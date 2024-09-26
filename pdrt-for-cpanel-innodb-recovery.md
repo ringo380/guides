@@ -1,4 +1,4 @@
-# Using Percona Data Recovery Tools for InnoDB in a cPanel Environment: 
+# Using Percona Data Recovery Tools for InnoDB in a cPanel Environment
 
 > ☢️ **WARNING**:
 >
