@@ -182,7 +182,7 @@ _____________________________________________
 
 You've generally got two circumstances here. One being a MySQL service that will functionally start, with or without innodb_force_recovery, and is accessible. The second being a MySQL service that is failing to even start, as a result of the corruption/data issues. I'll cover what the options and procedures are for both of these:
 
-- IF MYSQL IS RUNNING
+### IF MYSQL IS RUNNING
 
 1. Recovery Database
 
@@ -289,7 +289,7 @@ You still want to try and get the table structure if at all possible, so if you 
 ```
 Alternatively, MySQL has a utility that can be used to attempt to extract table structure from .frm files, which can be found here:
 
-http://dev.mysql.com/downloads/utilities/
+> http://dev.mysql.com/downloads/utilities/
 
 _____________________________________________
 ## RECOVERING YOUR DATA
@@ -346,7 +346,7 @@ There were three columns in the language table - language_id, name, and last_upd
 
 So there, I was able to see that language_id of the deleted entry is 1, the name is "English" (we can also see that there is character limit of 20 in the "name" column, if you notice the spaces there between the double quotes), as we already knew, and the last updated time was "2006-02-15 11:02:19". Now, we can re-create the deleted row successfully with this data. If this was all you needed, and the procedure was successful, you can consider yourself lucky. 
 
-### Manual Method:
+### MANUAL METHOD:
 
 If you think you might be missing something with the automated script method, which many likely will be, you can also run the relevant scripts manually to get the appropriate output. To start, you want to make sure your table definitions are appropriate, by grabbing the structure as it exists in your recovery database, and copying it to the include/=table_defs.h= file. Be sure and run this from within the PDRT source folder (replace database_name and table_name with the name of the RECOVERY database that you created, and the table that you're working with - additionally, this relies on a valid /root/.my.cnf existing, if one does not exist, you will need to replace the command after "--password=" with your actual root MySQL password):
 	```
