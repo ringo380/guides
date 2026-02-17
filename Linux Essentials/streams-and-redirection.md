@@ -148,6 +148,8 @@ To force overwrite even with `noclobber` set, use `>|`:
 echo "data" >| existing_file.txt   # works even with noclobber
 ```
 
+`noclobber` is worth enabling in multi-user environments where multiple people share a server, or in scripts that write to shared log paths. It's also a good safety net during long terminal sessions where you might accidentally redirect to a file you've been building up - one stray `>` instead of `>>` and hours of collected output is gone. Some sysadmins enable it in their `.bashrc` by default and use `>|` for the rare cases they actually want to overwrite.
+
 Disable `noclobber` with:
 
 ```bash
@@ -303,6 +305,18 @@ command 2>&1 | grep "error"
 # Method 2: bash shorthand
 command |& grep "error"
 ```
+
+This is useful when a program writes important data to STDOUT but buries diagnostics in STDERR. For example, filtering compiler warnings without losing the build output:
+
+```bash
+# Count errors from a build, ignoring normal output
+make 2>&1 >/dev/null | grep -c 'error:'
+
+# Separate error output from data in a script
+./process_data.sh 2> >(grep -v 'warning' >> errors.log) > results.txt
+```
+
+The `|&` shorthand is convenient for quick debugging, but in scripts, the explicit `2>&1 |` form is clearer about what's happening.
 
 ---
 
@@ -469,3 +483,7 @@ echo <(true)    # /dev/fd/63 (or similar)
 ```
 
 This is why it works with commands that expect filenames but not with commands that expect STDIN.
+
+---
+
+**Previous:** [Shell Basics](shell-basics.md) | **Next:** [Text Processing](text-processing.md) | [Back to Index](README.md)

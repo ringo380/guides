@@ -88,6 +88,14 @@ Add the values together for each level. Three digits represent user, group, and 
 | `775` | `rwxrwxr-x` | Owner/group full, others read/execute |
 | `666` | `rw-rw-rw-` | Everyone read/write (usually a bad idea) |
 
+To calculate octal permissions from a symbolic string like `rwxr-xr-x`, work through each group of three:
+
+- **User `rwx`**: r(4) + w(2) + x(1) = **7**
+- **Group `r-x`**: r(4) + 0 + x(1) = **5**
+- **Other `r-x`**: r(4) + 0 + x(1) = **5**
+
+Result: **755**. Going the other direction, if someone tells you to `chmod 640`, break it down: 6 = r+w, 4 = r, 0 = nothing. So `640` means `rw-r-----` - the owner can read and write, the group can read, and others have no access.
+
 ```bash
 chmod 755 script.sh
 chmod 644 config.txt
@@ -130,6 +138,8 @@ chgrp -R developers dir/         # recursive
 
 Only root can change a file's owner. Regular users can change the group to any group they belong to.
 
+The reason only root can change file ownership is to prevent two abuses. First, **quota bypass**: if users could give their files to other users, they could evade disk quotas by assigning large files to someone else's account. Second, **setuid abuse**: if a user could create a program, set the setuid bit, then change ownership to root, they'd have a root-owned setuid binary - an instant privilege escalation. Restricting `chown` to root prevents both scenarios.
+
 ---
 
 ## umask
@@ -149,6 +159,19 @@ The umask is *bitwise masked* from these maximums. You can think of it as subtra
 | `077` | `600` (rw-------) | `700` (rwx------) |
 | `002` | `664` (rw-rw-r--) | `775` (rwxrwxr-x) |
 
+Here's how the mask works concretely. With a umask of `027`:
+
+- **Files**: start with `666`, mask off `027`. The result is `640` (`rw-r-----`). The owner keeps read/write, the group keeps read, and others get nothing.
+- **Directories**: start with `777`, mask off `027`. The result is `750` (`rwxr-x---`). The owner gets full access, the group can read and enter, others are locked out.
+
+Technically, the umask is a bitwise AND NOT operation (`default AND (NOT umask)`), but thinking of it as 'subtract these permissions' gives the right answer for all common values. To make the umask permanent, add it to your `~/.bashrc` or `~/.profile`:
+
+```bash
+umask 027
+```
+
+In scripts, setting a restrictive umask at the top ensures any files the script creates are protected by default.
+
 ```bash
 umask            # display current umask
 umask 022        # set umask
@@ -156,8 +179,6 @@ umask -S         # display in symbolic form (u=rwx,g=rx,o=rx)
 ```
 
 The typical default is `022`, which gives the owner full access and everyone else read access.
-
-To make the umask permanent, add it to `~/.bashrc` or `~/.profile`.
 
 ---
 
@@ -276,3 +297,7 @@ find / -type f -perm -4000 2>/dev/null
 # Find files not owned by any user
 find / -nouser 2>/dev/null
 ```
+
+---
+
+**Previous:** [Finding Files](finding-files.md) | **Next:** [Job Control](job-control.md) | [Back to Index](README.md)

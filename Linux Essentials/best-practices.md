@@ -163,6 +163,35 @@ brew install shellcheck           # macOS
 
 Run it in CI/CD to catch shell script bugs before they reach production.
 
+Here's what shellcheck output looks like on a buggy script:
+
+```bash
+$ cat buggy.sh
+#!/bin/bash
+files=$(ls *.txt)
+for f in $files; do
+    if [ $f == "important" ]; then
+        rm $f
+    fi
+done
+
+$ shellcheck buggy.sh
+In buggy.sh line 2:
+files=$(ls *.txt)
+        ^------^ SC2012: Use find instead of ls to better handle non-alphanumeric filenames.
+
+In buggy.sh line 3:
+for f in $files; do
+         ^----^ SC2086: Double quote to prevent globbing and word splitting.
+
+In buggy.sh line 4:
+    if [ $f == "important" ]; then
+         ^-- SC2086: Double quote to prevent globbing and word splitting.
+         ^-- SC2039: In POSIX sh, == in place of = is undefined.
+```
+
+Each finding includes a code (like SC2086) that you can look up at the shellcheck wiki for a detailed explanation and fix. **Editor integration** makes this even more useful - the VS Code ShellCheck extension and vim plugins like ALE or Syntastic show warnings inline as you type, catching bugs before you even save the file.
+
 ---
 
 ## Don't Parse ls Output
@@ -238,6 +267,8 @@ If your script needs to run on minimal systems (Docker containers, embedded syst
 
 If you need bash features, make sure your shebang is `#!/bin/bash`, not `#!/bin/sh`. On some systems, `/bin/sh` is `dash`, which doesn't support bash extensions.
 
+**When to target POSIX sh:** Docker scratch images and minimal containers often only have `/bin/sh` (usually dash or busybox ash). Cron jobs on minimal systems may run under `sh` by default. CI/CD pipeline scripts that need to run across different environments (Alpine Linux, Ubuntu, macOS) are safer with POSIX sh. **When bash is fine:** application scripts, developer tools, interactive helpers, and anything where you control the execution environment. If you're writing a deployment script that only runs on your Ubuntu servers, use bash and enjoy its features - forcing POSIX compatibility on a known-bash environment just makes the code harder to read.
+
 ---
 
 ## Avoid Common Pitfalls
@@ -253,6 +284,24 @@ eval "rm $user_input"
 # GOOD - pass arguments directly
 rm "$filename"
 ```
+
+If you find yourself reaching for `eval` to dynamically construct variable names, bash has safer alternatives. **Indirect expansion** with `${!var}` lets you dereference a variable name stored in another variable:
+
+```bash
+key='HOME'
+echo "${!key}"    # prints the value of $HOME
+```
+
+**Associative arrays** (bash 4+) are even better for key-value lookups:
+
+```bash
+declare -A config
+config[host]='localhost'
+config[port]='5432'
+echo "${config[host]}"
+```
+
+Both approaches avoid the security risk of `eval` interpreting arbitrary strings as code.
 
 ### Handle Missing Commands
 
@@ -299,6 +348,8 @@ A starting point for new scripts:
 #!/bin/bash
 set -euo pipefail
 
+# BASH_SOURCE[0] is the path to this script, even when sourced from another script.
+# $0 would give the caller's name instead. cd + pwd resolves symlinks and relative paths.
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_NAME="$(basename "$0")"
 
@@ -319,6 +370,9 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >&2
 }
 
+# main() is defined here but called at the bottom of the file. This pattern lets you
+# define helper functions anywhere in the file without worrying about order - bash reads
+# function definitions before executing main(). It also makes the entry point obvious.
 main() {
     local verbose=false
 
@@ -338,5 +392,10 @@ main() {
     log "Done"
 }
 
+# "$@" passes all command-line arguments to main, preserving quoting.
 main "$@"
 ```
+
+---
+
+**Previous:** [Archiving and Compression](archiving-and-compression.md) | [Back to Index](README.md)

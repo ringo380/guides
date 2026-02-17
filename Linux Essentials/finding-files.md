@@ -39,6 +39,8 @@ find . -path "*/src/*.js"      # match against the full path
 | `-type p` | Named pipe (FIFO) |
 | `-type s` | Socket |
 
+In practice, you'll use `-type f` (regular files) and `-type d` (directories) constantly, and `-type l` (symlinks) occasionally. The others are rare: **`-type b`** (block devices) for finding disk devices in `/dev`, **`-type c`** (character devices) for things like terminal devices and `/dev/null`, **`-type p`** (named pipes) when debugging inter-process communication, and **`-type s`** (sockets) when tracking down Unix domain sockets used by services like MySQL or Docker.
+
 **By size:**
 
 ```bash
@@ -76,6 +78,8 @@ find . -perm /111              # any execute bit set (user, group, or other)
 find . -perm -u+x              # user execute bit set
 ```
 
+The three `-perm` modes correspond to different questions. **`-perm 644`** (exact) asks 'are the permissions *exactly* 644?' - nothing more, nothing less. **`-perm -644`** (dash prefix, all-bits) asks 'are *at least* these bits set?' - the file could have more permissions than specified. **`-perm /111`** (slash prefix, any-bit) asks 'is *any* of these bits set?' - useful for finding anything executable. Think of exact as '=', dash as 'includes all of', and slash as 'includes any of'.
+
 **By owner:**
 
 ```bash
@@ -103,6 +107,8 @@ find . ! -name "*.tmp"                 # negation
 find . \( -name "*.txt" -or -name "*.md" \) -and -mtime -7  # grouping
 ```
 
+Note that `-and` is the default operator between tests. When you write `find . -name '*.txt' -size +1M`, the `-and` is implicit - both conditions must be true. You only need to write `-and` explicitly for readability, or when combining it with `-or` and grouping.
+
 ### Actions
 
 **`-exec` (per file):**
@@ -120,6 +126,8 @@ find . -name "*.tmp" -exec rm {} +
 ```
 
 The `+` passes as many filenames as possible to a single command invocation. This is much faster when operating on many files.
+
+The performance difference between `\;` and `+` is significant. With `\;`, find spawns a new process for every single file. If you're operating on 1000 files, that's 1000 separate `rm` processes. With `+`, find passes as many filenames as will fit on one command line, so 1000 files might be handled in a single `rm` invocation. The limit on how many arguments `+` can batch is determined by **`ARG_MAX`** (the kernel's maximum argument length, typically 2MB on modern Linux). You can check it with `getconf ARG_MAX`. For very large file sets, `+` will make multiple invocations as needed to stay within this limit.
 
 **`-delete`:**
 
@@ -217,6 +225,8 @@ find . -name "*.png" -print0 | xargs -0 -P 4 -I {} convert {} -resize 50% {}
 
 This runs up to 4 `convert` processes at a time.
 
+A few things to be aware of with parallel `xargs`. First, **output interleaving**: when multiple processes write to the terminal simultaneously, their output lines can mix together. This is fine for operations that don't produce output (like `gzip` or `chmod`), but problematic for commands that do. Second, **choosing a `-P` value**: a good starting point is the number of CPU cores (`nproc`), but for I/O-bound tasks you can often go higher. Third, **safety**: parallel execution is safe when each invocation operates on independent files. It's risky when operations have side effects that interact - for example, parallel appends to the same log file will produce garbled output.
+
 ### Confirmation
 
 Use `-p` to prompt before each execution:
@@ -257,3 +267,7 @@ Both can run commands on found files. The differences:
 | Speed | Slowest | Fast | Fast |
 
 For most tasks, `find -exec {} +` is the simplest safe option. Use `xargs` when you need parallel execution or more control over argument handling.
+
+---
+
+**Previous:** [Text Processing](text-processing.md) | **Next:** [File Permissions](file-permissions.md) | [Back to Index](README.md)

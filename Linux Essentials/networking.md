@@ -31,6 +31,8 @@ Reading the output:
 
 The summary at the end shows packet loss percentage and min/avg/max/stddev latency.
 
+Common **TTL** starting values can hint at the remote OS: **64** usually means Linux or macOS, **128** means Windows, and **255** means a network device (router, switch). Each router hop decrements TTL by 1, so a TTL of 118 likely means a Windows host 10 hops away (128 - 118 = 10). The **stddev** (standard deviation) in the summary indicates latency consistency - a low stddev means a stable connection, while a high stddev suggests network congestion or routing instability.
+
 ### traceroute and tracepath
 
 **`traceroute`** shows the path packets take to reach a host, listing each router hop:
@@ -47,6 +49,10 @@ Each line shows a hop number, the router address, and three round-trip times. St
 ```bash
 tracepath google.com
 ```
+
+**How traceroute works:** it sends packets with incrementally increasing **TTL** (Time To Live) values. The first packet has TTL=1. The first router decrements it to 0, discards the packet, and sends back an ICMP "Time Exceeded" message - revealing its address. The next packet has TTL=2, making it one hop further before the same thing happens. This continues until the packet reaches the destination. Each hop shows three round-trip times because traceroute sends three probes per TTL value.
+
+**Reading the output:** stars (`* * *`) at a hop don't necessarily mean a problem - many routers are configured to not respond to these probes. A sudden jump in latency at a specific hop suggests congestion at that point. If latency increases at one hop but *stays high* for all subsequent hops, the bottleneck is at that hop. If latency spikes at one hop but returns to normal at the next, the router is just slow at responding to ICMP (not a real bottleneck).
 
 ### mtr
 
@@ -110,6 +116,8 @@ curl -L https://example.com      # follow HTTP redirects
 curl -v https://example.com      # verbose output (headers, TLS details)
 curl -I https://example.com      # HEAD request (headers only)
 ```
+
+**HTTP method semantics** in brief: **GET** reads a resource without changing anything, **POST** creates a new resource or triggers an action, **PUT** replaces an entire resource with the provided data, **PATCH** updates specific fields of a resource, and **DELETE** removes a resource. When debugging failed requests, start with `curl -v` to see the full request and response headers - the status code and response body usually tell you what went wrong. Common issues: `401` means your authentication is wrong, `403` means the server understood your credentials but you lack permission, `404` means the URL is wrong, and `422` means the request body doesn't match what the API expects.
 
 **Downloading files:**
 
@@ -258,6 +266,20 @@ Common flags:
 
 Note the trailing slash on source paths. `source/` means "the contents of source." `source` (no slash) means "the directory itself."
 
+The trailing slash difference is the most common rsync mistake:
+
+```bash
+# WITH trailing slash: copies CONTENTS of source into dest
+rsync -av photos/ /backup/photos/
+# Result: /backup/photos/img1.jpg, /backup/photos/img2.jpg
+
+# WITHOUT trailing slash: copies the DIRECTORY ITSELF into dest
+rsync -av photos /backup/photos/
+# Result: /backup/photos/photos/img1.jpg, /backup/photos/photos/img2.jpg
+```
+
+When in doubt, use a trailing slash on the source and make sure the destination path ends where you want the files to land.
+
 ---
 
 ## Network Inspection
@@ -292,6 +314,18 @@ ss -tn dport = :22                # connections to remote port 22
 ss -tn dst 10.0.0.0/24            # connections to a subnet
 ```
 
+**Listening vs established:** a **listening** socket is waiting for incoming connections (a server). An **established** socket is an active connection between two endpoints (a client connected to a server). To answer "what's using port 8080?":
+
+```bash
+ss -tlnp | grep 8080     # find the listening process on port 8080
+```
+
+The `-p` flag shows the process name and PID, so you can immediately identify which program is binding the port. If you need to find all connections to a remote service:
+
+```bash
+ss -tn dst :443           # all established connections to remote port 443
+```
+
 ### ip
 
 The **`ip`** command manages network interfaces, addresses, and routes. It replaces the older `ifconfig` and `route` commands.
@@ -319,6 +353,16 @@ ip link set eth0 down       # bring interface down
 ip route                    # show routing table
 ip route get 8.8.8.8        # show which route a packet would take
 ```
+
+The **default route** (also called the default gateway) is where packets go when no more specific route matches. It's the "catch-all" path to the rest of the internet.
+
+```bash
+ip route
+# default via 192.168.1.1 dev eth0 proto dhcp metric 100
+# 192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.50
+```
+
+Reading this: the first line says "for anything not in the local network, send packets to 192.168.1.1 via eth0." The second line says "the 192.168.1.0/24 network is directly connected via eth0, and this machine's address on that network is 192.168.1.50."
 
 ### netstat (Legacy)
 
@@ -406,3 +450,7 @@ nc -l 9999 > received_file.txt
 # On sending end
 nc hostname 9999 < file_to_send.txt
 ```
+
+---
+
+**Previous:** [Disk and Filesystem](disk-and-filesystem.md) | **Next:** [System Information](system-information.md) | [Back to Index](README.md)

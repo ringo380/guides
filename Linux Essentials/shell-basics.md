@@ -17,6 +17,14 @@ There are several shells in common use:
 | `sh` | `/bin/sh` | POSIX-compliant, minimal |
 | `dash` | `/bin/dash` | Lightweight, used as `/bin/sh` on Debian/Ubuntu |
 
+**bash** is the default on most Linux servers and the shell you'll encounter in nearly every tutorial and sysadmin guide. If you're SSH'd into a Linux box, you're probably running bash.
+
+**zsh** has better interactive features like smarter tab completion and spelling correction. macOS switched to it as the default because of bash's licensing - newer bash versions are GPLv3, which Apple avoids.
+
+**dash** exists for speed. Debian and Ubuntu use it as `/bin/sh` for system boot scripts because it starts and runs faster than bash. You won't use it interactively, but your system runs hundreds of dash scripts during boot.
+
+**sh** is the **POSIX** compatibility baseline. Scripts written for `sh` are portable across Unix-like systems. On modern Linux, `/bin/sh` is usually a symlink to dash or bash.
+
 Check which shell you're currently running:
 
 ```bash
@@ -511,3 +519,23 @@ ls +(pattern)        # one or more matches
 ls ?(pattern)        # zero or one match
 ls @(pat1|pat2)      # exactly one of the patterns
 ```
+
+Extended globs are most useful for selecting everything *except* certain files. For example, to delete everything in a directory except `.conf` files:
+
+```bash
+shopt -s extglob
+rm !(*.conf)
+```
+
+Or match multiple extensions at once:
+
+```bash
+ls *.@(jpg|png|gif)    # all image files
+cp !(*.log|*.tmp) /backup/    # copy everything except logs and temp files
+```
+
+Without extglob, you'd need `find` with `-not` flags to achieve the same thing.
+
+---
+
+**Next:** [Streams and Redirection](streams-and-redirection.md) | [Back to Index](README.md)

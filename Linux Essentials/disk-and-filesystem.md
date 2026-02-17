@@ -146,6 +146,12 @@ Common options:
 | `noauto` | Don't mount at boot (mount manually) |
 | `user` | Allow non-root users to mount |
 
+Some options worth understanding:
+
+- **`noatime`** stops the kernel from updating the 'last accessed' timestamp every time a file is read. On SSDs, this reduces unnecessary writes and improves performance. On HDDs with busy filesystems, it reduces I/O overhead. There's rarely a reason *not* to use `noatime` unless you have software that depends on access times.
+- **`noexec`** prevents executing any binary on the filesystem. It's a security hardening measure commonly applied to `/tmp` - if an attacker writes a malicious binary to `/tmp`, they can't execute it directly. Note that it doesn't prevent `bash /tmp/script.sh` (which runs bash, not the script), so it's a layer of defense, not a complete solution.
+- **`nosuid`** tells the kernel to ignore setuid and setgid bits on the filesystem. This is important for removable media and network mounts - you don't want someone plugging in a USB drive containing a setuid-root binary that could escalate privileges.
+
 Using UUIDs instead of device names (like `/dev/sdb1`) is safer because device names can change between boots:
 
 ```bash
@@ -219,6 +225,8 @@ parted /dev/sdb mklabel gpt         # create GPT partition table
 parted /dev/sdb mkpart primary ext4 0% 100%   # create partition using full disk
 ```
 
+**When to choose fdisk vs parted:** `fdisk` works with **MBR** (Master Boot Record) partition tables. MBR has a 2TB per-disk limit and supports a maximum of 4 primary partitions (or 3 primary + 1 extended partition containing logical partitions). `parted` works with **GPT** (GUID Partition Table), which supports disks larger than 2TB, up to 128 partitions by default, and is required for UEFI boot. For any new system with disks over 2TB or that uses UEFI, use `parted` with GPT. For older systems with MBR, or when modifying existing MBR layouts, use `fdisk`. Modern versions of `fdisk` can also handle GPT, but `parted` is the standard tool for it.
+
 ---
 
 ## Creating Filesystems
@@ -237,6 +245,8 @@ Options:
 mkfs.ext4 -L "backups" /dev/sdb1         # set a label
 mkfs.ext4 -m 1 /dev/sdb1                 # reserve only 1% for root (default is 5%)
 ```
+
+**ext4 vs XFS:** **ext4** is the default choice on most Linux distributions. It's well-tested, has excellent tooling (`e2fsck`, `tune2fs`, `resize2fs`), and handles general workloads well. **XFS** excels at handling large files and parallel I/O - it's the default on RHEL/CentOS and a strong choice for database servers, media storage, or any workload with many concurrent large writes. XFS can't be shrunk after creation (only grown), while ext4 can be both grown and shrunk. For most use cases, go with your distribution's default.
 
 ---
 
@@ -257,7 +267,7 @@ e2fsck -f /dev/sdb1          # force check even if clean
 tune2fs -l /dev/sdb1         # show filesystem metadata (last check, mount count, etc.)
 ```
 
-Running `fsck` on a mounted filesystem can cause data corruption. If you need to check the root filesystem, boot into single-user mode or use a live USB.
+Running `fsck` on a mounted filesystem can cause data corruption. The reason is that the mounted kernel has its own in-memory view of the filesystem's metadata (which blocks belong to which files, free space maps, directory entries). When `fsck` reads and writes to the raw disk device, it modifies on-disk structures that the kernel doesn't know about. The kernel's cached metadata now disagrees with what's on disk, leading to corrupted files, lost data, or an unmountable filesystem. Always unmount first, or boot from a live USB to check the root filesystem.
 
 ---
 
@@ -304,3 +314,7 @@ echo 'UUID=your-uuid-here /mnt/data ext4 defaults 0 2' >> /etc/fstab
 mount -a
 df -h /mnt/data
 ```
+
+---
+
+**Previous:** [Scripting Fundamentals](scripting-fundamentals.md) | **Next:** [Networking](networking.md) | [Back to Index](README.md)

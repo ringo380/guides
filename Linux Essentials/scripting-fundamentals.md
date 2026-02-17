@@ -88,6 +88,8 @@ In bash scripts, prefer `[[ ]]` - it's safer and more powerful.
 | `file1 -nt file2` | file1 is newer than file2 |
 | `file1 -ot file2` | file1 is older than file2 |
 
+The ones you'll use constantly: **`-f`** to check that a config file exists before trying to read it, **`-d`** to verify a directory is there before writing into it, **`-x`** to check that a command or script is executable before running it, **`-s`** to make sure a file isn't empty before processing it, and **`-nt`** to compare timestamps (useful in build systems to decide whether a target needs rebuilding).
+
 **String tests:**
 
 | Operator | True if... |
@@ -96,6 +98,8 @@ In bash scripts, prefer `[[ ]]` - it's safer and more powerful.
 | `-n "$str"` | String is non-empty |
 | `"$a" = "$b"` | Strings are equal |
 | `"$a" != "$b"` | Strings are not equal |
+
+**`-z`** is the go-to for checking whether a required variable has been set: `[[ -z "$DB_HOST" ]] && echo 'DB_HOST is required' >&2 && exit 1`. **`-n`** is its opposite - use it when you want to run something only if a variable has a value.
 
 **Numeric comparison:**
 
@@ -296,6 +300,8 @@ for file in *.txt; do
 done
 ```
 
+Both `break` and `continue` accept a numeric argument for nested loops. `break 2` exits two levels of nesting, `continue 2` skips to the next iteration of the outer loop. This avoids the need for flag variables when you want an inner loop's result to control the outer loop.
+
 ---
 
 ## Functions
@@ -327,6 +333,20 @@ Functions receive arguments the same way scripts do:
 | `$*` | All arguments (joined as a single string when quoted as `"$*"`) |
 | `$#` | Number of arguments |
 | `$0` | Still the script name (not the function name) |
+
+The critical difference between `"$@"` and `"$*"` appears when they're double-quoted. `"$@"` expands to each argument as a separate word, preserving the original argument boundaries. `"$*"` joins all arguments into a single string separated by the first character of `IFS` (normally a space). This matters when passing filenames with spaces:
+
+```bash
+# If called with: ./script.sh "my file.txt" "other file.txt"
+
+# CORRECT: passes two separate arguments to rm
+for f in "$@"; do rm "$f"; done    # rm "my file.txt"; rm "other file.txt"
+
+# BUG: joins into one string, then word-splits on spaces
+for f in "$*"; do rm "$f"; done    # rm "my file.txt other file.txt" (one argument with spaces)
+```
+
+In almost all cases, you want `"$@"`. The only time `"$*"` is useful is when you intentionally want to join arguments into a single string, like building a log message: `log "Arguments: $*"`.
 
 ```bash
 backup() {
@@ -516,3 +536,7 @@ This script:
 - Validates arguments
 - Uses `local` for all function variables
 - Wraps logic in a `main` function
+
+---
+
+**Previous:** [Job Control](job-control.md) | **Next:** [Disk and Filesystem](disk-and-filesystem.md) | [Back to Index](README.md)

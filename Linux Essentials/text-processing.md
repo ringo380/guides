@@ -34,6 +34,8 @@ grep "error" *.log                     # search files matching a glob
 | `-E` | Use extended regular expressions |
 | `-P` | Use Perl-compatible regular expressions |
 
+The most used flags in practice: **`-r`** to search an entire project tree, **`-l`** when you just need to know *which files* contain something (not the matching lines themselves), **`-o`** to extract just the matched text (useful for pulling values out of structured data), **`-c`** to count matches per file without seeing the actual lines, **`-F`** when your search string contains regex metacharacters like `.` or `*` and you want to search for them literally, and **`-P`** when you need advanced features like lookahead or non-greedy matching that basic and extended regex can't do.
+
 ### Context Lines
 
 Show lines surrounding each match:
@@ -135,6 +137,8 @@ Note the double brackets - the outer `[]` is the bracket expression, the inner `
 ```bash
 grep '[[:digit:]]\{3\}-[[:digit:]]\{4\}' phones.txt    # matches 555-1234
 ```
+
+POSIX character classes exist because of **locale awareness**. The range `[a-z]` doesn't always mean what you'd expect - in some locales (like `en_US.UTF-8`), the sort order interleaves upper and lowercase, so `[a-z]` can match uppercase letters too. `[:lower:]` always means 'lowercase letters in the current locale,' regardless of sorting rules. If you're writing scripts that will run on systems with different locale settings, POSIX classes are the safe choice. For quick interactive use where you know your locale, `[a-z]` is fine.
 
 ### Backreferences
 
@@ -424,6 +428,8 @@ cut -c5- file.txt               # from character 5 to end
 
 `cut` is fast but limited. For complex field extraction, use `awk`.
 
+**When to use `cut` vs `awk`:** `cut` is simpler and faster for extracting fixed-position fields from cleanly delimited data. Use `awk` when you need conditional logic, multiple delimiters, or field reordering. One gotcha: `cut` defaults to tab as its delimiter, not spaces. If your data is space-separated, you need `-d' '`, but `cut` can't handle multiple consecutive spaces as a single delimiter the way `awk` does. Also, `cut` has no way to handle quoted CSV fields - a field containing a comma inside quotes will be split incorrectly. For anything beyond simple TSV or single-character-delimited data, use `awk`.
+
 ---
 
 ## sort
@@ -456,6 +462,16 @@ sort -t: -k3 -n /etc/passwd
 du -a /var/log | sort -rn | head -10
 ```
 
+The **`-s`** (stable sort) flag preserves the original order of lines that compare as equal. This matters when sorting by multiple keys in separate passes - without stable sort, the second sort might scramble the ordering you established in the first. For example, to sort a list of employees by department and then by name within each department, a stable sort on name followed by a stable sort on department gives you the right result.
+
+**Human-numeric sort** (`-h`) understands unit suffixes, which makes it essential for sorting `du` output:
+
+```bash
+du -sh /var/* | sort -h
+```
+
+Without `-h`, `sort -n` would rank '2M' below '100K' because it only looks at the leading digit. With `-h`, it correctly understands that 2M is larger than 100K.
+
 ---
 
 ## uniq
@@ -478,6 +494,8 @@ sort access.log | uniq -c | sort -rn | head -10
 # Count unique IP addresses
 awk '{ print $1 }' access.log | sort | uniq -c | sort -rn
 ```
+
+**Why must input be sorted?** `uniq` only compares each line against the one directly before it. If duplicate lines appear in different parts of the file with other lines between them, `uniq` won't detect them. Sorting brings identical lines together so `uniq` can find them. If sorting would destroy meaningful ordering, use `sort -u` (which deduplicates as it sorts) or `awk '!seen[$0]++'` (which deduplicates while preserving original order).
 
 ---
 
@@ -516,6 +534,8 @@ tr -d '[:space:]' < file.txt             # remove all whitespace
 tr -dc '[:print:]' < file.txt            # keep only printable characters
 ```
 
+`tr` works on a **one-to-one character mapping** model. Each character in SET1 maps to the character at the same position in SET2. If SET1 is longer than SET2, the last character of SET2 is repeated to fill the gap. That's why `tr 'aeiou' '*'` replaces all five vowels with `*` - the single `*` gets repeated for each remaining position.
+
 ### Practical Examples
 
 ```bash
@@ -551,6 +571,8 @@ ls | wc -l
 grep -c "error" log.txt    # more efficient than grep | wc -l
 ```
 
+The difference between **`-c`** (bytes) and **`-m`** (characters) matters with multibyte encodings like **UTF-8**. An ASCII file will show the same count for both, but a file containing non-ASCII characters (accented letters, emoji, CJK characters) will have more bytes than characters. Use `-c` when you care about file size on disk, and `-m` when you care about the number of human-readable characters.
+
 ---
 
 ## head and tail
@@ -574,6 +596,11 @@ head -c 100 file.txt     # first 100 bytes
 tail file.txt            # last 10 lines
 tail -n 5 file.txt       # last 5 lines
 tail -n +5 file.txt      # from line 5 to end
+```
+
+The `+` prefix reverses `tail`'s logic. Instead of 'show the last N lines,' `tail -n +N` means 'start from line N.' This is useful for skipping headers: `tail -n +2 data.csv` gives you everything except the first line.
+
+```bash
 tail -c 100 file.txt     # last 100 bytes
 ```
 
@@ -593,19 +620,7 @@ tail -F /var/log/syslog                     # follow even if file is rotated
 
 ## tee
 
-**`tee`** reads from STDIN and writes to both STDOUT and one or more files:
-
-```bash
-command | tee output.txt                # write to file and terminal
-command | tee -a output.txt             # append to file
-command | tee file1.txt file2.txt       # write to multiple files
-```
-
-Use `tee` in pipelines to save intermediate results:
-
-```bash
-ps aux | tee processes.txt | grep "nginx" | tee nginx_procs.txt | wc -l
-```
+`tee` is covered in [Streams and Redirection](streams-and-redirection.md#tee). In brief, it reads from STDIN and writes to both STDOUT and one or more files, making it useful for saving intermediate pipeline results while still passing data to the next stage.
 
 ---
 
@@ -632,3 +647,35 @@ paste -sd+ numbers.txt | bc
 # Convert CSV to a formatted table
 column -t -s, data.csv
 ```
+
+### Breaking Down Pipelines
+
+Here's how to read these pipelines stage by stage.
+
+**Top 10 most common words in a file:**
+
+```bash
+tr -s '[:space:]' '\n' < file.txt | tr '[:upper:]' '[:lower:]' | sort | uniq -c | sort -rn | head -10
+```
+
+1. `tr -s '[:space:]' '\n'` - split text into one word per line by converting all whitespace (spaces, tabs, newlines) to newlines, squeezing consecutive whitespace into one
+2. `tr '[:upper:]' '[:lower:]'` - lowercase everything so 'The' and 'the' count as the same word
+3. `sort` - sort alphabetically so identical words are adjacent (required for `uniq`)
+4. `uniq -c` - collapse adjacent identical lines and prefix each with its count
+5. `sort -rn` - sort numerically in reverse so the highest counts come first
+6. `head -10` - show only the first 10 results
+
+**Extract and count HTTP status codes:**
+
+```bash
+awk '{ print $9 }' access.log | sort | uniq -c | sort -rn
+```
+
+1. `awk '{ print $9 }'` - pull the 9th whitespace-delimited field from each line (the HTTP status code in standard access log format)
+2. `sort` - sort the status codes so identical ones are adjacent
+3. `uniq -c` - count consecutive identical lines
+4. `sort -rn` - show most frequent codes first
+
+---
+
+**Previous:** [Streams and Redirection](streams-and-redirection.md) | **Next:** [Finding Files](finding-files.md) | [Back to Index](README.md)

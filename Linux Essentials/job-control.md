@@ -89,6 +89,10 @@ fg %1           # bring job 1 to foreground
 | `SIGUSR1` | 10 | Terminate | User-defined signal 1 |
 | `SIGUSR2` | 12 | Terminate | User-defined signal 2 |
 
+**SIGKILL** is unique because the kernel handles it directly - the signal is never delivered to the process. The kernel simply removes the process from its scheduling table. This is why SIGKILL can't be caught, ignored, or handled: the process never gets a chance to run any code in response. It also means the process can't clean up - temporary files stay behind, network connections are left half-open, and shared resources may be left in an inconsistent state.
+
+**SIGQUIT** produces a core dump in addition to terminating the process. This is useful for debugging a hung process: if a program is stuck and you want to analyze what it was doing, press `Ctrl-\` to send SIGQUIT. The resulting core file can be loaded into `gdb` for post-mortem analysis. In normal usage, you'll send SIGTERM (polite request) first, SIGQUIT (terminate with dump) if you need diagnostic information, and SIGKILL (force kill) only as a last resort.
+
 ### Sending Signals
 
 **`kill`** sends a signal to a process by PID:
@@ -154,6 +158,8 @@ disown %1          # remove job 1 from shell's job table
 disown -h %1       # keep in job table but don't send SIGHUP on exit
 ```
 
+The key difference: **`nohup`** is preventive - you use it *before* starting a process. **`disown`** is reactive - you use it *after* a process is already running and you realize you need it to survive terminal closure. A common workflow: you start a long build, realize you need to log out, press `Ctrl-Z` to suspend it, `bg` to resume in the background, and `disown` to detach it from the shell. If you'd planned ahead, you would have used `nohup` from the start.
+
 ---
 
 ## Process Information
@@ -187,6 +193,8 @@ Key columns in `ps aux`:
 | `TIME` | Cumulative CPU time |
 | `COMMAND` | Command that started the process |
 
+**VSZ** (Virtual Memory Size) is the total amount of memory the process has *mapped*, including shared libraries, memory-mapped files, and memory that's been allocated but never used. **RSS** (Resident Set Size) is how much physical RAM the process is actually using right now. VSZ is almost always larger than RSS because virtual memory includes pages that haven't been loaded from disk yet and shared libraries counted in full even though they're shared with other processes. When checking if a process is using too much memory, look at RSS. When checking if a process might run into address space limits, look at VSZ.
+
 Process states in the `STAT` column:
 
 | State | Meaning |
@@ -196,6 +204,10 @@ Process states in the `STAT` column:
 | `D` | Uninterruptible sleep (usually I/O) |
 | `T` | Stopped |
 | `Z` | Zombie (finished but parent hasn't collected status) |
+
+The **D state** (uninterruptible sleep) deserves special attention. A process in D state is waiting on I/O that the kernel considers non-interruptible - typically disk or network I/O at the kernel level. You cannot kill a D-state process, not even with SIGKILL, because the kernel won't deliver signals to it until the I/O completes. Processes stuck in D state are commonly seen with NFS mounts that have become unreachable or failing disk drives. If you see many processes in D state, investigate your storage and network mounts.
+
+The **Z state** (zombie) means the process has finished executing but its parent hasn't called `wait()` to collect its exit status. The zombie takes up no resources other than a process table entry. A few zombies are harmless, but a large accumulation suggests the parent process has a bug. You can't kill a zombie directly - killing the parent (or restarting it) clears them, because `init`/`systemd` adopts orphaned processes and reaps their exit status.
 
 ### top and htop
 
@@ -299,3 +311,9 @@ tmux attach -t deploy
 ```
 
 This is especially useful over SSH connections. If your connection drops, the tmux session keeps running. Just SSH back in and reattach.
+
+**Which to choose?** If you're setting up a new system, use **tmux** - it has better split-pane support, more intuitive configuration, and a scriptable command interface. Use **screen** if it's already installed on a server you're working with and you don't want to (or can't) install additional software. screen is nearly universal on older systems, while tmux may not be pre-installed. The core workflow (start a session, detach, reattach later) is the same in both.
+
+---
+
+**Previous:** [File Permissions](file-permissions.md) | **Next:** [Scripting Fundamentals](scripting-fundamentals.md) | [Back to Index](README.md)

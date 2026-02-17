@@ -1,6 +1,6 @@
 # Archiving and Compression
 
-Archiving bundles multiple files into one. Compression reduces file size. On Linux, these are usually separate operations (unlike zip, which does both). `tar` handles archiving and can invoke compression tools in a single command.
+**Archiving** and **compression** are two different operations that are often combined. Archiving bundles multiple files and directories into a single file, preserving directory structure, permissions, timestamps, and ownership - but without reducing size. Compression reduces file size by encoding redundant data more efficiently, but operates on a single file. On Linux, these are usually separate steps (unlike zip, which does both at once): `tar` creates the archive, then a compression tool like `gzip` or `xz` shrinks it. The `tar` command can invoke compression tools in a single command for convenience.
 
 ---
 
@@ -96,6 +96,8 @@ gzip -1 file.txt                # fastest compression (less compression)
 gzip -d file.txt.gz             # decompress (same as gunzip)
 ```
 
+Compression levels from `-1` to `-9` control the tradeoff between speed and compression ratio. Lower numbers use less CPU time and memory but produce larger files. Higher numbers spend more CPU and memory searching for better ways to encode the data. The difference in file size between `-1` and `-9` is often modest (5-15% on typical files), so the default level (`-6` for gzip) is usually the right choice. Use `-1` when speed matters (compressing data in a pipeline or on a slow machine) and `-9` only when you're compressing once and distributing many times (like software releases).
+
 **`gunzip`** decompresses:
 
 ```bash
@@ -183,6 +185,10 @@ unzip -l archive.zip                       # list contents
 unzip -o archive.zip                       # overwrite without prompting
 ```
 
+### zip Limitations
+
+Classic zip has a few limitations to be aware of. It doesn't preserve Unix file permissions by default - extracted files get default permissions based on your umask, which can break scripts that need to be executable. The original zip format has a **4GB limit** for individual files and a **4GB limit** for the total archive size. Modern implementations support zip64 extensions to overcome this, but not all unzip tools handle zip64 correctly. For Unix-to-Unix transfers where you need to preserve permissions, ownership, and symlinks, `tar` archives are the better choice.
+
 ---
 
 ## When to Use Which
@@ -195,15 +201,27 @@ unzip -o archive.zip                       # overwrite without prompting
 | `.zip` | Sharing with Windows/macOS users, or when recipients might not have tar. |
 | `.gz` (no tar) | Compressing a single file (like log rotation). |
 
+**Concrete scenarios:**
+
+- **Distributing software** - `.tar.xz` is the standard. Users download once, the slow compression time is paid by the developer, and the small size saves bandwidth.
+- **Log rotation** - `.gz` (single file, no tar needed). logrotate uses gzip by default because the fast compression/decompression cycle matters when rotating logs on a busy server.
+- **Backups** - `.tar.gz` balances compression with speed. For large backup jobs, the time difference between gzip and xz can be hours.
+- **Sharing with non-Linux users** - `.zip` is universally supported on Windows and macOS without extra software.
+- **Archiving for long-term storage** - `.tar.xz` gives the best size reduction. If the data won't be accessed frequently, the slow compression is worth it.
+
 ### Compression Comparison
 
-Rough comparison for a typical text file:
+Approximate results for a typical 100MB text file (actual results vary with content):
 
-| Format | Compression | Speed | Decompression Speed |
-|--------|------------|-------|---------------------|
-| gzip | Good | Fast | Fast |
-| bzip2 | Better | Slow | Moderate |
-| xz | Best | Slowest | Fast |
-| zip | Good | Fast | Fast |
+| Format | Compressed Size | Compression Time | Decompression Time |
+|--------|----------------|------------------|--------------------|
+| gzip | ~30MB (~70% reduction) | ~2 seconds | ~1 second |
+| bzip2 | ~25MB (~75% reduction) | ~8 seconds | ~4 seconds |
+| xz | ~20MB (~80% reduction) | ~30 seconds | ~2 seconds |
+| zip | ~30MB (~70% reduction) | ~2 seconds | ~1 second |
 
-For backup scripts, `.tar.gz` is usually the right default. For distributing software, `.tar.xz` is standard. For sharing with non-Linux users, `.zip` is safest.
+Notable: xz decompresses much faster than it compresses, making it a good choice when you compress once and decompress many times (like software distribution). Binary files and already-compressed data (images, video) will see much smaller reductions.
+
+---
+
+**Previous:** [System Information](system-information.md) | **Next:** [Best Practices](best-practices.md) | [Back to Index](README.md)

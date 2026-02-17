@@ -97,6 +97,8 @@ Key fields:
 - **Model name** - CPU model
 - **CPU MHz** - current clock speed
 
+The formula for total logical CPUs is: **Sockets x Cores per socket x Threads per core**. For example, a machine with 2 sockets, 8 cores per socket, and 2 threads per core has 2 x 8 x 2 = 32 logical CPUs. The "threads per core" value is usually 1 (no hyperthreading) or 2 (hyperthreading/SMT enabled). **Hyperthreading** lets each physical core present itself as two logical CPUs by sharing execution resources. It helps with workloads that have a mix of CPU-bound and I/O-waiting threads, but doesn't double performance - expect 15-30% improvement at best for most workloads.
+
 ```bash
 # Quick core count
 nproc                      # number of processing units
@@ -166,11 +168,20 @@ Key columns:
 - **id** - idle CPU time
 - **wa** - I/O wait time (high = disk bottleneck)
 
+**What values indicate problems:**
+
+- **wa > 10%** - the CPU is spending significant time waiting for disk I/O. Investigate with `iostat -x` to find which disk is the bottleneck.
+- **r consistently > number of CPUs** - more processes want to run than you have CPUs. The system needs more CPU power or the workload needs optimization.
+- **si/so > 0** - the system is actively swapping memory to/from disk. Even small amounts of swap activity cause noticeable slowdowns because disk is orders of magnitude slower than RAM. If you see sustained swapping, the system needs more RAM or a process is using too much.
+- **b > 0** for extended periods - processes are blocked on I/O. Combined with high wa%, this points to a storage bottleneck.
+
 ---
 
 ## /proc and /sys
 
 The **`/proc`** filesystem is a virtual filesystem that exposes kernel and process information as files.
+
+**/proc** and **/sys** are **virtual filesystems** - they don't exist on disk. The kernel generates their contents on the fly when you read them. **/proc** exposes process information and kernel internals: every running process gets a directory at `/proc/<PID>/`, and files like `/proc/cpuinfo` and `/proc/meminfo` provide system-wide stats. **/sys** is organized around the kernel's internal object model - devices, drivers, buses, and kernel subsystems. The key difference: `/proc` is older and somewhat disorganized (it mixes process info with hardware info), while `/sys` follows a clean hierarchy. New kernel features expose their interfaces through `/sys`.
 
 ```bash
 cat /proc/cpuinfo          # CPU details
@@ -231,6 +242,24 @@ dmesg -T | grep -i usb
 dmesg -T | grep -i "oom\|killed process"
 ```
 
+**Reading dmesg output for real problems.** Here's an example of spotting a disk error:
+
+```bash
+dmesg -T | grep -i 'error\|fail\|i/o'
+# [Mon Jan 15 14:23:01 2024] ata1.00: failed command: READ FPDMA QUEUED
+# [Mon Jan 15 14:23:01 2024] ata1.00: status: { DRDY ERR }
+# [Mon Jan 15 14:23:01 2024] ata1.00: error: { UNC }
+```
+
+The `UNC` (uncorrectable) error means the disk has a bad sector it can't recover from. Repeated disk errors like this mean the drive is failing and should be replaced. Another common scenario:
+
+```bash
+dmesg -T | grep -i 'oom\|killed process'
+# [Mon Jan 15 15:45:22 2024] Out of memory: Killed process 3421 (java) total-vm:4096000kB
+```
+
+The OOM (Out of Memory) killer activates when the system runs out of RAM and swap. It picks the process using the most memory and kills it. If you see this, you either need more RAM, a swap file, or to investigate why that process consumed so much memory.
+
 ---
 
 ## Putting It Together
@@ -263,3 +292,7 @@ dmesg -T | tail -30
 lsof -p <PID>
 strace -p <PID>   # system calls (careful - high overhead)
 ```
+
+---
+
+**Previous:** [Networking](networking.md) | **Next:** [Archiving and Compression](archiving-and-compression.md) | [Back to Index](README.md)
