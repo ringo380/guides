@@ -10,6 +10,11 @@ CLAUDE.local.md
 # Worktrees
 .worktrees/
 
-# MkDocs
+# Build artifacts
 site/
 docs/
+hooks/__pycache__/
+
+# Unused design assets
+assets/images/runbook-logo.png
+assets/images/logo-philosophy.md
