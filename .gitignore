@@ -6,3 +6,7 @@ CLAUDE.local.md
 .claude/
 .claude-dev-helper/
 .plugin-config/
+
+# MkDocs
+site/
+docs/

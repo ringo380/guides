@@ -1,0 +1,70 @@
+site_name: Guides
+site_url: https://ringo380.github.io/guides/
+site_description: Open-access technical guides on Linux, DNS, Git, databases, and development
+
+# docs_dir is a symlink tree created at build time (see .github/workflows/deploy.yml).
+# For local dev: ./setup-docs.sh && mkdocs serve
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+  - open-in-new-tab
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - tables
+  - fenced_code
+  - codehilite
+
+nav:
+  - Home: README.md
+  - Linux Essentials:
+      - Index: Linux Essentials/README.md
+      - Shell Basics: Linux Essentials/shell-basics.md
+      - Streams and Redirection: Linux Essentials/streams-and-redirection.md
+      - Text Processing: Linux Essentials/text-processing.md
+      - Finding Files: Linux Essentials/finding-files.md
+      - File Permissions: Linux Essentials/file-permissions.md
+      - Job Control: Linux Essentials/job-control.md
+      - Scripting Fundamentals: Linux Essentials/scripting-fundamentals.md
+      - Disk and Filesystem: Linux Essentials/disk-and-filesystem.md
+      - Networking: Linux Essentials/networking.md
+      - System Information: Linux Essentials/system-information.md
+      - Archiving and Compression: Linux Essentials/archiving-and-compression.md
+      - Best Practices: Linux Essentials/best-practices.md
+  - DNS Administration:
+      - Essential DNS Administration: DNS Administration/essential-dns-administration.md
+  - Git:
+      - Getting Through It: Git/git-getting-through-it.md
+  - Databases:
+      - InnoDB Recovery (PDRT for cPanel): Databases/pdrt-for-cpanel-innodb-recovery.md
+  - Dev Zero:
+      - Perl:
+          - Introduction: Dev Zero/Perl/perl_dev0_introduction.md
+          - Developer Roadmap: Dev Zero/Perl/perl_developer_roadmap.md
