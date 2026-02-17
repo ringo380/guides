@@ -4,4 +4,5 @@
 CLAUDE.md
 CLAUDE.local.md
 .claude/
+.claude-dev-helper/
 .plugin-config/
