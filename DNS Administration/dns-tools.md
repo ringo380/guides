@@ -20,7 +20,11 @@ dig example.com +short           # just the answer, nothing else
 
 ### Reading Full Output
 
-Most people use `+short` and miss the information that actually matters. Here's what a full `dig` response looks like:
+Most people use `+short` and miss the information that actually matters. The annotated diagram below shows each section of a full `dig` response:
+
+![Annotated dig output showing the HEADER, FLAGS, EDNS, QUESTION, ANSWER, and STATS sections with explanations](../assets/images/dns/dig-output-annotated.svg)
+
+Here's what a full `dig` response looks like:
 
 ```bash
 dig example.com

@@ -42,7 +42,11 @@ markdown_extensions:
   - toc:
       permalink: true
   - tables
-  - fenced_code
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - codehilite
   - attr_list
   - md_in_html

@@ -8,6 +8,8 @@ This guide covers PowerDNS - a DNS server that stores zone data in databases ins
 
 [**PowerDNS**](https://doc.powerdns.com/) takes a fundamentally different approach to DNS than BIND or NSD. Instead of reading zone files from disk, PowerDNS uses **backends** - pluggable modules that can read zone data from MySQL, PostgreSQL, SQLite, LDAP, plain files, or even custom scripts.
 
+![PowerDNS backend architecture showing the auth server core with pluggable MySQL, PostgreSQL, SQLite, and LMDB backends, plus HTTP API interface](../assets/images/dns/powerdns-backends.svg)
+
 This makes PowerDNS the natural choice when DNS data needs to be managed programmatically. Hosting providers, cloud platforms, and any system where DNS records change frequently through automation benefit from the database-backed model. You can `INSERT` a DNS record with SQL and it's live immediately - no zone file editing, no serial incrementing, no reload.
 
 PowerDNS effectively replaces MyDNS, a database-backed DNS server that was popular in the hosting industry but hasn't been maintained since 2008.

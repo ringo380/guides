@@ -85,3 +85,20 @@
   font-size: 0.85rem;
   color: var(--md-default-fg-color--light);
 }
+
+/* Mermaid diagram styling */
+.mermaid {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+/* Diagram images */
+.diagram-container {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.diagram-container img {
+  max-width: 100%;
+  height: auto;
+}

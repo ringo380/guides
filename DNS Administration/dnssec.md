@@ -49,20 +49,40 @@ Every signed zone has:
 
 The chain works like this:
 
-```
-Root zone (.)
-  DNSKEY → signs everything in the root zone
-  DS for .com → hash of .com's DNSKEY
-          ↓
-.com zone
-  DNSKEY → signs everything in .com
-  DS for example.com → hash of example.com's DNSKEY
-          ↓
-example.com zone
-  DNSKEY → signs everything in example.com
-  RRSIG over A record for www.example.com → signature
-          ↓
-Validated answer: www.example.com A 93.184.216.34
+```mermaid
+graph TD
+    TA["Trust Anchor<br/>(built into resolver)"]:::anchor
+    TA -->|"verifies"| RootKey
+
+    subgraph root ["Root Zone (.)"]
+        RootKey["DNSKEY (KSK + ZSK)"]
+        RootKey -->|"signs"| RootDS["DS for .com"]
+        RootKey -->|"signs"| RootRRSIG["RRSIG over all root records"]
+    end
+
+    RootDS -->|"hash matches"| ComKey
+
+    subgraph dotcom [".com Zone"]
+        ComKey["DNSKEY (KSK + ZSK)"]
+        ComKey -->|"signs"| ComDS["DS for example.com"]
+        ComKey -->|"signs"| ComRRSIG["RRSIG over all .com records"]
+    end
+
+    ComDS -->|"hash matches"| ExKey
+
+    subgraph example ["example.com Zone"]
+        ExKey["DNSKEY (KSK + ZSK)"]
+        ExKey -->|"signs"| ExRRSIG["RRSIG over A record"]
+        ExRRSIG -->|"validates"| Answer
+    end
+
+    Answer["www.example.com A 93.184.216.34"]:::validated
+
+    classDef anchor fill:#e65100,color:#fff,stroke:#bf360c,font-weight:bold
+    classDef validated fill:#2e7d32,color:#fff,stroke:#1b5e20,font-weight:bold
+    style root fill:#fff3e0,stroke:#e65100
+    style dotcom fill:#e3f2fd,stroke:#1565c0
+    style example fill:#e8f5e9,stroke:#2e7d32
 ```
 
 A validating resolver starts at the root (whose key it already knows - the "trust anchor") and follows the chain down. At each level:
@@ -124,6 +144,24 @@ How do you prove that a name *doesn't* exist? You can't sign a record that doesn
 
 An **NSEC** record says "the next name that exists after this one is X." By chaining all existing names together, a resolver can verify that a queried name falls in a gap and genuinely doesn't exist.
 
+```mermaid
+graph LR
+    A["alpha.example.com<br/>NSEC → beta"]:::exists
+    B["beta.example.com<br/>NSEC → delta"]:::exists
+    D["delta.example.com<br/>NSEC → mail"]:::exists
+    M["mail.example.com<br/>NSEC → www"]:::exists
+    W["www.example.com<br/>NSEC → alpha"]:::exists
+
+    A --> B --> D --> M --> W --> A
+
+    Q["Query: charlie.example.com"]:::query
+    Q -.->|"falls between<br/>beta and delta"| GAP["NSEC proves: no name<br/>exists between beta and delta<br/>→ NXDOMAIN is authentic"]:::proof
+
+    classDef exists fill:#1565c0,color:#fff,stroke:#0d47a1
+    classDef query fill:#e65100,color:#fff,stroke:#bf360c,font-weight:bold
+    classDef proof fill:#2e7d32,color:#fff,stroke:#1b5e20
+```
+
 The problem with NSEC is **zone walking**. An attacker can follow the NSEC chain to enumerate every name in a zone:
 
 ```bash
@@ -153,6 +191,40 @@ This separation means you can rotate ZSKs frequently (for security) without the 
 The current recommended algorithm is **ECDSAP256SHA256 (algorithm 13)**. It produces much smaller signatures than RSA, reducing DNS response sizes and improving performance. Older zones may use RSA (algorithms 5, 7, 8), but new deployments should use algorithm 13.
 
 ### Rollover Procedures
+
+```mermaid
+gantt
+    title ZSK Pre-Publish Rollover
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+    section Old ZSK
+        Active (signing)          :done, ozsk1, 2025-01-01, 30d
+        Still published           :done, ozsk2, after ozsk1, 14d
+        Removed                   :milestone, after ozsk2, 0d
+    section New ZSK
+        Published (not signing)   :active, nzsk1, 2025-01-17, 14d
+        Active (signing)          :nzsk2, after nzsk1, 90d
+    section DNSKEY TTL
+        Wait for cache expiry     :crit, ttl1, 2025-01-17, 14d
+```
+
+```mermaid
+gantt
+    title KSK Double-DS Rollover
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+    section Old KSK
+        Active                    :done, oksk1, 2025-01-01, 60d
+        Removed from DNSKEY       :milestone, 2025-03-02, 0d
+    section New KSK
+        Published in DNSKEY       :active, nksk1, 2025-01-15, 46d
+        Active                    :nksk2, after nksk1, 365d
+    section DS Records
+        Old DS in parent          :done, ods, 2025-01-01, 60d
+        New DS submitted          :crit, nds1, 2025-01-15, 14d
+        Both DS in parent         :nds2, 2025-01-29, 18d
+        Old DS removed            :milestone, 2025-02-16, 0d
+```
 
 **ZSK rollover** (pre-publish method):
 1. Generate the new ZSK and publish it in DNSKEY (but don't sign with it yet)

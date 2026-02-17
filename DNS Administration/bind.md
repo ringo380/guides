@@ -344,6 +344,32 @@ dig @198.51.100.1 example.com AXFR -y hmac-sha256:example-transfer-key:jF3K8vQ2+
 
 **Views** let a single BIND server return different answers depending on who's asking. The most common use case is returning internal IP addresses for internal clients and public IP addresses for everyone else.
 
+```mermaid
+flowchart TD
+    Q["DNS Query arrives<br/>www.example.com?"]
+    BIND["BIND Server"]
+    ACL{"match-clients ACL<br/>check source IP"}
+
+    Q --> BIND --> ACL
+
+    ACL -->|"192.168.x / 10.x / 172.16.x"| INT
+    ACL -->|"any other IP"| EXT
+
+    subgraph INT ["Internal View"]
+        IR["www.example.com<br/>→ 192.168.1.100"]
+        IF["Recursion: yes"]
+    end
+
+    subgraph EXT ["External View"]
+        ER["www.example.com<br/>→ 203.0.113.50"]
+        EF["Recursion: no"]
+    end
+
+    style INT fill:#e8f5e9,stroke:#2e7d32
+    style EXT fill:#e3f2fd,stroke:#1565c0
+    style ACL fill:#fff3e0,stroke:#e65100,font-weight:bold
+```
+
 ```
 acl "internal" {
     192.168.0.0/16;

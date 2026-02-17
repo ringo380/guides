@@ -106,6 +106,22 @@ When you change a zone on the primary, you don't want secondaries to wait until 
 
 The primary sends a NOTIFY message to all configured secondaries. Each secondary responds by checking the primary's SOA serial and initiating a transfer if the serial is higher.
 
+```mermaid
+sequenceDiagram
+    participant Admin as Admin
+    participant Primary as Primary (ns1)
+    participant Secondary as Secondary (ns2)
+
+    Admin->>Primary: Edit zone, increment serial
+    Primary->>Secondary: NOTIFY (UDP)
+    Secondary->>Primary: SOA query (check serial)
+    Primary-->>Secondary: SOA reply (serial: 2025011502)
+    Note over Secondary: New serial > my serial (2025011501)
+    Secondary->>Primary: AXFR or IXFR request (TCP)
+    Primary-->>Secondary: Zone data transfer
+    Note over Secondary: Zone loaded, serving new data
+```
+
 ### TSIG for Zone Transfer Security
 
 Zone transfers should always be authenticated with **TSIG** (see the [BIND](bind.md) and [NSD and Unbound](nsd-and-unbound.md) guides for configuration details). Without TSIG, anyone who can reach your primary can request a full dump of your zone data.
@@ -177,11 +193,7 @@ This is simpler to reason about and avoids the complexity of view configuration.
 
 **Anycast** is a routing technique where the same IP address is announced from multiple physical locations via BGP. When a client queries that IP, the network routes the query to the nearest (in network terms) instance.
 
-```
-Client in Tokyo  ──>  [nearest anycast instance]  ──>  Tokyo DNS node
-Client in London ──>  [nearest anycast instance]  ──>  London DNS node
-Client in NYC    ──>  [nearest anycast instance]  ──>  New York DNS node
-```
+![Anycast DNS routing diagram showing three nodes in Tokyo, London, and NYC all announcing the same IP via BGP, with automatic failover when a node goes down](../assets/images/dns/anycast-routing.svg)
 
 All nodes serve identical zone data (typically synced from a hidden primary) but operate independently. If one node goes down, BGP withdraws its route advertisement and traffic automatically shifts to the next nearest node.
 
@@ -204,6 +216,37 @@ These incidents share a theme: DNS is so fundamental that when it breaks, everyt
 ## DNS and Email: Getting It Right
 
 Email deliverability depends on getting five DNS record types correct. Missing or misconfigured email DNS is the most common reason legitimate email ends up in spam folders.
+
+```mermaid
+sequenceDiagram
+    participant Sender as Sending MTA<br/>(mail.sender.com)
+    participant DNS as DNS
+    participant Receiver as Receiving MTA<br/>(mail.example.com)
+
+    Sender->>DNS: MX lookup for example.com
+    DNS-->>Sender: 10 mail.example.com
+    Sender->>DNS: A lookup for mail.example.com
+    DNS-->>Sender: 198.51.100.20
+    Sender->>Receiver: SMTP connect to 198.51.100.20:25
+    Sender->>Receiver: MAIL FROM: user@sender.com
+    Note over Receiver: Check SPF
+    Receiver->>DNS: TXT lookup for sender.com
+    DNS-->>Receiver: v=spf1 ... -all
+    Note over Receiver: SPF: PASS ✓
+    Note over Receiver: Check DKIM signature
+    Receiver->>DNS: TXT lookup for selector._domainkey.sender.com
+    DNS-->>Receiver: v=DKIM1; k=rsa; p=...
+    Note over Receiver: DKIM: PASS ✓
+    Note over Receiver: Check DMARC policy
+    Receiver->>DNS: TXT lookup for _dmarc.sender.com
+    DNS-->>Receiver: v=DMARC1; p=reject
+    Note over Receiver: DMARC: PASS ✓
+    Note over Receiver: Check reverse DNS
+    Receiver->>DNS: PTR lookup for 198.51.100.10
+    DNS-->>Receiver: mail.sender.com
+    Note over Receiver: FCrDNS: PASS ✓
+    Receiver-->>Sender: 250 OK - Message accepted
+```
 
 ### MX Records
 
@@ -397,21 +440,22 @@ When migrating DNS records (changing providers, moving servers, changing IPs), l
 
 **Timeline:**
 
-```
-Day 1 (48+ hours before change):
-    Lower TTL from 86400 (24h) to 300 (5min)
-
-Day 2:
-    Wait for old TTL to expire (24 hours)
-    All resolvers now cache with the new 5-min TTL
-
-Day 3 (the change):
-    Update the DNS record
-    Within 5 minutes, all resolvers see the new value
-    Monitor for issues
-
-Day 4+ (after verification):
-    Raise TTL back to 86400
+```mermaid
+gantt
+    title DNS Record Migration Timeline
+    dateFormat YYYY-MM-DD
+    axisFormat %a %b %d
+    section TTL
+        Original TTL: 86400s (24h)        :done, ttl1, 2025-01-13, 1d
+        Lower TTL to 300s (5min)          :crit, ttl2, 2025-01-14, 0d
+        Low TTL active                    :active, ttl3, 2025-01-14, 2d
+        Raise TTL back to 86400s          :ttl4, 2025-01-17, 0d
+    section Cache Drain
+        Wait for old 24h caches to expire :crit, drain, 2025-01-14, 1d
+    section Record Change
+        All resolvers on 5min TTL         :milestone, 2025-01-15, 0d
+        Update DNS record                 :crit, change, 2025-01-16, 0d
+        Monitor (5min full propagation)   :monitor, 2025-01-16, 1d
 ```
 
 The critical detail: you must wait for the *old* TTL to expire before making the change. If your TTL was 86400 and you lower it to 300, you need to wait 24 hours before the change so that all cached copies of the old record (with the old TTL) have expired. Only then will all resolvers be honoring the new 5-minute TTL.

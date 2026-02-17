@@ -43,16 +43,23 @@ Every HTTPS connection, every email delivery, every API call starts with a DNS q
 
 DNS organizes names into a tree structure, read from right to left. The name `www.example.com.` (note the trailing dot) breaks down like this:
 
-```
-                    . (root)
-                    |
-         +----------+----------+
-         |          |          |
-       .com       .org       .uk     (TLDs)
-         |
-     example                         (second-level domain)
-         |
-       www                           (hostname)
+```mermaid
+graph TD
+    root(". (root)"):::root
+    root --> com(".com"):::tld
+    root --> org(".org"):::tld
+    root --> uk(".uk"):::tld
+    root --> arpa(".arpa"):::tld
+    com --> example("example"):::sld
+    org --> wikipedia("wikipedia"):::sld
+    uk --> couk(".co.uk"):::sld
+    example --> www("www"):::host
+    example --> mail("mail"):::host
+
+    classDef root fill:#e65100,color:#fff,stroke:#bf360c,font-weight:bold
+    classDef tld fill:#00695c,color:#fff,stroke:#004d40,font-weight:bold
+    classDef sld fill:#1565c0,color:#fff,stroke:#0d47a1
+    classDef host fill:#6a1b9a,color:#fff,stroke:#4a148c
 ```
 
 ### The Root Zone
@@ -131,6 +138,28 @@ scutil --dns | head -20
 
 Here's what happens when your recursive resolver needs to look up `www.example.com` and has nothing cached:
 
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant Stub as Stub Resolver
+    participant Rec as Recursive Resolver
+    participant Root as Root Server (.)
+    participant TLD as .com TLD Server
+    participant Auth as example.com Auth Server
+
+    App->>Stub: www.example.com?
+    Stub->>Rec: www.example.com? (rd flag set)
+    Rec->>Root: www.example.com?
+    Root-->>Rec: Referral: .com NS a.gtld-servers.net
+    Rec->>TLD: www.example.com?
+    TLD-->>Rec: Referral: example.com NS a.iana-servers.net
+    Rec->>Auth: www.example.com?
+    Auth-->>Rec: Answer: 93.184.216.34 (aa flag set)
+    Note over Rec: Cache answer (TTL: 86400s)
+    Rec-->>Stub: 93.184.216.34
+    Stub-->>App: 93.184.216.34
+```
+
 **Step 1 - Query the root.** The resolver picks a root server and asks: "What are the nameservers for `www.example.com`?" The root server doesn't know the final answer, but it knows who handles `.com`. It responds with a **referral** - the NS records and IP addresses for the `.com` TLD servers.
 
 **Step 2 - Query the TLD.** The resolver asks a `.com` TLD server the same question. The TLD server doesn't know the final answer either, but it knows who handles `example.com`. It responds with another referral - the NS records for `example.com`'s authoritative nameservers.
@@ -169,6 +198,37 @@ www.example.com.        86400   IN      A       93.184.216.34
 Each section shows a hop in the resolution chain. The IP addresses in the `from` field show you which server answered each step.
 
 ### Caching and TTLs
+
+```mermaid
+graph LR
+    Auth["Authoritative Server<br/>example.com A 93.184.216.34<br/>TTL: 86400"]
+
+    subgraph Resolver A
+        direction TB
+        RA_Q["Query at 09:00"] --> RA_C["Cached until 09:00 +24h"]
+        RA_C --> RA_E["Cache expires 09:00 next day"]
+    end
+
+    subgraph Resolver B
+        direction TB
+        RB_Q["Query at 14:00"] --> RB_C["Cached until 14:00 +24h"]
+        RB_C --> RB_E["Cache expires 14:00 next day"]
+    end
+
+    subgraph Resolver C
+        direction TB
+        RC_Q["Query at 22:00"] --> RC_C["Cached until 22:00 +24h"]
+        RC_C --> RC_E["Cache expires 22:00 next day"]
+    end
+
+    Auth -.-> RA_Q
+    Auth -.-> RB_Q
+    Auth -.-> RC_Q
+
+    style Auth fill:#00695c,color:#fff,stroke:#004d40,font-weight:bold
+```
+
+Each resolver's TTL countdown starts independently from when it first queried. There is no synchronization between them - this is why "DNS propagation" is a myth. It's really **independent cache expiration**.
 
 If your resolver had to chase every query from the root, DNS would be unbearably slow. **Caching** makes the system practical.
 
@@ -288,6 +348,28 @@ This distinction also matters in Kubernetes. A pod looking up `example.com` (wit
 There's a chicken-and-egg problem in DNS. Suppose `example.com` uses `ns1.example.com` as its nameserver. To resolve *anything* under `example.com`, you need to reach `ns1.example.com`. But to find the IP address of `ns1.example.com`, you need to query... the nameserver for `example.com`. That's circular.
 
 **Glue records** break this cycle. When `example.com` is registered, the parent zone (`.com`) stores not just the NS record (`example.com NS ns1.example.com`) but also an A record for the nameserver itself (`ns1.example.com A 198.51.100.1`). These A records in the parent zone are the "glue" that bootstraps the delegation.
+
+```mermaid
+graph TD
+    subgraph problem ["The Problem: Circular Dependency"]
+        P1["Resolve anything under example.com"]
+        P2["Need ns1.example.com IP"]
+        P3["Query example.com nameserver"]
+        P1 -->|"requires"| P2
+        P2 -->|"requires"| P3
+        P3 -->|"requires"| P1
+    end
+
+    subgraph solution ["The Solution: Glue Records"]
+        S1[".com TLD Zone<br/><br/>example.com NS ns1.example.com<br/>ns1.example.com A 198.51.100.1 ← glue"]
+        S2["Resolver gets NS + IP<br/>in the same referral"]
+        S3["Connects directly to<br/>198.51.100.1"]
+        S1 --> S2 --> S3
+    end
+
+    style problem fill:#fff3e0,stroke:#e65100
+    style solution fill:#e8f5e9,stroke:#2e7d32
+```
 
 Glue is only needed when a nameserver's name is *within* the zone it serves. If `example.com` uses `ns1.dnsprovider.net` as its nameserver, no glue is needed - the resolver can find `ns1.dnsprovider.net` by following the normal delegation chain through `.net`.
 

@@ -388,23 +388,7 @@ The most common NLnet Labs deployment runs NSD and Unbound on the same machine: 
 
 ### Architecture
 
-```
-                 Clients (port 53)
-                      |
-                      v
-              +-------+-------+
-              |   Unbound     |   (recursive resolver)
-              |   port 53     |
-              +-------+-------+
-                      |
-         +------------+------------+
-         |                         |
-         v                         v
-   Root / TLD /              +-----+-----+
-   external auth             |    NSD    |   (your authoritative zones)
-   servers                   | port 5353 |
-                             +-----------+
-```
+![NSD and Unbound architecture showing Unbound on port 53 receiving client queries and routing to external DNS or local NSD on port 5353 via stub-zone](../assets/images/dns/nsd-unbound-architecture.svg)
 
 ### Configuration
 
