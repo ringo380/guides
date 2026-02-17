@@ -31,6 +31,26 @@ if [ ! -f "$1" ]; then
 fi
 ```
 
+```terminal
+title: Exit Codes and Conditional Execution
+steps:
+  - command: "true; echo $?"
+    output: "0"
+    narration: "The true command always succeeds (exit code 0). $? holds the exit code of the last command."
+  - command: "false; echo $?"
+    output: "1"
+    narration: "false always fails (exit code 1). Non-zero exit codes indicate failure."
+  - command: "ls /etc/hosts > /dev/null; echo $?"
+    output: "0"
+    narration: "ls succeeded because /etc/hosts exists. Exit code 0 means success."
+  - command: "ls /nonexistent 2>/dev/null; echo $?"
+    output: "2"
+    narration: "ls failed because the path doesn't exist. Different commands use different non-zero codes to indicate specific error types."
+  - command: "false && echo 'this runs' || echo 'this runs instead'"
+    output: "this runs instead"
+    narration: "&& only runs the next command if the previous succeeded. || runs if it failed. This creates a simple if/else pattern."
+```
+
 ---
 
 ## Conditionals
@@ -71,6 +91,21 @@ The spaces inside `[ ]` and `[[ ]]` are required. They're not just syntax - `[` 
 
 In bash scripts, prefer `[[ ]]` - it's safer and more powerful.
 
+```quiz
+question: "What is the main advantage of [[ ]] over [ ] in bash?"
+type: multiple-choice
+options:
+  - text: "[[ ]] is faster because it's compiled"
+    feedback: "[[ ]] is a bash keyword (not an external command like [), but the advantage isn't speed - it's safety and features."
+  - text: "[[ ]] supports pattern matching and doesn't require quoting variables"
+    correct: true
+    feedback: "Correct! [[ ]] is a bash keyword that prevents word splitting on variables (so unquoted $var is safe), supports regex with =~, pattern matching with ==, and logical operators && and || directly."
+  - text: "[[ ]] is POSIX-compliant while [ ] is bash-specific"
+    feedback: "It's the opposite. [ ] (test) is POSIX-compliant. [[ ]] is a bash/zsh extension. Use [ ] in scripts that need to run on /bin/sh."
+  - text: "[[ ]] can test file permissions while [ ] cannot"
+    feedback: "Both support file tests like -r, -w, -x, -f, -d. The advantages of [[ ]] are safer variable handling and pattern matching."
+```
+
 ### Test Operators
 
 **File tests:**
@@ -100,6 +135,21 @@ The ones you'll use constantly: **`-f`** to check that a config file exists befo
 | `"$a" != "$b"` | Strings are not equal |
 
 **`-z`** is the go-to for checking whether a required variable has been set: `[[ -z "$DB_HOST" ]] && echo 'DB_HOST is required' >&2 && exit 1`. **`-n`** is its opposite - use it when you want to run something only if a variable has a value.
+
+```quiz
+question: "What does the test [ -z \"$var\" ] check?"
+type: multiple-choice
+options:
+  - text: "Whether the variable var exists"
+    feedback: "-z checks if the string is empty (zero length). A variable can exist but be empty, or be unset. -z returns true for both cases."
+  - text: "Whether the string is zero length (empty)"
+    correct: true
+    feedback: "Correct! -z returns true if the string has zero length. This is true both when the variable is unset and when it's set to an empty string. The opposite is -n, which checks for non-zero length."
+  - text: "Whether the variable contains only zeros"
+    feedback: "-z doesn't check content. It checks string length. [ -z '000' ] is false because '000' has length 3."
+  - text: "Whether the variable is set to the integer 0"
+    feedback: "-z checks for empty strings, not numeric zero. [ -z '0' ] is false because '0' has length 1. For numeric comparison, use [ \"$var\" -eq 0 ]."
+```
 
 **Numeric comparison:**
 
@@ -177,6 +227,68 @@ case "$filename" in
     *.zip)     unzip "$filename" ;;
     *)         echo "Unknown format" ;;
 esac
+```
+
+```exercise
+title: Build a CLI Argument Parser with case
+difficulty: intermediate
+scenario: |
+  Write a bash script that accepts command-line arguments using a case statement
+  inside a while loop. The script should support:
+
+  - `-v` or `--verbose` to enable verbose mode
+  - `-o FILE` or `--output FILE` to set an output file
+  - `-h` or `--help` to show usage and exit
+  - Any unknown flag should print an error and exit with code 1
+hints:
+  - "Use a while loop with shift to process arguments one at a time"
+  - "Use case \"$1\" in to match the current argument"
+  - "For flags that take a value (like -o), grab $2 and shift twice"
+  - "Use *) as the default case for unknown arguments"
+solution: |
+  ```bash
+  #!/bin/bash
+  set -euo pipefail
+
+  VERBOSE=false
+  OUTPUT=""
+
+  usage() {
+      echo "Usage: $0 [-v|--verbose] [-o|--output FILE] [-h|--help]"
+      exit 0
+  }
+
+  while [[ $# -gt 0 ]]; do
+      case "$1" in
+          -v|--verbose)
+              VERBOSE=true
+              shift
+              ;;
+          -o|--output)
+              OUTPUT="${2:?'--output requires a filename'}"
+              shift 2
+              ;;
+          -h|--help)
+              usage
+              ;;
+          -*)
+              echo "Unknown option: $1" >&2
+              exit 1
+              ;;
+          *)
+              break  # Stop processing flags, remaining args are positional
+              ;;
+      esac
+  done
+
+  $VERBOSE && echo "Verbose mode enabled"
+  [[ -n "$OUTPUT" ]] && echo "Output file: $OUTPUT"
+  echo "Remaining arguments: $@"
+  ```
+
+  Key patterns: `shift` removes the processed argument, `${2:?message}` fails
+  with a message if the required value is missing, and `break` on non-flag
+  arguments allows mixing flags and positional parameters.
 ```
 
 ---
@@ -348,6 +460,21 @@ for f in "$*"; do rm "$f"; done    # rm "my file.txt other file.txt" (one argume
 
 In almost all cases, you want `"$@"`. The only time `"$*"` is useful is when you intentionally want to join arguments into a single string, like building a log message: `log "Arguments: $*"`.
 
+```quiz
+question: "What is the difference between \"$@\" and \"$*\" in a shell script?"
+type: multiple-choice
+options:
+  - text: "$@ includes the script name; $* excludes it"
+    feedback: "Neither includes the script name ($0). Both represent the positional parameters ($1, $2, ...). The difference is how they handle quoting."
+  - text: "\"$@\" preserves each argument as a separate word; \"$*\" joins all arguments into a single word"
+    correct: true
+    feedback: "Correct! \"$@\" expands to \"$1\" \"$2\" \"$3\" (separate words). \"$*\" expands to \"$1 $2 $3\" (one word). This matters when arguments contain spaces: \"$@\" preserves 'hello world' as one argument, \"$*\" splits it."
+  - text: "\"$*\" preserves arguments; \"$@\" splits them"
+    feedback: "It's the opposite. \"$@\" preserves individual arguments. \"$*\" merges them into a single string."
+  - text: "They are identical when quoted"
+    feedback: "They behave very differently when quoted. \"$@\" preserves argument boundaries. \"$*\" joins everything with the first character of IFS."
+```
+
 ```bash
 backup() {
     local src="$1"
@@ -408,6 +535,54 @@ echo "$global_var"  # this leaks out
 
 Always use `local` for function variables unless you intentionally want them to be global.
 
+```code-walkthrough
+language: bash
+title: Functions with Local Variables and Return Values
+code: |
+  validate_port() {
+      local port="$1"
+      local -i min=1 max=65535
+
+      if [[ -z "$port" ]]; then
+          echo "Error: port number required" >&2
+          return 1
+      fi
+
+      if (( port < min || port > max )); then
+          echo "Error: port must be $min-$max" >&2
+          return 1
+      fi
+
+      echo "$port"
+      return 0
+  }
+
+  if result=$(validate_port "$1"); then
+      echo "Valid port: $result"
+  else
+      exit 1
+  fi
+annotations:
+  - line: 1
+    text: "Function names follow the same rules as variable names. Parentheses are optional but conventional."
+  - line: 2
+    text: "local restricts the variable to this function's scope. Without local, it would be global and could clash with variables elsewhere."
+  - line: 3
+    text: "local -i declares an integer variable. Bash will perform arithmetic on assignment, catching non-numeric values."
+  - line: 5
+    text: "Validate inputs early. Check for empty/missing arguments before doing any work."
+  - line: 7
+    text: "return sets the function's exit status (0=success, non-zero=failure). It does NOT output a value - use echo for that."
+  - line: 10
+    text: "Arithmetic comparison with (( )). Inside (( )), you don't need $ on variables and can use <, >, ==, etc."
+  - line: 15
+    text: "echo outputs the result to stdout. This is how bash functions 'return' data - through command substitution."
+  - line: 16
+    text: "return 0 signals success. The caller checks the exit status to know if the function succeeded."
+  - line: 19
+    text: "Command substitution captures the function's stdout in a variable. The if checks the function's exit status."
+```
+
 ---
 
 ## Error Handling
@@ -449,6 +624,21 @@ set -euo pipefail
 
 This catches the vast majority of common scripting errors: unhandled failures, typos in variable names, and hidden pipeline failures.
 
+```quiz
+question: "What does set -e do in a bash script?"
+type: multiple-choice
+options:
+  - text: "Enables extended globbing"
+    feedback: "Extended globbing is enabled with shopt -s extglob. set -e controls error behavior."
+  - text: "Exits the script immediately if any command returns a non-zero exit status"
+    correct: true
+    feedback: "Correct! set -e (errexit) causes the script to exit on the first command failure. There are exceptions: commands in if conditions, && or || chains, and while/until loops don't trigger the exit."
+  - text: "Echoes each command before executing it"
+    feedback: "That's set -x (xtrace). set -e is about error handling, not debugging output."
+  - text: "Exports all variables automatically"
+    feedback: "That's set -a (allexport). set -e makes the script exit on command failures."
+```
+
 ### trap
 
 **`trap`** runs a command when the script receives a signal or exits. It's essential for cleanup.
@@ -476,6 +666,49 @@ Common signals to trap:
 | `ERR` | A command fails (with `set -e`) |
 | `INT` | `Ctrl-C` |
 | `TERM` | `kill` (default signal) |
+
+```exercise
+title: Write a Robust Script Header
+difficulty: intermediate
+scenario: |
+  Write a bash script template that includes all the recommended safety settings
+  and a cleanup trap. The script should:
+
+  1. Use strict mode (set -euo pipefail)
+  2. Set up a trap that runs a cleanup function on EXIT
+  3. Create a temporary directory for working files
+  4. Clean up the temp directory when the script exits (normally or on error)
+hints:
+  - "set -e exits on errors, -u exits on unset variables, -o pipefail catches pipe failures"
+  - "trap 'commands' EXIT runs commands when the script exits for any reason"
+  - "mktemp -d creates a temporary directory and prints its path"
+  - "Define the cleanup function before the trap statement"
+solution: |
+  ```bash
+  #!/bin/bash
+  set -euo pipefail
+
+  # Create temp directory
+  TMPDIR=$(mktemp -d)
+
+  # Cleanup function
+  cleanup() {
+      rm -rf "$TMPDIR"
+      echo "Cleaned up temp directory"
+  }
+
+  # Register cleanup on EXIT (runs on normal exit, errors, and signals)
+  trap cleanup EXIT
+
+  # Your script logic here
+  echo "Working in $TMPDIR"
+  # ... do work ...
+  ```
+
+  The EXIT trap fires on normal exit, errexit (-e), and most signals. This
+  guarantees cleanup even if the script fails partway through. Using a function
+  (instead of inline commands) makes complex cleanup easier to manage.
+```
 
 ### Complete Example
 
@@ -536,6 +769,38 @@ This script:
 - Validates arguments
 - Uses `local` for all function variables
 - Wraps logic in a `main` function
+
+```code-walkthrough
+language: bash
+title: Bash Error Handling Template
+code: |
+  #!/bin/bash
+  set -euo pipefail
+  IFS=$'\n\t'
+
+  readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  readonly SCRIPT_NAME="$(basename "$0")"
+
+  log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >&2; }
+  die() { log "FATAL: $*"; exit 1; }
+
+  trap 'log "Error on line $LINENO. Exit code: $?"' ERR
+annotations:
+  - line: 2
+    text: "-e: exit on error. -u: error on unset variables. -o pipefail: catch failures in pipes, not just the last command."
+  - line: 3
+    text: "Set IFS to newline and tab only. This prevents word splitting on spaces in for loops and other expansions."
+  - line: 5
+    text: "BASH_SOURCE[0] is the path to this script. cd + dirname + pwd resolves it to an absolute path, even if called via symlink."
+  - line: 6
+    text: "Store the script's own name for use in usage messages and log output. basename strips the directory path."
+  - line: 8
+    text: "A reusable log function that timestamps messages and sends them to stderr (so stdout stays clean for data)."
+  - line: 9
+    text: "die() logs a fatal message and exits. Having a standard exit pattern makes error handling consistent."
+  - line: 11
+    text: "The ERR trap fires when any command fails (under set -e). $LINENO tells you exactly where the error occurred."
+```
 
 ---
 

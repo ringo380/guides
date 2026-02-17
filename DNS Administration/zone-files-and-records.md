@@ -44,6 +44,21 @@ mail.example.com    IN  A     198.51.100.20     ; becomes mail.example.com.examp
 
 That third line is the classic trailing-dot mistake. Without the dot, the parser appends the origin, producing a nonsensical name. You will make this mistake at least once. Zone checking tools like `named-checkzone` catch it.
 
+```quiz
+question: "In a zone file, what does the trailing dot in 'example.com.' signify?"
+type: multiple-choice
+options:
+  - text: "It marks the record as active"
+    feedback: "The dot has nothing to do with record status. It's about how the DNS name is interpreted."
+  - text: "It indicates an absolute/fully qualified domain name (FQDN)"
+    correct: true
+    feedback: "Correct! The trailing dot marks the name as fully qualified (absolute). Without the dot, BIND appends the zone's $ORIGIN. So 'mail' becomes 'mail.example.com.' but 'mail.example.com.' stays as-is. Forgetting the dot is one of the most common zone file mistakes."
+  - text: "It enables DNSSEC for that record"
+    feedback: "DNSSEC is configured separately and applies to the entire zone, not individual records. The trailing dot indicates an FQDN."
+  - text: "It's optional formatting that has no effect"
+    feedback: "The trailing dot is critical! Without it, the zone's $ORIGIN is appended. 'mail.example.com' (no dot) in the example.com zone becomes 'mail.example.com.example.com.' - a very common and hard-to-debug mistake."
+```
+
 ### The `@` Shorthand
 
 The `@` symbol means "the current origin" (the zone apex). So in a zone file for `example.com.`:
@@ -115,6 +130,21 @@ example.com.        3600 IN SOA ns1.example.com. admin.example.com. (
 
 The `+multiline` flag is essential for reading SOA records - without it, all the fields run together on one line.
 
+```quiz
+question: "Why is the SOA serial number typically formatted as YYYYMMDDNN?"
+type: multiple-choice
+options:
+  - text: "DNS requires this specific format"
+    feedback: "DNS only requires that the serial number increases with each change. The YYYYMMDDNN format is a convention, not a requirement."
+  - text: "It's a convention that makes it easy to track when the zone was last changed"
+    correct: true
+    feedback: "Correct! The YYYYMMDDNN format (e.g., 2024011502 = Jan 15, 2024, change #2) embeds the date and a change counter. The only rule DNS enforces is that the serial must increase for secondaries to detect changes and initiate zone transfers."
+  - text: "It ensures the serial number is always exactly 10 digits"
+    feedback: "The serial is a 32-bit unsigned integer (up to ~4.29 billion). Length doesn't matter. The date format is a human-readability convention."
+  - text: "The YYYY prefix is required for DNSSEC signature validation"
+    feedback: "DNSSEC signatures have their own timestamps. The SOA serial format is independent of DNSSEC. It's simply a convention for human readability."
+```
+
 ---
 
 ## Core Record Types
@@ -156,6 +186,21 @@ The workaround is provider-specific:
 - **CNAME flattening** (Cloudflare) - similar to ALIAS, done at the DNS provider level
 - **A record** pointing directly at the provider's IP (if they offer a static IP)
 
+```quiz
+question: "Why can't you put a CNAME record at the zone apex (e.g., example.com)?"
+type: multiple-choice
+options:
+  - text: "CNAME records only work with subdomains like www"
+    feedback: "CNAMEs technically work at any name, but the restriction is that a CNAME cannot coexist with other record types. The zone apex always has SOA and NS records."
+  - text: "A CNAME cannot coexist with other record types, and the apex always has SOA and NS records"
+    correct: true
+    feedback: "Correct! RFC 1034 states that if a CNAME exists at a name, no other records can exist at that name. Since the zone apex must have SOA and NS records, a CNAME there would violate this rule. Use ALIAS/ANAME (provider-specific) or an A record instead."
+  - text: "CNAMEs at the apex would create infinite loops"
+    feedback: "Loops are prevented by other mechanisms. The restriction is that CNAME records are exclusive - they can't share a name with SOA, NS, MX, or any other record type."
+  - text: "It's a limitation of BIND that other DNS servers don't have"
+    feedback: "This is an RFC-level restriction, not server-specific. Some providers offer non-standard workarounds (ALIAS, ANAME), but the CNAME-at-apex limitation is in the DNS specification itself."
+```
+
 ### MX
 
 **MX (Mail Exchange)** records specify which servers accept email for the domain. Each MX record has a **priority** (lower number = higher priority).
@@ -169,6 +214,21 @@ The workaround is provider-specific:
 Mail servers try the lowest-priority MX first. If `mail1` is unreachable, they try `mail2`, then `backupmx`. Equal priorities mean the sender picks randomly among them.
 
 An MX record **must point to a hostname, never an IP address**, and the target **must not be a CNAME**. Both constraints come from the RFCs and are enforced by many mail servers. Violating them causes subtle delivery failures.
+
+```quiz
+question: "If a domain has MX records with priorities 10, 20, and 30, which server receives mail first?"
+type: multiple-choice
+options:
+  - text: "The server with priority 30 (highest number = highest priority)"
+    feedback: "MX priorities work the opposite way - lower numbers have higher priority. Think of it as preference order, where 10 is preferred over 20."
+  - text: "The server with priority 10 (lowest number = highest priority)"
+    correct: true
+    feedback: "Correct! Lower MX priority numbers are tried first. Priority 10 is the primary mail server, 20 is the first backup, 30 is the second backup. If priority 10 is unreachable, mail is delivered to priority 20."
+  - text: "All three receive mail simultaneously for load balancing"
+    feedback: "MX priorities create a failover order, not load balancing. To load-balance, give multiple servers the same priority number. Different priorities mean fallback order."
+  - text: "The sending server randomly selects one"
+    feedback: "Selection is based on priority, not random. Servers with the same priority may be chosen randomly (or round-robin), but different priorities create an ordered preference."
+```
 
 ### NS
 
@@ -217,6 +277,46 @@ selector1._domainkey IN TXT ("v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEB"
 ```
 
 The DNS protocol concatenates the strings automatically. But some providers' web interfaces handle this badly, silently truncating long values. If your DKIM verification is failing, check whether the full key made it into the record.
+
+```exercise
+title: Write Email Authentication Records
+difficulty: intermediate
+scenario: |
+  You need to set up email authentication records for `example.com`. The mail is
+  sent from two sources:
+
+  - Your mail server at `mail.example.com` (IP: 203.0.113.10)
+  - A third-party email service (they tell you to include `spf.mailservice.com`)
+
+  Write the following DNS records:
+  1. An SPF record that authorizes both senders and fails all others
+  2. A DMARC record that requests quarantine of failing messages and sends reports to `dmarc@example.com`
+hints:
+  - "SPF is a TXT record at the domain apex with v=spf1 prefix"
+  - "Use ip4: for IP addresses and include: for third-party senders"
+  - "End SPF with -all (hard fail) or ~all (soft fail)"
+  - "DMARC is a TXT record at _dmarc.example.com with v=DMARC1 prefix"
+solution: |
+  ```
+  ; SPF - authorize your server IP and the third-party service
+  @          IN  TXT  "v=spf1 ip4:203.0.113.10 include:spf.mailservice.com -all"
+
+  ; DMARC - quarantine failures, send reports
+  _dmarc     IN  TXT  "v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com; pct=100"
+  ```
+
+  SPF breakdown:
+  - `v=spf1` - version identifier (required)
+  - `ip4:203.0.113.10` - authorize your mail server's IP
+  - `include:spf.mailservice.com` - authorize the third-party service
+  - `-all` - hard fail everything else (reject)
+
+  DMARC breakdown:
+  - `v=DMARC1` - version (required)
+  - `p=quarantine` - quarantine (spam folder) messages that fail both SPF and DKIM
+  - `rua=mailto:` - where to send aggregate reports
+  - `pct=100` - apply to 100% of messages
+```
 
 ### PTR
 
@@ -332,6 +432,59 @@ dev         IN  A       198.51.100.40
 @           IN  CAA     0 issuewild "letsencrypt.org"
 ```
 
+```code-walkthrough
+language: text
+title: Complete Zone File Anatomy
+code: |
+  $TTL 86400
+  @ IN SOA ns1.example.com. admin.example.com. (
+              2024011502  ; Serial (YYYYMMDDNN)
+              3600        ; Refresh (1 hour)
+              900         ; Retry (15 minutes)
+              604800      ; Expire (7 days)
+              86400 )     ; Negative TTL (1 day)
+
+  ; Nameservers
+  @      IN  NS   ns1.example.com.
+  @      IN  NS   ns2.example.com.
+
+  ; Mail
+  @      IN  MX   10 mail.example.com.
+  @      IN  MX   20 backup-mx.example.com.
+
+  ; A records
+  @      IN  A    203.0.113.10
+  ns1    IN  A    203.0.113.11
+  ns2    IN  A    203.0.113.12
+  mail   IN  A    203.0.113.20
+  www    IN  CNAME @
+annotations:
+  - line: 1
+    text: "$TTL sets the default TTL for records that don't specify their own. 86400 seconds = 24 hours of caching."
+  - line: 2
+    text: "SOA (Start of Authority): @ means the zone apex. The two names are the primary nameserver and the admin email (first dot replaces @, so admin.example.com. = admin@example.com)."
+  - line: 3
+    text: "Serial must increment with every change. Secondaries compare this to decide whether to transfer. YYYYMMDDNN format: 02 means the second change on Jan 15, 2024."
+  - line: 4
+    text: "Refresh: how often secondaries check for updates. 3600s = 1 hour. Balance between freshness and load on the primary."
+  - line: 5
+    text: "Retry: if refresh fails, try again after this interval. Should be shorter than refresh (here: 15 minutes)."
+  - line: 6
+    text: "Expire: if a secondary can't reach the primary for this long, it stops serving the zone. 7 days is standard."
+  - line: 7
+    text: "Negative TTL: how long resolvers cache NXDOMAIN (name doesn't exist) responses. Prevents repeated lookups for nonexistent names."
+  - line: 10
+    text: "NS records delegate the zone to these nameservers. You need at least 2 for redundancy. Trailing dots are critical here."
+  - line: 13
+    text: "MX records with priorities. 10 is tried first (primary), 20 is the backup. The target must be an A record, never a CNAME."
+  - line: 17
+    text: "A record at @ points the bare domain (example.com) to an IP. This is the record browsers use when you visit example.com without www."
+  - line: 18
+    text: "Glue records: ns1 and ns2 need A records here because they're within the zone they serve. Without these, there's a chicken-and-egg problem."
+  - line: 21
+    text: "CNAME for www pointing to @ (the zone apex). This means www.example.com resolves to wherever example.com points."
+```
+
 ### Reverse Zone
 
 The corresponding reverse zone for `198.51.100.0/24`:
@@ -384,6 +537,60 @@ Notice the PTR records only have the last octet because `$ORIGIN` is set to `100
 **TTL too high.** A TTL of 604800 (1 week) means if you make a mistake, resolvers worldwide will serve the wrong answer for up to a week. For records that change, keep TTLs reasonable.
 
 **MX pointing to a CNAME.** The RFCs say MX targets must be A/AAAA records, not CNAMEs. Some servers handle this, many don't. It causes hard-to-diagnose email delivery failures.
+
+```exercise
+title: Fix a Broken Zone File
+difficulty: intermediate
+scenario: |
+  The following zone file has several errors. Find and fix all of them:
+
+  ```
+  $TTL 86400
+  @  IN  SOA  ns1.example.com  admin.example.com (
+                  2024011501
+                  3600
+                  900
+                  604800
+                  86400 )
+  @      IN  NS   ns1.example.com
+  @      IN  NS   ns2.example.com
+  @      IN  A    192.168.1.10
+  @      IN  CNAME www.example.com.
+  www    IN  A    192.168.1.10
+  mail   IN  A    192.168.1.20
+  @      IN  MX   mail.example.com.
+  ```
+
+  There are at least 4 errors. Find them all.
+hints:
+  - "Check the SOA record - are the nameserver and email fields fully qualified (trailing dot)?"
+  - "Can a CNAME exist at the zone apex (@) alongside A, SOA, and NS records?"
+  - "MX records require a priority number before the mail server hostname"
+  - "Check the NS records - are the target hostnames fully qualified?"
+solution: |
+  Fixed version:
+  ```
+  $TTL 86400
+  @  IN  SOA  ns1.example.com. admin.example.com. (
+                  2024011501
+                  3600
+                  900
+                  604800
+                  86400 )
+  @      IN  NS   ns1.example.com.
+  @      IN  NS   ns2.example.com.
+  @      IN  A    192.168.1.10
+  www    IN  A    192.168.1.10
+  mail   IN  A    192.168.1.20
+  @      IN  MX   10 mail.example.com.
+  ```
+
+  Errors fixed:
+  1. **Missing trailing dots on SOA fields**: `ns1.example.com` → `ns1.example.com.` and `admin.example.com` → `admin.example.com.`
+  2. **Missing trailing dots on NS targets**: Both NS records needed trailing dots
+  3. **CNAME at zone apex**: Removed the illegal CNAME at @ (it conflicts with SOA, NS, and A records)
+  4. **Missing MX priority**: Added priority `10` before `mail.example.com.`
+```
 
 ---
 

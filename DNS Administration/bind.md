@@ -77,6 +77,21 @@ include "/etc/named/zones.conf";
 include "/etc/named/acls.conf";
 ```
 
+```quiz
+question: "In BIND's named.conf, what is the difference between an 'options' block and a 'zone' block?"
+type: multiple-choice
+options:
+  - text: "They are interchangeable - both configure the same settings"
+    feedback: "They serve different purposes. The options block is for server-wide settings, while zone blocks configure individual DNS zones."
+  - text: "The options block sets server-wide defaults; zone blocks configure individual zones"
+    correct: true
+    feedback: "Correct! The options block contains global settings like listen addresses, recursion policy, forwarders, and directory paths. Zone blocks define individual zones with their type (primary/secondary), file location, and zone-specific settings like allowed transfers."
+  - text: "The options block is for primary servers; zone blocks are for secondary servers"
+    feedback: "Both primary and secondary servers use both blocks. The zone block's 'type' directive (primary vs secondary) determines the server's role for that specific zone."
+  - text: "Zone blocks override everything in the options block"
+    feedback: "While zone blocks can override some options, they're not meant as complete overrides. They serve fundamentally different roles: global configuration vs per-zone configuration."
+```
+
 ---
 
 ## Configuring a Caching Recursive Resolver
@@ -153,6 +168,44 @@ After editing, always validate and reload:
 named-checkconf                      # validate configuration syntax
 sudo systemctl reload named          # apply changes without restart
 sudo rndc status                     # verify the server is running
+```
+
+```code-walkthrough
+language: text
+title: Caching Resolver named.conf
+code: |
+  options {
+      directory "/var/cache/bind";
+      listen-on { 127.0.0.1; 192.168.1.1; };
+      allow-recursion { 127.0.0.0/8; 192.168.1.0/24; };
+      forwarders { 8.8.8.8; 8.8.4.4; };
+      dnssec-validation auto;
+      rate-limit { responses-per-second 10; };
+  };
+
+  zone "." {
+      type hint;
+      file "/usr/share/dns/root.hints";
+  };
+annotations:
+  - line: 1
+    text: "The options block applies to the entire BIND server. All directives here are global defaults."
+  - line: 2
+    text: "Working directory for zone files and runtime data. BIND looks for relative file paths here."
+  - line: 3
+    text: "Listen only on localhost and the LAN interface. Don't listen on 0.0.0.0 (all interfaces) to avoid being an open resolver."
+  - line: 4
+    text: "Only allow recursion from trusted networks. An open recursive resolver is a DDoS amplification vector. This is critical for security."
+  - line: 5
+    text: "Forward queries to upstream resolvers (here, Google DNS). BIND asks these first before doing its own iterative resolution."
+  - line: 6
+    text: "'auto' downloads and manages DNSSEC trust anchors automatically. Validates signed responses and rejects forged ones."
+  - line: 7
+    text: "Rate limiting mitigates DNS amplification attacks by limiting identical responses per second per client."
+  - line: 10
+    text: "The root hints zone tells BIND where the root servers are. This is the starting point for all iterative resolution."
+  - line: 11
+    text: "'type hint' is special - it's used only for the root zone to bootstrap the resolution process."
 ```
 
 ---
@@ -338,6 +391,21 @@ Test the authenticated transfer:
 dig @198.51.100.1 example.com AXFR -y hmac-sha256:example-transfer-key:jF3K8vQ2+xN7wP...
 ```
 
+```quiz
+question: "What is the purpose of TSIG in DNS?"
+type: multiple-choice
+options:
+  - text: "It encrypts DNS queries between clients and servers"
+    feedback: "TSIG authenticates DNS messages using shared secrets (HMAC), but doesn't encrypt them. DNS-over-TLS provides encryption."
+  - text: "It authenticates DNS messages between servers using shared secret keys"
+    correct: true
+    feedback: "Correct! TSIG (Transaction Signature) uses HMAC with a shared secret to authenticate DNS messages. It's primarily used to secure zone transfers (AXFR/IXFR) between primary and secondary servers, and dynamic updates. Both servers must have the same key."
+  - text: "It signs zone files for DNSSEC validation"
+    feedback: "That's DNSSEC signing (with ZSK/KSK keys). TSIG uses shared secrets for server-to-server authentication, not public-key cryptography."
+  - text: "It provides TLS encryption for DNS traffic"
+    feedback: "TSIG uses HMAC (symmetric key authentication), not TLS. DNS-over-TLS (DoT) provides encrypted transport. TSIG authenticates but doesn't encrypt."
+```
+
 ---
 
 ## Views (Split-Horizon DNS)
@@ -482,6 +550,21 @@ phishing-site.com        IN  A      127.0.0.1 ; redirect to localhost
 
 Several threat intelligence providers publish RPZ feeds that you can use as secondary zones for automatic protection.
 
+```quiz
+question: "What is a Response Policy Zone (RPZ) used for?"
+type: multiple-choice
+options:
+  - text: "Rate-limiting DNS responses to prevent DDoS amplification"
+    feedback: "Rate limiting is configured separately (rate-limit directive). RPZ is about modifying responses based on policy rules."
+  - text: "Overriding DNS responses based on policy (blocking, redirecting, or modifying answers)"
+    correct: true
+    feedback: "Correct! RPZ lets you define rules that intercept and modify DNS responses. Common uses: blocking malware domains (return NXDOMAIN), redirecting users to a warning page, or enforcing organizational browsing policies. It's like a DNS-level firewall."
+  - text: "Restricting which zones BIND is allowed to serve"
+    feedback: "Zone serving restrictions are configured with allow-query and view blocks. RPZ dynamically modifies responses based on domain matching rules."
+  - text: "Compressing DNS zone files for faster loading"
+    feedback: "RPZ isn't about compression. It's a policy mechanism that lets you override DNS responses - essentially a DNS firewall for blocking or redirecting specific domains."
+```
+
 ---
 
 ## Operational Commands Reference
@@ -505,6 +588,30 @@ Several threat intelligence providers publish RPZ feeds that you can use as seco
 | `rndc zonestatus example.com` | Show zone status details |
 
 `rndc` authenticates to `named` using a shared key. If `rndc` commands fail with "connection refused," check that `rndc.key` exists and matches between `rndc.conf` and `named.conf`.
+
+```terminal
+title: Managing BIND with rndc
+steps:
+  - command: "rndc status"
+    output: |
+      version: BIND 9.18.18-0ubuntu0.22.04.1-Ubuntu
+      running on linux: Linux 5.15.0-91-generic
+      boot time: Mon, 15 Jan 2024 08:00:00 GMT
+      server is up and running
+      number of zones: 15 (12 automatic)
+      CPUs found: 4
+      worker threads: 4
+    narration: "rndc status shows BIND's current state: version, uptime, zone count, and thread info. Use this to verify BIND is running after changes."
+  - command: "rndc reload example.com"
+    output: "zone reload queued"
+    narration: "Reload a single zone after editing its zone file. This is faster than reloading all zones and doesn't interrupt other queries."
+  - command: "rndc flush"
+    output: ""
+    narration: "Flush the entire cache. Use this when you need to clear stale records immediately. rndc flushname example.com clears just one domain."
+  - command: "rndc querylog on"
+    output: ""
+    narration: "Enable query logging for troubleshooting. Every DNS query will be logged. Remember to turn it off (rndc querylog off) when done - it generates massive logs."
+```
 
 ---
 

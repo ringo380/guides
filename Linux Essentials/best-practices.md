@@ -43,6 +43,21 @@ cat /nonexistent | sort        # pipeline returns non-zero (cat failed)
 
 Without `pipefail`, only the exit code of the last command (`sort`) matters, hiding the `cat` failure.
 
+```quiz
+question: "Which of these commands would NOT trigger set -e to exit the script?"
+type: multiple-choice
+options:
+  - text: "A command that returns exit code 1"
+    feedback: "A bare command with non-zero exit does trigger set -e. The exceptions are commands in specific syntactic positions."
+  - text: "A command in an if condition: if failing_cmd; then ..."
+    correct: true
+    feedback: "Correct! Commands used as conditions in if, while, until, or as part of && and || chains are exempt from set -e. The shell needs to evaluate their exit code to make a decision, so it can't abort on failure there."
+  - text: "A command at the beginning of the script"
+    feedback: "Position in the script doesn't matter. set -e applies to any command not in an exempt position (if condition, && chain, etc.)."
+  - text: "A command run with sudo"
+    feedback: "sudo doesn't bypass set -e. If the sudo command fails, set -e will still trigger (unless it's in an exempt position like an if condition)."
+```
+
 ---
 
 ## Always Quote Your Variables
@@ -72,6 +87,21 @@ The rule is simple: always double-quote variable expansions (`"$var"`) unless yo
 Exceptions where quoting is unnecessary:
 - Inside `[[ ]]` (no word splitting, but quoting doesn't hurt)
 - Inside `$(( ))` arithmetic
+
+```quiz
+question: "What's wrong with: [ -f $file ] (without quotes around $file)?"
+type: multiple-choice
+options:
+  - text: "Nothing - [ ] handles unquoted variables correctly"
+    feedback: "[ ] is an external command and is affected by word splitting. If $file is empty, it becomes [ -f ] which is a different test entirely."
+  - text: "If $file is empty or contains spaces, the test breaks or tests the wrong thing"
+    correct: true
+    feedback: "Correct! If file is empty, [ -f ] tests if '-f' is a non-empty string (always true!). If file contains spaces, word splitting creates extra arguments and [ throws a 'too many arguments' error. Always quote: [ -f \"$file\" ]"
+  - text: "The -f flag requires an absolute path"
+    feedback: "-f works with any path (relative or absolute). The issue is word splitting and empty variable handling without quotes."
+  - text: "[ ] doesn't support the -f flag"
+    feedback: "[ ] (test) fully supports -f. The problem is that unquoted variables undergo word splitting, which breaks the syntax."
+```
 
 ---
 
@@ -192,6 +222,87 @@ In buggy.sh line 4:
 
 Each finding includes a code (like SC2086) that you can look up at the shellcheck wiki for a detailed explanation and fix. **Editor integration** makes this even more useful - the VS Code ShellCheck extension and vim plugins like ALE or Syntastic show warnings inline as you type, catching bugs before you even save the file.
 
+```quiz
+question: "What is ShellCheck?"
+type: multiple-choice
+options:
+  - text: "A shell that runs scripts in a sandbox"
+    feedback: "ShellCheck doesn't execute scripts. It's a static analysis tool that reads your script and finds issues without running it."
+  - text: "A static analysis tool that finds bugs and style issues in shell scripts"
+    correct: true
+    feedback: "Correct! ShellCheck analyzes shell scripts without running them, catching common bugs like unquoted variables, useless cat, incorrect test syntax, and non-portable constructs. Each finding includes a wiki link explaining the issue and fix."
+  - text: "A replacement for bash with better error messages"
+    feedback: "ShellCheck isn't a shell - it's a linter/analyzer. It reads your bash/sh scripts and reports issues, similar to how ESLint works for JavaScript."
+  - text: "A security scanner that checks for vulnerable commands"
+    feedback: "While ShellCheck can catch some security issues (like unquoted variables vulnerable to injection), it's primarily a general-purpose shell script linter, not a security-focused tool."
+```
+
+```exercise
+title: Fix a Buggy Script Using ShellCheck Principles
+difficulty: intermediate
+scenario: |
+  The following script has multiple common shell scripting bugs. Identify and fix
+  all the issues. There are at least 6 problems:
+
+  ```bash
+  #!/bin/bash
+
+  dir=$1
+  files=`ls $dir`
+  count=0
+
+  for f in $files; do
+    if [ -f $dir/$f ]; then
+      size=`du -sh $dir/$f | awk '{print $1}'`
+      echo "File: $f Size: $size"
+      count=$count+1
+    fi
+  done
+
+  echo "Total files: $count"
+  ```
+hints:
+  - "Missing set -euo pipefail at the top"
+  - "Never parse ls output - use a glob pattern instead: for f in \"$dir\"/*"
+  - "All variable references need double quotes to handle spaces in filenames"
+  - "Backticks should be replaced with $() for readability and nestability"
+  - "count=$count+1 doesn't do arithmetic - it creates the string '0+1'. Use $(( )) for math"
+  - "The script doesn't check if $1 was provided or if the directory exists"
+solution: |
+  ```bash
+  #!/bin/bash
+  set -euo pipefail
+
+  dir="${1:?Usage: $0 <directory>}"
+
+  if [[ ! -d "$dir" ]]; then
+      echo "Error: '$dir' is not a directory" >&2
+      exit 1
+  fi
+
+  count=0
+
+  for f in "$dir"/*; do
+      if [[ -f "$f" ]]; then
+          size=$(du -sh "$f" | awk '{print $1}')
+          echo "File: $(basename "$f") Size: $size"
+          (( count++ ))
+      fi
+  done
+
+  echo "Total files: $count"
+  ```
+
+  Fixes applied:
+  1. Added `set -euo pipefail` for safety
+  2. Added input validation with `${1:?}` and directory check
+  3. Replaced `` `ls $dir` `` with glob `"$dir"/*`
+  4. Quoted all variable references
+  5. Replaced backticks with `$()`
+  6. Fixed arithmetic: `count=$count+1` → `(( count++ ))`
+  7. Used `[[ ]]` instead of `[ ]` for safer conditionals
+```
+
 ---
 
 ## Don't Parse ls Output
@@ -213,6 +324,21 @@ done
 find . -type f -print0 | while IFS= read -r -d '' file; do
     echo "$file"
 done
+```
+
+```quiz
+question: "Why is it dangerous to parse the output of ls in scripts?"
+type: multiple-choice
+options:
+  - text: "ls is too slow for scripts"
+    feedback: "Speed isn't the issue. ls output is unreliable for programmatic use because filenames can contain unexpected characters."
+  - text: "ls doesn't exist on all Unix systems"
+    feedback: "ls is universally available. The problem is that its output format is ambiguous when filenames contain spaces, newlines, or special characters."
+  - text: "Filenames with spaces, newlines, or special characters break ls output parsing"
+    correct: true
+    feedback: "Correct! ls output is designed for humans, not scripts. A filename with spaces looks like multiple files, and filenames with newlines create phantom entries. Use glob patterns (for f in *.txt) or find -print0 | xargs -0 instead."
+  - text: "ls output format changes based on the locale"
+    feedback: "While locale does affect ls formatting (dates, etc.), the main issue is that filenames with special characters make ls output ambiguous to parse."
 ```
 
 ---
@@ -246,6 +372,58 @@ arr+=("four")                 # append
 
 # Build arrays from command output
 mapfile -t lines < file.txt   # read file into array (one line per element)
+```
+
+```exercise
+title: Rewrite a Script with Proper Quoting and Arrays
+difficulty: intermediate
+scenario: |
+  This script tries to process a list of filenames that may contain spaces.
+  It's completely broken. Rewrite it using arrays and proper quoting:
+
+  ```bash
+  #!/bin/bash
+  filelist="My Documents/report.txt
+  Project Files/data.csv
+  backup 2024.tar.gz"
+
+  for file in $filelist; do
+    if [ -f $file ]; then
+      cp $file /backup/
+      echo Copied $file
+    fi
+  done
+  ```
+hints:
+  - "Use a bash array instead of a newline-separated string: files=(...)"
+  - "Quote the array expansion: for file in \"${files[@]}\""
+  - "Quote every variable reference: \"$file\", not $file"
+  - "\"${files[@]}\" expands each element as a separate quoted word"
+solution: |
+  ```bash
+  #!/bin/bash
+  set -euo pipefail
+
+  files=(
+      "My Documents/report.txt"
+      "Project Files/data.csv"
+      "backup 2024.tar.gz"
+  )
+
+  for file in "${files[@]}"; do
+      if [[ -f "$file" ]]; then
+          cp "$file" /backup/
+          echo "Copied $file"
+      fi
+  done
+  ```
+
+  Key changes:
+  - **Array** instead of string: each filename is a separate element
+  - **"${files[@]}"** expands to each element as a separate word
+  - **"$file"** is quoted everywhere to prevent word splitting
+  - **[[ ]]** instead of [ ] for safer tests
+  - `echo "Copied $file"` is quoted to prevent globbing of any special characters
 ```
 
 ---
@@ -394,6 +572,88 @@ main() {
 
 # "$@" passes all command-line arguments to main, preserving quoting.
 main "$@"
+```
+
+```code-walkthrough
+language: bash
+title: Production-Ready Script Template
+code: |
+  #!/bin/bash
+  set -euo pipefail
+
+  readonly PROG="$(basename "$0")"
+  readonly ARGS=("$@")
+
+  usage() {
+      cat <<EOF
+  Usage: $PROG [OPTIONS] <input>
+    -o FILE   Output file (default: stdout)
+    -v        Verbose mode
+    -h        Show this help
+  EOF
+      exit "${1:-0}"
+  }
+
+  log() { echo "[$PROG] $*" >&2; }
+  die() { log "ERROR: $*"; exit 1; }
+
+  main() {
+      local output="" verbose=false
+
+      while getopts ":o:vh" opt; do
+          case "$opt" in
+              o) output="$OPTARG" ;;
+              v) verbose=true ;;
+              h) usage 0 ;;
+              :) die "Option -$OPTARG requires an argument" ;;
+              ?) die "Unknown option: -$OPTARG" ;;
+          esac
+      done
+      shift $((OPTIND - 1))
+
+      [[ $# -lt 1 ]] && usage 1
+      local input="$1"
+
+      [[ -f "$input" ]] || die "File not found: $input"
+
+      $verbose && log "Processing $input"
+
+      if [[ -n "$output" ]]; then
+          process "$input" > "$output"
+      else
+          process "$input"
+      fi
+  }
+
+  process() {
+      local file="$1"
+      wc -l "$file"
+  }
+
+  main "${ARGS[@]}"
+annotations:
+  - line: 2
+    text: "The safety trio: -e (exit on error), -u (error on unset variables), -o pipefail (catch pipe failures)."
+  - line: 4
+    text: "readonly prevents accidental modification. Store the program name for usage messages and logging."
+  - line: 5
+    text: "Save the original arguments in an array before they get shifted away by option processing."
+  - line: 7
+    text: "A usage function that accepts an exit code. Called with 0 for -h (help), 1 for errors."
+  - line: 17
+    text: "Utility functions for consistent logging. >&2 sends to stderr so stdout stays clean for data."
+  - line: 20
+    text: "Wrapping logic in main() keeps variables local and prevents accidental globals."
+  - line: 23
+    text: "getopts handles single-character flags. The leading : in ':o:vh' enables silent error handling."
+  - line: 32
+    text: "shift removes processed options, leaving only positional arguments in $@."
+  - line: 34
+    text: "Validate required arguments early. Fail fast with a helpful message."
+  - line: 48
+    text: "Separate processing logic into its own function for testability and clarity."
+  - line: 53
+    text: "Call main with the saved arguments. This pattern ensures the entire script is parsed before execution."
 ```
 
 ---

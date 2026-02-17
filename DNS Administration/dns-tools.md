@@ -71,6 +71,21 @@ The `aa` flag is one of the most important things to check. If you're querying y
 
 **SERVER** - which resolver answered your query. Critical when troubleshooting - you need to know who you're asking.
 
+```quiz
+question: "In dig output, what information does the AUTHORITY section contain?"
+type: multiple-choice
+options:
+  - text: "The final answer to your query (IP address, CNAME, etc.)"
+    feedback: "That's the ANSWER section. The AUTHORITY section shows which nameservers are authoritative for the domain."
+  - text: "The nameservers that are authoritative for the queried domain"
+    correct: true
+    feedback: "Correct! The AUTHORITY section contains NS records pointing to the authoritative nameservers. The ANSWER section has the actual result, and the ADDITIONAL section often has the IP addresses (glue records) for those nameservers."
+  - text: "Authentication and DNSSEC signature data"
+    feedback: "DNSSEC data appears in the ANSWER or ADDITIONAL sections with RRSIG record types. The AUTHORITY section holds NS records for the authoritative nameservers."
+  - text: "The DNS server that processed your query"
+    feedback: "The server that answered is shown at the bottom of the dig output (;; SERVER: line). The AUTHORITY section lists the domain's authoritative nameservers."
+```
+
 ### Querying Specific Servers
 
 By default, `dig` queries whatever resolver your system is configured to use. You can query any server directly with `@`:
@@ -82,6 +97,37 @@ dig @ns1.example.com example.com      # query an authoritative server directly
 ```
 
 Comparing results from different servers is a fundamental debugging technique. If your authoritative server has the right answer but `8.8.8.8` has the wrong one, the old answer is cached at Google and you need to wait for TTL expiration.
+
+```terminal
+title: Reading dig Output
+steps:
+  - command: "dig example.com A"
+    output: |
+      ; <<>> DiG 9.18.18 <<>> example.com A
+      ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 54321
+      ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+      ;; QUESTION SECTION:
+      ;example.com.               IN  A
+
+      ;; ANSWER SECTION:
+      example.com.        86400   IN  A     93.184.216.34
+
+      ;; Query time: 23 msec
+      ;; SERVER: 127.0.0.53#53(127.0.0.53)
+      ;; MSG SIZE  rcvd: 56
+    narration: "The HEADER shows status: NOERROR (success). flags: qr=response, rd=recursion desired, ra=recursion available. The ANSWER section has the A record with TTL 86400 (24 hours). SERVER shows which resolver answered."
+  - command: "dig example.com MX +short"
+    output: |
+      10 mail.example.com.
+      20 backup-mx.example.com.
+    narration: "+short strips everything except the answer. Quick way to get just the records. MX shows priority followed by the mail server hostname."
+  - command: "dig @8.8.8.8 example.com A +norecurse"
+    output: |
+      ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 12345
+      ;; flags: qr ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+    narration: "@8.8.8.8 queries Google's DNS directly. +norecurse clears the Recursion Desired flag, telling the server not to chase referrals on your behalf. Notice 'rd' flag is absent in the response."
+```
 
 ### Tracing Resolution
 
@@ -138,6 +184,48 @@ example.com MX
 example.com TXT
 
 dig -f queries.txt +short
+```
+
+```command-builder
+base: dig
+description: Build a dig query for DNS troubleshooting
+options:
+  - flag: "@"
+    type: select
+    label: "DNS server"
+    explanation: "Which DNS server to query"
+    choices:
+      - ["", "Default resolver"]
+      - ["8.8.8.8", "Google DNS (8.8.8.8)"]
+      - ["1.1.1.1", "Cloudflare DNS (1.1.1.1)"]
+      - ["ns1.example.com", "Specific nameserver"]
+  - flag: ""
+    type: text
+    label: "Domain name"
+    placeholder: "example.com"
+    explanation: "The domain to query"
+  - flag: ""
+    type: select
+    label: "Record type"
+    explanation: "Type of DNS record to look up"
+    choices:
+      - ["A", "A (IPv4 address)"]
+      - ["AAAA", "AAAA (IPv6 address)"]
+      - ["MX", "MX (mail servers)"]
+      - ["NS", "NS (nameservers)"]
+      - ["TXT", "TXT (text records / SPF / DKIM)"]
+      - ["SOA", "SOA (start of authority)"]
+      - ["ANY", "ANY (all record types)"]
+  - flag: ""
+    type: select
+    label: "Options"
+    explanation: "Additional query options"
+    choices:
+      - ["", "Default output"]
+      - ["+short", "Short output (answers only)"]
+      - ["+trace", "Trace resolution from root"]
+      - ["+dnssec", "Show DNSSEC records"]
+      - ["+norecurse", "Non-recursive (no recursion desired)"]
 ```
 
 ---
@@ -199,6 +287,21 @@ delv @8.8.8.8 dnssec-failed.org
 ```
 
 Use `delv` when `dig` gives you a SERVFAIL and you suspect DNSSEC is the cause.
+
+```quiz
+question: "When should you use delv instead of dig?"
+type: multiple-choice
+options:
+  - text: "delv is always better because it's newer"
+    feedback: "Each tool has its purpose. delv is specifically designed for DNSSEC validation, not as a general replacement for dig."
+  - text: "When you need to validate DNSSEC signatures and check the chain of trust"
+    correct: true
+    feedback: "Correct! delv (Domain Entity Lookup & Validation) performs full DNSSEC validation and shows whether signatures are valid. dig can display DNSSEC records with +dnssec, but delv actively validates the chain of trust and clearly reports the validation result."
+  - text: "When querying DNS over HTTPS (DoH)"
+    feedback: "DoH support depends on the tool version and isn't the primary distinction. delv's specialty is DNSSEC validation."
+  - text: "When you need faster queries"
+    feedback: "delv isn't about performance. It's specialized for DNSSEC validation, which is actually slower than a plain dig query because it checks signatures."
+```
 
 ---
 
@@ -339,6 +442,21 @@ dig @9.9.9.9 example.com +short
 
 If one resolver has the right answer and another doesn't, the wrong resolver has stale cached data.
 
+```quiz
+question: "What is the difference between NOERROR with an empty answer and NXDOMAIN?"
+type: multiple-choice
+options:
+  - text: "They mean the same thing - the domain doesn't exist"
+    feedback: "They're different! NXDOMAIN means the entire domain name doesn't exist. NOERROR with empty answer means the name exists but has no records of the requested type."
+  - text: "NOERROR with empty answer means the name exists but has no records of that type; NXDOMAIN means the name doesn't exist at all"
+    correct: true
+    feedback: "Correct! For example, querying an AAAA record for a host that only has an A record returns NOERROR (empty) - the name exists. Querying nonexistent.example.com returns NXDOMAIN - no records of any type exist for that name."
+  - text: "NOERROR means the query succeeded; NXDOMAIN means the DNS server is unreachable"
+    feedback: "Both are valid DNS responses from a reachable server. NXDOMAIN is a definitive answer ('this name doesn't exist'), not an error in communication. SERVFAIL or a timeout indicates unreachable servers."
+  - text: "NXDOMAIN is only returned by authoritative servers"
+    feedback: "Both authoritative and recursive servers can return NXDOMAIN. Recursive servers cache and forward the NXDOMAIN response from the authoritative server."
+```
+
 ### DNS Changes Not Showing Up
 
 **Step 1 - Verify the change is on the authoritative server:**
@@ -365,6 +483,26 @@ dig @ns2.example.com example.com SOA +short
 ```
 
 If the serial numbers don't match, zone transfer hasn't happened. Check that the primary is notifying the secondary and that zone transfers are allowed.
+
+```terminal
+title: DNS Troubleshooting Scenario
+steps:
+  - command: "dig website.example.com"
+    output: |
+      ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 11111
+      ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1
+    narration: "NXDOMAIN - the name doesn't exist. Check whether it's a typo or a missing record in the zone."
+  - command: "dig example.com NS +short"
+    output: |
+      ns1.example.com.
+      ns2.example.com.
+    narration: "First, find the authoritative nameservers for the domain. We'll query them directly to skip caching issues."
+  - command: "dig @ns1.example.com website.example.com A"
+    output: |
+      ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 22222
+      ;; flags: qr aa rd; QUERY: 1, ANSWER: 0, AUTHORITY: 1
+    narration: "Querying the authoritative server directly (note the 'aa' flag = Authoritative Answer). Still NXDOMAIN. The record genuinely doesn't exist in the zone file - it needs to be added."
+```
 
 ### Email Going to Spam
 
@@ -450,6 +588,50 @@ dig @ns2.example.com example.com SOA +short
 ```
 
 Different serial numbers mean the secondary is out of sync.
+
+```exercise
+title: Debug a Domain That Isn't Resolving
+difficulty: intermediate
+scenario: |
+  A user reports that `app.company.com` isn't resolving, but `company.com` and
+  `www.company.com` work fine. Determine the root cause using DNS tools.
+
+  Your investigation should:
+  1. Verify the problem exists
+  2. Check what the authoritative servers say
+  3. Determine if it's a caching issue, missing record, or delegation problem
+hints:
+  - "Start with dig app.company.com to see the error (NXDOMAIN or SERVFAIL?)"
+  - "Find the authoritative nameservers: dig NS company.com +short"
+  - "Query each nameserver directly: dig @ns1.company.com app.company.com"
+  - "If nameservers disagree, it might be a zone transfer issue - one secondary may be out of date"
+solution: |
+  ```bash
+  # Step 1: Verify the problem
+  dig app.company.com
+
+  # Step 2: Find authoritative nameservers
+  dig NS company.com +short
+
+  # Step 3: Query each nameserver directly
+  dig @ns1.company.com app.company.com A
+  dig @ns2.company.com app.company.com A
+
+  # Step 4: If NXDOMAIN from auth servers, the record is missing
+  # If one server has it and the other doesn't, check zone transfers:
+  dig @ns1.company.com company.com SOA +short
+  dig @ns2.company.com company.com SOA +short
+  # Different serial numbers = zone transfer problem
+
+  # Step 5: If the record was recently added, check TTL caching:
+  dig app.company.com +trace
+  # This bypasses your local cache and resolves from root
+  ```
+
+  Common causes: the record was never added, the zone wasn't reloaded after
+  editing, zone transfers failed (different SOA serials), or negative caching
+  (the NXDOMAIN response is cached for the SOA minimum TTL).
+```
 
 ---
 

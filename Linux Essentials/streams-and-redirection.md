@@ -22,6 +22,21 @@ These are just numbers the kernel uses to track open files. The fact that 0, 1, 
 grep "pattern" < input.txt > output.txt 2> errors.txt
 ```
 
+```quiz
+question: "What happens to stderr when you redirect stdout with > file.txt?"
+type: multiple-choice
+options:
+  - text: "Stderr is also redirected to file.txt"
+    feedback: "Only stdout (fd 1) is redirected by >. Stderr (fd 2) continues to the terminal unless explicitly redirected."
+  - text: "Stderr still goes to the terminal"
+    correct: true
+    feedback: "Correct! > only redirects stdout (fd 1). Stderr (fd 2) is a separate stream and continues to the terminal unless you redirect it with 2>."
+  - text: "Stderr is suppressed"
+    feedback: "Stderr is never automatically suppressed. It continues to the terminal unless you redirect it with 2> or 2>/dev/null."
+  - text: "The command fails with an error"
+    feedback: "Redirecting stdout is perfectly valid and doesn't affect stderr at all. Both streams are independent."
+```
+
 ---
 
 ## Basic Redirection
@@ -65,6 +80,32 @@ echo "New entry" >> log.txt
 echo "Another error" 2>> errors.txt
 ```
 
+```terminal
+title: Redirection Data Flow
+steps:
+  - command: "echo 'hello' > output.txt"
+    output: ""
+    narration: "Stdout (fd 1) is redirected to output.txt. Nothing appears on screen because the output went to the file."
+  - command: "cat output.txt"
+    output: "hello"
+    narration: "The file captured what would have gone to the terminal."
+  - command: "ls /nonexistent 2> errors.txt"
+    output: ""
+    narration: "Stderr (fd 2) is redirected to errors.txt. The error message goes to the file, not the screen."
+  - command: "cat errors.txt"
+    output: "ls: cannot access '/nonexistent': No such file or directory"
+    narration: "The error message was captured in the file."
+  - command: "ls /etc/hosts /nonexistent > out.txt 2> err.txt"
+    output: ""
+    narration: "Stdout and stderr go to separate files. Successful output to out.txt, errors to err.txt."
+  - command: "cat out.txt"
+    output: "/etc/hosts"
+    narration: "The successful listing went to stdout, captured in out.txt."
+  - command: "cat err.txt"
+    output: "ls: cannot access '/nonexistent': No such file or directory"
+    narration: "The error went to stderr, captured in err.txt. The two streams are completely independent."
+```
+
 ---
 
 ## Redirecting Both STDOUT and STDERR
@@ -106,6 +147,21 @@ command > file.txt 2>&1    # both go to file
 
 Think of `2>&1` as "make fd 2 point to wherever fd 1 is pointing right now." If fd 1 hasn't been redirected yet, it still points to the terminal.
 
+```quiz
+question: "What is the difference between cmd > file 2>&1 and cmd 2>&1 > file?"
+type: multiple-choice
+options:
+  - text: "They are identical - both redirect stdout and stderr to file"
+    feedback: "Order matters! In the second form, 2>&1 copies stderr to wherever stdout currently points (the terminal), then > redirects stdout to the file. So stderr goes to the terminal."
+  - text: "The first sends both to file; the second sends only stdout to file"
+    correct: true
+    feedback: "Correct! Redirections are processed left to right. In the first form, stdout goes to file, then stderr goes where stdout is (file). In the second, stderr goes where stdout is (terminal), then stdout moves to file."
+  - text: "The first sends only stderr to file; the second sends both"
+    feedback: "It's the other way around. The first form captures both streams in the file."
+  - text: "The second form is a syntax error"
+    feedback: "Both forms are valid syntax. The issue is that they produce different results because redirections are processed left to right."
+```
+
 ---
 
 ## Redirecting to /dev/null
@@ -131,6 +187,31 @@ if grep -q "pattern" file.txt 2>/dev/null; then
 fi
 ```
 
+```command-builder
+base: my_script.sh
+description: Build a shell redirection to route stdout and stderr
+options:
+  - flag: ""
+    type: select
+    label: "Stdout destination"
+    explanation: "Where to send standard output (fd 1)"
+    choices:
+      - ["> output.txt", "Overwrite file"]
+      - [">> output.txt", "Append to file"]
+      - ["> /dev/null", "Discard"]
+      - ["", "Terminal (default)"]
+  - flag: ""
+    type: select
+    label: "Stderr destination"
+    explanation: "Where to send standard error (fd 2)"
+    choices:
+      - ["2> errors.txt", "Separate error file"]
+      - ["2>> errors.txt", "Append to error file"]
+      - ["2> /dev/null", "Discard errors"]
+      - ["2>&1", "Merge with stdout"]
+      - ["", "Terminal (default)"]
+```
+
 ---
 
 ## The noclobber Option
@@ -154,6 +235,37 @@ Disable `noclobber` with:
 
 ```bash
 set +o noclobber
+```
+
+```exercise
+title: Redirect Both Streams to a File
+difficulty: beginner
+scenario: |
+  You're running a backup script that produces both normal output and error messages.
+  You need to capture everything - both stdout and stderr - into a single log file
+  called `backup.log`, while ensuring the file is created fresh each time (not appended).
+
+  Write the command to redirect both streams to the same file using two different methods.
+hints:
+  - "Method 1: Redirect stdout to the file first, then redirect stderr to where stdout points with 2>&1"
+  - "Method 2: Use the bash shorthand &> which redirects both streams at once"
+  - "Remember: with method 1, the order matters - stdout redirect must come before 2>&1"
+solution: |
+  ```bash
+  # Method 1: Traditional (works in sh and bash)
+  ./backup.sh > backup.log 2>&1
+
+  # Method 2: Bash shorthand
+  ./backup.sh &> backup.log
+
+  # To append instead of overwrite:
+  ./backup.sh >> backup.log 2>&1
+  # or
+  ./backup.sh &>> backup.log
+  ```
+
+  Both methods capture stdout and stderr in `backup.log`. Method 1 is more portable
+  (works in POSIX sh). Method 2 is bash-specific but more readable.
 ```
 
 ---
@@ -203,6 +315,21 @@ data="one two three"
 read -r first rest <<< "$data"
 echo "$first"    # one
 echo "$rest"     # two three
+```
+
+```quiz
+question: "What is the key difference between a here document (<<EOF) and a here string (<<<)?"
+type: multiple-choice
+options:
+  - text: "Here documents can only contain one line"
+    feedback: "It's the opposite - here documents support multiple lines, while here strings are typically single-line."
+  - text: "Here strings don't support variable expansion"
+    feedback: "Here strings do support variable expansion (unless quoted). The difference is about multi-line vs single-line input."
+  - text: "Here documents provide multi-line input; here strings provide single-line input"
+    correct: true
+    feedback: "Correct! Here documents (<<DELIM) let you provide a block of text spanning multiple lines. Here strings (<<<) feed a single string to stdin. Both support variable expansion by default."
+  - text: "Here strings are faster because they use a temporary file"
+    feedback: "Here documents typically use temporary files, not here strings. Here strings may use pipes internally. The real difference is multi-line vs single-line."
 ```
 
 ---
@@ -255,6 +382,28 @@ command 3>&1 1>&2 2>&3 3>&-
 ```
 
 This uses fd 3 as a temporary holding place, similar to swapping two variables with a temp variable.
+
+```code-walkthrough
+language: bash
+title: The exec File Descriptor Logging Pattern
+code: |
+  exec 3>> /var/log/app.log
+  echo "Starting backup at $(date)" >&3
+  tar czf /backup/data.tar.gz /data 2>&3
+  echo "Backup complete at $(date)" >&3
+  exec 3>&-
+annotations:
+  - line: 1
+    text: "exec with a redirection (no command) opens fd 3 for appending to the log file. This fd stays open for the entire script."
+  - line: 2
+    text: ">&3 redirects this echo's stdout to fd 3 (the log file). The terminal sees nothing."
+  - line: 3
+    text: "2>&3 sends tar's stderr to fd 3. Normal tar output still goes to the terminal, but errors go to the log."
+  - line: 4
+    text: "Another message to the log via fd 3. Having a persistent fd avoids repeatedly opening/closing the file."
+  - line: 5
+    text: "exec 3>&- closes fd 3. Always close file descriptors when done to free system resources."
+```
 
 ---
 
@@ -345,6 +494,21 @@ cat data.csv | tee /dev/stderr | sort -t, -k2 | tee /dev/stderr | uniq -c
 ```
 
 This prints the data at each pipeline stage to STDERR (your terminal) while the actual data flows through the pipeline.
+
+```quiz
+question: "What does the tee command do?"
+type: multiple-choice
+options:
+  - text: "It splits stderr from stdout"
+    feedback: "tee doesn't separate streams. It reads from stdin and writes to both stdout and one or more files simultaneously."
+  - text: "It reads from stdin and writes to both stdout and a file"
+    correct: true
+    feedback: "Correct! tee is like a T-junction in plumbing - it copies stdin to stdout AND to one or more named files, letting you save output while still seeing it on screen."
+  - text: "It redirects a file to two different commands"
+    feedback: "tee reads from stdin, not from files directly. You typically pipe into tee to split the stream."
+  - text: "It merges two input streams into one"
+    feedback: "tee doesn't merge streams - it duplicates one stream to multiple destinations (stdout plus files)."
+```
 
 ---
 
@@ -483,6 +647,60 @@ echo <(true)    # /dev/fd/63 (or similar)
 ```
 
 This is why it works with commands that expect filenames but not with commands that expect STDIN.
+
+```terminal
+title: Process Substitution in Action
+steps:
+  - command: "diff <(ls /usr/bin | head -5) <(ls /usr/sbin | head -5)"
+    output: |
+      1,5c1,5
+      < [
+      < 2to3
+      < 411toppm
+      < GET
+      < HEAD
+      ---
+      > aa-enabled
+      > aa-exec
+      > aa-features-abi
+      > aa-remove-unknown
+      > aa-status
+    narration: "Process substitution creates temporary file descriptors. diff sees two 'files' - each containing the output of a command."
+  - command: "echo <(echo hello)"
+    output: "/dev/fd/63"
+    narration: "Process substitution creates a /dev/fd path. The command's output is available through this file descriptor."
+  - command: "cat <(echo 'from process substitution')"
+    output: "from process substitution"
+    narration: "Any command that reads files can use process substitution to read from command output instead."
+```
+
+```exercise
+title: Compare Command Outputs with Process Substitution
+difficulty: intermediate
+scenario: |
+  You need to compare the installed packages on two servers. You have SSH access to both
+  `server1` and `server2`. On each server, the command `rpm -qa | sort` lists all installed
+  packages in sorted order.
+
+  Using process substitution, write a single command that shows which packages differ
+  between the two servers - without creating any temporary files.
+hints:
+  - "Use diff to compare two inputs"
+  - "Process substitution <() lets you use command output as a file argument"
+  - "You can nest SSH commands inside process substitution: <(ssh server1 'command')"
+solution: |
+  ```bash
+  diff <(ssh server1 'rpm -qa | sort') <(ssh server2 'rpm -qa | sort')
+  ```
+
+  This runs `rpm -qa | sort` on each server via SSH, feeds each output into a process
+  substitution, and diff compares them as if they were files. No temp files needed.
+
+  To see only package names that differ (without the diff formatting):
+  ```bash
+  comm -3 <(ssh server1 'rpm -qa | sort') <(ssh server2 'rpm -qa | sort')
+  ```
+```
 
 ---
 

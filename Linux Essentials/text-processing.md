@@ -172,6 +172,71 @@ grep -oP '".*?"' data.json                # match shortest quoted strings
 
 `-P` is a GNU grep extension and may not be available on all systems (notably macOS, where you can install GNU grep via Homebrew as `ggrep`).
 
+```quiz
+question: "What is the difference between grep and grep -E (or egrep)?"
+type: multiple-choice
+options:
+  - text: "grep -E is faster because it uses a compiled regex engine"
+    feedback: "The difference is syntax, not speed. Both use the same underlying regex engine."
+  - text: "grep uses Basic Regular Expressions; grep -E uses Extended Regular Expressions"
+    correct: true
+    feedback: "Correct! In BRE, metacharacters like +, ?, |, (, and ) need backslash escaping. In ERE (grep -E), they're special by default. The matching power is identical."
+  - text: "grep -E supports multiline matching while grep doesn't"
+    feedback: "Neither grep nor grep -E does multiline matching by default. The difference is BRE vs ERE syntax for metacharacters."
+  - text: "grep only supports literal string matching"
+    feedback: "grep supports full regular expressions (BRE). Characters like . and * are special in BRE too."
+```
+
+```command-builder
+base: grep
+description: Build a grep command to search file contents with regex
+options:
+  - flag: ""
+    type: select
+    label: "Regex mode"
+    explanation: "Basic (BRE) or Extended (ERE) regular expressions"
+    choices:
+      - ["", "Basic regex (default)"]
+      - ["-E", "Extended regex (-E)"]
+      - ["-P", "Perl regex (-P)"]
+  - flag: ""
+    type: select
+    label: "Match options"
+    explanation: "How to match the pattern"
+    choices:
+      - ["", "Default matching"]
+      - ["-i", "Case insensitive (-i)"]
+      - ["-w", "Whole words only (-w)"]
+      - ["-x", "Whole lines only (-x)"]
+  - flag: ""
+    type: select
+    label: "Output mode"
+    explanation: "What to show in results"
+    choices:
+      - ["", "Matching lines (default)"]
+      - ["-c", "Count of matches (-c)"]
+      - ["-l", "Filenames only (-l)"]
+      - ["-n", "Line numbers (-n)"]
+      - ["-o", "Only matching part (-o)"]
+  - flag: ""
+    type: select
+    label: "Context"
+    explanation: "Show surrounding lines"
+    choices:
+      - ["", "No context"]
+      - ["-B 3", "3 lines before (-B 3)"]
+      - ["-A 3", "3 lines after (-A 3)"]
+      - ["-C 3", "3 lines around (-C 3)"]
+  - flag: ""
+    type: select
+    label: "Scope"
+    explanation: "Where to search"
+    choices:
+      - ["", "Single file"]
+      - ["-r", "Recursive directory (-r)"]
+      - ["-r --include='*.py'", "Recursive, specific type (-r --include)"]
+```
+
 ---
 
 ## sed
@@ -194,6 +259,28 @@ The delimiter doesn't have to be `/`. Use any character to avoid escaping:
 ```bash
 sed 's|/usr/local|/opt|g' config.txt
 sed 's#http://#https://#g' urls.txt
+```
+
+```terminal
+title: sed Line-by-Line Processing
+steps:
+  - command: "echo -e 'hello world\\nhello bash\\ngoodbye world' | sed 's/hello/hi/'"
+    output: |
+      hi world
+      hi bash
+      goodbye world
+    narration: "Without the g flag, sed replaces only the first 'hello' on each line. Since each line has at most one, all are replaced here."
+  - command: "echo 'hello hello hello' | sed 's/hello/hi/'"
+    output: "hi hello hello"
+    narration: "Now you see it - only the first occurrence on the line is replaced. The other two 'hello' remain."
+  - command: "echo 'hello hello hello' | sed 's/hello/hi/g'"
+    output: "hi hi hi"
+    narration: "The g flag replaces ALL occurrences on each line. This is usually what you want."
+  - command: "echo -e 'line 1\\nline 2\\nline 3' | sed '2d'"
+    output: |
+      line 1
+      line 3
+    narration: "sed can address specific lines. '2d' deletes line 2. Addresses can be line numbers, patterns, or ranges."
 ```
 
 ### Addresses
@@ -278,6 +365,21 @@ sed '2c\This replaces the second line' file.txt
 sed '/./=' file.txt | sed 'N; s/\n/ /'
 ```
 
+```quiz
+question: "What does the g flag do at the end of a sed substitution (s/old/new/g)?"
+type: multiple-choice
+options:
+  - text: "Makes the substitution case-insensitive (global matching)"
+    feedback: "Case-insensitive matching uses the I flag (s/old/new/I in GNU sed). The g flag controls how many replacements per line."
+  - text: "Applies the substitution to all lines in the file"
+    feedback: "sed already applies substitutions to all lines by default. The g flag controls how many replacements happen within each line."
+  - text: "Replaces all occurrences on each line, not just the first"
+    correct: true
+    feedback: "Correct! Without g, sed only replaces the first match on each line. With g, it replaces every match. This is one of the most common sed gotchas."
+  - text: "Writes the result to a new file instead of stdout"
+    feedback: "Writing to files uses sed -i (in-place) or output redirection. The g flag controls per-line replacement count."
+```
+
 ---
 
 ## awk
@@ -318,6 +420,23 @@ awk '{ print $NF }' data.txt
 awk '{ print NR, $1 }' data.txt
 ```
 
+```terminal
+title: awk Field Splitting
+steps:
+  - command: "echo 'John 25 Engineer' | awk '{print $1}'"
+    output: "John"
+    narration: "awk automatically splits each line into fields by whitespace. $1 is the first field."
+  - command: "echo 'John 25 Engineer' | awk '{print $3, $1}'"
+    output: "Engineer John"
+    narration: "You can rearrange fields. The comma inserts the output field separator (space by default)."
+  - command: "echo 'John 25 Engineer' | awk '{print NF, $NF}'"
+    output: "3 Engineer"
+    narration: "NF is the number of fields (3). $NF is the value of the last field (field 3 = Engineer)."
+  - command: "echo '192.168.1.1:8080' | awk -F: '{print $1, $2}'"
+    output: "192.168.1.1 8080"
+    narration: "-F sets the field separator. With -F: the colon splits the IP from the port."
+```
+
 ### Field Separator
 
 Use `-F` to set the field separator:
@@ -353,6 +472,22 @@ awk '/START/,/END/' file.txt
 
 ```bash
 awk 'BEGIN { print "Name\tScore" } { print $1, $2 } END { print "---done---" }' data.txt
+```
+
+```code-walkthrough
+language: awk
+title: awk BEGIN/END Block Pattern
+code: |
+  awk 'BEGIN { FS=":"; total=0 }
+       { total += $3 }
+       END { print "Total:", total; print "Lines:", NR }' data.txt
+annotations:
+  - line: 1
+    text: "BEGIN runs once before any input is read. Set the field separator to colon and initialize a counter."
+  - line: 2
+    text: "This block runs for every line of input. It adds the third field's value to the running total."
+  - line: 3
+    text: "END runs once after all input is processed. NR holds the total number of records (lines) processed."
 ```
 
 ### Built-in Functions and printf
@@ -401,6 +536,54 @@ awk -F: '$7 == "/bin/bash" { print $1 }' /etc/passwd
 
 # Print every other line
 awk 'NR % 2 == 1' file.txt
+```
+
+```quiz
+question: "In awk, what does $NF refer to?"
+type: multiple-choice
+options:
+  - text: "The number of fields in the current record"
+    feedback: "That's NF without the dollar sign. NF is the count; $NF is the value of the field at that position."
+  - text: "The last field in the current record"
+    correct: true
+    feedback: "Correct! NF holds the number of fields. $NF uses that number as a field index, giving you the last field. If there are 5 fields, $NF is $5."
+  - text: "The next file to process"
+    feedback: "NF stands for Number of Fields, not Next File. $NF accesses the last field value."
+  - text: "A null field placeholder"
+    feedback: "NF means Number of Fields. $NF dereferences that count as a field position, returning the last field."
+```
+
+```command-builder
+base: awk
+description: Build an awk expression for text extraction and transformation
+options:
+  - flag: "-F"
+    type: select
+    label: "Field separator"
+    explanation: "Character that separates fields (default: whitespace)"
+    choices:
+      - ["", "Whitespace (default)"]
+      - ["':'", "Colon (:)"]
+      - ["','", "Comma (,)"]
+      - ["'\\t'", "Tab"]
+  - flag: ""
+    type: select
+    label: "Action"
+    explanation: "What to do with each line"
+    choices:
+      - ["'{print $0}'", "Print whole line"]
+      - ["'{print $1}'", "Print first field"]
+      - ["'{print $NF}'", "Print last field"]
+      - ["'{print $1, $NF}'", "Print first and last field"]
+  - flag: ""
+    type: select
+    label: "Filter"
+    explanation: "Only process lines matching a condition"
+    choices:
+      - ["", "All lines"]
+      - ["'NR>1'", "Skip header row"]
+      - ["'$3>100'", "Third field > 100"]
+      - ["'/pattern/'", "Lines matching pattern"]
 ```
 
 ---
@@ -497,6 +680,21 @@ awk '{ print $1 }' access.log | sort | uniq -c | sort -rn
 
 **Why must input be sorted?** `uniq` only compares each line against the one directly before it. If duplicate lines appear in different parts of the file with other lines between them, `uniq` won't detect them. Sorting brings identical lines together so `uniq` can find them. If sorting would destroy meaningful ordering, use `sort -u` (which deduplicates as it sorts) or `awk '!seen[$0]++'` (which deduplicates while preserving original order).
 
+```quiz
+question: "Why does uniq only remove consecutive duplicate lines?"
+type: multiple-choice
+options:
+  - text: "It's a bug that was never fixed for backwards compatibility"
+    feedback: "It's by design, not a bug. Processing only consecutive lines lets uniq work in a streaming pipeline without loading the entire file into memory."
+  - text: "It processes input line by line, only comparing adjacent lines"
+    correct: true
+    feedback: "Correct! uniq is a streaming filter - it compares each line to the previous one. This is memory-efficient but means you must sort the input first if you want to remove all duplicates: sort file | uniq."
+  - text: "It was designed for already-sorted files only"
+    feedback: "While uniq works best on sorted input, it's designed to compare adjacent lines. This is a feature for streaming efficiency, not a limitation to sorted files."
+  - text: "It can remove non-consecutive duplicates with the -u flag"
+    feedback: "The -u flag shows only unique lines (appearing exactly once). It doesn't change the adjacent-comparison behavior. You still need to sort first."
+```
+
 ---
 
 ## tr
@@ -547,6 +745,21 @@ tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32; echo
 
 # Remove all non-alphanumeric characters
 tr -dc '[:alnum:]\n' < file.txt
+```
+
+```quiz
+question: "Which of these is a valid use of tr?"
+type: multiple-choice
+options:
+  - text: "tr 'hello' 'world' file.txt"
+    feedback: "tr doesn't take filename arguments. It reads from stdin only. Use: tr 'hello' 'world' < file.txt"
+  - text: "tr -d '[:digit:]' < file.txt"
+    correct: true
+    feedback: "Correct! tr reads from stdin (via redirection here) and -d deletes all characters matching the set. [:digit:] is a POSIX character class matching 0-9."
+  - text: "tr 'hello' 'world' (replaces the word hello with world)"
+    feedback: "tr translates character-by-character, not word-by-word. tr 'hello' 'world' maps h→w, e→o, l→r, l→l, o→d. It doesn't match the word 'hello'."
+  - text: "tr -s 'hello' (removes duplicate 'hello' strings)"
+    feedback: "tr -s squeezes repeated individual characters, not strings. tr -s 'hello' squeezes repeated h, e, l, or o characters."
 ```
 
 ---
@@ -675,6 +888,79 @@ awk '{ print $9 }' access.log | sort | uniq -c | sort -rn
 2. `sort` - sort the status codes so identical ones are adjacent
 3. `uniq -c` - count consecutive identical lines
 4. `sort -rn` - show most frequent codes first
+
+```exercise
+title: Extract and Count HTTP Status Codes
+difficulty: intermediate
+scenario: |
+  You have a web server access log where each line looks like this:
+
+  ```
+  192.168.1.1 - - [10/Jan/2024:13:55:36 -0700] "GET /index.html HTTP/1.1" 200 2326
+  10.0.0.5 - - [10/Jan/2024:13:55:37 -0700] "POST /api/login HTTP/1.1" 401 125
+  192.168.1.1 - - [10/Jan/2024:13:55:38 -0700] "GET /style.css HTTP/1.1" 304 0
+  ```
+
+  The HTTP status code is the number after the closing quote (200, 401, 304, etc.).
+  Write a pipeline that extracts all status codes, counts how many times each one
+  appears, and shows the results sorted by frequency (most common first).
+hints:
+  - "Use awk to extract the status code field - it's a specific column number in the log format"
+  - "In the Common Log Format, the status code is field $9 (with default whitespace splitting)"
+  - "After extracting codes: sort | uniq -c | sort -rn gives you a frequency count sorted descending"
+solution: |
+  ```bash
+  awk '{print $9}' access.log | sort | uniq -c | sort -rn
+  ```
+
+  This pipeline:
+  1. `awk '{print $9}'` - extracts field 9 (the status code)
+  2. `sort` - groups identical codes together (required for uniq)
+  3. `uniq -c` - counts consecutive duplicates
+  4. `sort -rn` - sorts numerically in reverse (highest count first)
+
+  Output looks like:
+  ```
+    1547 200
+     312 304
+      89 404
+      23 500
+      12 401
+  ```
+```
+
+```exercise
+title: Build a Word Frequency Pipeline
+difficulty: intermediate
+scenario: |
+  Given a text file, write a pipeline that finds the 10 most frequently used words,
+  normalized to lowercase, with one word per line.
+
+  The pipeline should handle punctuation (strip it), case differences (normalize to
+  lowercase), and produce output in the format:
+  ```
+     45 the
+     32 and
+     28 to
+  ```
+hints:
+  - "Use tr to convert to lowercase: tr '[:upper:]' '[:lower:]'"
+  - "Use tr to replace non-letter characters with newlines: tr -cs '[:alpha:]' '\\n'"
+  - "The -c flag complements the set (matches everything NOT in the set), -s squeezes repeats"
+  - "Finish with sort | uniq -c | sort -rn | head -10"
+solution: |
+  ```bash
+  tr '[:upper:]' '[:lower:]' < file.txt | tr -cs '[:alpha:]' '\n' | sort | uniq -c | sort -rn | head -10
+  ```
+
+  Breaking it down:
+  1. `tr '[:upper:]' '[:lower:]'` - normalize to lowercase
+  2. `tr -cs '[:alpha:]' '\n'` - replace any non-letter character with newline, squeeze consecutive newlines
+  3. `sort` - alphabetize (needed for uniq)
+  4. `uniq -c` - count occurrences
+  5. `sort -rn` - sort by count, descending
+  6. `head -10` - top 10 results
+```
 
 ---
 

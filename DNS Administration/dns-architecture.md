@@ -57,6 +57,21 @@ Why use a hidden primary:
 
 The primary still needs to be reachable by the secondaries for zone transfers. Put it on a private network or restrict access by IP.
 
+```quiz
+question: "What is a hidden primary DNS server?"
+type: multiple-choice
+options:
+  - text: "A primary server that uses encryption to hide its IP address"
+    feedback: "Hidden primary isn't about encryption. It's about not listing the server in public NS records while still using it as the zone data source."
+  - text: "A primary server that isn't listed in NS records but still provides zone transfers to secondaries"
+    correct: true
+    feedback: "Correct! A hidden primary holds the master copy of zone data and pushes updates to public-facing secondaries, but isn't listed in NS records and doesn't answer public queries. This protects it from direct attacks and simplifies management."
+  - text: "A backup server that only activates when the primary fails"
+    feedback: "A hidden primary is always active - it's the authoritative source for zone data. It's 'hidden' from public DNS, not inactive."
+  - text: "A server that only responds to queries from specific IP addresses"
+    feedback: "Access control is a separate concept. A hidden primary specifically means the server provides zone transfers but isn't listed in public NS records."
+```
+
 ---
 
 ## Zone Transfers In Depth
@@ -187,6 +202,21 @@ This is simpler to reason about and avoids the complexity of view configuration.
 - **VPN environments** where the same hostname should resolve differently inside and outside the VPN
 - **Development environments** where `api.example.com` should point to a staging server internally
 
+```quiz
+question: "What problem does split-horizon DNS solve?"
+type: multiple-choice
+options:
+  - text: "It provides DNS failover between geographically distant servers"
+    feedback: "Geographic failover is handled by anycast or GeoDNS. Split-horizon serves different answers based on the client's network location."
+  - text: "It serves different DNS responses to internal and external clients for the same domain"
+    correct: true
+    feedback: "Correct! Split-horizon (or split-brain) DNS returns different records based on where the query originates. Internal clients get private IPs (192.168.x.x), external clients get public IPs. This lets you use the same hostname internally and externally with different targets."
+  - text: "It splits a large zone into smaller sub-zones for performance"
+    feedback: "Zone delegation splits zones into sub-zones. Split-horizon is about serving different answers to different client groups for the same records."
+  - text: "It separates DNSSEC-signed and unsigned responses"
+    feedback: "DNSSEC signing is all-or-nothing per zone. Split-horizon separates responses by client network (internal vs external), not by signing status."
+```
+
 ---
 
 ## Anycast DNS
@@ -210,6 +240,65 @@ Understanding why large-scale DNS architectures fail teaches you what to design 
 **Dyn, October 21, 2016.** The Mirai botnet (composed of compromised IoT devices like cameras and DVRs) launched a massive DDoS attack against Dyn, a major managed DNS provider. Since Dyn provided authoritative DNS for Twitter, Reddit, Netflix, Amazon, Spotify, and many others, the attack took all of these services offline for hours - even though the services themselves were running fine. The outage demonstrated the risk of concentrating authoritative DNS with a single provider.
 
 These incidents share a theme: DNS is so fundamental that when it breaks, everything built on top of it breaks too, often in ways that prevent you from fixing the DNS problem itself (Facebook engineers couldn't access internal tools because DNS was down).
+
+```quiz
+question: "What is anycast DNS?"
+type: multiple-choice
+options:
+  - text: "A DNS server that casts (broadcasts) its responses to all clients simultaneously"
+    feedback: "Anycast isn't broadcast. It uses routing to direct each client to the nearest server sharing the same IP address."
+  - text: "Multiple DNS servers share the same IP address, and routing directs clients to the nearest one"
+    correct: true
+    feedback: "Correct! In anycast, identical DNS servers at different locations all announce the same IP address via BGP. Network routing automatically sends each client's query to the topologically nearest server, reducing latency and providing automatic failover if a site goes down."
+  - text: "A load balancer that distributes DNS queries across multiple servers"
+    feedback: "While anycast does distribute load, it works at the network routing level (BGP), not through a load balancer. Each server has the same IP address and routing handles distribution."
+  - text: "A protocol for synchronizing DNS zones across multiple servers"
+    feedback: "Zone synchronization uses AXFR/IXFR transfers or database replication. Anycast is about network routing - directing clients to the nearest server sharing an IP address."
+```
+
+```exercise
+title: Design a DNS Architecture
+difficulty: advanced
+scenario: |
+  A company is expanding from a single-site setup to a multi-site architecture.
+  Current state:
+  - One BIND server handling both authoritative and recursive DNS
+  - 50 internal zones and 5 public zones
+  - Two offices: New York (primary) and London (new)
+
+  Requirements:
+  - Internal zones must resolve in both offices
+  - Public zones must be highly available
+  - The primary zone data should be editable in only one place
+  - London office should still resolve internal names if the NY-London link goes down
+
+  Design the DNS architecture: what servers, what roles, where placed?
+hints:
+  - "Separate authoritative and recursive functions (use NSD/Unbound or dedicated BIND instances)"
+  - "Consider a hidden primary for the authoritative zones"
+  - "Each office needs a local recursive resolver for performance and resilience"
+  - "Use zone transfers (AXFR/IXFR) to replicate to the London office"
+solution: |
+  **Recommended Architecture:**
+
+  **New York (Primary Site):**
+  - 1x Hidden primary (NSD or BIND) - authoritative master for all zones, not public-facing
+  - 1x Public secondary authoritative - listed in NS records, serves public zones
+  - 1x Local recursive resolver (Unbound) - for NY office clients, with stub-zones for internal
+
+  **London (Secondary Site):**
+  - 1x Secondary authoritative (NSD or BIND) - receives zone transfers from NY hidden primary
+  - 1x Local recursive resolver (Unbound) - for London clients, with stub-zones pointing to local authoritative
+
+  **External/Cloud:**
+  - 1-2x Public secondary authoritative - in different networks/providers for redundancy
+
+  **Key design decisions:**
+  - Hidden primary: single edit point, protected from direct attacks
+  - Local resolvers in each office: fast resolution, resilient to WAN failures
+  - Zone transfers to London: London authoritative has full zone copies, works during WAN outage
+  - Public secondaries in multiple locations: high availability for external DNS
+```
 
 ---
 
@@ -365,6 +454,34 @@ for mx in $(dig +short MX "$DOMAIN" | awk '{print $2}'); do
     ip=$(dig +short A "$mx")
     [ -n "$ip" ] && echo "$ip -> $(dig +short -x "$ip")"
 done
+```
+
+```code-walkthrough
+language: bash
+title: DNS Email Record Audit Script
+code: |
+  #!/bin/bash
+  domain="$1"
+  echo "=== Email DNS Audit for $domain ==="
+  echo "--- MX Records ---"
+  dig +short MX "$domain" | sort -n
+  echo "--- SPF ---"
+  dig +short TXT "$domain" | grep "v=spf1"
+  echo "--- DKIM ---"
+  dig +short TXT "default._domainkey.$domain"
+  echo "--- DMARC ---"
+  dig +short TXT "_dmarc.$domain"
+annotations:
+  - line: 3
+    text: "Start the audit by announcing the domain. A complete email DNS audit checks MX, SPF, DKIM, and DMARC."
+  - line: 5
+    text: "MX records sorted by priority (lowest first = preferred). Verify the mail servers are correct and reachable."
+  - line: 7
+    text: "SPF is a TXT record at the domain apex. grep filters for the v=spf1 prefix. Check that all legitimate senders are included."
+  - line: 9
+    text: "DKIM public key is stored at selector._domainkey.domain. 'default' is the most common selector - adjust for your mail provider."
+  - line: 11
+    text: "DMARC policy at _dmarc.domain. Check that p= policy is set (none/quarantine/reject) and rua= has a report address."
 ```
 
 ---

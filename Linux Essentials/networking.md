@@ -54,6 +54,21 @@ tracepath google.com
 
 **Reading the output:** stars (`* * *`) at a hop don't necessarily mean a problem - many routers are configured to not respond to these probes. A sudden jump in latency at a specific hop suggests congestion at that point. If latency increases at one hop but *stays high* for all subsequent hops, the bottleneck is at that hop. If latency spikes at one hop but returns to normal at the next, the router is just slow at responding to ICMP (not a real bottleneck).
 
+```quiz
+question: "In traceroute output, what does the TTL (Time to Live) field actually count?"
+type: multiple-choice
+options:
+  - text: "Seconds until the packet expires"
+    feedback: "Despite the name 'Time to Live', TTL counts hops (routers), not seconds. Each router decrements the TTL by 1."
+  - text: "The number of router hops remaining before the packet is discarded"
+    correct: true
+    feedback: "Correct! Each router decrements the TTL by 1. When it reaches 0, the router drops the packet and sends an ICMP Time Exceeded message back. traceroute exploits this by sending packets with incrementing TTLs to discover each hop."
+  - text: "The maximum bandwidth available on the route"
+    feedback: "TTL has nothing to do with bandwidth. It counts how many more routers the packet can traverse before being dropped."
+  - text: "The number of times the packet has been retransmitted"
+    feedback: "TTL doesn't track retransmissions. It's decremented by each router, and the packet is dropped when it reaches 0."
+```
+
 ### mtr
 
 [**`mtr`**](https://www.bitwizard.nl/mtr/) combines `ping` and `traceroute` into a continuous display:
@@ -81,6 +96,21 @@ curl https://example.com                    # GET request, output to terminal
 curl -o file.html https://example.com       # save to file
 curl -O https://example.com/file.tar.gz     # save with original filename
 curl -s https://api.example.com/data        # silent mode (no progress bar)
+```
+
+```quiz
+question: "What is the difference between curl -O and curl -o filename?"
+type: multiple-choice
+options:
+  - text: "-O is for HTTP; -o is for FTP"
+    feedback: "Both flags work with any protocol curl supports. The difference is about how the output filename is determined."
+  - text: "-O saves with the remote filename; -o lets you specify a local filename"
+    correct: true
+    feedback: "Correct! -O (uppercase) uses the filename from the URL (e.g., /file.tar.gz saves as file.tar.gz). -o (lowercase) lets you choose any local filename. Use -o when the URL doesn't have a meaningful filename."
+  - text: "-O overwrites existing files; -o appends to them"
+    feedback: "Both flags will overwrite by default. The difference is whether the filename comes from the URL or from your argument."
+  - text: "-o outputs to stdout; -O outputs to a file"
+    feedback: "Without either flag, curl outputs to stdout. Both -O and -o save to files - the difference is how the filename is chosen."
 ```
 
 **HTTP methods and headers:**
@@ -117,6 +147,36 @@ curl -v https://example.com      # verbose output (headers, TLS details)
 curl -I https://example.com      # HEAD request (headers only)
 ```
 
+```terminal
+title: curl Verbose Request/Response
+steps:
+  - command: "curl -v https://httpbin.org/get 2>&1 | head -20"
+    output: |
+      *   Trying 54.243.24.41:443...
+      * Connected to httpbin.org (54.243.24.41) port 443
+      * SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+      > GET /get HTTP/1.1
+      > Host: httpbin.org
+      > User-Agent: curl/8.4.0
+      > Accept: */*
+      >
+      < HTTP/1.1 200 OK
+      < Content-Type: application/json
+      < Content-Length: 256
+    narration: "-v shows the full conversation. Lines with > are what curl sent (request). Lines with < are what the server returned (response headers). * lines are connection info."
+  - command: "curl -s -o /dev/null -w '%{http_code}' https://httpbin.org/status/404"
+    output: "404"
+    narration: "-s is silent (no progress), -o /dev/null discards the body, -w prints just the status code. Great for checking if a URL is up without the noise."
+  - command: "curl -s https://httpbin.org/headers -H 'X-Custom: hello' | head -5"
+    output: |
+      {
+        "headers": {
+          "Host": "httpbin.org",
+          "X-Custom": "hello",
+          "User-Agent": "curl/8.4.0"
+    narration: "-H adds custom headers. httpbin.org/headers echoes back what it received, so you can verify your headers are sent correctly."
+```
+
 **HTTP method semantics** in brief: **GET** reads a resource without changing anything, **POST** creates a new resource or triggers an action, **PUT** replaces an entire resource with the provided data, **PATCH** updates specific fields of a resource, and **DELETE** removes a resource. When debugging failed requests, start with `curl -v` to see the full request and response headers - the status code and response body usually tell you what went wrong. Common issues: `401` means your authentication is wrong, `403` means the server understood your credentials but you lack permission, `404` means the URL is wrong, and `422` means the request body doesn't match what the API expects.
 
 **Downloading files:**
@@ -124,6 +184,48 @@ curl -I https://example.com      # HEAD request (headers only)
 ```bash
 curl -O -L https://example.com/archive.tar.gz        # follow redirects and save
 curl -C - -O https://example.com/large.iso            # resume interrupted download
+```
+
+```command-builder
+base: curl
+description: Build a curl command for HTTP requests
+options:
+  - flag: "-X"
+    type: select
+    label: "HTTP method"
+    explanation: "The HTTP request method to use"
+    choices:
+      - ["GET", "GET (default)"]
+      - ["POST", "POST"]
+      - ["PUT", "PUT"]
+      - ["DELETE", "DELETE"]
+  - flag: ""
+    type: select
+    label: "Headers"
+    explanation: "Common request headers to include"
+    choices:
+      - ["", "None"]
+      - ["-H 'Content-Type: application/json'", "JSON content type"]
+      - ["-H 'Authorization: Bearer TOKEN'", "Bearer auth"]
+      - ["-H 'Accept: application/json'", "Accept JSON"]
+  - flag: ""
+    type: select
+    label: "Data/body"
+    explanation: "Request body for POST/PUT requests"
+    choices:
+      - ["", "No body"]
+      - ["-d '{\"key\": \"value\"}'", "JSON body"]
+      - ["-d @data.json", "Body from file"]
+      - ["--data-urlencode 'key=value'", "Form data"]
+  - flag: ""
+    type: select
+    label: "Output options"
+    explanation: "How to handle the response"
+    choices:
+      - ["", "Print to stdout"]
+      - ["-o output.json", "Save to file"]
+      - ["-v", "Verbose (show headers)"]
+      - ["-s -w '\\n%{http_code}\\n'", "Silent + status code"]
 ```
 
 ### wget
@@ -198,6 +300,49 @@ Host *.internal
 ```
 
 With this config, `ssh web` connects to 192.168.1.100 as user "deploy" on port 2222.
+
+```exercise
+title: Create an SSH Config for Multiple Hosts
+difficulty: beginner
+scenario: |
+  You regularly SSH into three servers with different settings:
+
+  - **prod**: user `deploy`, host `192.168.1.100`, port 22, identity file `~/.ssh/prod_key`
+  - **staging**: user `deploy`, host `192.168.1.101`, port 2222
+  - **dev**: user `yourname`, host `dev.example.com`, port 22, forward your SSH agent
+
+  Create an `~/.ssh/config` file so you can connect with just `ssh prod`, `ssh staging`, or `ssh dev`.
+hints:
+  - "Each host block starts with Host followed by the alias you want to use"
+  - "Use HostName for the actual address, User for the username, Port for non-standard ports"
+  - "IdentityFile specifies which key to use, ForwardAgent yes enables agent forwarding"
+  - "You can use Host * for settings that apply to all connections"
+solution: |
+  ```
+  Host prod
+      HostName 192.168.1.100
+      User deploy
+      IdentityFile ~/.ssh/prod_key
+
+  Host staging
+      HostName 192.168.1.101
+      User deploy
+      Port 2222
+
+  Host dev
+      HostName dev.example.com
+      User yourname
+      ForwardAgent yes
+
+  Host *
+      ServerAliveInterval 60
+      ServerAliveCountMax 3
+  ```
+
+  The `Host *` block applies to all connections - here it sends keepalive packets
+  every 60 seconds to prevent idle disconnections. Now `ssh prod` replaces
+  `ssh -i ~/.ssh/prod_key deploy@192.168.1.100`.
+```
 
 **Port forwarding:**
 
@@ -280,6 +425,85 @@ rsync -av photos /backup/photos/
 
 When in doubt, use a trailing slash on the source and make sure the destination path ends where you want the files to land.
 
+```quiz
+question: "What is the difference between rsync -a source and rsync -a source/?"
+type: multiple-choice
+options:
+  - text: "The trailing slash means recursive mode"
+    feedback: "-a already includes recursive. The trailing slash controls whether the directory itself is copied or just its contents."
+  - text: "Without trailing slash, rsync copies the directory itself; with trailing slash, it copies only the contents"
+    correct: true
+    feedback: "Correct! rsync source dest/ creates dest/source/... (the directory itself is copied). rsync source/ dest/ copies the files inside source directly into dest/. This is one of rsync's most common gotchas."
+  - text: "The trailing slash enables --delete behavior"
+    feedback: "--delete must be specified explicitly. The trailing slash only controls whether the source directory itself is included in the transfer."
+  - text: "There is no difference - the trailing slash is ignored"
+    feedback: "The trailing slash makes a significant difference in rsync! Without it, the directory is copied inside the destination. With it, only the contents are copied."
+```
+
+```terminal
+title: rsync Dry Run Preview
+steps:
+  - command: "rsync -avhn source/ dest/"
+    output: |
+      sending incremental file list
+      ./
+      config.yml
+      data/report.csv
+      logs/app.log
+
+      sent 245 bytes  received 55 bytes  600.00 bytes/sec
+      total size is 15,234  speedup is 50.78 (DRY RUN)
+    narration: "-n (--dry-run) shows what would be transferred without actually doing it. Always preview with -n before large rsync operations."
+  - command: "rsync -avh --delete -n source/ dest/"
+    output: |
+      sending incremental file list
+      deleting old-file.txt
+      config.yml
+      data/report.csv
+
+      sent 198 bytes  received 42 bytes  480.00 bytes/sec
+      total size is 12,100  speedup is 50.42 (DRY RUN)
+    narration: "--delete removes files in dest/ that don't exist in source/. The dry run shows 'deleting old-file.txt' - you can verify before committing."
+```
+
+```command-builder
+base: rsync
+description: Build an rsync command for file synchronization
+options:
+  - flag: ""
+    type: select
+    label: "Mode"
+    explanation: "Archive mode preserves permissions, timestamps, symlinks, etc."
+    choices:
+      - ["-avh", "Archive + verbose + human-readable"]
+      - ["-avhz", "Archive + verbose + compressed"]
+      - ["-avh --progress", "Archive + progress display"]
+  - flag: ""
+    type: select
+    label: "Delete behavior"
+    explanation: "Whether to remove files in destination that don't exist in source"
+    choices:
+      - ["", "Keep extra files in destination"]
+      - ["--delete", "Delete extra files in destination"]
+      - ["--delete --backup --backup-dir=backup", "Delete but backup first"]
+  - flag: ""
+    type: select
+    label: "Exclusions"
+    explanation: "Files or patterns to skip"
+    choices:
+      - ["", "No exclusions"]
+      - ["--exclude='*.log'", "Exclude log files"]
+      - ["--exclude='.git'", "Exclude .git directory"]
+      - ["--exclude-from='exclude.txt'", "Exclude from file"]
+  - flag: ""
+    type: select
+    label: "Dry run"
+    explanation: "Preview changes without executing them"
+    choices:
+      - ["", "Execute for real"]
+      - ["-n", "Dry run (preview only)"]
+```
+
 ---
 
 ## Network Inspection
@@ -304,6 +528,21 @@ Flags:
 | `-n` | Don't resolve names (show numbers) |
 | `-p` | Show process using the socket |
 | `-a` | All (listening and non-listening) |
+
+```quiz
+question: "What does ss -tlnp show?"
+type: multiple-choice
+options:
+  - text: "All TCP connections including established ones"
+    feedback: "The -l flag limits output to listening sockets only. Without -l, you'd see established connections too."
+  - text: "TCP listening sockets with numeric addresses and the process using each one"
+    correct: true
+    feedback: "Correct! -t = TCP only, -l = listening sockets, -n = numeric (no DNS resolution, faster), -p = show process name/PID. This is the go-to command for 'what's listening on which port?'"
+  - text: "TLS-encrypted connections"
+    feedback: "The -t flag means TCP, not TLS. ss doesn't distinguish encrypted from unencrypted connections."
+  - text: "The TCP routing table"
+    feedback: "Routing tables are shown by ip route, not ss. ss shows socket information - connections and listening ports."
+```
 
 **Filtering:**
 
@@ -389,6 +628,38 @@ dig +short example.com              # concise output (just the answer)
 dig @8.8.8.8 example.com            # query a specific nameserver
 dig -x 142.250.80.46                # reverse DNS lookup
 dig +trace example.com              # show the full resolution path
+```
+
+```exercise
+title: Trace DNS Resolution with dig
+difficulty: intermediate
+scenario: |
+  Use `dig +trace` to follow the full DNS resolution path for a domain name.
+  Trace the resolution of `www.example.com` and identify:
+
+  1. Which root server responded
+  2. Which TLD server handled `.com`
+  3. Which authoritative nameserver provided the final answer
+  4. The IP address returned
+hints:
+  - "Run: dig +trace www.example.com"
+  - "The output shows each delegation step: root → TLD → authoritative"
+  - "Look for NS records at each level to see which servers were consulted"
+  - "The final ANSWER section contains the A record with the IP address"
+solution: |
+  ```bash
+  dig +trace www.example.com
+  ```
+
+  Reading the output bottom-to-top of each section:
+  1. **Root servers** (`.`): One of the root servers (like `a.root-servers.net`) refers you to the `.com` TLD servers
+  2. **TLD servers** (`.com`): A `.com` server (like `a.gtld-servers.net`) refers you to example.com's nameservers
+  3. **Authoritative** (`example.com`): The authoritative nameserver returns the A record
+  4. **Answer**: `www.example.com. 86400 IN A 93.184.216.34`
+
+  The +trace flag makes dig perform iterative resolution itself, starting
+  from the root, so you can see every step that your recursive resolver
+  normally handles invisibly.
 ```
 
 For deeper DNS coverage, see the [DNS Administration](../DNS%20Administration/README.md) guides in this repo.

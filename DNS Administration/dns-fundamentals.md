@@ -192,6 +192,84 @@ www.example.com.        86400   IN      A       93.184.216.34
 
 Each section shows a hop in the resolution chain. The IP addresses in the `from` field show you which server answered each step.
 
+```quiz
+question: "In what order does a recursive resolver look up a domain name like www.example.com?"
+type: multiple-choice
+options:
+  - text: "Ask example.com nameserver → ask .com TLD → ask root server"
+    feedback: "The resolution works top-down from the root, not bottom-up. The resolver starts at the root of the DNS hierarchy."
+  - text: "Ask root server → ask .com TLD server → ask example.com authoritative server"
+    correct: true
+    feedback: "Correct! Resolution follows the hierarchy: root servers know where .com lives, .com TLD servers know where example.com lives, and example.com's authoritative server has the actual records."
+  - text: "Ask the local /etc/hosts file → ask the ISP → ask Google DNS"
+    feedback: "While /etc/hosts is checked first by the OS, the DNS resolution hierarchy is root → TLD → authoritative. ISP and Google DNS are recursive resolvers, not part of the delegation chain."
+  - text: "Ask all DNS servers simultaneously and use the fastest response"
+    feedback: "DNS resolution is sequential and hierarchical, not parallel. Each server in the chain refers the resolver to the next level down."
+```
+
+```terminal
+title: Tracing DNS Resolution with dig +trace
+steps:
+  - command: "dig +trace www.example.com"
+    output: |
+      ; <<>> DiG 9.18.18 <<>> +trace www.example.com
+      ;; global options: +cmd
+      .                   86400   IN  NS  a.root-servers.net.
+      .                   86400   IN  NS  b.root-servers.net.
+      ;; Received 239 bytes from 127.0.0.53#53(127.0.0.53) in 1 ms
+
+      com.                172800  IN  NS  a.gtld-servers.net.
+      com.                172800  IN  NS  b.gtld-servers.net.
+      ;; Received 892 bytes from 198.41.0.4#53(a.root-servers.net) in 24 ms
+
+      example.com.        172800  IN  NS  a.iana-servers.net.
+      example.com.        172800  IN  NS  b.iana-servers.net.
+      ;; Received 266 bytes from 192.5.6.30#53(a.gtld-servers.net) in 32 ms
+
+      www.example.com.    86400   IN  A   93.184.216.34
+      ;; Received 56 bytes from 199.43.135.53#53(a.iana-servers.net) in 88 ms
+    narration: "dig +trace performs iterative resolution from the root. Step 1: Root server (198.41.0.4) refers us to .com TLD servers. Step 2: .com TLD (192.5.6.30) refers us to example.com's nameservers. Step 3: Authoritative server (199.43.135.53) returns the final A record: 93.184.216.34."
+```
+
+```exercise
+title: Trace DNS Resolution Manually
+difficulty: beginner
+scenario: |
+  Use `dig` to manually trace the resolution of a domain name step by step.
+  Pick any real domain (e.g., your company's website or a popular site).
+
+  1. Query a root server for the TLD nameservers
+  2. Query the TLD nameserver for the domain's authoritative nameservers
+  3. Query the authoritative nameserver for the final A record
+  4. Compare the result to a simple `dig domain.com` query
+hints:
+  - "Start with: dig NS com. @a.root-servers.net to find .com TLD servers"
+  - "Then: dig NS example.com @a.gtld-servers.net to find the domain's nameservers"
+  - "Finally: dig A www.example.com @a.iana-servers.net to get the IP"
+  - "Use dig +trace domain.com to do all steps automatically and verify"
+solution: |
+  ```bash
+  # Step 1: Ask root server for .com TLD nameservers
+  dig NS com. @a.root-servers.net +norecurse
+
+  # Step 2: Ask .com TLD for example.com's nameservers
+  dig NS example.com @a.gtld-servers.net +norecurse
+
+  # Step 3: Ask authoritative server for the A record
+  dig A www.example.com @a.iana-servers.net
+
+  # Verify with automatic trace
+  dig +trace www.example.com
+
+  # Compare with simple query (uses your local resolver)
+  dig www.example.com
+  ```
+
+  The manual steps mirror exactly what a recursive resolver does automatically.
+  Each server only knows about its own level of the hierarchy and refers you
+  to the next level down.
+```
+
 ### Caching and TTLs
 
 ```mermaid
@@ -250,6 +328,21 @@ Resolvers also cache **negative answers**. When a name doesn't exist, the author
 
 [RFC 2308](https://datatracker.ietf.org/doc/html/rfc2308) defines negative caching behavior. It's worth knowing this exists because it explains a common gotcha: if you query a name *before* you've created the record, the NXDOMAIN gets cached, and you may have to wait for that negative cache to expire before the new record is visible.
 
+```quiz
+question: "If a DNS record has a TTL of 3600, what does that mean?"
+type: multiple-choice
+options:
+  - text: "The record expires and is deleted after 3600 queries"
+    feedback: "TTL is time-based, not query-based. It's measured in seconds, not request count."
+  - text: "Resolvers can cache the record for 3600 seconds (1 hour) before re-querying"
+    correct: true
+    feedback: "Correct! TTL (Time to Live) tells caching resolvers how long to store the answer. After 3600 seconds, they must query the authoritative server again. Lower TTLs mean faster propagation of changes but more DNS traffic."
+  - text: "The record was created 3600 seconds ago"
+    feedback: "TTL indicates how long the record can be cached, not when it was created. Each time a resolver fetches the record, the TTL countdown starts fresh."
+  - text: "The maximum number of hops the DNS query can traverse"
+    feedback: "That's the IP TTL concept (hop count). DNS TTL is about cache duration in seconds."
+```
+
 ---
 
 ## Authoritative vs Recursive
@@ -293,6 +386,21 @@ An **open resolver** is a recursive server that accepts queries from anyone on t
 ISPs routinely operate resolvers, but they restrict access to their own customers' IP ranges. If you run your own recursive resolver, restrict it to your network with ACLs.
 
 Some ISPs also hijack NXDOMAIN responses. Instead of telling your browser that a domain doesn't exist, they redirect you to a search/advertising page. This violates DNS standards ([RFC 4924](https://datatracker.ietf.org/doc/html/rfc4924) Section 2.5.2.3) and breaks applications that rely on NXDOMAIN behavior. Public resolvers like `1.1.1.1` and `9.9.9.9` don't do this.
+
+```quiz
+question: "What is the difference between a recursive and an iterative DNS query?"
+type: multiple-choice
+options:
+  - text: "Recursive queries are faster; iterative queries are more secure"
+    feedback: "The difference isn't about speed or security, but about who does the work of following referrals."
+  - text: "In a recursive query, the server does the full lookup; in an iterative query, it returns a referral"
+    correct: true
+    feedback: "Correct! A recursive resolver does all the work - it follows referrals from root to TLD to authoritative and returns the final answer. An iterative query just returns 'ask this other server instead' (a referral), making the client do the follow-up."
+  - text: "Recursive queries use TCP; iterative queries use UDP"
+    feedback: "Both can use either UDP or TCP. The protocol choice depends on response size and reliability needs, not the query type."
+  - text: "Iterative queries repeat until they get an answer; recursive queries only try once"
+    feedback: "It's roughly the opposite. The recursive server follows the chain. In iterative mode, the client receives referrals and must follow them itself."
+```
 
 ---
 
@@ -396,6 +504,21 @@ Newer transport protocols are emerging for privacy:
 - **DNS over QUIC (DoQ)** - DNS queries over the QUIC protocol, offering TLS encryption with lower latency than DoT
 
 These encrypted transports prevent ISPs and network operators from seeing (or tampering with) your DNS queries. They don't change how DNS *resolution* works - they just encrypt the transport between your stub resolver and the recursive resolver.
+
+```quiz
+question: "What problem does DNSSEC solve?"
+type: multiple-choice
+options:
+  - text: "It encrypts DNS queries so ISPs can't see which domains you look up"
+    feedback: "DNSSEC provides authentication, not encryption. DNS queries and responses are still visible. DNS-over-HTTPS (DoH) and DNS-over-TLS (DoT) provide encryption."
+  - text: "It verifies that DNS responses haven't been tampered with (authenticity and integrity)"
+    correct: true
+    feedback: "Correct! DNSSEC uses digital signatures to prove that a DNS response came from the legitimate authoritative server and wasn't modified in transit. It prevents cache poisoning and man-in-the-middle attacks on DNS."
+  - text: "It prevents DDoS attacks against DNS servers"
+    feedback: "DNSSEC doesn't prevent DDoS. In fact, DNSSEC responses are larger (due to signatures), which can actually amplify DDoS. Its purpose is response authentication."
+  - text: "It speeds up DNS resolution by using faster algorithms"
+    feedback: "DNSSEC actually adds overhead (larger responses, signature verification). Its purpose is security (proving response authenticity), not performance."
+```
 
 ---
 

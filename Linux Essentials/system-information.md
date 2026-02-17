@@ -49,6 +49,21 @@ nproc
 
 A rising 1-minute average with stable 15-minute average indicates a recent spike. A high 15-minute average means sustained load.
 
+```quiz
+question: "A server with 4 CPU cores shows a load average of 4.00. What does this mean?"
+type: multiple-choice
+options:
+  - text: "The server is critically overloaded and needs immediate attention"
+    feedback: "A load of 4.00 on a 4-core system means each core is fully utilized but there's no queue. It's at capacity but not overloaded."
+  - text: "Each CPU core is fully utilized with no processes waiting"
+    correct: true
+    feedback: "Correct! Load average represents the number of processes in the run queue. A load equal to the number of cores means full utilization. Above 4.00 on this system, processes start waiting. Below 4.00, there's headroom."
+  - text: "The system is only using 4% of its CPU capacity"
+    feedback: "Load average isn't a percentage. It's the average number of processes using or waiting for CPU. Compare it to the number of cores, not to 100."
+  - text: "Four processes have crashed"
+    feedback: "Load average measures active/waiting processes, not crashes. A load of 4.00 on 4 cores means the CPU is at capacity."
+```
+
 ---
 
 ## free - Memory Usage
@@ -78,6 +93,21 @@ Key columns:
 The **available** column is what matters. Linux aggressively uses free memory for caching disk data. This cached memory is immediately available when a process needs it. A system with low "free" but high "available" is healthy.
 
 If **swap** is heavily used, the system is running low on RAM and performance will suffer.
+
+```quiz
+question: "In the output of the free command, what does the 'available' column represent?"
+type: multiple-choice
+options:
+  - text: "The amount of completely unused RAM"
+    feedback: "That's the 'free' column. 'Available' is larger because it includes memory the kernel can reclaim if needed."
+  - text: "Memory available for new applications, including reclaimable cache"
+    correct: true
+    feedback: "Correct! 'Available' estimates how much memory can be used by new applications without swapping. It includes free memory plus buffer/cache memory that the kernel can reclaim. This is the number you should check, not 'free'."
+  - text: "The amount of swap space remaining"
+    feedback: "Swap is shown on its own line in the free output. 'Available' refers to reclaimable physical RAM, not swap."
+  - text: "Memory reserved for the kernel"
+    feedback: "Kernel-reserved memory isn't shown directly by free. 'Available' is the memory usable by applications, including reclaimable cache."
+```
 
 ---
 
@@ -174,6 +204,95 @@ Key columns:
 - **r consistently > number of CPUs** - more processes want to run than you have CPUs. The system needs more CPU power or the workload needs optimization.
 - **si/so > 0** - the system is actively swapping memory to/from disk. Even small amounts of swap activity cause noticeable slowdowns because disk is orders of magnitude slower than RAM. If you see sustained swapping, the system needs more RAM or a process is using too much.
 - **b > 0** for extended periods - processes are blocked on I/O. Combined with high wa%, this points to a storage bottleneck.
+
+```quiz
+question: "In vmstat output, what do the wa (I/O wait) and id (idle) columns under CPU represent?"
+type: multiple-choice
+options:
+  - text: "wa is disk write activity; id is disk idle time"
+    feedback: "wa is CPU time spent waiting for I/O, not the I/O itself. id is CPU idle time (not busy with anything)."
+  - text: "wa is CPU time waiting for I/O to complete; id is CPU time doing nothing"
+    correct: true
+    feedback: "Correct! High wa means the CPU is idle because it's waiting for disk I/O - this points to a disk bottleneck. High id means the CPU genuinely has nothing to do. A busy system with high wa needs faster storage; one with high id needs more work (or has enough resources)."
+  - text: "wa is network wait time; id is interrupt delay time"
+    feedback: "wa specifically measures I/O wait (typically disk). Network waits show up differently. id is simply idle time."
+  - text: "wa is the WAL (write-ahead log) percentage; id is the process ID column"
+    feedback: "wa is CPU I/O wait percentage and id is CPU idle percentage. Both are CPU utilization metrics, not disk or process identifiers."
+```
+
+```terminal
+title: Reading vmstat Output
+steps:
+  - command: "vmstat 1 5"
+    output: |
+      procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+       r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+       2  0      0 245680  89012 1024560    0    0    12    45  234  567 15  3 80  2  0
+       1  0      0 245200  89012 1024680    0    0     0    28  198  445 12  2 85  1  0
+       3  1      0 244800  89024 1024720    0    0   128   256  456  890 25  5 55 15  0
+       1  0      0 245100  89024 1024720    0    0     0    32  210  478 10  2 87  1  0
+       1  0      0 245400  89036 1024780    0    0     0    16  189  432  8  2 89  1  0
+    narration: "vmstat 1 5 samples every 1 second, 5 times. Key columns: r=runnable processes, b=blocked on I/O, us=user CPU%, sy=system CPU%, id=idle%, wa=I/O wait%. Line 3 shows a spike: wa jumped to 15% and bi (block in) spiked, indicating a disk read burst."
+  - command: "vmstat -s | head -10"
+    output: |
+        8167940 K total memory
+        3456780 K used memory
+        2345670 K active memory
+        1890120 K inactive memory
+         245680 K free memory
+          89012 K buffer memory
+        1024560 K swap cache
+        2097148 K total swap
+              0 K used swap
+        2097148 K free swap
+    narration: "-s shows a summary instead of live stats. Useful for a quick snapshot: how much total memory, how much swap is in use, etc."
+```
+
+```exercise
+title: Identify the Bottleneck from vmstat Output
+difficulty: intermediate
+scenario: |
+  You're troubleshooting a slow server. Here's the vmstat output:
+
+  ```
+  procs  ------cpu-----
+   r  b  us sy id wa st
+  12  0  95  4  1  0  0
+  15  0  97  3  0  0  0
+  11  0  94  5  1  0  0
+  ```
+
+  And another server:
+
+  ```
+  procs  ------cpu-----
+   r  b  us sy id wa st
+   1  8   5  2  3 90  0
+   2  6   3  1  2 94  0
+   1  9   4  2  1 93  0
+  ```
+
+  For each server, identify whether the bottleneck is CPU, I/O, or memory, and
+  explain what metrics led you to that conclusion.
+hints:
+  - "Look at the r (runnable) and b (blocked) columns in procs"
+  - "High r with high us% indicates CPU-bound workload"
+  - "High b with high wa% indicates I/O-bound workload"
+  - "Check if swap is being used (si/so columns) to identify memory pressure"
+solution: |
+  **Server 1: CPU-bound**
+  - `r` column is 11-15 (many processes waiting for CPU)
+  - `us` (user CPU) is 94-97% (nearly maxed out)
+  - `wa` (I/O wait) is 0% (disk is fine)
+  - `b` is 0 (no processes blocked on I/O)
+  - **Action**: Profile the application, optimize code, or add CPU cores
+
+  **Server 2: I/O-bound**
+  - `b` column is 6-9 (many processes blocked waiting for I/O)
+  - `wa` (I/O wait) is 90-94% (CPU is idle, waiting for disk)
+  - `us` is only 3-5% (CPU has capacity, but disk is the bottleneck)
+  - **Action**: Check for disk issues with `iostat -x 1`, consider faster storage (SSD), or optimize disk-heavy queries
+```
 
 ---
 
@@ -291,6 +410,31 @@ dmesg -T | tail -30
 # 8. What's a specific process doing?
 lsof -p <PID>
 strace -p <PID>   # system calls (careful - high overhead)
+```
+
+```code-walkthrough
+language: bash
+title: System Troubleshooting Quick-Check Script
+code: |
+  echo "=== Load ===" && uptime
+  echo "=== CPU/IO ===" && vmstat 1 3 | tail -1
+  echo "=== Memory ===" && free -h | grep -E 'Mem|Swap'
+  echo "=== Disk ===" && df -h | grep -vE 'tmpfs|devtmpfs'
+  echo "=== Top CPU ===" && ps aux --sort=-%cpu | head -6
+  echo "=== Top Mem ===" && ps aux --sort=-%mem | head -6
+annotations:
+  - line: 1
+    text: "uptime shows load averages for 1, 5, and 15 minutes. Compare to the number of CPU cores (nproc) to assess CPU pressure."
+  - line: 2
+    text: "vmstat's last sample gives current state: check r (run queue), b (blocked), wa (I/O wait), and us+sy (CPU usage)."
+  - line: 3
+    text: "free -h shows memory in human-readable units. Check 'available' (not 'free') and whether swap is being used."
+  - line: 4
+    text: "df -h filtered to real filesystems. Look for any partition above 90% - especially /, /var, and /tmp."
+  - line: 5
+    text: "Top 5 processes by CPU usage. Helps identify what's consuming CPU if load is high."
+  - line: 6
+    text: "Top 5 processes by memory (RSS). Identifies memory hogs if 'available' memory is low or swap is in use."
 ```
 
 ---
