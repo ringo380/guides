@@ -285,6 +285,17 @@ annotations:
 
 ---
 
+## Licensing
+
+This project is dual-licensed:
+
+- **Written content** (`.md` files) is licensed under [CC BY-NC-ND 4.0](LICENSE-CONTENT), attributed to Ryan Thomas Robson / Robworks Software LLC.
+- **Code** (`.js`, `.py`, `.css`, `.sh`, `.html`) is licensed under the [MIT License](LICENSE-CODE), copyright Robworks Software LLC.
+
+By submitting a pull request, you grant Ryan Thomas Robson / Robworks Software LLC a perpetual, irrevocable, worldwide, royalty-free license to incorporate your contributions under the project's existing licenses.
+
+---
+
 ## Code of Conduct
 
 We are committed to providing a welcoming and inclusive experience. Please read our [Code of Conduct](CODE_OF_CONDUCT.md).

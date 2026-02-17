@@ -1,4 +1,7 @@
 #!/bin/bash
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025-2026 Robworks Software LLC
+#
 # Creates a docs/ directory with symlinks to source content.
 # MkDocs requires docs_dir to be separate from the config file location.
 # Run this before `mkdocs serve` for local development.

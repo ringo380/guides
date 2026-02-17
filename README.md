@@ -16,3 +16,14 @@ Practical, open-access technical guides covering Linux, DNS, Git, databases, and
 - **[Git](Git/git-getting-through-it.md)** - Fundamentals and concepts
 - **[Databases](Databases/pdrt-for-cpanel-innodb-recovery.md)** - InnoDB recovery with Percona Data Recovery Tool
 - **[Perl](Dev Zero/Perl/perl_dev0_introduction.md)** - Developer introduction and learning roadmap
+
+---
+
+## License
+
+This project is dual-licensed:
+
+- **Written content** (guides, documentation) - [CC BY-NC-ND 4.0](LICENSE-CONTENT) - Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC
+- **Code** (JavaScript, Python, CSS, Shell, HTML templates) - [MIT](LICENSE-CODE) - Copyright (c) 2025-2026 Robworks Software LLC
+
+See [LICENSE](LICENSE) for details.

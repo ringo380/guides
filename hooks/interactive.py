@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025-2026 Robworks Software LLC
+
 """MkDocs hook that converts custom interactive fences to HTML divs.
 
 Supported fence types: quiz, terminal, command-builder, exercise, code-walkthrough
