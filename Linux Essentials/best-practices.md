@@ -72,7 +72,6 @@ The rule is simple: always double-quote variable expansions (`"$var"`) unless yo
 Exceptions where quoting is unnecessary:
 - Inside `[[ ]]` (no word splitting, but quoting doesn't hurt)
 - Inside `$(( ))` arithmetic
-- Array assignments: `arr=($var)` when you explicitly want splitting
 
 ---
 

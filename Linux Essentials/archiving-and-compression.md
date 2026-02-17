@@ -57,7 +57,7 @@ tar -tvf archive.tar.gz                     # verbose listing (like ls -l)
 | `-c` | Create archive |
 | `-x` | Extract archive |
 | `-t` | List contents |
-| `-f` | Specify filename (must be last flag before filename) |
+| `-f` | Specify archive filename (put `-f` last when combining flags, e.g., `-czf` not `-cfz`) |
 | `-v` | Verbose output |
 | `-C` | Change to directory before extracting |
 | `--exclude` | Exclude files matching pattern |

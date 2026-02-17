@@ -27,8 +27,8 @@ tmpfs           3.9G     0  3.9G   0% /dev/shm
 Key columns:
 - **Size** - total capacity
 - **Used** - space consumed
-- **Avail** - space remaining
-- **Use%** - percentage used
+- **Avail** - space remaining (may not equal Size minus Used due to reserved space for root)
+- **Use%** - percentage used (calculated against non-reserved space)
 - **Mounted on** - where the filesystem is accessible
 
 A filesystem at 100% causes applications to fail in unexpected ways. Keep an eye on `Use%`.
@@ -67,7 +67,7 @@ du -sh * | sort -rh
 `du` and `df` can show different numbers. `df` reports space from the filesystem's perspective (including space held by deleted-but-open files). `du` counts only visible files. If `df` shows full but `du` doesn't account for all the space, a process may be holding a deleted file open. Find it with:
 
 ```bash
-lsof +D /var/log | grep deleted
+lsof +L1    # files with zero link count (deleted but still held open)
 ```
 
 ---
@@ -276,7 +276,7 @@ du -h --max-depth=1 /var | sort -rh | head
 find /var -type f -size +100M -exec ls -lh {} +
 
 # 4. Check for deleted files still held open
-lsof +D /var | grep deleted
+lsof +L1
 ```
 
 ### Adding a New Disk

@@ -140,7 +140,7 @@ The maximum defaults are:
 - Files: `666` (no execute by default)
 - Directories: `777`
 
-The umask value is subtracted from these maximums:
+The umask is *bitwise masked* from these maximums. You can think of it as subtraction for common values, but it's technically a bitwise AND NOT operation:
 
 | umask | File permissions | Directory permissions |
 |-------|-----------------|----------------------|

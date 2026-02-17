@@ -186,7 +186,6 @@ Process-specific info lives in `/proc/<PID>/`:
 ```bash
 cat /proc/1234/cmdline     # command that started the process
 cat /proc/1234/status      # process status (memory, state, etc.)
-cat /proc/1234/fd/         # open file descriptors (directory)
 ls -l /proc/1234/fd        # see what files a process has open
 cat /proc/1234/environ     # environment variables (null-separated)
 ```

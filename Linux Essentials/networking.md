@@ -15,6 +15,7 @@ ping google.com               # ping until you Ctrl-C
 ping -c 5 google.com          # send 5 packets and stop
 ping -i 0.5 google.com        # ping every 0.5 seconds (default is 1)
 ping -W 2 192.168.1.1         # 2-second timeout per packet
+sudo ping -f google.com       # flood ping (requires root, sends as fast as possible)
 ```
 
 Reading the output:
@@ -193,7 +194,7 @@ With this config, `ssh web` connects to 192.168.1.100 as user "deploy" on port 2
 **Port forwarding:**
 
 ```bash
-# Local: access remote_host:3306 via localhost:3307
+# Local: forward localhost:3307 to port 3306 on remote_host's end
 ssh -L 3307:localhost:3306 user@remote_host
 
 # Remote: make your localhost:8080 accessible on remote_host:9090

@@ -47,11 +47,11 @@ find . -size -1k               # smaller than 1 kilobyte
 find . -size 100c              # exactly 100 bytes
 ```
 
-Size suffixes: `c` (bytes), `k` (kilobytes), `M` (megabytes), `G` (gigabytes).
+Size suffixes: `c` (bytes), `k` (kilobytes), `M` (megabytes), `G` (gigabytes). Without a suffix, the unit is 512-byte blocks.
 
 **By time:**
 
-Timestamps are measured in 24-hour periods. `+7` means "more than 7 days ago" and `-1` means "within the last day."
+Timestamps are measured in 24-hour periods. `+7` means "more than 7 days ago", `-1` means "within the last day", and `7` (no sign) means "between exactly 7 and 8 days ago."
 
 ```bash
 find . -mtime -7               # modified within the last 7 days
@@ -72,7 +72,7 @@ find . -mmin -60               # modified within the last 60 minutes
 ```bash
 find . -perm 644               # exactly 644
 find . -perm -644              # at least these permissions (all specified bits set)
-find . -perm /644              # any of these permissions (any specified bit set)
+find . -perm /111              # any execute bit set (user, group, or other)
 find . -perm -u+x              # user execute bit set
 ```
 

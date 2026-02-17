@@ -45,7 +45,7 @@ There are three ways to evaluate conditions in bash:
 test -f /etc/passwd && echo "exists"
 ```
 
-**`[ ]`** is equivalent to `test` (literally an alias):
+**`[ ]`** is equivalent to `test` (it's the same command under a different name):
 
 ```bash
 [ -f /etc/passwd ] && echo "exists"
@@ -324,7 +324,7 @@ Functions receive arguments the same way scripts do:
 |----------|---------|
 | `$1`, `$2`, ... | Positional arguments |
 | `$@` | All arguments (as separate words) |
-| `$*` | All arguments (as a single string) |
+| `$*` | All arguments (joined as a single string when quoted as `"$*"`) |
 | `$#` | Number of arguments |
 | `$0` | Still the script name (not the function name) |
 

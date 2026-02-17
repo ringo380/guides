@@ -261,7 +261,7 @@ This uses fd 3 as a temporary holding place, similar to swapping two variables w
 A **pipeline** connects the STDOUT of one command to the STDIN of the next using the `|` operator:
 
 ```bash
-ls -la | grep ".txt" | sort -k5 -n
+ls -la | grep "\.txt" | sort -k5 -n
 ```
 
 Each command in a pipeline runs in its own subshell, and they all run concurrently. Data flows between them through kernel buffers.
@@ -321,7 +321,7 @@ command | tee -a output.txt
 command | tee file1.txt file2.txt
 
 # Use in a pipeline
-ls -la | tee listing.txt | grep ".txt"
+ls -la | tee listing.txt | grep "\.txt"
 ```
 
 A common use is capturing intermediate output in a pipeline for debugging:
@@ -336,7 +336,7 @@ This prints the data at each pipeline stage to STDERR (your terminal) while the 
 
 ## Named Pipes (FIFOs)
 
-A **named pipe** is a special file that acts as a pipeline between processes. Unlike anonymous pipes (`|`), named pipes exist as files on disk and can be used by unrelated processes.
+A **named pipe** is a special file that acts as a pipeline between processes. Unlike anonymous pipes (`|`), named pipes have a name in the filesystem and can be used by unrelated processes. The data itself passes through kernel buffers, not through disk.
 
 Create one with `mkfifo`:
 
@@ -405,9 +405,10 @@ done
 echo $count    # 0! The while loop ran in a subshell
 ```
 
-To avoid this in bash 4.2+, use `lastpipe`:
+To avoid this in bash 4.2+, use `lastpipe`. Note that `lastpipe` only takes effect when job control is off, so it works in scripts but not in an interactive shell (unless you also run `set +m`):
 
 ```bash
+#!/bin/bash
 shopt -s lastpipe
 count=0
 echo -e "one\ntwo\nthree" | while read -r line; do
@@ -416,7 +417,7 @@ done
 echo $count    # 3
 ```
 
-Or use process substitution instead:
+Or use process substitution instead (works everywhere, including interactive shells):
 
 ```bash
 count=0

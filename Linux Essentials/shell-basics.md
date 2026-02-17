@@ -227,7 +227,7 @@ unset greeting
 Variable names can contain letters, numbers, and underscores. They cannot start with a number. By convention, environment variables use `UPPER_CASE` and local shell variables use `lower_case`.
 
 ```bash
-MY_CONFIG="/etc/app.conf"    # environment variable (will be exported)
+MY_CONFIG="/etc/app.conf"    # conventional naming for an env var (export separately)
 counter=0                     # local shell variable
 ```
 
@@ -338,6 +338,7 @@ The shell processes your command line through several expansion stages before ex
 5. Command substitution (left to right)
 6. Word splitting
 7. Pathname expansion (globbing)
+8. Quote removal
 
 ### Brace Expansion
 

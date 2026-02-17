@@ -97,7 +97,7 @@ This is grep's default mode. Some metacharacters require backslash escaping.
 
 ### Extended Regular Expressions (ERE)
 
-Use `grep -E` (or `egrep`). Metacharacters work without backslashes:
+Use `grep -E`. Metacharacters work without backslashes. (`egrep` is deprecated - use `grep -E` instead.)
 
 | Pattern | Matches |
 |---------|---------|
@@ -105,7 +105,7 @@ Use `grep -E` (or `egrep`). Metacharacters work without backslashes:
 | `?` | Zero or one |
 | `{n,m}` | Repetition |
 | `(group)` | Capture group |
-| `\|` becomes `|` | Alternation |
+| `\|` | Alternation (no backslash needed in ERE) |
 
 ```bash
 # BRE
@@ -141,12 +141,32 @@ grep '[[:digit:]]\{3\}-[[:digit:]]\{4\}' phones.txt    # matches 555-1234
 Capture a group and match it again later:
 
 ```bash
-# Find repeated words
+# Find repeated words (GNU grep - \b, \w, and \1 in ERE are GNU extensions)
 grep -E '\b(\w+)\s+\1\b' document.txt
 
-# Find lines where first and last word match
-grep '^\(\w\+\).*\1$' file.txt
+# Find lines where first and last word match (GNU grep - \w is a GNU extension)
+grep '^\([[:alpha:]]\+\).*\1$' file.txt
 ```
+
+### Perl-Compatible Regular Expressions
+
+Use `grep -P` for Perl-compatible regex (PCRE), which adds shorthand classes and advanced features not available in BRE or ERE:
+
+```bash
+# Shorthand character classes
+grep -P '\d{3}-\d{4}' phones.txt          # \d = digit (like [0-9])
+grep -P '\bword\b' file.txt               # \b = word boundary
+grep -P '\s+' file.txt                    # \s = whitespace
+
+# Lookahead and lookbehind
+grep -P '(?<=price: )\d+' catalog.txt     # match digits preceded by "price: "
+grep -P '\d+(?= dollars)' catalog.txt     # match digits followed by " dollars"
+
+# Non-greedy matching
+grep -oP '".*?"' data.json                # match shortest quoted strings
+```
+
+`-P` is a GNU grep extension and may not be available on all systems (notably macOS, where you can install GNU grep via Homebrew as `ggrep`).
 
 ---
 
@@ -161,7 +181,7 @@ The most common sed operation is substitution:
 ```bash
 sed 's/old/new/' file.txt        # replace first occurrence on each line
 sed 's/old/new/g' file.txt       # replace all occurrences on each line
-sed 's/old/new/gi' file.txt      # case-insensitive, all occurrences
+sed 's/old/new/gI' file.txt      # case-insensitive, all occurrences (GNU sed only)
 sed 's/old/new/3' file.txt       # replace only the 3rd occurrence on each line
 ```
 
