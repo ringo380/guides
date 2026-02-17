@@ -102,6 +102,21 @@ chmod 644 config.txt
 chmod 600 id_rsa
 ```
 
+```quiz
+question: "What is the octal representation of rwxr-xr--?"
+type: multiple-choice
+options:
+  - text: "644"
+    feedback: "644 is rw-r--r--. Remember: r=4, w=2, x=1. rwx=7, r-x=5, r--=4."
+  - text: "754"
+    correct: true
+    feedback: "Correct! rwx=4+2+1=7, r-x=4+0+1=5, r--=4+0+0=4. So rwxr-xr-- = 754."
+  - text: "745"
+    feedback: "Close, but the group permission r-x is 4+0+1=5, not 4. And other is r--=4, not 5."
+  - text: "755"
+    feedback: "755 is rwxr-xr-x. The other field here is r-- (4), not r-x (5)."
+```
+
 ### Recursive
 
 ```bash
@@ -114,6 +129,32 @@ Be careful with recursive chmod. You usually don't want the same permissions on 
 # Set directories to 755, files to 644
 find /var/www -type d -exec chmod 755 {} +
 find /var/www -type f -exec chmod 644 {} +
+```
+
+```command-builder
+base: chmod
+description: Build a chmod command to set file or directory permissions
+options:
+  - flag: ""
+    type: select
+    label: "Mode style"
+    explanation: "Symbolic uses letters (u+rwx); octal uses numbers (755)"
+    choices:
+      - ["755", "Octal: rwxr-xr-x (755)"]
+      - ["644", "Octal: rw-r--r-- (644)"]
+      - ["700", "Octal: rwx------ (700)"]
+      - ["600", "Octal: rw------- (600)"]
+      - ["u+x", "Symbolic: add execute for owner"]
+      - ["g+w", "Symbolic: add write for group"]
+      - ["o-rwx", "Symbolic: remove all for other"]
+      - ["a+r", "Symbolic: add read for all"]
+  - flag: ""
+    type: select
+    label: "Recursive"
+    explanation: "Apply to all files and directories inside"
+    choices:
+      - ["", "Single file/directory"]
+      - ["-R", "Recursive (-R)"]
 ```
 
 ---
@@ -139,6 +180,21 @@ chgrp -R developers dir/         # recursive
 Only root can change a file's owner. Regular users can change the group to any group they belong to.
 
 The reason only root can change file ownership is to prevent two abuses. First, **quota bypass**: if users could give their files to other users, they could evade disk quotas by assigning large files to someone else's account. Second, **setuid abuse**: if a user could create a program, set the setuid bit, then change ownership to root, they'd have a root-owned setuid binary - an instant privilege escalation. Restricting `chown` to root prevents both scenarios.
+
+```quiz
+question: "Why can't regular users use chown to change a file's owner?"
+type: multiple-choice
+options:
+  - text: "chown only works on directories, not files"
+    feedback: "chown works on both files and directories. The restriction is about who can run it, not what it operates on."
+  - text: "Regular users can use chown - it's just chgrp that's restricted"
+    feedback: "It's the opposite. Regular users can use chgrp (to groups they belong to), but only root can change file ownership with chown."
+  - text: "Allowing it would let users evade disk quotas by giving files to others"
+    correct: true
+    feedback: "Correct! If users could give files away, they could bypass disk quotas, hide file origins, and create files owned by other users (including root). This is a security boundary enforced by the kernel."
+  - text: "It's a bug - chown should work for all users"
+    feedback: "This is an intentional security restriction. Unrestricted chown would allow quota evasion, privilege escalation vectors, and audit trail manipulation."
+```
 
 ---
 
@@ -179,6 +235,21 @@ umask -S         # display in symbolic form (u=rwx,g=rx,o=rx)
 ```
 
 The typical default is `022`, which gives the owner full access and everyone else read access.
+
+```quiz
+question: "If the umask is 027, what permissions will a newly created regular file have?"
+type: multiple-choice
+options:
+  - text: "750"
+    feedback: "Files start at 666 (not 777) before applying umask. 666 - 027 = 640. Directories would start at 777, giving 750."
+  - text: "640"
+    correct: true
+    feedback: "Correct! Regular files start with 666 (no execute by default). Subtracting umask 027: owner 6-0=6 (rw-), group 6-2=4 (r--), other 6-7=0 (---). Result: 640."
+  - text: "666"
+    feedback: "666 is what you'd get with umask 000 (no bits masked). Umask 027 removes write from group and all from other."
+  - text: "753"
+    feedback: "Umask is subtracted, not applied directly. And files start at 666, not 777. The result is 666 - 027 = 640."
+```
 
 ---
 
@@ -246,6 +317,21 @@ chmod 1777 directory/      # set sticky bit with octal (note the leading 1)
 | Setgid | 2 | Run as file group | New files inherit directory group |
 | Sticky | 1 | No effect | Only owner can delete files |
 
+```quiz
+question: "What does the sticky bit do on a directory?"
+type: multiple-choice
+options:
+  - text: "It makes all files in the directory executable"
+    feedback: "The sticky bit has nothing to do with execute permissions on files. It controls who can delete files in the directory."
+  - text: "It prevents anyone from reading the directory contents"
+    feedback: "That would be removing the read permission on the directory. The sticky bit controls deletion, not reading."
+  - text: "Only the file owner, directory owner, or root can delete files in it"
+    correct: true
+    feedback: "Correct! The sticky bit (chmod +t or the 1000 bit) prevents users from deleting or renaming files they don't own. /tmp is the classic example - everyone can write there, but you can only delete your own files."
+  - text: "New files inherit the directory's group ownership"
+    feedback: "That's the setgid bit on a directory, not the sticky bit. Sticky bit controls deletion permissions."
+```
+
 ### Combined
 
 The leading digit in octal mode sets all three:
@@ -269,6 +355,70 @@ chmod 644 ~/.ssh/id_rsa.pub      # public key - readable by all
 chmod 600 ~/.ssh/authorized_keys
 ```
 
+```code-walkthrough
+language: bash
+title: SSH Key Directory Security Setup
+code: |
+  chmod 755 ~
+  mkdir -p ~/.ssh
+  chmod 700 ~/.ssh
+  chmod 600 ~/.ssh/id_rsa
+  chmod 644 ~/.ssh/id_rsa.pub
+  chmod 644 ~/.ssh/authorized_keys
+  chmod 644 ~/.ssh/config
+annotations:
+  - line: 1
+    text: "Home directory must not be writable by group or other. 755 (rwxr-xr-x) is the standard. SSH checks this!"
+  - line: 2
+    text: "Create the .ssh directory if it doesn't exist. -p prevents errors if it already exists."
+  - line: 3
+    text: "700 (rwx------) means only you can enter or list the .ssh directory. SSH refuses to work if others have access."
+  - line: 4
+    text: "600 (rw-------) for private keys. This is critical - SSH silently ignores private keys that are readable by others."
+  - line: 5
+    text: "644 (rw-r--r--) for the public key. Public keys are meant to be shared, so world-readable is fine."
+  - line: 6
+    text: "644 for authorized_keys. This file lists public keys allowed to log in. Read access is sufficient."
+  - line: 7
+    text: "644 for the SSH config file. It contains host aliases and options but no secrets (those go in keys)."
+```
+
+```exercise
+title: Set Up SSH Keys with Correct Permissions
+difficulty: beginner
+scenario: |
+  You've generated a new SSH key pair and copied the files to your home directory,
+  but the permissions are wrong and SSH refuses to use them. Set up the correct
+  permissions for:
+
+  - `~/.ssh/` directory
+  - `~/.ssh/id_rsa` (private key)
+  - `~/.ssh/id_rsa.pub` (public key)
+  - `~/.ssh/authorized_keys`
+
+  SSH is very strict about permissions - if they're too open, it silently refuses to use the keys.
+hints:
+  - "The ~/.ssh directory should be accessible only by the owner: 700"
+  - "The private key must be readable only by the owner: 600"
+  - "The public key and authorized_keys can be world-readable: 644"
+  - "SSH checks permissions on the home directory too - it should not be group or world writable"
+solution: |
+  ```bash
+  chmod 700 ~/.ssh
+  chmod 600 ~/.ssh/id_rsa
+  chmod 644 ~/.ssh/id_rsa.pub
+  chmod 644 ~/.ssh/authorized_keys
+  ```
+
+  The key rules: private keys must be 600 (or 400), the .ssh directory must be 700,
+  and your home directory must not be writable by group or other (typically 755 or 750).
+
+  If SSH still refuses, check with:
+  ```bash
+  ssh -v user@host 2>&1 | grep -i perm
+  ```
+```
+
 ### Web Server Directory
 
 ```bash
@@ -283,6 +433,42 @@ find /var/www/html -type f -exec chmod 644 {} +
 mkdir /opt/project
 chown root:developers /opt/project
 chmod 2775 /opt/project    # setgid so new files belong to 'developers' group
+```
+
+```exercise
+title: Create a Shared Directory with setgid
+difficulty: intermediate
+scenario: |
+  You need to create a shared project directory `/srv/project` where:
+
+  - All members of the `devteam` group can read and write files
+  - New files automatically belong to the `devteam` group (not the creator's primary group)
+  - Users cannot delete each other's files
+  - The directory and its contents are not accessible to other users
+hints:
+  - "Use setgid (chmod g+s) on the directory so new files inherit the group"
+  - "Use the sticky bit (chmod +t) to prevent users from deleting each other's files"
+  - "Set the umask or use ACLs to ensure new files are group-writable"
+  - "Combine: chmod 3770 sets setgid (2) + sticky (1) + rwxrwx--- (770)"
+solution: |
+  ```bash
+  # Create directory owned by devteam group
+  sudo mkdir -p /srv/project
+  sudo chgrp devteam /srv/project
+
+  # Set permissions: setgid + sticky + rwxrwx---
+  sudo chmod 3770 /srv/project
+  ```
+
+  The permission 3770 breaks down:
+  - 3 = setgid (2) + sticky (1)
+  - 7 = rwx for owner
+  - 7 = rwx for group
+  - 0 = no access for other
+
+  Setgid makes new files inherit the `devteam` group. Sticky bit prevents
+  deletion of others' files. Users should set `umask 002` so new files are
+  group-writable by default.
 ```
 
 ### Finding Permission Issues

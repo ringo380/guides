@@ -70,6 +70,21 @@ du -sh * | sort -rh
 lsof +L1    # files with zero link count (deleted but still held open)
 ```
 
+```quiz
+question: "Why might df show a disk as 90% full while du -sh / shows only 70% used?"
+type: multiple-choice
+options:
+  - text: "df is inaccurate and du should always be trusted"
+    feedback: "Both tools are accurate but measure different things. df reports filesystem-level usage, du measures visible files."
+  - text: "Deleted files still held open by processes consume space that df sees but du doesn't"
+    correct: true
+    feedback: "Correct! When a file is deleted but a process still has it open, the disk blocks aren't freed until the process closes the file. df counts these blocks (filesystem level), but du can't see the deleted file. Use lsof +D /path | grep deleted to find them."
+  - text: "du counts symlinks as full files while df doesn't"
+    feedback: "Symlinks consume negligible space. The discrepancy is typically caused by deleted-but-open files or filesystem reserved blocks."
+  - text: "df includes the kernel's memory usage"
+    feedback: "df only reports disk usage, not memory. The discrepancy is usually from deleted-but-open files consuming blocks that du can't see."
+```
+
 ---
 
 ## mount
@@ -92,6 +107,48 @@ mount /dev/sdb1 /mnt/data              # mount a partition
 mount -t ext4 /dev/sdb1 /mnt/data      # specify filesystem type
 mount -o ro /dev/sdb1 /mnt/data        # mount read-only
 mount -o remount,rw /                   # remount root as read-write
+```
+
+```command-builder
+base: mount
+description: Build a mount command with common options
+options:
+  - flag: ""
+    type: select
+    label: "Device"
+    explanation: "What to mount (UUID, device path, or network share)"
+    choices:
+      - ["/dev/sdb1", "Device path"]
+      - ["UUID=xxxx-xxxx", "UUID"]
+      - ["//server/share", "CIFS/SMB share"]
+      - ["server:/export", "NFS share"]
+  - flag: ""
+    type: select
+    label: "Mount point"
+    explanation: "Where to mount it in the filesystem"
+    choices:
+      - ["/mnt", "/mnt"]
+      - ["/data", "/data"]
+      - ["/media/usb", "/media/usb"]
+  - flag: "-t"
+    type: select
+    label: "Filesystem type"
+    explanation: "Type of filesystem on the device"
+    choices:
+      - ["ext4", "ext4"]
+      - ["xfs", "XFS"]
+      - ["ntfs", "NTFS"]
+      - ["cifs", "CIFS/SMB"]
+      - ["nfs", "NFS"]
+  - flag: "-o"
+    type: select
+    label: "Mount options"
+    explanation: "Additional mount options"
+    choices:
+      - ["defaults", "Defaults"]
+      - ["ro", "Read-only"]
+      - ["noexec,nosuid", "Security hardened"]
+      - ["noatime", "No access time updates (performance)"]
 ```
 
 ### Unmounting
@@ -135,6 +192,37 @@ Fields:
 - **dump** - backup flag (usually 0)
 - **pass** - fsck order (1 for root, 2 for others, 0 to skip)
 
+```code-walkthrough
+language: text
+title: Understanding an fstab Entry
+code: |
+  UUID=b2c3d4e5-f6a7-8901-bcde-f12345678901  /  ext4  defaults,noatime  0  1
+  UUID=d4e5f6a7-b8c9-0123-defa-234567890123  /data  xfs  defaults,nofail  0  2
+  UUID=c3d4e5f6-a7b8-9012-cdef-123456789012  none  swap  sw  0  0
+annotations:
+  - line: 1
+    text: "Root filesystem: UUID identifies the partition, / is the mount point, ext4 is the filesystem type, noatime skips access time updates for performance, 0 means no dump, 1 means fsck checks this first at boot."
+  - line: 2
+    text: "Data partition: mounted at /data, XFS filesystem, nofail prevents boot failure if this disk is missing (important for removable/secondary disks), fsck pass 2 means checked after root."
+  - line: 3
+    text: "Swap: 'none' for mount point (swap isn't mounted to a directory), 'sw' enables it as swap space, both dump and pass are 0 (no backup, no fsck - swap doesn't need either)."
+```
+
+```quiz
+question: "In an fstab entry, what does the sixth field (fs_passno) control?"
+type: multiple-choice
+options:
+  - text: "The password required to mount the filesystem"
+    feedback: "fstab doesn't handle passwords. The sixth field controls the order of filesystem checks at boot."
+  - text: "The number of times the filesystem can be mounted before requiring a check"
+    feedback: "That's the mount count, configured with tune2fs. The sixth fstab field is about fsck order at boot."
+  - text: "The order in which fsck checks filesystems at boot (0 means skip)"
+    correct: true
+    feedback: "Correct! 0 = don't check, 1 = check first (root filesystem), 2 = check after root. Setting this correctly prevents long boot times from serial fsck on multiple disks."
+  - text: "The maximum number of mount passes before unmounting"
+    feedback: "There's no such concept. The sixth field (pass number) tells fsck what order to check filesystems during boot."
+```
+
 Common options:
 | Option | Meaning |
 |--------|---------|
@@ -156,6 +244,21 @@ Using UUIDs instead of device names (like `/dev/sdb1`) is safer because device n
 
 ```bash
 blkid                  # show UUIDs of all block devices
+```
+
+```quiz
+question: "Why does fstab use UUIDs instead of device names like /dev/sdb1?"
+type: multiple-choice
+options:
+  - text: "UUIDs are faster to look up than device names"
+    feedback: "Performance isn't the reason. UUID lookup is actually slightly slower. The advantage is reliability."
+  - text: "Device names can change between boots if disks are added or reordered"
+    correct: true
+    feedback: "Correct! Device names like /dev/sdb1 depend on detection order and can shift if you add, remove, or reorder disks. UUIDs are stored on the filesystem itself and never change, making mounts reliable regardless of hardware changes."
+  - text: "UUIDs allow encryption of the device name"
+    feedback: "UUIDs aren't about encryption. They're unique identifiers baked into the filesystem that don't change when hardware order changes."
+  - text: "Modern kernels don't support device name mounting"
+    feedback: "Device name mounting works fine. UUIDs are preferred because device names (/dev/sdX) can change if disk detection order changes."
 ```
 
 After editing `/etc/fstab`, test it before rebooting:
@@ -187,6 +290,38 @@ sda      8:0    0   500G  0 disk
 sdb      8:16   0     1T  0 disk
 └─sdb1   8:17   0     1T  0 part /mnt/backup
 sr0     11:0    1  1024M  0 rom
+```
+
+```terminal
+title: Viewing Disk Layout with lsblk
+steps:
+  - command: "lsblk"
+    output: |
+      NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+      sda      8:0    0    50G  0 disk
+      ├─sda1   8:1    0   512M  0 part /boot
+      ├─sda2   8:2    0    45G  0 part /
+      └─sda3   8:3    0   4.5G  0 part [SWAP]
+      sdb      8:16   0   100G  0 disk
+      └─sdb1   8:17   0   100G  0 part /data
+    narration: "lsblk shows the block device hierarchy as a tree. sda has 3 partitions (boot, root, swap). sdb has one partition mounted at /data."
+  - command: "lsblk -f"
+    output: |
+      NAME   FSTYPE FSVER LABEL UUID                                 MOUNTPOINTS
+      sda
+      ├─sda1 ext4   1.0         a1b2c3d4-e5f6-7890-abcd-ef1234567890 /boot
+      ├─sda2 ext4   1.0         b2c3d4e5-f6a7-8901-bcde-f12345678901 /
+      └─sda3 swap   1           c3d4e5f6-a7b8-9012-cdef-123456789012 [SWAP]
+      sdb
+      └─sdb1 xfs              d4e5f6a7-b8c9-0123-defa-234567890123 /data
+    narration: "-f adds filesystem type, label, and UUID columns. These UUIDs are what fstab should use instead of device names like /dev/sda1."
+  - command: "df -h"
+    output: |
+      Filesystem      Size  Used Avail Use% Mounted on
+      /dev/sda2        45G   12G   31G  28% /
+      /dev/sda1       488M  120M  333M  27% /boot
+      /dev/sdb1        99G   45G   54G  46% /data
+    narration: "df -h shows how much space is used on each mounted filesystem. -h gives human-readable sizes (G, M instead of blocks)."
 ```
 
 ---
@@ -287,6 +422,48 @@ find /var -type f -size +100M -exec ls -lh {} +
 
 # 4. Check for deleted files still held open
 lsof +L1
+```
+
+```exercise
+title: Diagnose a Full Disk
+difficulty: intermediate
+scenario: |
+  A server is reporting "No space left on device" errors. You need to diagnose the problem.
+  The tricky part: du reports less usage than df shows, suggesting some space is consumed
+  by deleted-but-open files.
+
+  Find the largest directories, identify any deleted files still held open by processes,
+  and free the space.
+hints:
+  - "Start with df -h to see which filesystem is full"
+  - "Use du -sh /* | sort -rh | head -10 to find the largest top-level directories"
+  - "Use lsof +L1 to find deleted files still held open (link count < 1)"
+  - "To free space from deleted-but-open files, restart the process holding them open, or truncate with : > /proc/PID/fd/FD"
+solution: |
+  ```bash
+  # Step 1: Which filesystem is full?
+  df -h
+
+  # Step 2: Find largest directories
+  du -sh /* 2>/dev/null | sort -rh | head -10
+
+  # Step 3: Drill down into the largest directory
+  du -sh /var/* 2>/dev/null | sort -rh | head -10
+
+  # Step 4: Find deleted-but-open files consuming space
+  lsof +L1 | grep deleted
+
+  # Step 5: If a large deleted file is found, either:
+  # Option A: Restart the process
+  systemctl restart service-name
+
+  # Option B: Truncate the file descriptor (advanced)
+  : > /proc/PID/fd/FD_NUMBER
+  ```
+
+  The lsof +L1 technique is crucial for the df/du discrepancy. A common
+  culprit is a log file that was deleted while the application still has it open.
+  The space isn't freed until the file descriptor is closed.
 ```
 
 ### Adding a New Disk

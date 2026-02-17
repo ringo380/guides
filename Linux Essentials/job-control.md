@@ -59,6 +59,29 @@ fg              # bring most recent job to foreground
 fg %1           # bring job 1 to foreground
 ```
 
+```terminal
+title: Job Suspend/Background/Foreground Workflow
+steps:
+  - command: "sleep 300"
+    output: ""
+    narration: "Start a long-running command. It blocks the terminal - you can't type anything else."
+  - command: "^Z"
+    output: "[1]+  Stopped                 sleep 300"
+    narration: "Ctrl-Z sends SIGTSTP, suspending the process. It's paused but still exists. The shell gives you back your prompt."
+  - command: "jobs"
+    output: "[1]+  Stopped                 sleep 300"
+    narration: "The jobs command shows all background/stopped jobs. [1] is the job number, + marks it as the current job."
+  - command: "bg %1"
+    output: "[1]+ sleep 300 &"
+    narration: "bg resumes the stopped job in the background. It's now running but your terminal is free for other commands."
+  - command: "jobs"
+    output: "[1]+  Running                 sleep 300 &"
+    narration: "The job is now Running (not Stopped). The & confirms it's in the background."
+  - command: "fg %1"
+    output: "sleep 300"
+    narration: "fg brings the job back to the foreground. The terminal is blocked again until the command finishes or you Ctrl-Z it again."
+```
+
 ### Job References
 
 | Reference | Meaning |
@@ -92,6 +115,21 @@ fg %1           # bring job 1 to foreground
 **SIGKILL** is unique because the kernel handles it directly - the signal is never delivered to the process. The kernel simply removes the process from its scheduling table. This is why SIGKILL can't be caught, ignored, or handled: the process never gets a chance to run any code in response. It also means the process can't clean up - temporary files stay behind, network connections are left half-open, and shared resources may be left in an inconsistent state.
 
 **SIGQUIT** produces a core dump in addition to terminating the process. This is useful for debugging a hung process: if a program is stuck and you want to analyze what it was doing, press `Ctrl-\` to send SIGQUIT. The resulting core file can be loaded into `gdb` for post-mortem analysis. In normal usage, you'll send SIGTERM (polite request) first, SIGQUIT (terminate with dump) if you need diagnostic information, and SIGKILL (force kill) only as a last resort.
+
+```quiz
+question: "What is the difference between Ctrl-C and Ctrl-\\?"
+type: multiple-choice
+options:
+  - text: "Ctrl-C suspends the process; Ctrl-\\ terminates it"
+    feedback: "Ctrl-Z suspends (SIGTSTP). Ctrl-C sends SIGINT (interrupt), and Ctrl-\\ sends SIGQUIT which is stronger."
+  - text: "Ctrl-C sends SIGINT (can be caught); Ctrl-\\ sends SIGQUIT (produces core dump)"
+    correct: true
+    feedback: "Correct! SIGINT (Ctrl-C) is a polite interrupt that programs commonly handle. SIGQUIT (Ctrl-\\) is stronger - it also terminates the process but produces a core dump for debugging. Use Ctrl-\\ when Ctrl-C doesn't work."
+  - text: "They are identical - both send SIGTERM"
+    feedback: "Neither sends SIGTERM. Ctrl-C sends SIGINT (signal 2) and Ctrl-\\ sends SIGQUIT (signal 3). SIGTERM (signal 15) is sent by the kill command."
+  - text: "Ctrl-\\ sends SIGKILL which cannot be caught"
+    feedback: "Ctrl-\\ sends SIGQUIT, not SIGKILL. SIGQUIT can be caught by the process. SIGKILL (signal 9) has no keyboard shortcut."
+```
 
 ### Sending Signals
 
@@ -128,6 +166,21 @@ pkill -t pts/2                  # kill all processes on terminal pts/2
 kill -l             # list all signal names and numbers
 ```
 
+```quiz
+question: "Why should you try kill (SIGTERM) before kill -9 (SIGKILL)?"
+type: multiple-choice
+options:
+  - text: "SIGTERM is faster than SIGKILL"
+    feedback: "SIGKILL is actually more immediate. The reason to prefer SIGTERM is about cleanup, not speed."
+  - text: "SIGTERM lets the process clean up (save data, remove temp files, close connections)"
+    correct: true
+    feedback: "Correct! SIGTERM is a polite request that the process can handle - saving state, closing files, releasing locks. SIGKILL terminates immediately with no chance to clean up, which can leave temp files, corrupt data, or orphan child processes."
+  - text: "SIGKILL doesn't actually stop the process"
+    feedback: "SIGKILL always stops the process (unless it's in uninterruptible sleep). The issue is that it does so without giving the process a chance to clean up."
+  - text: "Only root can send SIGKILL"
+    feedback: "Any user can send SIGKILL to their own processes. The distinction is about cleanup behavior, not permissions."
+```
+
 ---
 
 ## Keeping Processes Running
@@ -159,6 +212,21 @@ disown -h %1       # keep in job table but don't send SIGHUP on exit
 ```
 
 The key difference: **`nohup`** is preventive - you use it *before* starting a process. **`disown`** is reactive - you use it *after* a process is already running and you realize you need it to survive terminal closure. A common workflow: you start a long build, realize you need to log out, press `Ctrl-Z` to suspend it, `bg` to resume in the background, and `disown` to detach it from the shell. If you'd planned ahead, you would have used `nohup` from the start.
+
+```quiz
+question: "What is the difference between nohup and disown?"
+type: multiple-choice
+options:
+  - text: "nohup works on running processes; disown only works when starting a process"
+    feedback: "It's the opposite. nohup must be used when starting a command. disown works on already-running background jobs."
+  - text: "nohup redirects output to a file; disown does not"
+    feedback: "While nohup does redirect output to nohup.out by default, that's a side effect. The core difference is when they're used."
+  - text: "nohup is used before starting a command; disown detaches an already-running job"
+    correct: true
+    feedback: "Correct! nohup command & starts the command immune to hangup signals. disown %1 removes an already-running background job from the shell's job table. Use nohup when planning ahead, disown when you forgot to use nohup."
+  - text: "They are identical - disown is just the modern replacement for nohup"
+    feedback: "They serve related but different purposes. nohup is a separate command that wraps execution. disown is a shell builtin that modifies the job table."
+```
 
 ---
 
@@ -209,6 +277,21 @@ The **D state** (uninterruptible sleep) deserves special attention. A process in
 
 The **Z state** (zombie) means the process has finished executing but its parent hasn't called `wait()` to collect its exit status. The zombie takes up no resources other than a process table entry. A few zombies are harmless, but a large accumulation suggests the parent process has a bug. You can't kill a zombie directly - killing the parent (or restarting it) clears them, because `init`/`systemd` adopts orphaned processes and reaps their exit status.
 
+```quiz
+question: "What does a process state of D (uninterruptible sleep) typically mean?"
+type: multiple-choice
+options:
+  - text: "The process is in a debugging state"
+    feedback: "D doesn't stand for debug. T (traced/stopped) is the state for debugged processes."
+  - text: "The process is waiting for disk I/O and cannot be interrupted, even by signals"
+    correct: true
+    feedback: "Correct! D state means the process is waiting for I/O (usually disk) in a kernel code path that can't be interrupted. These processes can't be killed with SIGKILL until the I/O completes. A stuck D-state process often indicates a hardware or NFS issue."
+  - text: "The process has been killed but is waiting for its parent to read its exit status"
+    feedback: "That's a zombie (Z) state. D state is about waiting for I/O operations to complete."
+  - text: "The process is a daemon running in the background"
+    feedback: "Daemons can be in any state - usually S (sleeping). D specifically means uninterruptible sleep, typically waiting for I/O."
+```
+
 ### top and htop
 
 [**`top`**](https://gitlab.com/procps-ng/procps) shows a live, updating view of processes:
@@ -234,6 +317,49 @@ Useful keystrokes inside `top`:
 sudo apt install htop    # Debian/Ubuntu
 sudo dnf install htop    # Fedora/RHEL
 htop
+```
+
+```exercise
+title: Find and Manage a Runaway Process
+difficulty: intermediate
+scenario: |
+  Your server is running slowly and you suspect a process is consuming too much memory.
+  Using command-line tools:
+
+  1. Find the process using the most memory
+  2. Identify what it is and who's running it
+  3. Send it a graceful termination signal
+  4. Verify it stopped, and if not, force-kill it
+hints:
+  - "Use ps aux --sort=-%mem | head to find the top memory consumers"
+  - "The RSS column in ps shows resident memory in kilobytes"
+  - "Try kill PID (SIGTERM) first, then check if the process is gone with ps -p PID"
+  - "If SIGTERM doesn't work after a few seconds, use kill -9 PID (SIGKILL)"
+solution: |
+  ```bash
+  # Step 1: Find the top memory consumer
+  ps aux --sort=-%mem | head -5
+
+  # Step 2: Note the PID (column 2) and command (last column)
+  # Example output shows PID 12345 using 45% memory
+
+  # Step 3: Send SIGTERM (graceful shutdown)
+  kill 12345
+
+  # Step 4: Wait a moment, then check if it's gone
+  sleep 2
+  ps -p 12345
+
+  # Step 5: If still running, force kill
+  kill -9 12345
+
+  # Verify it's gone
+  ps -p 12345
+  ```
+
+  Always try SIGTERM first - it lets the process save state and clean up.
+  Only use SIGKILL (-9) as a last resort since it can leave corrupt files
+  and orphaned child processes.
 ```
 
 ---
@@ -293,6 +419,23 @@ Key bindings (prefixed with `Ctrl-b`):
 | `Ctrl-b [` | Enter copy mode |
 | `Ctrl-b w` | List windows |
 | `Ctrl-b x` | Kill current pane |
+
+```terminal
+title: tmux Session Management
+steps:
+  - command: "tmux new -s work"
+    output: ""
+    narration: "Create a new tmux session named 'work'. You're now inside tmux - notice the green status bar at the bottom."
+  - command: "# Press Ctrl-b then d"
+    output: "[detached (from session work)]"
+    narration: "Ctrl-b d detaches from the session. The session keeps running in the background - all your processes continue."
+  - command: "tmux ls"
+    output: "work: 1 windows (created Mon Jan 15 10:30:00 2024)"
+    narration: "tmux ls lists all sessions. Your 'work' session is still running with all its windows and processes intact."
+  - command: "tmux attach -t work"
+    output: ""
+    narration: "Reattach to the session. Everything is exactly as you left it. This survives SSH disconnections too."
+```
 
 ### Common Workflow
 
