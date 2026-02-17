@@ -45,38 +45,65 @@
   }
 
   function initComponents() {
-    // Find all interactive divs on the page
-    const types = Object.keys(COMPONENT_SCRIPTS);
-    types.forEach((type) => {
-      const divs = document.querySelectorAll(`.interactive-${type}`);
-      if (divs.length === 0) return;
+    // Load storage first - components depend on window.RunbookStorage
+    loadScript("assets/javascripts/lib/storage.js")
+      .then(() => {
+        // Find all interactive divs on the page
+        const types = Object.keys(COMPONENT_SCRIPTS);
+        types.forEach((type) => {
+          const divs = document.querySelectorAll(`.interactive-${type}`);
+          if (divs.length === 0) return;
 
-      const scriptSrc = COMPONENT_SCRIPTS[type];
-      loadScript(scriptSrc)
-        .then(() => {
-          const init = window.RunbookComponents[type];
-          if (typeof init === "function") {
-            divs.forEach((div) => {
-              // Skip already-initialized divs
-              if (div.dataset.initialized) return;
-              try {
-                const config = JSON.parse(div.dataset.config || "{}");
-                init(div, config);
-                div.dataset.initialized = "true";
-              } catch (e) {
-                console.error(`[Runbook] Error initializing ${type}:`, e);
+          const scriptSrc = COMPONENT_SCRIPTS[type];
+          loadScript(scriptSrc)
+            .then(() => {
+              const init = window.RunbookComponents[type];
+              if (typeof init === "function") {
+                divs.forEach((div) => {
+                  // Skip already-initialized divs
+                  if (div.dataset.initialized) return;
+                  try {
+                    const config = JSON.parse(div.dataset.config || "{}");
+                    init(div, config);
+                    div.dataset.initialized = "true";
+                  } catch (e) {
+                    console.error(`[Runbook] Error initializing ${type}:`, e);
+                  }
+                });
               }
-            });
-          }
-        })
-        .catch((err) => console.error(`[Runbook]`, err));
-    });
+            })
+            .catch((err) => console.error(`[Runbook]`, err));
+        });
 
-    // Always load progress tracker if storage is available
-    loadScript(COMPONENT_SCRIPTS.progress).catch(() => {});
-
-    // Load storage library
-    loadScript("assets/javascripts/lib/storage.js").catch(() => {});
+        // Always load progress tracker
+        loadScript(COMPONENT_SCRIPTS.progress).catch(() => {});
+      })
+      .catch(() => {
+        // Storage failed to load - initialize components without it
+        console.warn("[Runbook] Storage unavailable, progress will not persist");
+        const types = Object.keys(COMPONENT_SCRIPTS);
+        types.forEach((type) => {
+          const divs = document.querySelectorAll(`.interactive-${type}`);
+          if (divs.length === 0) return;
+          loadScript(COMPONENT_SCRIPTS[type])
+            .then(() => {
+              const init = window.RunbookComponents[type];
+              if (typeof init === "function") {
+                divs.forEach((div) => {
+                  if (div.dataset.initialized) return;
+                  try {
+                    const config = JSON.parse(div.dataset.config || "{}");
+                    init(div, config);
+                    div.dataset.initialized = "true";
+                  } catch (e) {
+                    console.error(`[Runbook] Error initializing ${type}:`, e);
+                  }
+                });
+              }
+            })
+            .catch((err) => console.error(`[Runbook]`, err));
+        });
+      });
   }
 
   // Initialize on DOMContentLoaded (first page load)
