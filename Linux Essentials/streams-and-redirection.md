@@ -322,7 +322,7 @@ The `|&` shorthand is convenient for quick debugging, but in scripts, the explic
 
 ## tee
 
-The **`tee`** command reads from STDIN and writes to both STDOUT and one or more files simultaneously. It splits the stream.
+The [**`tee`**](https://www.gnu.org/software/coreutils/manual/) command reads from STDIN and writes to both STDOUT and one or more files simultaneously. It splits the stream.
 
 ```bash
 # Write to file and still see output on terminal
@@ -352,7 +352,7 @@ This prints the data at each pipeline stage to STDERR (your terminal) while the 
 
 A **named pipe** is a special file that acts as a pipeline between processes. Unlike anonymous pipes (`|`), named pipes have a name in the filesystem and can be used by unrelated processes. The data itself passes through kernel buffers, not through disk.
 
-Create one with `mkfifo`:
+Create one with [`mkfifo`](https://www.gnu.org/software/coreutils/manual/):
 
 ```bash
 mkfifo /tmp/mypipe
@@ -483,6 +483,14 @@ echo <(true)    # /dev/fd/63 (or similar)
 ```
 
 This is why it works with commands that expect filenames but not with commands that expect STDIN.
+
+---
+
+## Further Reading
+
+- [Bash Reference Manual - Redirections](https://www.gnu.org/software/bash/manual/) - official documentation on redirection operators and file descriptors
+- [GNU Coreutils - tee](https://www.gnu.org/software/coreutils/manual/) - tee invocation and options
+- [POSIX Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/) - portable redirection and pipeline semantics
 
 ---
 

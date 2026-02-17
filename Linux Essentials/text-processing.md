@@ -6,7 +6,7 @@ Linux provides a rich set of tools for searching, transforming, and analyzing te
 
 ## grep
 
-**`grep`** searches for lines matching a pattern. It's one of the most frequently used commands on any Linux system.
+[**`grep`**](https://www.gnu.org/software/grep/manual/) searches for lines matching a pattern. It's one of the most frequently used commands on any Linux system.
 
 ### Basic Usage
 
@@ -176,7 +176,7 @@ grep -oP '".*?"' data.json                # match shortest quoted strings
 
 ## sed
 
-**`sed`** (stream editor) transforms text line by line. It reads input, applies editing commands, and writes the result.
+[**`sed`**](https://www.gnu.org/software/sed/manual/) (stream editor) transforms text line by line. It reads input, applies editing commands, and writes the result.
 
 ### Substitute
 
@@ -282,7 +282,7 @@ sed '/./=' file.txt | sed 'N; s/\n/ /'
 
 ## awk
 
-**`awk`** is a pattern-scanning and text-processing language. It excels at working with structured, column-based data.
+[**`awk`**](https://www.gnu.org/software/gawk/manual/) is a pattern-scanning and text-processing language. It excels at working with structured, column-based data.
 
 ### Basic Structure
 
@@ -407,7 +407,7 @@ awk 'NR % 2 == 1' file.txt
 
 ## cut
 
-**`cut`** extracts specific columns or character positions from each line.
+[**`cut`**](https://www.gnu.org/software/coreutils/manual/) extracts specific columns or character positions from each line.
 
 ### By Field
 
@@ -434,7 +434,7 @@ cut -c5- file.txt               # from character 5 to end
 
 ## sort
 
-**`sort`** orders lines of text.
+[**`sort`**](https://www.gnu.org/software/coreutils/manual/) orders lines of text.
 
 ```bash
 sort file.txt                # alphabetical sort
@@ -476,7 +476,7 @@ Without `-h`, `sort -n` would rank '2M' below '100K' because it only looks at th
 
 ## uniq
 
-**`uniq`** filters adjacent duplicate lines. Input must be sorted first (or use `sort -u` instead).
+[**`uniq`**](https://www.gnu.org/software/coreutils/manual/) filters adjacent duplicate lines. Input must be sorted first (or use `sort -u` instead).
 
 ```bash
 sort file.txt | uniq           # remove duplicates
@@ -501,7 +501,7 @@ awk '{ print $1 }' access.log | sort | uniq -c | sort -rn
 
 ## tr
 
-**`tr`** translates, squeezes, or deletes characters. It reads from STDIN only (no file arguments).
+[**`tr`**](https://www.gnu.org/software/coreutils/manual/) translates, squeezes, or deletes characters. It reads from STDIN only (no file arguments).
 
 ### Translate
 
@@ -553,7 +553,7 @@ tr -dc '[:alnum:]\n' < file.txt
 
 ## wc
 
-**`wc`** (word count) counts lines, words, and characters.
+[**`wc`**](https://www.gnu.org/software/coreutils/manual/) (word count) counts lines, words, and characters.
 
 ```bash
 wc file.txt           # lines, words, characters (all three)
@@ -579,7 +579,7 @@ The difference between **`-c`** (bytes) and **`-m`** (characters) matters with m
 
 ### head
 
-**`head`** prints the first N lines of a file (default 10):
+[**`head`**](https://www.gnu.org/software/coreutils/manual/) prints the first N lines of a file (default 10):
 
 ```bash
 head file.txt            # first 10 lines
@@ -590,7 +590,7 @@ head -c 100 file.txt     # first 100 bytes
 
 ### tail
 
-**`tail`** prints the last N lines (default 10):
+[**`tail`**](https://www.gnu.org/software/coreutils/manual/) prints the last N lines (default 10):
 
 ```bash
 tail file.txt            # last 10 lines
@@ -675,6 +675,17 @@ awk '{ print $9 }' access.log | sort | uniq -c | sort -rn
 2. `sort` - sort the status codes so identical ones are adjacent
 3. `uniq -c` - count consecutive identical lines
 4. `sort -rn` - show most frequent codes first
+
+---
+
+## Further Reading
+
+- [GNU Grep Manual](https://www.gnu.org/software/grep/manual/) - pattern matching with regular expressions
+- [GNU Sed Manual](https://www.gnu.org/software/sed/manual/) - stream editing reference
+- [GAWK Manual](https://www.gnu.org/software/gawk/manual/) - the GNU awk programming language
+- [GNU Coreutils Manual](https://www.gnu.org/software/coreutils/manual/) - documentation for sort, cut, uniq, tr, wc, head, tail, and other core utilities
+- [Linux man-pages Project](https://man7.org/linux/man-pages/) - comprehensive manual pages for Linux commands and system calls
+- [regular-expressions.info](https://www.regular-expressions.info/) - regex tutorial and reference across flavors
 
 ---
 

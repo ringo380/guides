@@ -53,7 +53,7 @@ A rising 1-minute average with stable 15-minute average indicates a recent spike
 
 ## free - Memory Usage
 
-**`free`** shows RAM and swap usage.
+[**`free`**](https://gitlab.com/procps-ng/procps) shows RAM and swap usage.
 
 ```bash
 free -h            # human-readable
@@ -83,7 +83,7 @@ If **swap** is heavily used, the system is running low on RAM and performance wi
 
 ## lscpu - CPU Information
 
-**`lscpu`** displays detailed CPU architecture information.
+[**`lscpu`**](https://github.com/util-linux/util-linux) displays detailed CPU architecture information.
 
 ```bash
 lscpu
@@ -109,7 +109,7 @@ nproc --all                # all installed (may differ if some are offline)
 
 ## lsof - Open Files and Connections
 
-**`lsof`** (list open files) shows which files, sockets, and pipes are in use by which processes. In Unix, everything is a file - including network connections.
+[**`lsof`**](https://github.com/lsof-org/lsof) (list open files) shows which files, sockets, and pipes are in use by which processes. In Unix, everything is a file - including network connections.
 
 ```bash
 lsof                             # all open files (very long output)
@@ -141,7 +141,7 @@ This is useful when `df` shows a disk is full but `du` can't account for all the
 
 ## vmstat - System Performance Snapshot
 
-**`vmstat`** reports virtual memory, CPU, and I/O statistics.
+[**`vmstat`**](https://gitlab.com/procps-ng/procps) reports virtual memory, CPU, and I/O statistics.
 
 ```bash
 vmstat                   # single snapshot
@@ -179,7 +179,7 @@ Key columns:
 
 ## /proc and /sys
 
-The **`/proc`** filesystem is a virtual filesystem that exposes kernel and process information as files.
+The [**`/proc`**](https://www.kernel.org/doc/html/latest/) filesystem is a virtual filesystem that exposes kernel and process information as files.
 
 **/proc** and **/sys** are **virtual filesystems** - they don't exist on disk. The kernel generates their contents on the fly when you read them. **/proc** exposes process information and kernel internals: every running process gets a directory at `/proc/<PID>/`, and files like `/proc/cpuinfo` and `/proc/meminfo` provide system-wide stats. **/sys** is organized around the kernel's internal object model - devices, drivers, buses, and kernel subsystems. The key difference: `/proc` is older and somewhat disorganized (it mixes process info with hardware info), while `/sys` follows a clean hierarchy. New kernel features expose their interfaces through `/sys`.
 
@@ -201,7 +201,7 @@ ls -l /proc/1234/fd        # see what files a process has open
 cat /proc/1234/environ     # environment variables (null-separated)
 ```
 
-The **`/sys`** filesystem exposes kernel objects - devices, drivers, and configuration:
+The [**`/sys`**](https://www.kernel.org/doc/html/latest/) filesystem exposes kernel objects - devices, drivers, and configuration:
 
 ```bash
 cat /sys/class/net/eth0/speed          # network interface speed
@@ -215,7 +215,7 @@ Both `/proc` and `/sys` are virtual - they don't take up disk space. They're gen
 
 ## dmesg - Kernel Messages
 
-**`dmesg`** displays kernel ring buffer messages - hardware detection, driver loading, errors, and warnings.
+[**`dmesg`**](https://github.com/util-linux/util-linux) displays kernel ring buffer messages - hardware detection, driver loading, errors, and warnings.
 
 ```bash
 dmesg                      # all kernel messages
@@ -292,6 +292,17 @@ dmesg -T | tail -30
 lsof -p <PID>
 strace -p <PID>   # system calls (careful - high overhead)
 ```
+
+---
+
+## Further Reading
+
+- [procps-ng](https://gitlab.com/procps-ng/procps) - source and docs for free, vmstat, ps, top, and related utilities
+- [util-linux](https://github.com/util-linux/util-linux) - lscpu, dmesg, lsblk, and other system utilities
+- [strace](https://strace.io/) - system call tracer for Linux
+- [lsof](https://github.com/lsof-org/lsof) - list open files utility
+- [Linux Kernel /proc Documentation](https://www.kernel.org/doc/html/latest/) - documentation for /proc and /sys virtual filesystems
+- [Linux man-pages Project](https://man7.org/linux/man-pages/) - comprehensive manual pages for system information commands
 
 ---
 

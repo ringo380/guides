@@ -74,7 +74,7 @@ lsof +L1    # files with zero link count (deleted but still held open)
 
 ## mount
 
-**`mount`** attaches a filesystem to the directory tree.
+[**`mount`**](https://github.com/util-linux/util-linux) attaches a filesystem to the directory tree.
 
 ### Viewing Mounts
 
@@ -168,7 +168,7 @@ mount -a    # mount everything in fstab that isn't already mounted
 
 ## lsblk - Block Devices
 
-**`lsblk`** lists block devices (disks, partitions, loop devices) in a tree format.
+[**`lsblk`**](https://github.com/util-linux/util-linux) lists block devices (disks, partitions, loop devices) in a tree format.
 
 ```bash
 lsblk                    # basic tree view
@@ -195,7 +195,7 @@ sr0     11:0    1  1024M  0 rom
 
 ### fdisk
 
-**`fdisk`** manages MBR partition tables (disks up to 2TB, max 4 primary partitions):
+[**`fdisk`**](https://github.com/util-linux/util-linux) manages MBR partition tables (disks up to 2TB, max 4 primary partitions):
 
 ```bash
 fdisk -l                   # list all partitions on all disks
@@ -216,7 +216,7 @@ Inside `fdisk`:
 
 ### parted
 
-**`parted`** manages GPT partition tables (supports disks larger than 2TB):
+[**`parted`**](https://www.gnu.org/software/parted/) manages GPT partition tables (supports disks larger than 2TB):
 
 ```bash
 parted -l                            # list all partitions
@@ -246,7 +246,7 @@ mkfs.ext4 -L "backups" /dev/sdb1         # set a label
 mkfs.ext4 -m 1 /dev/sdb1                 # reserve only 1% for root (default is 5%)
 ```
 
-**ext4 vs XFS:** **ext4** is the default choice on most Linux distributions. It's well-tested, has excellent tooling (`e2fsck`, `tune2fs`, `resize2fs`), and handles general workloads well. **XFS** excels at handling large files and parallel I/O - it's the default on RHEL/CentOS and a strong choice for database servers, media storage, or any workload with many concurrent large writes. XFS can't be shrunk after creation (only grown), while ext4 can be both grown and shrunk. For most use cases, go with your distribution's default.
+**ext4 vs XFS:** **ext4** is the default choice on most Linux distributions. It's well-tested, has excellent tooling ([`e2fsck`](https://e2fsprogs.sourceforge.net/), `tune2fs`, `resize2fs`), and handles general workloads well. [**XFS**](https://xfs.wiki.kernel.org/) excels at handling large files and parallel I/O - it's the default on RHEL/CentOS and a strong choice for database servers, media storage, or any workload with many concurrent large writes. XFS can't be shrunk after creation (only grown), while ext4 can be both grown and shrunk. For most use cases, go with your distribution's default.
 
 ---
 
@@ -314,6 +314,15 @@ echo 'UUID=your-uuid-here /mnt/data ext4 defaults 0 2' >> /etc/fstab
 mount -a
 df -h /mnt/data
 ```
+
+---
+
+## Further Reading
+
+- [e2fsprogs](https://e2fsprogs.sourceforge.net/) - ext2/ext3/ext4 filesystem utilities including mkfs.ext4, e2fsck, and tune2fs
+- [XFS Wiki](https://xfs.wiki.kernel.org/) - XFS filesystem documentation and administration guides
+- [util-linux](https://github.com/util-linux/util-linux) - collection of system utilities including fdisk, lsblk, mount, and more
+- [Linux Kernel Filesystem Documentation](https://www.kernel.org/doc/html/latest/) - kernel-level filesystem and block device documentation
 
 ---
 

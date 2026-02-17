@@ -590,4 +590,12 @@ Staying fluent in Git and GitHub workflows will make you a stronger collaborator
 - Barrett, D. J. *Linux Pocket Guide*
 - Conway, D. *Object Oriented Perl*
 - Feynman, R. P. *Surely You’re Joking Mr. Feynman!*
-- Langworth, I. \*Perl Testing: A Developer’s
+- Langworth, I. \*Perl Testing: A Developer's
+
+---
+
+## Further Reading
+
+- [Perl Official Documentation](https://perldoc.perl.org/) - comprehensive Perl language reference
+- [CPAN](https://www.cpan.org/) - Comprehensive Perl Archive Network
+- [Perl.org](https://www.perl.org/) - official Perl community site

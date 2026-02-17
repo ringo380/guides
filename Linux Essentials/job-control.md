@@ -136,7 +136,7 @@ When you close a terminal, the shell sends `SIGHUP` to all its child processes, 
 
 ### nohup
 
-**`nohup`** runs a command immune to hangup signals:
+[**`nohup`**](https://www.gnu.org/software/coreutils/manual/) runs a command immune to hangup signals:
 
 ```bash
 nohup long_running_script.sh &
@@ -166,7 +166,7 @@ The key difference: **`nohup`** is preventive - you use it *before* starting a p
 
 ### ps
 
-**`ps`** shows a snapshot of current processes:
+[**`ps`**](https://gitlab.com/procps-ng/procps) shows a snapshot of current processes:
 
 ```bash
 ps                     # processes in current terminal
@@ -211,7 +211,7 @@ The **Z state** (zombie) means the process has finished executing but its parent
 
 ### top and htop
 
-**`top`** shows a live, updating view of processes:
+[**`top`**](https://gitlab.com/procps-ng/procps) shows a live, updating view of processes:
 
 ```bash
 top
@@ -228,7 +228,7 @@ Useful keystrokes inside `top`:
 | `1` | Toggle per-CPU display |
 | `c` | Show full command line |
 
-**`htop`** is an improved version of `top` with color, mouse support, and easier process management. It's not installed by default but is available in most package managers:
+[**`htop`**](https://htop.dev/) is an improved version of `top` with color, mouse support, and easier process management. It's not installed by default but is available in most package managers:
 
 ```bash
 sudo apt install htop    # Debian/Ubuntu
@@ -244,7 +244,7 @@ Terminal multiplexers let you create multiple virtual terminals inside a single 
 
 ### screen
 
-**`screen`** is the older, widely available multiplexer.
+[**`screen`**](https://www.gnu.org/software/screen/manual/) is the older, widely available multiplexer.
 
 ```bash
 screen                     # start a new session
@@ -268,7 +268,7 @@ Key bindings inside screen (prefixed with `Ctrl-a`):
 
 ### tmux
 
-**`tmux`** is the more modern alternative with better scripting support and split panes.
+[**`tmux`**](https://github.com/tmux/tmux/wiki) is the more modern alternative with better scripting support and split panes.
 
 ```bash
 tmux                       # start a new session
@@ -313,6 +313,17 @@ tmux attach -t deploy
 This is especially useful over SSH connections. If your connection drops, the tmux session keeps running. Just SSH back in and reattach.
 
 **Which to choose?** If you're setting up a new system, use **tmux** - it has better split-pane support, more intuitive configuration, and a scriptable command interface. Use **screen** if it's already installed on a server you're working with and you don't want to (or can't) install additional software. screen is nearly universal on older systems, while tmux may not be pre-installed. The core workflow (start a session, detach, reattach later) is the same in both.
+
+---
+
+## Further Reading
+
+- [tmux Wiki](https://github.com/tmux/tmux/wiki) - terminal multiplexer documentation and FAQ
+- [GNU Screen Manual](https://www.gnu.org/software/screen/manual/) - official Screen user manual
+- [procps-ng](https://gitlab.com/procps-ng/procps) - source and docs for ps, top, vmstat, free, and related utilities
+- [htop](https://htop.dev/) - interactive process viewer
+- [GNU Coreutils - nohup](https://www.gnu.org/software/coreutils/manual/) - run commands immune to hangups
+- [Linux man-pages - signal(7)](https://man7.org/linux/man-pages/) - comprehensive signal reference
 
 ---
 

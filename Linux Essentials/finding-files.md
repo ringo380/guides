@@ -1,6 +1,6 @@
 # Finding Files
 
-The `find` command searches directory trees for files matching specified criteria. Combined with `xargs`, it forms a powerful pattern for batch operations on files.
+The [`find`](https://www.gnu.org/software/findutils/manual/) command searches directory trees for files matching specified criteria. Combined with `xargs`, it forms a powerful pattern for batch operations on files.
 
 ---
 
@@ -174,7 +174,7 @@ find / -perm -4000 -type f 2>/dev/null
 
 ## xargs
 
-**`xargs`** reads items from STDIN and passes them as arguments to a command. It bridges the gap between commands that produce output (like `find`) and commands that expect arguments.
+[**`xargs`**](https://www.gnu.org/software/findutils/manual/) reads items from STDIN and passes them as arguments to a command. It bridges the gap between commands that produce output (like `find`) and commands that expect arguments.
 
 ### Basic Usage
 
@@ -267,6 +267,13 @@ Both can run commands on found files. The differences:
 | Speed | Slowest | Fast | Fast |
 
 For most tasks, `find -exec {} +` is the simplest safe option. Use `xargs` when you need parallel execution or more control over argument handling.
+
+---
+
+## Further Reading
+
+- [GNU Findutils Manual](https://www.gnu.org/software/findutils/manual/) - official documentation for find, xargs, and locate
+- [Linux man-pages Project](https://man7.org/linux/man-pages/) - comprehensive manual pages including find(1) and xargs(1)
 
 ---
 

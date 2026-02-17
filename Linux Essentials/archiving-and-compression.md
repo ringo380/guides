@@ -6,7 +6,7 @@
 
 ## tar
 
-**`tar`** (tape archive) creates, extracts, and lists archives.
+[**`tar`**](https://www.gnu.org/software/tar/manual/) (tape archive) creates, extracts, and lists archives.
 
 ### Creating Archives
 
@@ -86,7 +86,7 @@ tar -df archive.tar
 
 ## gzip / gunzip
 
-**`gzip`** compresses individual files. It replaces the original file with a `.gz` version.
+[**`gzip`**](https://www.gnu.org/software/gzip/manual/) compresses individual files. It replaces the original file with a `.gz` version.
 
 ```bash
 gzip file.txt                   # creates file.txt.gz, removes file.txt
@@ -117,7 +117,7 @@ Also available: `zless`, `zgrep` for working with gzip files directly.
 
 ## bzip2 / bunzip2
 
-**`bzip2`** compresses with a better ratio than gzip but is slower.
+[**`bzip2`**](https://sourceware.org/bzip2/) compresses with a better ratio than gzip but is slower.
 
 ```bash
 bzip2 file.txt                  # creates file.txt.bz2
@@ -141,7 +141,7 @@ bzcat file.txt.bz2
 
 ## xz / unxz
 
-**`xz`** provides the best compression ratio of the three but is the slowest.
+[**`xz`**](https://tukaani.org/xz/) provides the best compression ratio of the three but is the slowest.
 
 ```bash
 xz file.txt                    # creates file.txt.xz
@@ -167,7 +167,7 @@ xzcat file.txt.xz
 
 ## zip / unzip
 
-**`zip`** creates archives compatible with Windows and macOS. It handles both archiving and compression in one step.
+[**`zip`**](https://infozip.sourceforge.net/) creates archives compatible with Windows and macOS. It handles both archiving and compression in one step.
 
 ```bash
 zip archive.zip file1.txt file2.txt        # create zip with files
@@ -221,6 +221,16 @@ Approximate results for a typical 100MB text file (actual results vary with cont
 | zip | ~30MB (~70% reduction) | ~2 seconds | ~1 second |
 
 Notable: xz decompresses much faster than it compresses, making it a good choice when you compress once and decompress many times (like software distribution). Binary files and already-compressed data (images, video) will see much smaller reductions.
+
+---
+
+## Further Reading
+
+- [GNU Tar Manual](https://www.gnu.org/software/tar/manual/) - archiving utility documentation
+- [GNU Gzip Manual](https://www.gnu.org/software/gzip/manual/) - compression utility reference
+- [bzip2](https://sourceware.org/bzip2/) - block-sorting file compressor
+- [XZ Utils](https://tukaani.org/xz/) - LZMA/LZMA2 compression tools
+- [Info-ZIP](https://infozip.sourceforge.net/) - zip and unzip utilities
 
 ---
 

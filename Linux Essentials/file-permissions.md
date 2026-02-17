@@ -46,7 +46,7 @@ The remaining columns show: link count, owner, group, size, modification time, a
 
 ---
 
-## chmod - Changing Permissions
+## [chmod](https://www.gnu.org/software/coreutils/manual/) - Changing Permissions
 
 ### Symbolic Mode
 
@@ -118,7 +118,7 @@ find /var/www -type f -exec chmod 644 {} +
 
 ---
 
-## chown and chgrp
+## [chown](https://www.gnu.org/software/coreutils/manual/) and chgrp
 
 ### chown - Change Owner
 
@@ -297,6 +297,14 @@ find / -type f -perm -4000 2>/dev/null
 # Find files not owned by any user
 find / -nouser 2>/dev/null
 ```
+
+---
+
+## Further Reading
+
+- [GNU Coreutils Manual](https://www.gnu.org/software/coreutils/manual/) - official documentation for chmod, chown, and other file utilities
+- [POSIX File Permissions](https://pubs.opengroup.org/onlinepubs/9799919799/) - portable specification for file permission semantics
+- [Linux man-pages Project](https://man7.org/linux/man-pages/) - manual pages for chmod(1), chown(1), and related system calls
 
 ---
 

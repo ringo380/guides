@@ -56,7 +56,7 @@ tracepath google.com
 
 ### mtr
 
-**`mtr`** combines `ping` and `traceroute` into a continuous display:
+[**`mtr`**](https://www.bitwizard.nl/mtr/) combines `ping` and `traceroute` into a continuous display:
 
 ```bash
 mtr google.com                # live updating view
@@ -72,7 +72,7 @@ mtr -r -c 100 google.com     # report mode: send 100 packets and print summary
 
 ### curl
 
-**`curl`** transfers data to or from a server. It supports HTTP, HTTPS, FTP, and many other protocols.
+[**`curl`**](https://curl.se/docs/) transfers data to or from a server. It supports HTTP, HTTPS, FTP, and many other protocols.
 
 **Basic requests:**
 
@@ -128,7 +128,7 @@ curl -C - -O https://example.com/large.iso            # resume interrupted downl
 
 ### wget
 
-**`wget`** is designed for downloading files, including recursive downloads.
+[**`wget`**](https://www.gnu.org/software/wget/manual/) is designed for downloading files, including recursive downloads.
 
 ```bash
 wget https://example.com/file.tar.gz           # download a file
@@ -153,7 +153,7 @@ wget -r --no-parent https://example.com/docs/   # don't go above starting direct
 
 ### ssh
 
-**`ssh`** (Secure Shell) provides encrypted remote access to other machines.
+[**`ssh`**](https://www.openssh.com/manual.html) (Secure Shell) provides encrypted remote access to other machines.
 
 **Basic connection:**
 
@@ -241,7 +241,7 @@ scp -P 2222 file.txt user@host:/path/         # non-standard port
 
 ### rsync
 
-**`rsync`** is the preferred tool for copying files - it only transfers what's changed.
+[**`rsync`**](https://rsync.samba.org/documentation.html) is the preferred tool for copying files - it only transfers what's changed.
 
 ```bash
 rsync -av source/ dest/                                # local sync
@@ -286,7 +286,7 @@ When in doubt, use a trailing slash on the source and make sure the destination 
 
 ### ss
 
-**`ss`** (socket statistics) shows network connections. It replaces the older `netstat` command.
+[**`ss`**](https://wiki.linuxfoundation.org/networking/iproute2) (socket statistics) shows network connections. It replaces the older `netstat` command.
 
 ```bash
 ss -tlnp               # TCP listening sockets with process info
@@ -328,7 +328,7 @@ ss -tn dst :443           # all established connections to remote port 443
 
 ### ip
 
-The **`ip`** command manages network interfaces, addresses, and routes. It replaces the older `ifconfig` and `route` commands.
+The [**`ip`**](https://wiki.linuxfoundation.org/networking/iproute2) command manages network interfaces, addresses, and routes. It replaces the older `ifconfig` and `route` commands.
 
 **Addresses:**
 
@@ -379,7 +379,7 @@ netstat -rn                # equivalent to ip route
 
 ### dig
 
-**`dig`** queries DNS servers for records. It's the most informative DNS lookup tool.
+[**`dig`**](https://www.isc.org/bind/) queries DNS servers for records. It's the most informative DNS lookup tool.
 
 ```bash
 dig example.com                     # default A record query
@@ -421,7 +421,7 @@ hostnamectl set-hostname server01    # set hostname (persistent)
 
 ### nc (netcat)
 
-**`nc`** (netcat) is a versatile networking utility - a "Swiss army knife" for TCP/UDP connections.
+[**`nc`**](https://man7.org/linux/man-pages/) (netcat) is a versatile networking utility - a "Swiss army knife" for TCP/UDP connections.
 
 **Port testing:**
 
@@ -450,6 +450,18 @@ nc -l 9999 > received_file.txt
 # On sending end
 nc hostname 9999 < file_to_send.txt
 ```
+
+---
+
+## Further Reading
+
+- [curl Documentation](https://curl.se/docs/) - comprehensive guide to curl usage and options
+- [OpenSSH Manual Pages](https://www.openssh.com/manual.html) - official SSH client and server documentation
+- [rsync Documentation](https://rsync.samba.org/documentation.html) - file synchronization reference
+- [GNU Wget Manual](https://www.gnu.org/software/wget/manual/) - non-interactive network downloader
+- [iproute2](https://wiki.linuxfoundation.org/networking/iproute2) - modern Linux networking utilities (ss, ip)
+- [ISC BIND / dig](https://www.isc.org/bind/) - DNS lookup utility documentation
+- [mtr](https://www.bitwizard.nl/mtr/) - network diagnostic tool combining ping and traceroute
 
 ---
 

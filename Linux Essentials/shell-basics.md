@@ -17,13 +17,13 @@ There are several shells in common use:
 | `sh` | `/bin/sh` | POSIX-compliant, minimal |
 | `dash` | `/bin/dash` | Lightweight, used as `/bin/sh` on Debian/Ubuntu |
 
-**bash** is the default on most Linux servers and the shell you'll encounter in nearly every tutorial and sysadmin guide. If you're SSH'd into a Linux box, you're probably running bash.
+[**bash**](https://www.gnu.org/software/bash/manual/) is the default on most Linux servers and the shell you'll encounter in nearly every tutorial and sysadmin guide. If you're SSH'd into a Linux box, you're probably running bash.
 
-**zsh** has better interactive features like smarter tab completion and spelling correction. macOS switched to it as the default because of bash's licensing - newer bash versions are GPLv3, which Apple avoids.
+[**zsh**](https://www.zsh.org/) has better interactive features like smarter tab completion and spelling correction. macOS switched to it as the default because of bash's licensing - newer bash versions are GPLv3, which Apple avoids.
 
-**dash** exists for speed. Debian and Ubuntu use it as `/bin/sh` for system boot scripts because it starts and runs faster than bash. You won't use it interactively, but your system runs hundreds of dash scripts during boot.
+[**dash**](http://gondor.apana.org.au/~herbert/dash/) exists for speed. Debian and Ubuntu use it as `/bin/sh` for system boot scripts because it starts and runs faster than bash. You won't use it interactively, but your system runs hundreds of dash scripts during boot.
 
-**sh** is the **POSIX** compatibility baseline. Scripts written for `sh` are portable across Unix-like systems. On modern Linux, `/bin/sh` is usually a symlink to dash or bash.
+**sh** is the [**POSIX**](https://pubs.opengroup.org/onlinepubs/9799919799/) compatibility baseline. Scripts written for `sh` are portable across Unix-like systems. On modern Linux, `/bin/sh` is usually a symlink to dash or bash.
 
 Check which shell you're currently running:
 
@@ -535,6 +535,15 @@ cp !(*.log|*.tmp) /backup/    # copy everything except logs and temp files
 ```
 
 Without extglob, you'd need `find` with `-not` flags to achieve the same thing.
+
+---
+
+## Further Reading
+
+- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/) - comprehensive guide to bash syntax, builtins, and behavior
+- [Zsh Documentation](https://www.zsh.org/) - official zsh project and manual
+- [POSIX Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/) - the portable shell specification
+- [dash](http://gondor.apana.org.au/~herbert/dash/) - Debian Almquist Shell project page
 
 ---
 

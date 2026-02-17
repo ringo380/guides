@@ -4,7 +4,7 @@ The perspective that you pproach git is crucial to your ability to fully compreh
 
 ## Overview
 
-Git is an incredible - if not often flawed - tool. Originally planned as a file system, its purpose and usability as a version control system became quickly apparent, and now we have one of the most popular and efficient development tools in use today. The beauty of it is actually in its simplicity, however, though this may not always feel apparent. I hope, thorugh this guide, you can gain an understanding that opens this simplicity up to you, allowing you to comprehend its use and its value inherently, while acknowledging where its flaws may present themselves.
+[**Git**](https://git-scm.com/doc) is an incredible - if not often flawed - tool. Originally planned as a file system, its purpose and usability as a version control system became quickly apparent, and now we have one of the most popular and efficient development tools in use today. The beauty of it is actually in its simplicity, however, though this may not always feel apparent. I hope, thorugh this guide, you can gain an understanding that opens this simplicity up to you, allowing you to comprehend its use and its value inherently, while acknowledging where its flaws may present themselves.
 
 A brief glossary of some terms you should ensure that you know before going further:
     
@@ -32,3 +32,10 @@ gitGraph
    commit id: "Index"
    commit id: "Repository"
 ```
+
+---
+
+## Further Reading
+
+- [Official Git Documentation](https://git-scm.com/doc) - reference manual, videos, and external links
+- [Pro Git Book](https://git-scm.com/book/en/v2) - comprehensive free book covering Git fundamentals to advanced topics

@@ -1,6 +1,6 @@
 # Scripting Fundamentals
 
-Bash scripts automate sequences of commands. This guide covers the control structures, functions, and error handling patterns that form the backbone of reliable shell scripts.
+[Bash](https://www.gnu.org/software/bash/manual/) scripts automate sequences of commands. This guide covers the control structures, functions, and error handling patterns that form the backbone of reliable shell scripts.
 
 ---
 
@@ -536,6 +536,14 @@ This script:
 - Validates arguments
 - Uses `local` for all function variables
 - Wraps logic in a `main` function
+
+---
+
+## Further Reading
+
+- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/) - official bash documentation covering scripting syntax, conditionals, loops, and builtins
+- [POSIX Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/) - the portable shell scripting specification
+- [ShellCheck](https://www.shellcheck.net/) - static analysis tool for shell scripts
 
 ---
 

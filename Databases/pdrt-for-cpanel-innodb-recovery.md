@@ -576,3 +576,10 @@ Of course, failing all of the above, there are manual methods of recovery withou
 * Recovering single InnoDB table from a backup: http://www.mysqlperformanceblog.com/2012/01/25/how-to-recover-a-single-innodb-table-from-a-full-backup/
 * Great explanation of some manual recovery options: http://dba.stackexchange.com/questions/42495/how-to-recover-restore-corrupted-innodb-data-files
 * One of my favorites - a flowchart providing in-depth insight on how InnoDB really operates behind the scenes: http://i.stack.imgur.com/9EcRi.jpg
+
+---
+
+## Further Reading
+
+- [MySQL Documentation](https://dev.mysql.com/doc/) - official MySQL reference manual
+- [Percona Software](https://www.percona.com/software/mysql-database) - Percona tools for MySQL database recovery and management

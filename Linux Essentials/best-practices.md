@@ -6,7 +6,7 @@ A collection of conventions and patterns that make shell scripts more reliable, 
 
 ## Start Every Script Right
 
-Every bash script should begin with:
+Every [**`bash`**](https://www.gnu.org/software/bash/manual/) script should begin with:
 
 ```bash
 #!/bin/bash
@@ -98,7 +98,7 @@ Exceptions where quoting is unnecessary:
 [ "$a" -gt 0 ] && [ "$b" -gt 0 ]  # clunky equivalent with [ ]
 ```
 
-If you're writing a bash script (not a POSIX sh script), always use `[[ ]]`.
+If you're writing a bash script (not a [POSIX](https://pubs.opengroup.org/onlinepubs/9799919799/) sh script), always use `[[ ]]`.
 
 ---
 
@@ -140,7 +140,7 @@ trap 'rm -f "$tmpfile"' EXIT
 
 ## Use shellcheck
 
-**`shellcheck`** is a static analysis tool that catches common mistakes in shell scripts:
+[**`shellcheck`**](https://www.shellcheck.net/) is a static analysis tool that catches common mistakes in shell scripts:
 
 ```bash
 shellcheck myscript.sh
@@ -395,6 +395,16 @@ main() {
 # "$@" passes all command-line arguments to main, preserving quoting.
 main "$@"
 ```
+
+---
+
+## Further Reading
+
+- [ShellCheck Wiki](https://github.com/koalaman/shellcheck/wiki) - explanations for every ShellCheck warning and suggestion
+- [ShellCheck](https://www.shellcheck.net/) - online shell script analysis tool
+- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/) - official bash documentation
+- [POSIX Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/) - portable shell scripting specification
+- [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html) - widely-referenced style conventions for shell scripts
 
 ---
 
