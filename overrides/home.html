@@ -1,0 +1,49 @@
+{% extends "main.html" %}
+
+{% block tabs %}
+  {{ super() }}
+  <section class="tx-container">
+    <div class="md-grid md-typeset">
+      <div class="tx-hero">
+        <h1>The Runbook</h1>
+        <p>Practical technical guides for practitioners</p>
+        <div>
+          <a href="{{ 'Linux Essentials/' | url }}" class="md-button md-button--primary">
+            Get Started
+          </a>
+          <a href="{{ 'Linux Essentials/shell-basics/' | url }}" class="md-button">
+            Shell Basics
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block content %}
+  <div class="md-typeset">
+    <h2>Topics</h2>
+    <div class="tx-topics">
+      <a href="{{ 'Linux Essentials/' | url }}">
+        <strong>Linux Essentials</strong>
+        <span>12 guides from shell basics to scripting best practices</span>
+      </a>
+      <a href="{{ 'DNS Administration/essential-dns-administration/' | url }}">
+        <strong>DNS Administration</strong>
+        <span>Essential DNS management for sysadmins</span>
+      </a>
+      <a href="{{ 'Git/git-getting-through-it/' | url }}">
+        <strong>Git</strong>
+        <span>Fundamentals and concepts for getting through it</span>
+      </a>
+      <a href="{{ 'Databases/pdrt-for-cpanel-innodb-recovery/' | url }}">
+        <strong>Databases</strong>
+        <span>InnoDB recovery with Percona Data Recovery Tool</span>
+      </a>
+      <a href="{{ 'Dev Zero/Perl/perl_dev0_introduction/' | url }}">
+        <strong>Perl</strong>
+        <span>Developer introduction and learning roadmap</span>
+      </a>
+    </div>
+  </div>
+{% endblock %}

@@ -1,6 +1,6 @@
-site_name: Guides
+site_name: The Runbook
 site_url: https://ringo380.github.io/guides/
-site_description: Open-access technical guides on Linux, DNS, Git, databases, and development
+site_description: Practical technical guides on Linux, DNS, Git, databases, and development
 
 # docs_dir is a symlink tree created at build time (see .github/workflows/deploy.yml).
 # For local dev: ./setup-docs.sh && mkdocs serve
@@ -8,18 +8,21 @@ docs_dir: docs
 
 theme:
   name: material
+  custom_dir: overrides
+  logo: assets/images/logo.svg
+  favicon: assets/images/favicon.svg
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: indigo
+      primary: teal
+      accent: amber
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: teal
+      accent: amber
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -41,6 +44,11 @@ markdown_extensions:
   - tables
   - fenced_code
   - codehilite
+  - attr_list
+  - md_in_html
+
+extra_css:
+  - assets/stylesheets/extra.css
 
 nav:
   - Home: README.md

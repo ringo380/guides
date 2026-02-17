@@ -1,2 +1,18 @@
-# guides
-Various open-access and text-based guides that were created for varying purposes, now available here for those that may benefit from them, though be aware this will include outdated information that should be verified.
+---
+template: home.html
+hide:
+  - navigation
+  - toc
+---
+
+# The Runbook
+
+Practical, open-access technical guides covering Linux, DNS, Git, databases, and development. Created for practitioners - be aware some content may be outdated and should be verified.
+
+## Topics
+
+- **[Linux Essentials](Linux Essentials/README.md)** - 12 guides from shell basics to scripting best practices
+- **[DNS Administration](DNS Administration/essential-dns-administration.md)** - Essential DNS management for sysadmins
+- **[Git](Git/git-getting-through-it.md)** - Fundamentals and concepts
+- **[Databases](Databases/pdrt-for-cpanel-innodb-recovery.md)** - InnoDB recovery with Percona Data Recovery Tool
+- **[Perl](Dev Zero/Perl/perl_dev0_introduction.md)** - Developer introduction and learning roadmap

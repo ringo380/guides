@@ -1,0 +1,87 @@
+/* Hero section - bold & technical */
+.tx-container {
+  padding: 4rem 0;
+  background: linear-gradient(135deg, #00796b, #004d40);
+}
+
+[data-md-color-scheme="slate"] .tx-container {
+  background: linear-gradient(135deg, #263238, #37474f);
+}
+
+.tx-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.tx-hero h1 {
+  margin-bottom: 0.5rem;
+  color: white;
+  font-weight: 700;
+  font-size: 2.8rem;
+  letter-spacing: -0.02em;
+}
+
+.tx-hero p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.tx-hero .md-button {
+  margin: 0.25rem 0.5rem;
+  color: white;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.tx-hero .md-button--primary {
+  background-color: #ffb300;
+  border-color: #ffb300;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.tx-hero .md-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  transition: all 0.15s ease;
+}
+
+/* Topic cards on landing page */
+.tx-topics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.tx-topics a {
+  display: block;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--md-default-fg-color);
+  transition: all 0.15s ease;
+}
+
+.tx-topics a:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.tx-topics a strong {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 0.25rem;
+  color: var(--md-typeset-a-color);
+}
+
+.tx-topics a span {
+  font-size: 0.85rem;
+  color: var(--md-default-fg-color--light);
+}
