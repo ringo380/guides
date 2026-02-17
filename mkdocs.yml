@@ -30,6 +30,9 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - navigation.instant
+    - navigation.tracking
+    - navigation.indexes
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -38,21 +41,39 @@ plugins:
   - search
   - open-in-new-tab
 
+hooks:
+  - hooks/interactive.py
+
 markdown_extensions:
   - toc:
       permalink: true
   - tables
+  - admonition
+  - pymdownx.details
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - codehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.mark
+  - pymdownx.critic
+  - pymdownx.keys
   - attr_list
   - md_in_html
 
 extra_css:
   - assets/stylesheets/extra.css
+  - assets/stylesheets/interactive.css
+
+extra_javascript:
+  - assets/javascripts/interactive.js
 
 nav:
   - Home: README.md

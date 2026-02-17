@@ -40,6 +40,41 @@ To see all available shells on your system:
 cat /etc/shells
 ```
 
+```terminal
+title: Identifying Your Shell
+steps:
+  - command: "echo $SHELL"
+    output: "/bin/bash"
+    narration: "$SHELL shows your default login shell - the one assigned in /etc/passwd."
+  - command: "echo $0"
+    output: "-bash"
+    narration: "$0 shows the shell actually running right now. The leading dash means it's a login shell."
+  - command: "cat /etc/shells"
+    output: |
+      /bin/sh
+      /bin/bash
+      /usr/bin/bash
+      /bin/zsh
+      /usr/bin/zsh
+      /bin/dash
+    narration: "These are all the shells installed and registered on this system. Any of them can be set as a user's login shell."
+```
+
+```quiz
+question: What does the $SHELL variable tell you?
+type: multiple-choice
+options:
+  - text: "The shell that is currently executing your commands"
+    feedback: "That's $0 - which shows the currently running shell."
+  - text: "Your default login shell as set in /etc/passwd"
+    correct: true
+    feedback: "Correct! $SHELL is set at login time from /etc/passwd and doesn't change if you switch shells."
+  - text: "The most recently installed shell on the system"
+    feedback: "$SHELL is per-user and comes from /etc/passwd, not from installation order."
+  - text: "The fastest shell available on the system"
+    feedback: "$SHELL has nothing to do with performance - it's your configured login shell."
+```
+
 ---
 
 ## Login vs Non-Login Shells
@@ -57,6 +92,24 @@ shopt -q login_shell && echo "login" || echo "non-login"
 ```
 
 An **interactive** shell is one where you type commands at a prompt. A **non-interactive** shell runs a script file without user input.
+
+!!! tip "Quick mental model"
+    Think of it as a 2x2 grid: shells are **login or non-login**, and independently **interactive or non-interactive**. SSH gives you a login interactive shell. Running `./script.sh` gives you a non-login non-interactive shell. The startup files loaded depend on both dimensions.
+
+```quiz
+question: Which of the following gives you a login shell?
+type: multiple-choice
+options:
+  - text: "Opening a new terminal tab in your desktop environment"
+    feedback: "Terminal tabs typically start non-login shells. They inherit the login shell's environment from the original session."
+  - text: "SSH'ing into a remote server"
+    correct: true
+    feedback: "Correct! SSH starts a login shell, which reads /etc/profile and ~/.bash_profile (or equivalent)."
+  - text: "Running 'bash' from an existing shell"
+    feedback: "Running 'bash' without the -l flag starts a non-login shell. Use 'bash -l' or 'bash --login' for a login shell."
+  - text: "Running a bash script with ./script.sh"
+    feedback: "Scripts run in a non-interactive, non-login subshell. They don't read any startup files unless explicitly sourced."
+```
 
 ---
 
@@ -96,6 +149,64 @@ Zsh has its own load order:
 3. `/etc/zshrc` then `~/.zshrc` (interactive shells)
 4. `/etc/zlogin` then `~/.zlogin` (login shells)
 
+!!! warning "Common gotcha"
+    If you put aliases in `~/.bash_profile` but not `~/.bashrc`, they'll be available in SSH sessions but missing when you open a terminal tab on a desktop. Always put interactive settings (aliases, prompt, functions) in `~/.bashrc` and source it from `~/.bash_profile`.
+
+```code-walkthrough
+language: bash
+title: Understanding .bash_profile
+code: |
+  # ~/.bash_profile
+  if [ -f ~/.bashrc ]; then
+      source ~/.bashrc
+  fi
+  export PATH="$HOME/bin:$PATH"
+  export EDITOR="vim"
+annotations:
+  - line: 1
+    text: "This comment indicates the file location. bash_profile runs only for login shells."
+  - line: 2
+    text: "Check if ~/.bashrc exists before trying to source it - prevents errors on minimal systems."
+  - line: 3
+    text: "Source bashrc so login shells get the same aliases, prompt, and functions as non-login shells."
+  - line: 5
+    text: "Add ~/bin to PATH. This goes in bash_profile (not bashrc) because it only needs to run once per session."
+  - line: 6
+    text: "Set the default editor. Environment variables that child processes need belong in bash_profile."
+```
+
+```exercise
+title: Find Your Shell Configuration
+difficulty: beginner
+scenario: |
+  You've logged into a new Linux server via SSH. You need to figure out which
+  shell configuration files exist on this system and what's in them.
+
+  Determine: Which shell are you running? Which config files are present
+  in your home directory? Is `.bashrc` being sourced from `.bash_profile`?
+hints:
+  - "Use `echo $0` to check your current shell, and `echo $SHELL` for your login shell"
+  - "List hidden files with `ls -la ~` to see which dotfiles exist"
+  - "Look inside `.bash_profile` with `cat ~/.bash_profile` to see if it sources `.bashrc`"
+solution: |
+  ```bash
+  # Check your shell
+  echo $0          # Current shell
+  echo $SHELL      # Login shell
+
+  # Find config files
+  ls -la ~ | grep -E '^\.'
+
+  # Check if bash_profile sources bashrc
+  cat ~/.bash_profile
+  # Look for: source ~/.bashrc  or  . ~/.bashrc
+  ```
+
+  If `.bash_profile` doesn't source `.bashrc`, your login shell won't have
+  aliases and prompt customizations defined in `.bashrc`. Add the sourcing
+  pattern shown in the Configuration File Load Order section.
+```
+
 ---
 
 ## Sourcing Files
@@ -120,6 +231,21 @@ echo $VAR    # empty
 # This sets VAR in the current shell
 source <(echo 'VAR=hello')
 echo $VAR    # hello
+```
+
+```quiz
+question: You added a new alias to ~/.bashrc. What's the fastest way to use it without logging out?
+type: multiple-choice
+options:
+  - text: "Run: source ~/.bashrc"
+    correct: true
+    feedback: "Correct! Sourcing re-reads the file in your current shell, making the new alias immediately available."
+  - text: "Run: bash ~/.bashrc"
+    feedback: "This runs bashrc in a subshell. The alias would be set in that subshell, then lost when it exits."
+  - text: "Run: exec ~/.bashrc"
+    feedback: "exec replaces the current process. Running it on a config file would try to execute it as a standalone script, not source it."
+  - text: "Close and reopen the terminal"
+    feedback: "This works but it's slow. Sourcing the file is instant and doesn't lose your current working directory or history."
 ```
 
 ---
@@ -151,6 +277,9 @@ export PATH="$PATH:$HOME/bin"
 ```
 
 Put `PATH` modifications in `~/.bashrc` or `~/.bash_profile` to make them permanent.
+
+!!! note "Prepend vs Append"
+    Prepending puts your directory first, so your version of a command wins over the system version. Appending puts it last, so system commands take priority. Prepend when you want to override system tools (e.g., a newer version of `git`). Append when you're adding new commands that don't conflict.
 
 ---
 
@@ -188,6 +317,21 @@ This is the preferred method for scripts because it works across shells and hand
 if command -v docker &>/dev/null; then
     echo "Docker is installed"
 fi
+```
+
+```quiz
+question: "Which command should you use in a portable shell script to check if a program is installed?"
+type: multiple-choice
+options:
+  - text: "which"
+    feedback: "which only finds external commands and behaves differently across systems. Some versions print errors to stderr, others don't."
+  - text: "type"
+    feedback: "type works well in bash but its output format varies between shells, making it harder to parse in scripts."
+  - text: "command -v"
+    correct: true
+    feedback: "Correct! command -v is POSIX-specified, works across all shells, finds builtins and externals, and exits silently if not found."
+  - text: "whereis"
+    feedback: "whereis searches broader locations (man pages, source) and isn't POSIX-standard. It's useful for exploration but not for scripts."
 ```
 
 ---
@@ -257,6 +401,24 @@ echo "$fruits"       # empty - shell looks for variable 'fruits'
 echo "${fruit}s"     # apples
 ```
 
+```terminal
+title: Variables in Action
+steps:
+  - command: "greeting='hello world'"
+    narration: "Set a shell variable. No spaces around the = sign, and quote values with spaces."
+  - command: "echo $greeting"
+    output: "hello world"
+    narration: "The variable exists in this shell session."
+  - command: "bash -c 'echo $greeting'"
+    output: ""
+    narration: "Empty! Shell variables aren't visible to child processes. The subshell can't see it."
+  - command: "export greeting"
+    narration: "Export promotes the shell variable to an environment variable."
+  - command: "bash -c 'echo $greeting'"
+    output: "hello world"
+    narration: "Now the child process can see it. Export makes variables available to subshells and child programs."
+```
+
 ---
 
 ## Quoting
@@ -297,6 +459,9 @@ cat $file        # tries to open 'my' and 'document.txt' separately
 cat "$file"      # opens 'my document.txt' correctly
 ```
 
+!!! danger "Always quote your variables"
+    Unquoted variables are the #1 source of subtle shell bugs. When `$file` contains spaces, `cat $file` silently does the wrong thing. Always use `"$file"` unless you specifically need word splitting.
+
 ### Escaping with Backslash
 
 A **backslash** (`\`) escapes a single character, removing its special meaning:
@@ -329,6 +494,21 @@ Always reset `IFS` after changing it, or set it only in a subshell:
 
 ```bash
 (IFS=":"; for item in $data; do echo "$item"; done)
+```
+
+```quiz
+question: "What does echo '$HOME' print?"
+type: multiple-choice
+options:
+  - text: "Your home directory path (e.g., /home/ryan)"
+    feedback: "That's what double quotes would give you. Single quotes prevent all expansion."
+  - text: "Literally: $HOME"
+    correct: true
+    feedback: "Correct! Single quotes preserve everything literally. No variable expansion, no command substitution, no escaping."
+  - text: "An error because $HOME isn't defined"
+    feedback: "$HOME is almost always defined, but that's not the issue here. Single quotes prevent expansion entirely."
+  - text: "Nothing (empty output)"
+    feedback: "Single quotes don't suppress output - they preserve the literal text, including the $ sign."
 ```
 
 ---
@@ -535,6 +715,33 @@ cp !(*.log|*.tmp) /backup/    # copy everything except logs and temp files
 ```
 
 Without extglob, you'd need `find` with `-not` flags to achieve the same thing.
+
+```exercise
+title: Expansion Prediction Challenge
+difficulty: intermediate
+scenario: |
+  Without running these commands, predict what each one will output.
+  Then check your answers by running them in a terminal.
+
+  1. `echo {web,api,db}-server-{01..03}`
+  2. `file="backup.2024.tar.gz"; echo ${file%%.*}`
+  3. `echo $(( 2 ** 8 ))`
+  4. `name="hello"; echo "${name:1:3}"`
+hints:
+  - "Brace expansion generates all combinations: {a,b}-{1,2} becomes a-1 a-2 b-1 b-2"
+  - "%% removes the longest match from the end. With .*, it strips from the first dot onward"
+  - "** is exponentiation. 2^8 = 256"
+  - "${name:1:3} extracts 3 characters starting at position 1 (0-indexed)"
+solution: |
+  1. `web-server-01 web-server-02 web-server-03 api-server-01 api-server-02 api-server-03 db-server-01 db-server-02 db-server-03`
+  2. `backup` (removes everything from the first dot)
+  3. `256`
+  4. `ell` (positions 1, 2, 3 of "hello")
+
+  The key insight is knowing the order of operations. Brace expansion happens first
+  (before variable expansion), which is why `{$a,$b}` doesn't work the way you might
+  expect - the braces are processed before `$a` and `$b` are expanded.
+```
 
 ---
 
