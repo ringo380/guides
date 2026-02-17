@@ -1,271 +1,57 @@
 # Linux CLI Essentials
 
-## Introduction
+A comprehensive guide to working effectively on the Linux command line. These guides take you from "I can type commands" to understanding how the shell actually works and using it productively.
 
-This guide introduces key concepts necessary for complex shell scripting behavior, including streams, redirection, pipelines, subshells, and process substitution. These are fundamental to shell operation in Unix-like systems.
-
----
-
-## Table of Contents
-
-- [Streams](#streams)
-  - [Standard Streams](#standard-streams)
-- [Redirection](#redirection)
-  - [Basic Redirection](#basic-redirection)
-  - [Appending Output](#appending-output)
-  - [Redirecting Both STDOUT and STDERR](#redirecting-both-stdout-and-stderr)
-- [Here Documents](#here-documents)
-- [Pipelines](#pipelines)
-- [Subshells](#subshells)
-- [Process Substitution](#process-substitution)
-- [Best Practices](#best-practices)
-- [Finding Files with `find`](#finding-files-with-find)
-  - [Introduction to `find`](#introduction-to-find)
-  - [Tests and Actions in `find`](#tests-and-actions-in-find)
-- [Grep and Regular Expressions](#grep-and-regular-expressions)
-  - [Basic Regular Expressions](#basic-regular-expressions)
+Each topic is covered in its own guide. Start anywhere - they're self-contained, but the order below follows a natural learning path.
 
 ---
 
-## Streams
+## Guides
 
-### Standard Streams
+### [Shell Basics](shell-basics.md)
 
-In Unix-like systems, every program operates with three standard streams that are automatically opened upon startup:
+What the shell is, how it starts up, and how it processes your input. Covers shell types, configuration files, the `PATH` variable, variables, quoting rules, and the full set of shell expansions (brace, tilde, parameter, arithmetic, command substitution, and globbing).
 
-1. **STDIN (Standard Input)**: Stream used for input, which can be provided from files, peripherals, or other programs. It has a file descriptor of 0.
-2. **STDOUT (Standard Output)**: Stream used for output (non-error data), typically displayed in the terminal. Its file descriptor is 1.
-3. **STDERR (Standard Error)**: Stream used for error messages and diagnostics. It has a file descriptor of 2.
+### [Streams and Redirection](streams-and-redirection.md)
 
-These file descriptors allow you to manipulate these streams for redirection.
+How programs communicate through STDIN, STDOUT, and STDERR. Covers basic redirection, appending, `/dev/null`, here documents, here strings, file descriptor manipulation, pipelines (exit status, `PIPESTATUS`, named pipes), `tee`, subshells, and process substitution.
 
----
+### [Text Processing](text-processing.md)
 
-## Redirection
+The core toolkit for searching, transforming, and analyzing text. Covers `grep` (with regular expressions - basic, extended, and POSIX classes), `sed` (substitution, addresses, in-place editing), `awk` (fields, patterns, BEGIN/END, variables), `cut`, `sort`, `uniq`, `tr`, `wc`, `head`, `tail`, and `tee`.
 
-### Basic Redirection
+### [Finding Files](finding-files.md)
 
-Redirection is a powerful concept that allows you to control where your input and output go. You can redirect input or output streams to files or other commands.
+Searching directory trees and operating on the results. Covers `find` (name, type, size, time, permission, and owner tests, depth control, logical operators, and actions) and `xargs` (null-delimited input, placeholder substitution, parallel execution).
 
-- **Redirecting STDOUT**: 
-  ```bash
-  echo "Hello, World!" > output.txt
-  ```
-  This command writes "Hello, World!" to `output.txt`. If the file exists, it will be overwritten.
+### [File Permissions](file-permissions.md)
 
-- **Redirecting STDIN**:
-  ```bash
-  grep "pattern" < input.txt
-  ```
-  This command uses `input.txt` as input for `grep`.
+The Linux permission model explained. Covers reading `ls -l` output, `chmod` (symbolic and octal modes), `chown`, `chgrp`, `umask`, and special permission bits (setuid, setgid, sticky bit) with real-world examples.
 
-### Appending Output
+### [Job Control](job-control.md)
 
-If you want to append output to a file instead of overwriting it, use the `>>` operator:
+Managing processes from the terminal. Covers foreground/background processes, `Ctrl-Z`/`bg`/`fg`/`jobs`, signals (`SIGTERM`, `SIGKILL`, etc.), `kill`/`killall`/`pkill`, `nohup`, `disown`, `ps`, `top`/`htop`, and terminal multiplexers (`screen` and `tmux`).
 
-```bash
-echo "Another line" >> output.txt
-```
-This adds "Another line" to the end of `output.txt`.
+### [Scripting Fundamentals](scripting-fundamentals.md)
 
-### Redirecting Both STDOUT and STDERR
+Writing reliable bash scripts. Covers exit codes, conditionals (`test`/`[ ]`/`[[ ]]` and their differences), `if`/`elif`/`else`, `case`, `for`/`while`/`until` loops, functions (arguments, return values, local variables), and error handling (`set -euo pipefail`, `trap`).
 
-Sometimes you may want to redirect both standard output and standard error to the same file. Here are a few methods:
+### [Disk and Filesystem](disk-and-filesystem.md)
 
-- **Redirecting both to a file**:
-  ```bash
-  command > output.txt 2>&1
-  ```
-  Or:
-  ```bash
-  command &> output.txt
-  ```
+Managing storage. Covers `df` (filesystem usage), `du` (directory sizes), `mount`/`umount`, `/etc/fstab`, `lsblk`, partition management (`fdisk`/`parted`), `mkfs`, and `fsck`.
 
-- **Redirecting only STDERR**:
-  ```bash
-  command 2> error.txt
-  ```
+### [Networking](networking.md)
 
----
+Essential networking from the command line. Covers `ping`/`traceroute`/`mtr`, `curl`/`wget`, `ssh` (keys, config, port forwarding, jump hosts), `scp`/`rsync`, `ss`/`ip`, `dig`/`nslookup`, and `nc` (netcat).
 
-## Here Documents
+### [System Information](system-information.md)
 
-A **Here Document** allows you to provide multiple lines of input to a command via redirection until a specified delimiter is reached.
+Understanding what's running on a system. Covers `uname`, `uptime` (and how to interpret load averages), `free` (and what buff/cache means), `lscpu`, `lsof`, `vmstat`, the `/proc` and `/sys` virtual filesystems, and `dmesg`.
 
-```bash
-cat > list.txt << "EOF"
-This is a line of text.
-Another line of text.
-EOF
-```
-This will write the specified lines to `list.txt`.
+### [Archiving and Compression](archiving-and-compression.md)
 
-Here Documents are often used with commands that require structured input, like `cat` or scripting.
+Bundling and compressing files. Covers `tar` (with gzip, bzip2, and xz), standalone `gzip`/`bzip2`/`xz`, `zip`/`unzip`, and guidance on when to use each format.
 
----
+### [Best Practices](best-practices.md)
 
-## Pipelines
-
-A **pipeline** passes the standard output of one command as the standard input to another command, using the pipe operator `|`.
-
-For example:
-```bash
-ls -l | grep ".txt"
-```
-This command lists the files in the current directory and filters them for `.txt` files.
-
-Pipelines are extremely useful for chaining together commands and processing data in a step-by-step fashion.
-
----
-
-## Subshells
-
-A **subshell** is a child process spawned by the shell. When commands are run in a pipeline, each command typically runs in its own subshell.
-
-Subshells inherit the environment from their parent shell, but any changes to the environment (e.g., setting a variable) in the subshell do not affect the parent shell.
-
-Example:
-```bash
-(cd /tmp && ls)
-pwd
-```
-Even though the `cd` command changes the directory in the subshell, the `pwd` command runs in the parent shell, so it will still print the original working directory.
-
----
-
-## Process Substitution
-
-**Process Substitution** is an advanced feature in bash that allows the output of a command to be used as if it were a file. It provides a way to treat processes as files and redirect their input or output.
-
-- **Example**:
-  ```bash
-  cat <(ls -lh)
-  ```
-  Here, `ls -lh` is treated as a file, and its output is passed to `cat`.
-
-Process substitution is useful when you need to compare or combine output from multiple commands, but a program expects a file as input.
-
----
-
-## Best Practices
-
-### Avoid Truncating Files
-When redirecting output, always be careful to avoid accidentally truncating important files. Use `>>` to append instead of `>` if you're unsure.
-
-- **Bad**: `echo "data" > important.txt` (this will overwrite `important.txt`).
-- **Good**: `echo "data" >> important.txt` (this will append to `important.txt`).
-
-### Use Epoch Timestamps for Logs
-When creating log files, it's useful to include a timestamp in the filename:
-```bash
-echo "Log entry" > log_$(date +%s).txt
-```
-This ensures that your logs have unique filenames.
-
----
-
-## Finding Files with `find`
-
-### Introduction to `find`
-
-The `find` command is a versatile tool for searching files and directories. It can be used to search based on name, size, modification date, and other criteria.
-
-### Basic Usage
-
-- **Find files by name**:
-  ```bash
-  find . -name "*.txt"
-  ```
-  This finds all files with a `.txt` extension in the current directory and its subdirectories.
-
-### Tests and Actions in `find`
-
-- **Test for file type**: 
-  ```bash
-  find /path/to/search -type f
-  ```
-  This finds all regular files in the specified directory.
-
-- **Find files by size**: 
-  ```bash
-  find . -size +1M
-  ```
-  This finds files larger than 1MB.
-
-- **Using `-exec` to execute a command on each result**:
-  ```bash
-  find . -type f -exec ls -lh {} \;
-  ```
-  This command finds all regular files and lists them using `ls -lh`.
-
-### Combining Tests with Logical Operators
-
-You can combine tests with logical operators like `-and`, `-or`, and `!` (negation). For example:
-```bash
-find . -type f -name "*.txt" -or -name "*.log"
-```
-This finds all `.txt` and `.log` files in the current directory.
-
----
-
-## Grep and Regular Expressions
-
-### Introduction to `grep`
-
-The `grep` command searches for patterns within files. It can be used with regular expressions to perform complex pattern matching.
-
-### Basic `grep` Usage
-
-- **Search for a pattern**:
-  ```bash
-  grep "pattern" file.txt
-  ```
-  This searches for lines containing "pattern" in `file.txt`.
-
-### Useful `grep` Options
-
-- **Case-insensitive search**:
-  ```bash
-  grep -i "pattern" file.txt
-  ```
-
-- **Invert match (show lines that do not contain the pattern)**:
-  ```bash
-  grep -v "pattern" file.txt
-  ```
-
-- **Show only the matched part of the line**:
-  ```bash
-  grep -o "pattern" file.txt
-  ```
-
-### Basic Regular Expressions
-
-- `^`: Anchors a match to the start of a line.
-  ```bash
-  grep "^robworks" file.txt
-  ```
-
-- `$`: Anchors a match to the end of a line.
-  ```bash
-  grep "pattern$" file.txt
-  ```
-
-- `.`: Matches any single character.
-  ```bash
-  grep "gr.p" file.txt
-  ```
-
-### Extended Regular Expressions
-
-Extended regular expressions allow for more powerful pattern matching. To enable them in `grep`, use the `-E` option:
-```bash
-grep -E "pattern1|pattern2" file.txt
-```
-This searches for either "pattern1" or "pattern2".
-
----
-
-## Conclusion
-
-This guide covers critical shell concepts such as streams, redirection, pipelines, subshells, process substitution, and using tools like `find` and `grep`. By understanding and mastering these concepts, you can work more efficiently in Unix-like environments, automating tasks and processing data seamlessly.
+Conventions that prevent real bugs. Covers `set -euo pipefail`, quoting variables, `[[ ]]` vs `[ ]`, `$()` vs backticks, `mktemp`, `shellcheck`, avoiding `ls` parsing, using arrays, portability considerations, and a script template.
