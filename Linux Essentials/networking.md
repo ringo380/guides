@@ -391,7 +391,7 @@ dig -x 142.250.80.46                # reverse DNS lookup
 dig +trace example.com              # show the full resolution path
 ```
 
-For deeper DNS coverage, see the [DNS Administration](../DNS%20Administration/essential-dns-administration.md) guide in this repo.
+For deeper DNS coverage, see the [DNS Administration](../DNS%20Administration/README.md) guides in this repo.
 
 ### nslookup
 

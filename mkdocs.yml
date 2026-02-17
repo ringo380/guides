@@ -67,7 +67,15 @@ nav:
       - Archiving and Compression: Linux Essentials/archiving-and-compression.md
       - Best Practices: Linux Essentials/best-practices.md
   - DNS Administration:
-      - Essential DNS Administration: DNS Administration/essential-dns-administration.md
+      - Index: DNS Administration/README.md
+      - DNS Fundamentals: DNS Administration/dns-fundamentals.md
+      - Zone Files and Records: DNS Administration/zone-files-and-records.md
+      - DNS Tools and Troubleshooting: DNS Administration/dns-tools.md
+      - BIND: DNS Administration/bind.md
+      - NSD and Unbound: DNS Administration/nsd-and-unbound.md
+      - PowerDNS: DNS Administration/powerdns.md
+      - DNSSEC: DNS Administration/dnssec.md
+      - DNS Architecture and Operations: DNS Administration/dns-architecture.md
   - Git:
       - Getting Through It: Git/git-getting-through-it.md
   - Databases:
