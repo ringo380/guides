@@ -27,6 +27,21 @@ Key features:
 - **Lua scripting** - customize query processing in the recursor
 - **Split-horizon** - PowerDNS 5.0 (2025) added views, one of its most requested features for years
 
+```quiz
+question: "What is the main advantage of PowerDNS's backend architecture?"
+type: multiple-choice
+options:
+  - text: "It can only use flat files, making it simpler than BIND"
+    feedback: "PowerDNS supports many backends, not just flat files. Its strength is the variety of data sources it can use."
+  - text: "It can store DNS records in various databases (MySQL, PostgreSQL, LDAP, etc.) instead of zone files"
+    correct: true
+    feedback: "Correct! PowerDNS's backend system lets you store records in relational databases, LDAP directories, or any supported backend. This makes it ideal for environments with thousands of zones, dynamic records, or integration with existing infrastructure databases."
+  - text: "Backends make PowerDNS faster than all other DNS servers"
+    feedback: "Performance depends on the backend choice and configuration. A database backend adds query overhead compared to in-memory zone files. The advantage is flexibility, not raw speed."
+  - text: "It eliminates the need for zone transfers between servers"
+    feedback: "While database replication can replace zone transfers in some setups, backends don't eliminate transfers entirely. The primary advantage is flexible record storage."
+```
+
 ---
 
 ## PowerDNS Authoritative Server
@@ -171,6 +186,41 @@ pdnsutil increase-serial example.com    # manually bump the serial
 pdnsutil check-all-zones                # validate all zones
 ```
 
+```quiz
+question: "What is pdnsutil primarily used for?"
+type: multiple-choice
+options:
+  - text: "Starting and stopping the PowerDNS service"
+    feedback: "Service management uses systemctl or the init system. pdnsutil manages zone data and DNSSEC operations."
+  - text: "Managing zones, records, and DNSSEC operations from the command line"
+    correct: true
+    feedback: "Correct! pdnsutil is the command-line tool for PowerDNS zone administration: creating zones, adding/editing records, managing DNSSEC keys, checking zone correctness, and performing key rollovers. It works directly with the backend database."
+  - text: "Monitoring DNS query traffic in real time"
+    feedback: "Real-time monitoring uses pdns_control or the HTTP API statistics. pdnsutil is for zone and record management."
+  - text: "Converting BIND zone files to PowerDNS format"
+    feedback: "While PowerDNS can import BIND zones (zone2sql), pdnsutil's primary role is managing zones and DNSSEC operations directly."
+```
+
+```terminal
+title: PowerDNS Zone Management with pdnsutil
+steps:
+  - command: "pdnsutil create-zone example.com ns1.example.com"
+    output: "Creating empty zone 'example.com'"
+    narration: "Create a new zone with ns1.example.com as the primary nameserver. This sets up the SOA and initial NS record."
+  - command: "pdnsutil add-record example.com '' A 3600 203.0.113.10"
+    output: "New rrset:\nexample.com. 3600 IN A 203.0.113.10"
+    narration: "Add an A record at the zone apex (empty name = apex). The empty string '' means the record is for example.com itself."
+  - command: "pdnsutil add-record example.com www A 3600 203.0.113.10"
+    output: "New rrset:\nwww.example.com. 3600 IN A 203.0.113.10"
+    narration: "Add an A record for www.example.com. pdnsutil automatically appends the zone name."
+  - command: "pdnsutil add-record example.com '' MX 3600 '10 mail.example.com.'"
+    output: "New rrset:\nexample.com. 3600 IN MX 10 mail.example.com."
+    narration: "Add an MX record. The content includes the priority (10) and mail server. Note the trailing dot on the hostname."
+  - command: "pdnsutil check-zone example.com"
+    output: "Checked 4 records of 'example.com', 0 errors, 0 warnings."
+    narration: "Always check your zone after changes. This validates record syntax, CNAME conflicts, missing glue records, and other common mistakes."
+```
+
 ---
 
 ## The HTTP API
@@ -264,6 +314,57 @@ curl -s -X DELETE -H "X-API-Key: your-api-key-here" \
 ```
 
 The API returns JSON for all operations, making it straightforward to integrate with configuration management tools, CI/CD pipelines, or custom provisioning systems.
+
+```quiz
+question: "What can you do with the PowerDNS HTTP API?"
+type: multiple-choice
+options:
+  - text: "Only view zone information (read-only)"
+    feedback: "The API supports full CRUD operations: create zones, add/modify/delete records, and query statistics."
+  - text: "Create, modify, and delete zones and records programmatically"
+    correct: true
+    feedback: "Correct! The PowerDNS HTTP API enables full zone and record management via REST endpoints. You can create zones, add/modify/delete records, retrieve statistics, and integrate DNS management into automation pipelines - all without editing zone files or running CLI commands."
+  - text: "Only manage DNSSEC keys"
+    feedback: "DNSSEC key management is one capability, but the API covers all zone and record operations plus server statistics."
+  - text: "Proxy DNS queries through HTTP"
+    feedback: "The API manages the DNS server (zones, records, config), not DNS query traffic. DNS-over-HTTPS (DoH) proxies queries, but that's a different feature."
+```
+
+```command-builder
+base: curl
+description: Build a PowerDNS HTTP API request
+options:
+  - flag: "-X"
+    type: select
+    label: "Operation"
+    explanation: "HTTP method for the API action"
+    choices:
+      - ["GET", "GET (read/list)"]
+      - ["POST", "POST (create)"]
+      - ["PATCH", "PATCH (modify records)"]
+      - ["DELETE", "DELETE (remove)"]
+  - flag: ""
+    type: select
+    label: "Endpoint"
+    explanation: "API endpoint to target"
+    choices:
+      - ["http://localhost:8081/api/v1/servers/localhost/zones", "List all zones"]
+      - ["http://localhost:8081/api/v1/servers/localhost/zones/example.com.", "Specific zone"]
+      - ["http://localhost:8081/api/v1/servers/localhost/statistics", "Server statistics"]
+  - flag: "-H"
+    type: select
+    label: "Authentication"
+    explanation: "API key header for authentication"
+    choices:
+      - ["'X-API-Key: your-api-key'", "API key auth"]
+  - flag: ""
+    type: select
+    label: "Data"
+    explanation: "Request body for create/modify operations"
+    choices:
+      - ["", "No body (GET/DELETE)"]
+      - ["-d '{\"rrsets\": [{\"name\": \"www.example.com.\", \"type\": \"A\", \"ttl\": 3600, \"changetype\": \"REPLACE\", \"records\": [{\"content\": \"203.0.113.10\", \"disabled\": false}]}]}'", "Update A record"]
+```
 
 ---
 

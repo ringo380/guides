@@ -86,6 +86,21 @@ A validating resolver starts at the root (whose key it already knows - the "trus
 3. Use the DNSKEY to verify the RRSIG signatures on the records
 4. If any step fails, return SERVFAIL instead of the (potentially forged) answer
 
+```quiz
+question: "How does a DNSSEC validator verify that a response is authentic?"
+type: multiple-choice
+options:
+  - text: "It checks the response against a local database of known-good records"
+    feedback: "DNSSEC doesn't use a local database. It follows a chain of cryptographic signatures back to a trusted root key."
+  - text: "It follows a chain of signatures from the root trust anchor down to the record's zone"
+    correct: true
+    feedback: "Correct! The validator starts with a trusted root key (trust anchor) and follows the DS/DNSKEY chain: root signs .com's DS record, .com's key signs example.com's DS record, and example.com's key signs the actual records. Each link is cryptographically verified."
+  - text: "It contacts the authoritative server over an encrypted TLS connection"
+    feedback: "DNSSEC uses cryptographic signatures, not encrypted connections. The responses travel in plain text but are signed. DNS-over-TLS provides transport encryption, which is a different security layer."
+  - text: "It compares responses from multiple DNS servers and uses majority consensus"
+    feedback: "DNSSEC doesn't use consensus. It uses public-key cryptography to verify that signatures on records are valid, following the chain of trust from the root."
+```
+
 ---
 
 ## DNSSEC Record Types
@@ -176,6 +191,21 @@ Using separate KSK and ZSK keys serves a practical purpose. The DS record in the
 
 This separation means you can rotate ZSKs frequently (for security) without the operational burden of updating DS records each time. KSKs rotate much less often.
 
+```quiz
+question: "Why does DNSSEC use two types of keys (ZSK and KSK) instead of just one?"
+type: multiple-choice
+options:
+  - text: "ZSK encrypts zone data; KSK encrypts the zone transfer"
+    feedback: "DNSSEC doesn't encrypt anything - it signs. Both keys create signatures. The split is about key management and rollover frequency."
+  - text: "The ZSK signs records and is rotated frequently; the KSK signs the ZSK and is rotated less often"
+    correct: true
+    feedback: "Correct! The ZSK (Zone Signing Key) signs individual records and can be rotated without involving the parent zone. The KSK (Key Signing Key) signs the ZSK's DNSKEY record and its hash (DS record) is stored in the parent zone. Changing the KSK requires updating the parent, which is why it's rotated less often."
+  - text: "ZSK is for internal use; KSK is for external queries"
+    feedback: "Both keys are used in responding to external queries. The split is about operational key management: ZSK rotates locally, KSK rotation requires parent zone coordination."
+  - text: "Different DNS server software requires different key types"
+    feedback: "The ZSK/KSK split is part of the DNSSEC specification, not server-specific. All DNSSEC implementations use both key types for the same purpose."
+```
+
 ### Algorithm Recommendations
 
 The current recommended algorithm is **ECDSAP256SHA256 (algorithm 13)**. It produces much smaller signatures than RSA, reducing DNS response sizes and improving performance. Older zones may use RSA (algorithms 5, 7, 8), but new deployments should use algorithm 13.
@@ -232,6 +262,46 @@ gantt
 6. Remove the old DS from the parent
 
 Key rollovers are the most operationally risky part of DNSSEC. Automate them whenever possible.
+
+```quiz
+question: "What makes a KSK rollover more complex than a ZSK rollover?"
+type: multiple-choice
+options:
+  - text: "KSK rollovers require more computational power"
+    feedback: "Computational requirements aren't the issue. The complexity is about coordination with the parent zone."
+  - text: "The KSK's DS record must be updated in the parent zone, requiring coordination with the registrar"
+    correct: true
+    feedback: "Correct! When you roll a KSK, the new key's DS (Delegation Signer) record must be published in the parent zone (e.g., .com for example.com). This requires coordination with your registrar or parent zone operator, and careful timing to avoid breaking the chain of trust during the transition."
+  - text: "KSK rollovers invalidate all cached records immediately"
+    feedback: "Records aren't immediately invalidated. The rollover uses a transition period where both old and new keys are published, respecting TTL-based cache expiration."
+  - text: "Only root server operators can perform KSK rollovers"
+    feedback: "Any zone operator can roll their KSK. The complexity is that you must coordinate with the parent zone to update the DS record. Root KSK rollovers are uniquely complex because the root has no parent."
+```
+
+```code-walkthrough
+language: text
+title: ZSK Rollover Timeline (Pre-Publication Method)
+code: |
+  Day 0:  Publish new ZSK in DNSKEY RRset (both old and new present)
+  Day 1+: Wait for DNSKEY TTL to expire (caches pick up new key)
+  Day 2:  Start signing records with new ZSK
+  Day 3+: Wait for all signed record TTLs to expire
+  Day 4:  Remove old ZSK from DNSKEY RRset
+  Day 5:  Rollover complete - only new ZSK in use
+annotations:
+  - line: 1
+    text: "Add the new ZSK to the published DNSKEY set. Both old and new keys are present. All signatures still use the old key."
+  - line: 2
+    text: "Wait for caches worldwide to pick up the DNSKEY RRset containing both keys. This takes at least one full TTL period."
+  - line: 3
+    text: "Now that resolvers have the new key cached, start signing records with it. Old signatures are still valid during this transition."
+  - line: 4
+    text: "Wait for all old signatures to expire from caches. During this time, resolvers may see old or new signatures, and they have both keys to verify either."
+  - line: 5
+    text: "Safe to remove the old ZSK. All caches have the new key, and all old signatures have expired."
+  - line: 6
+    text: "The rollover is complete. The critical principle: never remove a key until all signatures made with it have expired from all caches."
+```
 
 ---
 
@@ -512,6 +582,41 @@ dig +dnssec example.com A          # are RRSIGs present and current?
 
 # Step 4: Use DNSViz for visual analysis
 # Visit https://dnsviz.net/ and enter the domain
+```
+
+```command-builder
+base: dig
+description: Build a DNSSEC debugging command
+options:
+  - flag: ""
+    type: select
+    label: "Tool"
+    explanation: "Which tool to use for DNSSEC inspection"
+    choices:
+      - ["dig", "dig (show DNSSEC records)"]
+      - ["delv", "delv (validate DNSSEC chain)"]
+  - flag: ""
+    type: text
+    label: "Domain"
+    placeholder: "example.com"
+    explanation: "Domain to inspect"
+  - flag: ""
+    type: select
+    label: "Record type"
+    explanation: "What to query"
+    choices:
+      - ["DNSKEY", "DNSKEY (zone's public keys)"]
+      - ["DS", "DS (delegation signer in parent)"]
+      - ["RRSIG", "RRSIG (record signatures)"]
+      - ["A +dnssec", "A record with DNSSEC data"]
+  - flag: ""
+    type: select
+    label: "Options"
+    explanation: "Additional query options"
+    choices:
+      - ["", "Default"]
+      - ["+multiline", "Multiline output (readable keys)"]
+      - ["+cd", "Checking disabled (bypass validation)"]
 ```
 
 ---

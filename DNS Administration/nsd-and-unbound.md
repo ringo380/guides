@@ -30,6 +30,21 @@ When BIND is better:
 - You need RPZ
 - You want one software to manage
 
+```quiz
+question: "Why might you choose NSD over BIND for an authoritative DNS server?"
+type: multiple-choice
+options:
+  - text: "NSD supports both authoritative and recursive DNS"
+    feedback: "NSD is authoritative-only by design. BIND handles both. NSD's advantage is in its focused, simpler architecture."
+  - text: "NSD is smaller, faster for authoritative serving, and has a reduced attack surface"
+    correct: true
+    feedback: "Correct! NSD is purpose-built for authoritative DNS only. With no recursive resolver code, it has a smaller codebase, fewer potential vulnerabilities, and better performance for serving zones. The trade-off is you need a separate resolver (like Unbound) for recursion."
+  - text: "NSD is the only DNS server that supports DNSSEC"
+    feedback: "BIND, NSD, PowerDNS, and others all support DNSSEC. NSD's advantage is its focused, lightweight authoritative-only design."
+  - text: "NSD uses less memory because it doesn't cache"
+    feedback: "NSD actually loads entire zones into memory for fast serving. Its advantage isn't memory use but rather its smaller, more secure codebase due to being authoritative-only."
+```
+
 ---
 
 ## NSD: Authoritative DNS
@@ -225,6 +240,83 @@ Test the transfer:
 # On the secondary
 nsd-control force_transfer example.com
 nsd-control zonestatus example.com
+```
+
+```quiz
+question: "In an NSD primary/secondary setup, where must the TSIG key be configured?"
+type: multiple-choice
+options:
+  - text: "Only on the primary server"
+    feedback: "Both servers need the key. The primary uses it to authenticate transfer responses, and the secondary uses it to authenticate transfer requests."
+  - text: "Only on the secondary server"
+    feedback: "Both servers need the key. TSIG authentication is mutual - both sides must know the shared secret."
+  - text: "On both the primary and secondary servers with the same key"
+    correct: true
+    feedback: "Correct! TSIG uses symmetric (shared secret) authentication. Both the primary and secondary must have the same key name, algorithm, and secret. The primary verifies incoming transfer requests, and the secondary verifies the zone data it receives."
+  - text: "On a separate key management server"
+    feedback: "TSIG keys are configured directly on each DNS server. There's no external key management server - the shared secret is placed in both servers' configurations."
+```
+
+```exercise
+title: Configure NSD Primary/Secondary with TSIG
+difficulty: advanced
+scenario: |
+  Set up zone transfers between an NSD primary (192.168.1.10) and secondary (192.168.1.11)
+  for the zone `example.com`. The transfer must be authenticated with TSIG.
+
+  1. Generate a TSIG key
+  2. Configure the primary to allow transfers only with the TSIG key
+  3. Configure the secondary to request transfers using the TSIG key
+  4. Verify the transfer works
+hints:
+  - "Generate a key with: ldns-keygen -a hmac-sha256 -b 256 transfer-key"
+  - "On the primary: use provide-xfr with the key name"
+  - "On the secondary: use request-xfr with the key name"
+  - "Both configs need a matching key: section with the same name and secret"
+solution: |
+  ```bash
+  # Generate TSIG key
+  ldns-keygen -a hmac-sha256 -b 256 transfer-key
+  # Note the secret from the output
+  ```
+
+  Primary (`/etc/nsd/nsd.conf` on 192.168.1.10):
+  ```yaml
+  key:
+      name: "transfer-key"
+      algorithm: hmac-sha256
+      secret: "BASE64_SECRET_HERE"
+
+  zone:
+      name: "example.com"
+      zonefile: "example.com.zone"
+      provide-xfr: 192.168.1.11 transfer-key
+      notify: 192.168.1.11 NOKEY
+  ```
+
+  Secondary (`/etc/nsd/nsd.conf` on 192.168.1.11):
+  ```yaml
+  key:
+      name: "transfer-key"
+      algorithm: hmac-sha256
+      secret: "BASE64_SECRET_HERE"
+
+  zone:
+      name: "example.com"
+      zonefile: "example.com.zone"
+      request-xfr: AXFR 192.168.1.10 transfer-key
+      allow-notify: 192.168.1.10 NOKEY
+  ```
+
+  Verify:
+  ```bash
+  # On primary: reload and check
+  nsd-control reload example.com
+  # On secondary: force transfer
+  nsd-control force_transfer example.com
+  # Check the zone loaded
+  nsd-control zonestatus example.com
+  ```
 ```
 
 ---
@@ -429,6 +521,55 @@ stub-zone:
 ```
 
 **`stub-zone`** (not `forward-zone`) is the right directive here. A stub zone tells Unbound to query the specified server directly for that zone, as if it were an authoritative server. A forward zone tells Unbound to use the specified server as a recursive resolver. Since NSD is authoritative (not recursive), use `stub-zone`.
+
+```quiz
+question: "What is a stub-zone in Unbound's configuration?"
+type: multiple-choice
+options:
+  - text: "A zone that Unbound serves authoritatively"
+    feedback: "Unbound is a resolver, not an authoritative server. Stub-zones tell it where to forward queries for specific zones."
+  - text: "A directive that tells Unbound to forward queries for a specific zone to designated nameservers"
+    correct: true
+    feedback: "Correct! A stub-zone overrides normal resolution for a specific zone by pointing to specific nameservers. Common use: forward internal.company.com queries to your internal DNS servers while resolving everything else normally."
+  - text: "A placeholder zone that returns NXDOMAIN for blocked domains"
+    feedback: "That would be a local-zone with type 'refuse' or 'deny'. Stub-zones redirect queries to specific nameservers."
+  - text: "A zone file template for creating new zones"
+    feedback: "Stub-zones aren't templates. They're forwarding rules that tell Unbound which nameservers to query for a specific domain."
+```
+
+```code-walkthrough
+language: yaml
+title: NSD + Unbound Split Architecture
+code: |
+  # /etc/nsd/nsd.conf (Authoritative - port 8053)
+  server:
+      port: 8053
+      ip-address: 127.0.0.1
+  zone:
+      name: "internal.company.com"
+      zonefile: "internal.company.com.zone"
+
+  # /etc/unbound/unbound.conf (Resolver - port 53)
+  server:
+      interface: 0.0.0.0
+      access-control: 192.168.0.0/16 allow
+  stub-zone:
+      name: "internal.company.com"
+      stub-addr: 127.0.0.1@8053
+annotations:
+  - line: 1
+    text: "NSD handles authoritative serving on a non-standard port (8053) on localhost only. It's not directly exposed to clients."
+  - line: 3
+    text: "Port 8053 keeps NSD separate from Unbound's port 53. Only localhost queries reach NSD."
+  - line: 5
+    text: "NSD serves the internal zone file. It knows the actual records for internal.company.com."
+  - line: 9
+    text: "Unbound is the public-facing resolver on port 53. All client queries come here first."
+  - line: 11
+    text: "Unbound listens on all interfaces. access-control restricts who can query (internal networks only)."
+  - line: 13
+    text: "The stub-zone tells Unbound: 'for internal.company.com queries, ask NSD at 127.0.0.1:8053 instead of resolving normally.' All other queries follow standard resolution."
+```
 
 ---
 
