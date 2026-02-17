@@ -161,6 +161,8 @@ Alright - you've got your important files backed up, so the real time-crunch is 
 
 	* Run "`mysql -V`" to confirm this. Note whether it's 4.x or 5.x - this will be important later on.
 
+_____________________________________________
+
 ```quiz
 question: "What is the relationship between ibdata1 and .ibd files in InnoDB?"
 type: multiple-choice
@@ -176,7 +178,6 @@ options:
     feedback: ".ibd files are standard InnoDB (both MySQL and Percona). They're created when innodb_file_per_table is enabled, which is the default in modern MySQL."
 ```
 
-_____________________________________________
 ## PREPARING YOUR SERVER FOR RECOVERY USING PDRT:
 
 After you've assessed the status of the situation, you can start getting the server prepared for the actual recovery procedures. Let's get all of the tools ready, and make sure the server's ready to move forward. Because the development build includes an effective set of tools that aren't in the current stable release, I'm going to recommend going ahead and downloading their latest build via Bazaar.

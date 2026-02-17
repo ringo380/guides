@@ -586,15 +586,8 @@ dig +dnssec example.com A          # are RRSIGs present and current?
 
 ```command-builder
 base: dig
-description: Build a DNSSEC debugging command
+description: Build a DNSSEC debugging command with dig
 options:
-  - flag: ""
-    type: select
-    label: "Tool"
-    explanation: "Which tool to use for DNSSEC inspection"
-    choices:
-      - ["dig", "dig (show DNSSEC records)"]
-      - ["delv", "delv (validate DNSSEC chain)"]
   - flag: ""
     type: text
     label: "Domain"

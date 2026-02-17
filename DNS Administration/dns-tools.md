@@ -126,7 +126,7 @@ steps:
     output: |
       ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 12345
       ;; flags: qr ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
-    narration: "@8.8.8.8 queries Google's DNS directly. +norecurse asks for only cached answers (no following referrals). Notice 'rd' flag is absent - we didn't request recursion."
+    narration: "@8.8.8.8 queries Google's DNS directly. +norecurse clears the Recursion Desired flag, telling the server not to chase referrals on your behalf. Notice 'rd' flag is absent in the response."
 ```
 
 ### Tracing Resolution
@@ -225,7 +225,7 @@ options:
       - ["+short", "Short output (answers only)"]
       - ["+trace", "Trace resolution from root"]
       - ["+dnssec", "Show DNSSEC records"]
-      - ["+norecurse", "Non-recursive (cached only)"]
+      - ["+norecurse", "Non-recursive (no recursion desired)"]
 ```
 
 ---
@@ -491,7 +491,7 @@ steps:
     output: |
       ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 11111
       ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1
-    narration: "NXDOMAIN - the name doesn't exist. Let's investigate why. Is it a typo, or is the record missing from the zone?"
+    narration: "NXDOMAIN - the name doesn't exist. Check whether it's a typo or a missing record in the zone."
   - command: "dig example.com NS +short"
     output: |
       ns1.example.com.

@@ -351,7 +351,7 @@ title: Compression Algorithm Comparison
 steps:
   - command: "ls -lh testdata.txt"
     output: "-rw-r--r-- 1 user user 50M Jan 15 10:00 testdata.txt"
-    narration: "Starting with a 50MB text file. Let's compare how different algorithms compress it."
+    narration: "Starting with a 50MB text file. Comparing how different algorithms handle it."
   - command: "time gzip -k testdata.txt && ls -lh testdata.txt.gz"
     output: |
       real    0m0.82s

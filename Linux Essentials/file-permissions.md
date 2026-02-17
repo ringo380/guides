@@ -364,7 +364,7 @@ code: |
   chmod 700 ~/.ssh
   chmod 600 ~/.ssh/id_rsa
   chmod 644 ~/.ssh/id_rsa.pub
-  chmod 644 ~/.ssh/authorized_keys
+  chmod 600 ~/.ssh/authorized_keys
   chmod 644 ~/.ssh/config
 annotations:
   - line: 1
@@ -378,7 +378,7 @@ annotations:
   - line: 5
     text: "644 (rw-r--r--) for the public key. Public keys are meant to be shared, so world-readable is fine."
   - line: 6
-    text: "644 for authorized_keys. This file lists public keys allowed to log in. Read access is sufficient."
+    text: "600 for authorized_keys. This file controls who can log in, so restrict it to owner-only like private keys."
   - line: 7
     text: "644 for the SSH config file. It contains host aliases and options but no secrets (those go in keys)."
 ```
@@ -400,17 +400,17 @@ scenario: |
 hints:
   - "The ~/.ssh directory should be accessible only by the owner: 700"
   - "The private key must be readable only by the owner: 600"
-  - "The public key and authorized_keys can be world-readable: 644"
+  - "The public key can be world-readable (644), but authorized_keys should be owner-only (600)"
   - "SSH checks permissions on the home directory too - it should not be group or world writable"
 solution: |
   ```bash
   chmod 700 ~/.ssh
   chmod 600 ~/.ssh/id_rsa
   chmod 644 ~/.ssh/id_rsa.pub
-  chmod 644 ~/.ssh/authorized_keys
+  chmod 600 ~/.ssh/authorized_keys
   ```
 
-  The key rules: private keys must be 600 (or 400), the .ssh directory must be 700,
+  The key rules: private keys and authorized_keys must be 600 (or 400), the .ssh directory must be 700,
   and your home directory must not be writable by group or other (typically 755 or 750).
 
   If SSH still refuses, check with:

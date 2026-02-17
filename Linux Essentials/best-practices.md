@@ -640,19 +640,19 @@ annotations:
     text: "Save the original arguments in an array before they get shifted away by option processing."
   - line: 7
     text: "A usage function that accepts an exit code. Called with 0 for -h (help), 1 for errors."
-  - line: 16
+  - line: 17
     text: "Utility functions for consistent logging. >&2 sends to stderr so stdout stays clean for data."
-  - line: 19
+  - line: 20
     text: "Wrapping logic in main() keeps variables local and prevents accidental globals."
-  - line: 22
+  - line: 23
     text: "getopts handles single-character flags. The leading : in ':o:vh' enables silent error handling."
-  - line: 30
-    text: "shift removes processed options, leaving only positional arguments in $@."
   - line: 32
+    text: "shift removes processed options, leaving only positional arguments in $@."
+  - line: 34
     text: "Validate required arguments early. Fail fast with a helpful message."
-  - line: 44
+  - line: 48
     text: "Separate processing logic into its own function for testability and clarity."
-  - line: 49
+  - line: 53
     text: "Call main with the saved arguments. This pattern ensures the entire script is parsed before execution."
 ```
 

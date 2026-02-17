@@ -188,18 +188,9 @@ fi
 ```
 
 ```command-builder
-base: ""
+base: my_script.sh
 description: Build a shell redirection to route stdout and stderr
 options:
-  - flag: ""
-    type: select
-    label: "Command"
-    placeholder: "command to run"
-    explanation: "The command whose output you want to redirect"
-    choices:
-      - ["my_script.sh", "Script"]
-      - ["find / -name '*.log'", "Find command"]
-      - ["make build", "Build command"]
   - flag: ""
     type: select
     label: "Stdout destination"
