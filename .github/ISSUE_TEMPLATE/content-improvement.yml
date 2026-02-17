@@ -1,0 +1,50 @@
+name: Content Improvement
+description: Suggest improvements to an existing guide
+labels: ["type: content"]
+body:
+  - type: dropdown
+    id: guide
+    attributes:
+      label: Which Guide?
+      description: Select the guide that needs improvement
+      options:
+        - "Linux Essentials: Shell Basics"
+        - "Linux Essentials: Streams and Redirection"
+        - "Linux Essentials: Text Processing"
+        - "Linux Essentials: Finding Files"
+        - "Linux Essentials: File Permissions"
+        - "Linux Essentials: Job Control"
+        - "Linux Essentials: Scripting Fundamentals"
+        - "Linux Essentials: Disk and Filesystem"
+        - "Linux Essentials: Networking"
+        - "Linux Essentials: System Information"
+        - "Linux Essentials: Archiving and Compression"
+        - "Linux Essentials: Best Practices"
+        - "DNS Administration: DNS Fundamentals"
+        - "DNS Administration: Zone Files and Records"
+        - "DNS Administration: DNS Tools and Troubleshooting"
+        - "DNS Administration: BIND"
+        - "DNS Administration: NSD and Unbound"
+        - "DNS Administration: PowerDNS"
+        - "DNS Administration: DNSSEC"
+        - "DNS Administration: DNS Architecture and Operations"
+        - "Git: Getting Through It"
+        - "Databases: InnoDB Recovery (PDRT)"
+        - "Perl: Introduction"
+        - "Perl: Developer Roadmap"
+    validations:
+      required: true
+  - type: textarea
+    id: improvement
+    attributes:
+      label: What Needs Improving?
+      description: Describe what's wrong or missing
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Content
+      description: What should it look like after improvement? Include specific text, examples, or references if possible.
+    validations:
+      required: false

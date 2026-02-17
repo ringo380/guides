@@ -1,0 +1,54 @@
+name: New Guide Proposal
+description: Propose a new guide for The Runbook
+labels: ["type: new-guide"]
+body:
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic Area
+      description: Which section should this guide belong to?
+      options:
+        - Linux Essentials
+        - DNS Administration
+        - Git
+        - Databases
+        - Perl / Dev Zero
+        - New Topic Area
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: Proposed Title
+      description: What should the guide be called?
+      placeholder: "e.g., Package Management"
+    validations:
+      required: true
+  - type: input
+    id: audience
+    attributes:
+      label: Target Audience
+      description: Who is this guide for?
+      placeholder: "e.g., Linux sysadmins who need to manage packages across distributions"
+    validations:
+      required: true
+  - type: textarea
+    id: outline
+    attributes:
+      label: Outline
+      description: Provide a rough outline of sections and topics to cover
+      placeholder: |
+        ## Section 1
+        - Topic A
+        - Topic B
+        ## Section 2
+        ...
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why This Guide?
+      description: Why would this guide be valuable? What gap does it fill?
+    validations:
+      required: true

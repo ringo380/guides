@@ -1,0 +1,25 @@
+name: Feature Request
+description: Request site features, new interactive component types, or tooling improvements
+labels: ["type: infrastructure"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: What feature would you like?
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this feature valuable? What problem does it solve?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: If you have ideas about implementation, describe them here
+    validations:
+      required: false
