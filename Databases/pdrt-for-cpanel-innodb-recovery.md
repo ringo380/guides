@@ -11,11 +11,11 @@ Percona documents these examples of where this tool may be the most helpful:
    * A mistaken DROP TABLE, DELETE, TRUNCATE, or UPDATE
    * Deletion of the data file on the filesystem level
    * Partial corruption of the data such that InnoDB is unable to run without crashing, even with innodb_force_recovery set
-   
+
 _____________________________________________
 ## THE TOOLS
 
-As mentioned earlier - if you're encountering a situation where you'll need to perform recovery, go ahead and skip to the next section and get the preparation started, then come back here once you've got your files backed up. The longer that MySQL is online and able to write to your existing ibdata and table files, the more chance there is that lost or corrupted data will be irrecoverable. 
+As mentioned earlier - if you're encountering a situation where you'll need to perform recovery, go ahead and skip to the next section and get the preparation started, then come back here once you've got your files backed up. The longer that MySQL is online and able to write to your existing ibdata and table files, the more chance there is that lost or corrupted data will be irrecoverable.
 
 To provide you with a reference point on the tools you'll be using, I'm going to include the usage information here, so that you can become familiar with what kind of options you'll have with the various utilities involved:
 ```
@@ -35,7 +35,7 @@ To provide you with a reference point on the tools you'll be using, I'm going to
 	    -T  -- retrieves only pages with index id = NM (N - high word, M - low word of id)
 	    -b &lt;dir&gt; -- Directory where external pages can be found. Usually it is pages-XXX/FIL_PAGE_TYPE_BLOB/
 	    -p prefix -- Use prefix for a directory name in LOAD DATA INFILE command
-		
+
 [[create_defs.pl]]
 	Usage: create_defs.pl [options]
 	  Where options are:
@@ -45,7 +45,7 @@ To provide you with a reference point on the tools you'll be using, I'm going to
 		--password - mysql password
 		--db       - mysql database
 		--table    - specific table only
-		--help     - show this help		
+		--help     - show this help
 
 [[page_parser]]
 	Usage: ./page_parser -4|-5 [-dDhcCV] -f &lt;innodb_datafile&gt; [-T N:M] [-s size] [-t size]
@@ -59,6 +59,22 @@ To provide you with a reference point on the tools you'll be using, I'm going to
 	    -C  -- count pages in the tablespace and group them by index id (and ignore too high/zero indexes)
 	    -t  size -- Size of InnoDB tablespace to scan. Use it only if the parser can't determine it by himself.
 ```
+
+```quiz
+question: "What does the constraints_parser tool from PDRT (Percona Data Recovery Tool) do?"
+type: multiple-choice
+options:
+  - text: "It repairs the InnoDB tablespace file in place"
+    feedback: "constraints_parser doesn't repair files. It extracts data from them by scanning for valid row patterns."
+  - text: "It scans InnoDB data files and extracts rows matching a defined table structure"
+    correct: true
+    feedback: "Correct! constraints_parser reads the raw InnoDB tablespace files (ibdata1 or .ibd files) and uses a table definition file to identify and extract valid rows. It can recover data even from severely corrupted tablespaces where MySQL itself can't start."
+  - text: "It checks foreign key constraints and removes invalid references"
+    feedback: "Despite the name, constraints_parser doesn't manage foreign keys. It uses 'constraints' (column definitions) to identify and extract row data from raw InnoDB pages."
+  - text: "It converts InnoDB tables to MyISAM format for easier recovery"
+    feedback: "constraints_parser doesn't convert formats. It extracts raw data from InnoDB files into tab-separated output that can be imported into a new database."
+```
+
 _____________________________________________
 ## FIRST RESPONSE
 
@@ -68,7 +84,7 @@ When approaching data recovery using PDRT, it's a good idea to understand that -
 
 If you've recognized that data loss has occurred, you should do the following:
 
-1. If still running, go ahead and STOP the MySQL server as soon as possible: 
+1. If still running, go ahead and STOP the MySQL server as soon as possible:
 ```
 	# /etc/init.d/mysql stop
 ```
@@ -99,7 +115,22 @@ The downside to this, however, is that dropping a table results in the frm/ibd f
 ```
 Dumping it with single-transaction flag creates the dump in, go figure, a single transaction, which prevents locking on the database, and may help if you're running a 100% InnoDB environment - so to be safe, particularly if you're not sure, I recommend running both.
 
-Note: If you're dealing with file system corruption, try and back up these files on to another disk drive, if available (or even to a secure, remote host, if viable). 
+Note: If you're dealing with file system corruption, try and back up these files on to another disk drive, if available (or even to a secure, remote host, if viable).
+
+```quiz
+question: "What should be your first action when discovering a corrupted InnoDB database?"
+type: multiple-choice
+options:
+  - text: "Immediately run mysqlcheck --repair on all databases"
+    feedback: "mysqlcheck --repair works for MyISAM tables. For InnoDB corruption, running repair commands without preparation can make things worse."
+  - text: "Stop MySQL and make a full copy of the data directory before attempting any recovery"
+    correct: true
+    feedback: "Correct! Always preserve the original data before any recovery attempt. Copy the entire MySQL data directory (especially ibdata1, ib_logfile*, and the database directories). Recovery tools modify data in place, so without a backup, a failed recovery attempt can destroy your only copy."
+  - text: "Delete the ib_logfile files and restart MySQL"
+    feedback: "Deleting InnoDB log files without understanding the state can cause data loss. The logs may contain uncommitted transactions needed for recovery."
+  - text: "Restore from the most recent backup immediately"
+    feedback: "Restoring from backup is often the best path, but first you should preserve the current data directory. The backup might be outdated, and you may need the current files for recovering recent data."
+```
 
 _____________________________________________
 ## ASSESSING THE SITUATION:
@@ -125,15 +156,30 @@ Alright - you've got your important files backed up, so the real time-crunch is 
 		`mysql&gt; show create table $table_name;`
 
 	I'll cover this to a greater extent later on in the article. If MySQL is not running at this point, you'll want to try and track down a copy of the table structure, the table create statement, or a backup of some kind - anything that can give you an idea of what that table's layout was like.
-    
+
 3. What version of MySQL is your server currently running?
 
 	* Run "`mysql -V`" to confirm this. Note whether it's 4.x or 5.x - this will be important later on.
-	
+
+```quiz
+question: "What is the relationship between ibdata1 and .ibd files in InnoDB?"
+type: multiple-choice
+options:
+  - text: "ibdata1 is the main data file; .ibd files are backup copies"
+    feedback: ".ibd files aren't backups. They're the per-table data files used when innodb_file_per_table is enabled."
+  - text: "ibdata1 is the system tablespace (metadata, undo logs); .ibd files store individual table data when file-per-table is enabled"
+    correct: true
+    feedback: "Correct! With innodb_file_per_table=ON (default since MySQL 5.6), each table gets its own .ibd file for data and indexes. ibdata1 always exists and contains the system tablespace (data dictionary, undo logs, change buffer). Without file-per-table, all table data lives in ibdata1."
+  - text: "ibdata1 stores indexes; .ibd files store row data"
+    feedback: "Both ibdata1 and .ibd files can contain both data and indexes. The split depends on whether file-per-table is enabled, not on data type."
+  - text: ".ibd files are only used by Percona Server, not standard MySQL"
+    feedback: ".ibd files are standard InnoDB (both MySQL and Percona). They're created when innodb_file_per_table is enabled, which is the default in modern MySQL."
+```
+
 _____________________________________________
 ## PREPARING YOUR SERVER FOR RECOVERY USING PDRT:
 
-After you've assessed the status of the situation, you can start getting the server prepared for the actual recovery procedures. Let's get all of the tools ready, and make sure the server's ready to move forward. Because the development build includes an effective set of tools that aren't in the current stable release, I'm going to recommend going ahead and downloading their latest build via Bazaar. 
+After you've assessed the status of the situation, you can start getting the server prepared for the actual recovery procedures. Let's get all of the tools ready, and make sure the server's ready to move forward. Because the development build includes an effective set of tools that aren't in the current stable release, I'm going to recommend going ahead and downloading their latest build via Bazaar.
 
 1. If you don't already have Bazaar installed, you can do so by running "yum install bzr", or by downloading and installing from their site: http://wiki.bazaar.canonical.com/Download
 
@@ -146,7 +192,7 @@ You should see something like this, if successful (you can ignore the "launchpad
 ```
 	You have not informed bzr of your Launchpad ID, and you must do this to
 	write to Launchpad or access private data.  See "bzr help launchpad-login".
-	Branched 81 revision(s).    
+	Branched 81 revision(s).
 ```
 The installation now exists in /root/percona-data-recovery-tool-for-innodb.. but for the purposes of this example, and ease of access, I'm going to shorten that down a little:
 ```
@@ -271,7 +317,7 @@ Once MySQL is successfully running, either via innodb_force_recovery or renaming
 	# mysqldump --single-transaction --all-databases &gt; /root/sqldump_trans.sql
 	# mysqldump --all-databases &gt; /root/sqldump.sql
 ```
-4. Recovery Database 
+4. Recovery Database
 
 At this point, with MySQL up and running, go ahead and create your recovery database:
 ```
@@ -294,7 +340,7 @@ Alternatively, MySQL has a utility that can be used to attempt to extract table 
 _____________________________________________
 ## RECOVERING YOUR DATA
 
-So at this point, regardless of your situation, you should at least have your "/var/lib/mysql/ibdata1.recovery" file created (which we'll be working with to recover data from, rather than the active ibdata1), a copy of your schema directory (/var/lib/mysql/dbname/*), a functional, running MySQL server that accepts queries, and at least one new database created containing table structures for each of the tables you'd to recover data for (if you want to look for data from all tables in a database, for example, go ahead and create the table structures for each table within the database before proceeding). 
+So at this point, regardless of your situation, you should at least have your "/var/lib/mysql/ibdata1.recovery" file created (which we'll be working with to recover data from, rather than the active ibdata1), a copy of your schema directory (/var/lib/mysql/dbname/*), a functional, running MySQL server that accepts queries, and at least one new database created containing table structures for each of the tables you'd to recover data for (if you want to look for data from all tables in a database, for example, go ahead and create the table structures for each table within the database before proceeding).
 
 There's a few different paths you can take here, depending on what kind of recovery you're attempting. I'll try and cover some of the options for each:
 
@@ -311,9 +357,9 @@ For the purposes of this script, it may make things easier if you've got an up-t
 
 If this script runs successfully, you should see output from the compile processes running, and subsequently a completion notice. You won't see any of the data there yet - it's been output to one file per table, in the directory you're running the script from (which should be the PDRT source folder). The format is: "out.tablename"
 
-2. Start digging! 
+2. Start digging!
 
-Depending on the circumstances, these files can have a lot of junk in them. Often, though, data you're looking for will be grouped together in chunks. 
+Depending on the circumstances, these files can have a lot of junk in them. Often, though, data you're looking for will be grouped together in chunks.
 
 In the following example, I had accidentally deleted the "English" row from my language table. I ran the script, which took data from the "ibdata1.recovery" file and extracted it based on the table structures defined in a recovery database, which in this case simply had the "language" table's structure re-created within it. That script produced an "out.language" file in the directory, so I did a quick grep, with "-in" flag to enable case insensitivity, and to display line numbers, for the word "English". I was lucky enough in this case that the data was collected at the very beginning of the file (it will not always be that easy - that's where manually tuning the =table_defs.h= file comes in, which is a bit more advanced):
 ```
@@ -344,7 +390,7 @@ In the following example, I had accidentally deleted the "English" row from my l
 
 There were three columns in the language table - language_id, name, and last_update. All of which are reflected here, with complete records. The rest of the "out.language" file, however, is filled with "dummy" results, which you'll generally have to sift through to find your actual content.
 
-So there, I was able to see that language_id of the deleted entry is 1, the name is "English" (we can also see that there is character limit of 20 in the "name" column, if you notice the spaces there between the double quotes), as we already knew, and the last updated time was "2006-02-15 11:02:19". Now, we can re-create the deleted row successfully with this data. If this was all you needed, and the procedure was successful, you can consider yourself lucky. 
+So there, I was able to see that language_id of the deleted entry is 1, the name is "English" (we can also see that there is character limit of 20 in the "name" column, if you notice the spaces there between the double quotes), as we already knew, and the last updated time was "2006-02-15 11:02:19". Now, we can re-create the deleted row successfully with this data. If this was all you needed, and the procedure was successful, you can consider yourself lucky.
 
 ### MANUAL METHOD:
 
@@ -361,6 +407,30 @@ Now, you can run the =constraints_parser= tool, which will reference the table d
 	# ./=constraints_parser= -5 -f /var/lib/mysql/ibdata1.recovery &gt; table_recovery.out
 ```
 You can also run this without outputting to a file ("&gt; table_recovery.out" in the above command), but there will generally be a substantial amount of information displayed, and it is usually simpler to write it to a file and parse through it afterwards.
+
+```terminal
+title: Running constraints_parser for Data Recovery
+steps:
+  - command: "constraints_parser -5 -f /var/lib/mysql/ibdata1 -t table_defs/users.constraints"
+    output: |
+      -- Parsing InnoDB tablespace: /var/lib/mysql/ibdata1
+      -- Using table definition: table_defs/users.constraints
+      -- Page size: 16384 bytes
+      -- Scanning pages...
+      -- Found 15234 candidate rows
+      -- 14891 rows passed all constraints
+      -- Output written to dumps/default/users
+    narration: "constraints_parser scans the raw tablespace file using the table definition to identify valid rows. -5 means InnoDB page format. 14891 of 15234 candidate rows passed validation - the 343 failures are likely corrupted rows."
+  - command: "head -3 dumps/default/users"
+    output: |
+      1\tJohn\tjohn@example.com\t2024-01-15 10:30:00
+      2\tJane\tjane@example.com\t2024-01-15 11:45:00
+      3\tBob\tbob@example.com\t2024-01-16 09:00:00
+    narration: "Output is tab-separated values matching the table definition columns. This can be loaded into a fresh MySQL table with LOAD DATA INFILE."
+  - command: "mysql -e \"LOAD DATA LOCAL INFILE 'dumps/default/users' INTO TABLE users\" mydb"
+    output: "Query OK, 14891 rows affected"
+    narration: "Import the recovered data into a new, clean database. Verify row counts and spot-check data integrity after import."
+```
 
 
 _____________________________________________
@@ -391,9 +461,9 @@ I've pulled up the "first_name" column definition from the =table_defs.h=.custom
 	},
 ```
 
-These definitions act as sort of a mask, and allow the parser script to try and intelligently determine what data is relevant to your tables, and what data is irrelevant, or relevant elsewhere. I chose first_name in this instance because - at least in the "customer" table - it is something that every customer entry likely has, and so it can act as sort of a baseline. 
+These definitions act as sort of a mask, and allow the parser script to try and intelligently determine what data is relevant to your tables, and what data is irrelevant, or relevant elsewhere. I chose first_name in this instance because - at least in the "customer" table - it is something that every customer entry likely has, and so it can act as sort of a baseline.
 
-You'll notice, looking through definitions files, that columns will default to "has_limits: FALSE". This means that limitations defined there are not being taken into account when =constraints_parser= searches through page files or data files. These limitations, though, are what are really going to help you weed out the junk and find what you're looking for. 
+You'll notice, looking through definitions files, that columns will default to "has_limits: FALSE". This means that limitations defined there are not being taken into account when =constraints_parser= searches through page files or data files. These limitations, though, are what are really going to help you weed out the junk and find what you're looking for.
 
 So, focusing just on the first_name definitions, we'll take the same scenario from earlier in the documentation, and see if we have any more luck getting a full set of data using =constraints_parser=. With the auto-generated table definitions, =constraints_parser= was unable to find the MARY SMITH entry. Let's look at some of the simple changes using just the standard set of limitation fields that are already provided for us:
 ```
@@ -425,7 +495,7 @@ Now, the first_name definitions entry should look something like this:
 Those look good, so now we can run make in the PDRT source folder and give constraints_parser another shot. We're going to give the "-D" flag a try as well, which instructs it to specifically look for deleted records:
 ```
 	# cd /root/pdrt && make clean all
-	# ./constraints_parser -5 -Df /root/innodb.bak/mydb/customer.ibd	
+	# ./constraints_parser -5 -Df /root/innodb.bak/mydb/customer.ibd
 ```
 The resulting output:
 ```
@@ -449,7 +519,7 @@ The resulting output:
 	-- Page id: 9, Found records: 0, Lost records: NO, Leaf page: YES
 	-- Page id: 10, Format: COMPACT, Records list: Invalid, Expected records: (0 149)
 	-- Page id: 10, Found records: 0, Lost records: NO, Leaf page: YES
-	
+
 Nailed it - a single record qualified, and it's the one we're looking for:
 
 	000000001569    6D0000021F1CED  customer        1       1       "MARY"  "SMITH" "MARY.SMITH@mydbcustomer.org" 5       1       "2006-02-14 22:04:36"   "2006-02-15 04:57:20"
@@ -457,19 +527,19 @@ Nailed it - a single record qualified, and it's the one we're looking for:
 You've got the hex addresses at the start, followed by the table name, and then the actual data in the order of the columns as they existed in the table. If you want a bit more information, or prefer it formatted line by line, try running =constraints_parser= with the -V flag as well, for verbose output, and grepping for something unique to that row (MARY can coincide with PRIMARY or ROSEMARY, and SMITH is repeated in a number of rows, so MARY.SMITH or even MARYSMITH, grepped with the -20 or -30 flag, will get the desired results in this case):
 ```
 	PAGE7: Found a table customer record: 0x1134b091 (offset = 129)
-	Field #1 @ 0x1134b093: length 6, value: 000000001569	
-	Field #2 @ 0x1134b099: length 7, value: 6D0000021F1CED	
+	Field #1 @ 0x1134b093: length 6, value: 000000001569
+	Field #2 @ 0x1134b099: length 7, value: 6D0000021F1CED
 	Processing record 0x1134b091 from table 'customer'
 	PHYSICAL RECORD: n_fields 11; compact format; info bits 32
 	 0: len 2; hex 0001; asc   ;; 1: len 6; hex 000000001569; asc      i;; 2: len 7; hex 6d0000021f1ced; asc m      ;; 3: len 1; hex 01; asc  ;; 4: len 4; hex 4d415259; asc MARY;; 5: len 5; hex 534d495448; asc SMITH;; 6: len 29; hex 4d4152592e534d4954484073616b696c61637573746f6d65722e6f7267; asc MARY.SMITH@mydbcustomer.org;; 7: len 2; hex 0005; asc   ;; 8: len 1; hex 81; asc  ;; 9: len 8; hex 8000123ea1f15694; asc    &gt;  V ;; 10: len 4; hex 43f30910; asc C   ;;
-	Field #0 @ 0x1134b091: length 2, value: 1	
-	Field #3 @ 0x1134b0a0: length 1, value: 1	
-	Field #4 @ 0x1134b0a1: length 4, value: "MARY"	
-	Field #5 @ 0x1134b0a5: length 5, value: "SMITH"	
-	Field #6 @ 0x1134b0aa: length 29, value: "MARY.SMITH@mydbcustomer.org"	
-	Field #7 @ 0x1134b0c7: length 2, value: 5	
-	Field #8 @ 0x1134b0c9: length 1, value: 1	
-	Field #9 @ 0x1134b0ca: length 8, value: "2006-02-14 22:04:36"	
+	Field #0 @ 0x1134b091: length 2, value: 1
+	Field #3 @ 0x1134b0a0: length 1, value: 1
+	Field #4 @ 0x1134b0a1: length 4, value: "MARY"
+	Field #5 @ 0x1134b0a5: length 5, value: "SMITH"
+	Field #6 @ 0x1134b0aa: length 29, value: "MARY.SMITH@mydbcustomer.org"
+	Field #7 @ 0x1134b0c7: length 2, value: 5
+	Field #8 @ 0x1134b0c9: length 1, value: 1
+	Field #9 @ 0x1134b0ca: length 8, value: "2006-02-14 22:04:36"
 	Field #10 @ 0x1134b0d2: length 4, value: "2006-02-15 04:57:20"
 ```
 You'll get a lot of other results with partial data in verbose mode, as it displays basically everything that is being processed, but only one page of data will have the full set of fields you're looking for (for each row that you're attempting to match).
@@ -477,34 +547,34 @@ You'll get a lot of other results with partial data in verbose mode, as it displ
 _____________________________________________
 ## GETTING THE DATA BACK INTO YOUR DATABASE
 
-So, you've got the raw data for one missing row. While that's useful on its own, realistically, there's a good chance that you're going to be dealing with more than just that, and it may not be as well put-together, particularly if you're running into corruption issues. You could take the data that you find piece by piece and reinsert it into the recovery database, or you can use another method to create dump and SQL files to automatically handle this for you. 
+So, you've got the raw data for one missing row. While that's useful on its own, realistically, there's a good chance that you're going to be dealing with more than just that, and it may not be as well put-together, particularly if you're running into corruption issues. You could take the data that you find piece by piece and reinsert it into the recovery database, or you can use another method to create dump and SQL files to automatically handle this for you.
 
 To do this, you'll want to get your =constraints_parser= output split apart into dump file and SQL statements containing the LOAD DATA information, which can be separated via stderr and stdout. The dump file data is output by =constraints_parser= as stdout, and the LOAD DATA statement is output as stderr. The one thing that =constraints_parser= requires in this respect is that a proper dump folder structure is used, relative to the path that you're currently in, and dependent on whether you specify a database name with the -p flag.
 ```
-	Example with -p: 
+	Example with -p:
 	./constraints_parser -5 -f /root/innodb.bak/database/table.ibd -p database_recovered
 	..will produce a LOAD DATA statement with ./dumps/database_recovered/ as its dump path.
 
 	Example without -p:
 	./constraints_parser -5 -f /root/innodb.bak/database/table.ibd
-	..will produce a LOAD DATA statement with ./dumps/default/ as its dump path. 
-```	
+	..will produce a LOAD DATA statement with ./dumps/default/ as its dump path.
+```
 The dumps are important, because they contain the actual data that the LOAD DATA SQL statement will reference when inserting the data into your recovery database. Because this path isn't created automatically by =constraints_parser=, let's go ahead and set that up, assuming that -p flag will be used with the recovery database specified:
 ```
 	# mkdir -p /root/pdrt/dumps/database_recovered
 ```
-With that set up, we can now run the full =constraints_parser= command with redirects used for stdout and stderr. Because, on occasion it will send "progress percentage" output into stderr as well (eg. 76.6% done), I've also added on a sed command to check for this and remove those lines if they exist. The only concern would be if, for any reason, a column name has the word "done" in it. Feel free to expand on the sed command, as I'm sure there's a better way to match for this without risk of matching a column or table name. The only data that should be in the SQL file that we create via stderr should be recognizable SQL syntax, which is why lines like that must be removed. 
+With that set up, we can now run the full =constraints_parser= command with redirects used for stdout and stderr. Because, on occasion it will send "progress percentage" output into stderr as well (eg. 76.6% done), I've also added on a sed command to check for this and remove those lines if they exist. The only concern would be if, for any reason, a column name has the word "done" in it. Feel free to expand on the sed command, as I'm sure there's a better way to match for this without risk of matching a column or table name. The only data that should be in the SQL file that we create via stderr should be recognizable SQL syntax, which is why lines like that must be removed.
 
 Here's a full example using the customer table data from earlier to demonstrate:
 ```
 	./constraints_parser -5 -Df /root/innodb.bak/mydb/customer.ibd -p mydb_recovered &gt; dumps/mydb_recovered/customer 2&gt; customer.sql && sed -i '/done/d' customer.sql
-```	
+```
 Here, we've got the stdout, which contains the actual data, headed into dumps/mydb_recovered/customer, and the stderr, which contains the SQL statements with instructions to load those dumps into a database, going into customer.sql. Now, we can see how those were split up:
 ```
 	# cat customer.sql
 	SET FOREIGN_KEY_CHECKS=0;
 	LOAD DATA INFILE '/root/pdrt/dumps/mydb_recovered/customer' REPLACE INTO TABLE `customer` FIELDS TERMINATED BY '\t' OPTIONALLY ENCLOSED BY '"' LINES STARTING BY 		'customer\t' (`customer_id`, `store_id`, `first_name`, `last_name`, `email`, `address_id`, `active`, `create_date`, `last_update`);
-	
+
 	# cat ./dumps/mydb_recovered/customer
 	-- Page id: 0-- Page id: 1-- Page id: 2-- Page id: 3, Format: COMPACT, Records list: Invalid, Expected records: (0 4)
 	-- Page id: 3, Found records: 0, Lost records: NO, Leaf page: NO
@@ -524,21 +594,21 @@ Here, we've got the stdout, which contains the actual data, headed into dumps/my
 	-- Page id: 10, Format: COMPACT, Records list: Invalid, Expected records: (0 149)
 	-- Page id: 10, Found records: 0, Lost records: NO, Leaf page: YES
 	-- Page id: 0-- Page id: 0
-```	
+```
 Even with the additional, irrelevant data you see in the dump file, the LOAD DATA statement explicitly defines the import data to begin after the table name, followed by a tab (LINES STARTING BY 'customer\t'), then fields delimited by tabs after that point optionally enclosed in quotations (FIELDS TERMINATED BY '\t' OPTIONALLY ENCLOSED BY '"'), which ensures that only the data you want ends up being loaded.
 
 At this point, you've got these two key files - customer.sql and dumps/mydb_recovered/customer - the next step is to use that sql file to load the data back into your recovered database:
 ```
 	# mysql mydb_recovered &lt; /root/pdrt/customer.sql
-```	
+```
 One thing you may encounter here, is a not-particularly-helpful error about being unable to stat the dump file. It will look something like this:
 ```
 		ERROR 13 (HY000) at line 2: Can't get stat of '/root/pdrt/dumps/mydb_recovered/customer' (Errcode: 13)
-```	
+```
 If you receive this, the fix is to modify the statement to read: "LOAD DATA LOCAL INFILE". It has something to do with the way the MySQL host is treated as local versus potentially remote, as I understand it. A quick command to fix this is:
 ```
 	# sed -i 's/LOAD DATA INFILE/LOAD DATA LOCAL INFILE/g' /root/pdrt/customer.sql
-```	
+```
 Then, re-run the above "mysql mydb_recovered &lt; /root/pdrt/customer.sql" command, and it should process correctly this time.
 
 Now we can confirm the results:
@@ -553,8 +623,37 @@ Now we can confirm the results:
 	|           3 |        1 | LINDA      | WILLIAMS  | LINDA.WILLIAMS@sakilacustomer.org   |          7 |      1 | 2006-02-14 22:04:36 | 2006-02-15 04:57:20 |
 	+-------------+----------+------------+-----------+-------------------------------------+------------+--------+---------------------+---------------------+
 	3 rows in set (0.00 sec)
-```	
+```
 There it is - Mary Smith in her entirety, each field restored to its original value successfully into the recovered database. So ultimately, these principles can be applied to large-scale restorations as well, with the key factors being both the correct usage of =constraints_parser=, and effective tweaking of =table_defs.h=, so that you can ensure that the output you get from =constraints_parser= contains only what you need from it. Of course, if you get a "close enough" result, there's always the option of loading up the dump file in your favorite editor and simply deleting the lines of data that you don't want restored, leaving only what you'd like to import, and it will work just as well.
+
+```code-walkthrough
+language: bash
+title: Complete PDRT Recovery Workflow
+code: |
+  systemctl stop mysql
+  cp -a /var/lib/mysql /var/lib/mysql.backup
+  cd /opt/pdrt
+  ./create_defs.pl --host=localhost --user=root --db=mydb > table_defs/mydb.constraints
+  ./constraints_parser -5 -f /var/lib/mysql/mydb/users.ibd -t table_defs/mydb.constraints
+  mysql -e "CREATE DATABASE mydb_recovered"
+  mysql mydb_recovered < original_schema.sql
+  mysql -e "LOAD DATA LOCAL INFILE 'dumps/default/users' INTO TABLE users" mydb_recovered
+annotations:
+  - line: 1
+    text: "Stop MySQL first. You don't want the server modifying files while you're trying to recover data from them."
+  - line: 2
+    text: "Critical: copy the entire data directory BEFORE any recovery attempt. cp -a preserves permissions and ownership. This is your safety net."
+  - line: 4
+    text: "create_defs.pl generates a constraints file from the MySQL schema. If MySQL won't start, you'll need to write this manually from a backup of the schema."
+  - line: 5
+    text: "Run constraints_parser against the .ibd file (file-per-table) or ibdata1 (shared tablespace). The -5 flag specifies the InnoDB page format."
+  - line: 6
+    text: "Create a fresh database for the recovered data. Never import back into the corrupted database."
+  - line: 7
+    text: "Apply the original schema (CREATE TABLE statements) to the recovery database. You need matching table structures for the import."
+  - line: 8
+    text: "LOAD DATA INFILE imports the tab-separated recovery output. Verify row counts match the constraints_parser output."
+```
 
 _____________________________________________
 ## WHERE TO GO FROM HERE
@@ -562,15 +661,15 @@ _____________________________________________
 This documentation covered some of the basics when it comes to recovering data, but there are going to undoubtedly be a variety of scenarios you'll run into that are going to require some more in-depth procedures. Ideally, I've tried to cover the foundations so that anything described here can be applied on a larger-scale to accomplish recovery of just about any level. There's certainly quite bit of functionality that the PDRT tool set is capable of taht isn't covered here, though, and one of the best ways I can recommend to familiarize yourself with those capabilities is to look right into the source, which you can find here, at their launchpad site containing the latest development builds:
 
 > http://bazaar.launchpad.net/~percona-dev/percona-data-recovery-tool-for-innodb/trunk/files
-	
+
 Additionally, though there are areas of it that don't seem to have been updated to account for the latest build, or even the 0.5 stable release, Percona still has some great tips on their site, which can be found here:
 
 > http://www.percona.com/docs/wiki/innodb-data-recovery-tool:start
-	
+
 In the external resources of their documentation, there is a link to what is described as a video tutorial, but the link was not functional at the time of writing this - however I was able to track down the 3-part series posted to Youtube. Again, some of the techniques shown seem to reference earlier versions, or features that do not seem to function as displayed in either 0.5 or the development build, but it can still be a helpful way to see recovery via PDRT demonstrated visually. Part 1 can be found here:
 
 > https://www.youtube.com/watch?v=gkiztClZses
-	
+
 Of course, failing all of the above, there are manual methods of recovery without the use of toolsets, though that may be documentation for another time. If you'd like to jump the gun, here are some handy links that may get you started on that:
 
 * Recovering single InnoDB table from a backup: http://www.mysqlperformanceblog.com/2012/01/25/how-to-recover-a-single-innodb-table-from-a-full-backup/
