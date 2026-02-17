@@ -340,6 +340,9 @@ The shell processes your command line through several expansion stages before ex
 7. Pathname expansion (globbing)
 8. Quote removal
 
+Otherwise known as:
+_Big Tasty Pies Always Come With Quiche._
+
 ### Brace Expansion
 
 **Brace expansion** generates strings. It happens before any other expansion, so it works even with non-existent files.
