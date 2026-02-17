@@ -7,6 +7,9 @@ CLAUDE.local.md
 .claude-dev-helper/
 .plugin-config/
 
+# Worktrees
+.worktrees/
+
 # MkDocs
 site/
 docs/
