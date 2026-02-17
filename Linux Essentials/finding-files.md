@@ -80,6 +80,21 @@ find . -perm -u+x              # user execute bit set
 
 The three `-perm` modes correspond to different questions. **`-perm 644`** (exact) asks 'are the permissions *exactly* 644?' - nothing more, nothing less. **`-perm -644`** (dash prefix, all-bits) asks 'are *at least* these bits set?' - the file could have more permissions than specified. **`-perm /111`** (slash prefix, any-bit) asks 'is *any* of these bits set?' - useful for finding anything executable. Think of exact as '=', dash as 'includes all of', and slash as 'includes any of'.
 
+```quiz
+question: "What is the difference between find -perm 644 and find -perm -644?"
+type: multiple-choice
+options:
+  - text: "They are identical - both find files with permission 644"
+    feedback: "-perm 644 requires an exact match. -perm -644 checks that all the specified bits are set, but the file may have additional permissions."
+  - text: "-perm 644 matches exactly 644; -perm -644 matches files where at least these bits are set"
+    correct: true
+    feedback: "Correct! -perm 644 is exact match only. -perm -644 means 'all of these bits must be set' - a file with 744 would match -644 (owner has read+write+execute, which includes read+write) but not 644 exactly."
+  - text: "-perm -644 excludes files with permission 644"
+    feedback: "The dash doesn't mean 'exclude'. It means 'at least these permissions'. Files with exactly 644 would also match -644."
+  - text: "-perm 644 is for files only; -perm -644 is for directories only"
+    feedback: "Both work on any file type. The difference is exact match (644) vs minimum permissions (-644)."
+```
+
 **By owner:**
 
 ```bash
@@ -96,6 +111,55 @@ find . -maxdepth 1             # current directory only (no recursion)
 find . -maxdepth 2             # at most 2 levels deep
 find . -mindepth 1             # skip the starting directory itself
 find . -mindepth 2 -maxdepth 3 # between 2 and 3 levels deep
+```
+
+```quiz
+question: "What does find /home -maxdepth 1 -type d do?"
+type: multiple-choice
+options:
+  - text: "Lists all directories recursively under /home"
+    feedback: "-maxdepth 1 limits the search to one level deep. Without it, find would recurse fully."
+  - text: "Lists /home itself plus its immediate subdirectories only"
+    correct: true
+    feedback: "Correct! -maxdepth 1 means: search /home (depth 0) and its direct children (depth 1), but don't recurse deeper. Combined with -type d, it shows only directories at those levels."
+  - text: "Lists only the subdirectories inside /home, not /home itself"
+    feedback: "Close, but -maxdepth 1 includes the starting point (/home) at depth 0. To exclude it, add -mindepth 1: find /home -mindepth 1 -maxdepth 1 -type d"
+  - text: "Follows symbolic links one level deep"
+    feedback: "-maxdepth controls how many directory levels to descend, not symbolic link following. Link following is controlled by -L."
+```
+
+```terminal
+title: find Depth and Type Filtering
+steps:
+  - command: "find /etc -maxdepth 1 -type f | head -5"
+    output: |
+      /etc/hostname
+      /etc/fstab
+      /etc/hosts
+      /etc/resolv.conf
+      /etc/passwd
+    narration: "-maxdepth 1 searches only the top level of /etc. -type f limits results to regular files (no directories)."
+  - command: "find /etc -maxdepth 1 -type d | head -5"
+    output: |
+      /etc
+      /etc/ssh
+      /etc/apt
+      /etc/cron.d
+      /etc/default
+    narration: "Same depth, but -type d shows directories. Note /etc itself is included (depth 0). Add -mindepth 1 to exclude it."
+  - command: "find /var/log -name '*.log' -mtime -7 | head -5"
+    output: |
+      /var/log/syslog
+      /var/log/auth.log
+      /var/log/kern.log
+      /var/log/dpkg.log
+      /var/log/alternatives.log
+    narration: "Combining criteria: files ending in .log that were modified in the last 7 days. -mtime -7 means 'less than 7 days ago'."
+  - command: "find /var/log -name '*.log' -size +1M -mtime -30"
+    output: |
+      /var/log/syslog
+      /var/log/auth.log
+    narration: "Multiple criteria are AND'd together: .log files, larger than 1MB, modified in the last 30 days."
 ```
 
 ### Logical Operators
@@ -128,6 +192,21 @@ find . -name "*.tmp" -exec rm {} +
 The `+` passes as many filenames as possible to a single command invocation. This is much faster when operating on many files.
 
 The performance difference between `\;` and `+` is significant. With `\;`, find spawns a new process for every single file. If you're operating on 1000 files, that's 1000 separate `rm` processes. With `+`, find passes as many filenames as will fit on one command line, so 1000 files might be handled in a single `rm` invocation. The limit on how many arguments `+` can batch is determined by **`ARG_MAX`** (the kernel's maximum argument length, typically 2MB on modern Linux). You can check it with `getconf ARG_MAX`. For very large file sets, `+` will make multiple invocations as needed to stay within this limit.
+
+```quiz
+question: "What is the difference between find -exec cmd {} \\; and find -exec cmd {} +?"
+type: multiple-choice
+options:
+  - text: "\\; runs the command once per file; + runs it once with all files as arguments"
+    correct: true
+    feedback: "Correct! With \\;, find runs the command separately for each match (like a loop). With +, it batches files into a single command invocation (like xargs), which is much faster for large result sets."
+  - text: "+ runs the command in the background for each file"
+    feedback: "The + doesn't run anything in the background. It batches all matched files into as few command invocations as possible."
+  - text: "\\; preserves filenames with spaces; + doesn't"
+    feedback: "Both handle filenames with spaces correctly since find passes them directly as arguments, not through a shell."
+  - text: "They produce the same result but + is newer syntax"
+    feedback: "They can produce different results. Commands that only accept one file argument (like mv to a specific name) need \\;. Commands that accept multiple files (like rm, chmod) work better with +."
+```
 
 **`-delete`:**
 
@@ -170,6 +249,113 @@ find . -daystart -mtime -1
 find / -perm -4000 -type f 2>/dev/null
 ```
 
+```exercise
+title: Find Large Log Files
+difficulty: beginner
+scenario: |
+  Your server's disk is filling up. You need to find all `.log` files under `/var/log`
+  that are larger than 10MB and were modified in the last 30 days.
+
+  Write a find command that shows these files with their sizes in human-readable format.
+hints:
+  - "Use -name '*.log' to match log files"
+  - "Use -size +10M to find files larger than 10MB"
+  - "Use -mtime -30 for files modified in the last 30 days"
+  - "Pipe to xargs ls -lh to see human-readable sizes, or use find's -exec with ls -lh"
+solution: |
+  ```bash
+  # Method 1: Using -exec
+  find /var/log -name '*.log' -size +10M -mtime -30 -exec ls -lh {} \;
+
+  # Method 2: Using xargs (more efficient for many files)
+  find /var/log -name '*.log' -size +10M -mtime -30 -print0 | xargs -0 ls -lh
+
+  # Method 3: Using find's -printf for custom format
+  find /var/log -name '*.log' -size +10M -mtime -30 -printf '%s %p\n' | sort -rn
+  ```
+
+  The -print0 | xargs -0 pattern safely handles filenames with spaces.
+  -printf '%s %p\n' prints size in bytes and path, which sort -rn orders by size.
+```
+
+```exercise
+title: Fix File Permissions Recursively
+difficulty: intermediate
+scenario: |
+  After extracting a tarball, all files and directories have 777 permissions. You need
+  to fix this: directories should be 755 and regular files should be 644.
+
+  Write the find commands to fix this, starting from the current directory.
+hints:
+  - "Use -type d for directories and -type f for files"
+  - "Use -exec chmod to change permissions"
+  - "Run the directory command first, then the file command"
+  - "Use {} + instead of {} \\; for better performance"
+solution: |
+  ```bash
+  # Fix directory permissions (755 = rwxr-xr-x)
+  find . -type d -exec chmod 755 {} +
+
+  # Fix file permissions (644 = rw-r--r--)
+  find . -type f -exec chmod 644 {} +
+  ```
+
+  Using `{} +` batches files into fewer chmod invocations, making it significantly
+  faster than `{} \;` for large directory trees. If some files need to be executable
+  (scripts), handle those separately:
+
+  ```bash
+  find . -type f -name '*.sh' -exec chmod 755 {} +
+  ```
+```
+
+```command-builder
+base: find
+description: Build a find command to search for files by various criteria
+options:
+  - flag: ""
+    type: select
+    label: "Search path"
+    explanation: "Where to start the search"
+    choices:
+      - [".", "Current directory"]
+      - ["/var/log", "/var/log"]
+      - ["/home", "/home"]
+      - ["/etc", "/etc"]
+  - flag: "-type"
+    type: select
+    label: "File type"
+    explanation: "What kind of filesystem objects to find"
+    choices:
+      - ["f", "Regular files"]
+      - ["d", "Directories"]
+      - ["l", "Symbolic links"]
+      - ["", "Any type"]
+  - flag: "-name"
+    type: text
+    label: "Name pattern"
+    placeholder: "'*.log'"
+    explanation: "Glob pattern for the filename (case-sensitive, use -iname for case-insensitive)"
+  - flag: ""
+    type: select
+    label: "Size filter"
+    explanation: "Filter by file size"
+    choices:
+      - ["", "Any size"]
+      - ["-size +10M", "Larger than 10MB"]
+      - ["-size +100M", "Larger than 100MB"]
+      - ["-size -1k", "Smaller than 1KB"]
+  - flag: ""
+    type: select
+    label: "Time filter"
+    explanation: "Filter by modification time"
+    choices:
+      - ["", "Any time"]
+      - ["-mtime -7", "Modified in last 7 days"]
+      - ["-mtime -30", "Modified in last 30 days"]
+      - ["-mtime +90", "Not modified in 90+ days"]
+```
+
 ---
 
 ## xargs
@@ -193,6 +379,21 @@ find . -name "*.log" -print0 | xargs -0 grep "error"
 ```
 
 The `-print0` / `-0` pair is the standard pattern for safely processing arbitrary filenames.
+
+```quiz
+question: "Why would you use find -print0 | xargs -0 instead of find | xargs?"
+type: multiple-choice
+options:
+  - text: "It's faster because -print0 uses binary output"
+    feedback: "-print0 uses null bytes as delimiters instead of newlines. It's not about speed but about correctly handling special characters in filenames."
+  - text: "It correctly handles filenames containing spaces, quotes, or newlines"
+    correct: true
+    feedback: "Correct! Filenames can legally contain spaces, quotes, and even newlines. Regular xargs splits on whitespace, breaking these filenames. -print0/-0 uses null bytes (which can't appear in filenames) as delimiters, making it safe for all filenames."
+  - text: "-print0 sorts the output for more predictable processing"
+    feedback: "-print0 doesn't sort. It changes the delimiter from newline to null byte, which is the only character guaranteed not to appear in Unix filenames."
+  - text: "It prevents find from following symbolic links"
+    feedback: "Symbolic link behavior is controlled by -L and -P flags, not by the output format. -print0 only changes how filenames are delimited."
+```
 
 ### Placeholder Substitution
 
@@ -267,6 +468,39 @@ Both can run commands on found files. The differences:
 | Speed | Slowest | Fast | Fast |
 
 For most tasks, `find -exec {} +` is the simplest safe option. Use `xargs` when you need parallel execution or more control over argument handling.
+
+```command-builder
+base: find
+description: Build a find + action pipeline to process matched files
+options:
+  - flag: ""
+    type: select
+    label: "Search path"
+    explanation: "Where to start searching"
+    choices:
+      - [".", "Current directory"]
+      - ["/var/log", "/var/log"]
+      - ["/tmp", "/tmp"]
+  - flag: ""
+    type: select
+    label: "What to find"
+    explanation: "Criteria for matching files"
+    choices:
+      - ["-type f -name '*.log'", "Log files"]
+      - ["-type f -name '*.tmp' -mtime +7", "Temp files older than 7 days"]
+      - ["-type f -size +100M", "Files over 100MB"]
+      - ["-type d -empty", "Empty directories"]
+  - flag: ""
+    type: select
+    label: "Action"
+    explanation: "What to do with the matched files"
+    choices:
+      - ["-print", "Print paths (default)"]
+      - ["-exec ls -lh {} +", "Show with sizes"]
+      - ["-print0 | xargs -0 rm", "Delete them"]
+      - ["-exec chmod 644 {} +", "Set permissions to 644"]
+      - ["-print0 | xargs -0 tar czf archive.tar.gz", "Archive them"]
+```
 
 ---
 
