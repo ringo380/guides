@@ -341,7 +341,7 @@ The shell processes your command line through several expansion stages before ex
 8. Quote removal
 
 Otherwise known as:
-_Big Tasty Pies Always Come With Quiche._
+_Big Tasty Pies Always Come With Perfect Quiche._
 
 ### Brace Expansion
 
