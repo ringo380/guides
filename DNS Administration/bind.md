@@ -364,10 +364,6 @@ flowchart TD
         ER["www.example.com<br/>→ 203.0.113.50"]
         EF["Recursion: no"]
     end
-
-    style INT fill:#e8f5e9,stroke:#2e7d32
-    style EXT fill:#e3f2fd,stroke:#1565c0
-    style ACL fill:#fff3e0,stroke:#e65100,font-weight:bold
 ```
 
 ```

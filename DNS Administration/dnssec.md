@@ -51,7 +51,7 @@ The chain works like this:
 
 ```mermaid
 graph TD
-    TA["Trust Anchor<br/>(built into resolver)"]:::anchor
+    TA["Trust Anchor<br/>(built into resolver)"]
     TA -->|"verifies"| RootKey
 
     subgraph root ["Root Zone (.)"]
@@ -76,13 +76,7 @@ graph TD
         ExRRSIG -->|"validates"| Answer
     end
 
-    Answer["www.example.com A 93.184.216.34"]:::validated
-
-    classDef anchor fill:#e65100,color:#fff,stroke:#bf360c,font-weight:bold
-    classDef validated fill:#2e7d32,color:#fff,stroke:#1b5e20,font-weight:bold
-    style root fill:#fff3e0,stroke:#e65100
-    style dotcom fill:#e3f2fd,stroke:#1565c0
-    style example fill:#e8f5e9,stroke:#2e7d32
+    Answer["www.example.com A 93.184.216.34"]
 ```
 
 A validating resolver starts at the root (whose key it already knows - the "trust anchor") and follows the chain down. At each level:
@@ -146,20 +140,16 @@ An **NSEC** record says "the next name that exists after this one is X." By chai
 
 ```mermaid
 graph LR
-    A["alpha.example.com<br/>NSEC → beta"]:::exists
-    B["beta.example.com<br/>NSEC → delta"]:::exists
-    D["delta.example.com<br/>NSEC → mail"]:::exists
-    M["mail.example.com<br/>NSEC → www"]:::exists
-    W["www.example.com<br/>NSEC → alpha"]:::exists
+    A["alpha.example.com<br/>NSEC → beta"]
+    B["beta.example.com<br/>NSEC → delta"]
+    D["delta.example.com<br/>NSEC → mail"]
+    M["mail.example.com<br/>NSEC → www"]
+    W["www.example.com<br/>NSEC → alpha"]
 
     A --> B --> D --> M --> W --> A
 
-    Q["Query: charlie.example.com"]:::query
-    Q -.->|"falls between<br/>beta and delta"| GAP["NSEC proves: no name<br/>exists between beta and delta<br/>→ NXDOMAIN is authentic"]:::proof
-
-    classDef exists fill:#1565c0,color:#fff,stroke:#0d47a1
-    classDef query fill:#e65100,color:#fff,stroke:#bf360c,font-weight:bold
-    classDef proof fill:#2e7d32,color:#fff,stroke:#1b5e20
+    Q{{"Query: charlie.example.com"}}
+    Q -.->|"falls between<br/>beta and delta"| GAP["NSEC proves: no name<br/>exists between beta and delta<br/>→ NXDOMAIN is authentic"]
 ```
 
 The problem with NSEC is **zone walking**. An attacker can follow the NSEC chain to enumerate every name in a zone:

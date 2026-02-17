@@ -45,21 +45,16 @@ DNS organizes names into a tree structure, read from right to left. The name `ww
 
 ```mermaid
 graph TD
-    root(". (root)"):::root
-    root --> com(".com"):::tld
-    root --> org(".org"):::tld
-    root --> uk(".uk"):::tld
-    root --> arpa(".arpa"):::tld
-    com --> example("example"):::sld
-    org --> wikipedia("wikipedia"):::sld
-    uk --> couk(".co.uk"):::sld
-    example --> www("www"):::host
-    example --> mail("mail"):::host
-
-    classDef root fill:#e65100,color:#fff,stroke:#bf360c,font-weight:bold
-    classDef tld fill:#00695c,color:#fff,stroke:#004d40,font-weight:bold
-    classDef sld fill:#1565c0,color:#fff,stroke:#0d47a1
-    classDef host fill:#6a1b9a,color:#fff,stroke:#4a148c
+    root(". (root)")
+    root --> com(".com")
+    root --> org(".org")
+    root --> uk(".uk")
+    root --> arpa(".arpa")
+    com --> example("example")
+    org --> wikipedia("wikipedia")
+    uk --> couk(".co.uk")
+    example --> www("www")
+    example --> mail("mail")
 ```
 
 ### The Root Zone
@@ -224,8 +219,6 @@ graph LR
     Auth -.-> RA_Q
     Auth -.-> RB_Q
     Auth -.-> RC_Q
-
-    style Auth fill:#00695c,color:#fff,stroke:#004d40,font-weight:bold
 ```
 
 Each resolver's TTL countdown starts independently from when it first queried. There is no synchronization between them - this is why "DNS propagation" is a myth. It's really **independent cache expiration**.
@@ -366,9 +359,6 @@ graph TD
         S3["Connects directly to<br/>198.51.100.1"]
         S1 --> S2 --> S3
     end
-
-    style problem fill:#fff3e0,stroke:#e65100
-    style solution fill:#e8f5e9,stroke:#2e7d32
 ```
 
 Glue is only needed when a nameserver's name is *within* the zone it serves. If `example.com` uses `ns1.dnsprovider.net` as its nameserver, no glue is needed - the resolver can find `ns1.dnsprovider.net` by following the normal delegation chain through `.net`.
