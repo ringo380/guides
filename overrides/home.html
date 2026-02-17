@@ -5,9 +5,17 @@
   <section class="tx-container">
     <div class="md-grid md-typeset">
       <div class="tx-hero">
-        <h1>The Runbook</h1>
-        <p>Practical technical guides for practitioners</p>
-        <div>
+        <img src="{{ 'assets/images/runbook-hero.png' | url }}" alt="The Runbook - Practical guides for sysadmins and developers" class="tx-hero-logo">
+        <div class="tx-hero-terminal">
+          <div class="tx-hero-terminal__bar">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="tx-hero-terminal__body">
+            <span class="tx-hero-terminal__prompt">$</span>
+            <span class="tx-hero-terminal__text" id="hero-typed"></span><span class="tx-hero-terminal__cursor"></span>
+          </div>
+        </div>
+        <div class="tx-hero-buttons">
           <a href="{{ 'Linux Essentials/' | url }}" class="md-button md-button--primary">
             Get Started
           </a>
@@ -22,28 +30,157 @@
 
 {% block content %}
   <div class="md-typeset">
+
+    <!-- Stats row -->
+    <div class="tx-stats">
+      <div class="tx-stat">
+        <strong>24</strong>
+        <span>Guides</span>
+      </div>
+      <div class="tx-stat">
+        <strong>5</strong>
+        <span>Topics</span>
+      </div>
+      <div class="tx-stat">
+        <strong>100%</strong>
+        <span>Free &amp; Open Source</span>
+      </div>
+    </div>
+
+    <!-- Feature highlights -->
+    <h2>Interactive Learning</h2>
+    <p class="tx-section-subtitle">Every guide includes hands-on components to reinforce what you read.</p>
+    <div class="tx-features">
+      <div class="tx-feature">
+        <div class="tx-feature__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        </div>
+        <strong>Knowledge Checks</strong>
+        <span>Test understanding with quizzes after each section</span>
+      </div>
+      <div class="tx-feature">
+        <div class="tx-feature__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v12zM7.5 17L6 15.5 9.5 12 6 8.5 7.5 7l5 5-5 5zm5.5 0h5v-2h-5v2z"/></svg>
+        </div>
+        <strong>Simulated Terminals</strong>
+        <span>Watch commands execute step-by-step with explanations</span>
+      </div>
+      <div class="tx-feature">
+        <div class="tx-feature__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+        </div>
+        <strong>Hands-on Exercises</strong>
+        <span>Solve real scenarios with progressive hints</span>
+      </div>
+      <div class="tx-feature">
+        <div class="tx-feature__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+        </div>
+        <strong>Code Walkthroughs</strong>
+        <span>Step through scripts line-by-line with annotations</span>
+      </div>
+    </div>
+
+    <!-- Featured guide -->
+    <div class="tx-featured">
+      <div class="tx-featured__badge">Start Here</div>
+      <div class="tx-featured__content">
+        <h3><a href="{{ 'Linux Essentials/shell-basics/' | url }}">Shell Basics</a></h3>
+        <p>How the shell works under the hood - startup files, PATH, variables, and expansions. Includes interactive quizzes, exercises, simulated terminals, and code walkthroughs.</p>
+        <a href="{{ 'Linux Essentials/shell-basics/' | url }}" class="md-button md-button--primary tx-featured__cta">
+          Start Learning
+        </a>
+      </div>
+    </div>
+
+    <!-- Topics -->
     <h2>Topics</h2>
     <div class="tx-topics">
-      <a href="{{ 'Linux Essentials/' | url }}">
-        <strong>Linux Essentials</strong>
-        <span>12 guides from shell basics to scripting best practices</span>
+      <a href="{{ 'Linux Essentials/' | url }}" class="tx-topic--linux">
+        <div class="tx-topic__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v12zM7.5 17L6 15.5 9.5 12 6 8.5 7.5 7l5 5-5 5z"/></svg>
+        </div>
+        <div class="tx-topic__text">
+          <strong>Linux Essentials</strong>
+          <span>12 guides from shell basics to scripting best practices</span>
+        </div>
       </a>
-      <a href="{{ 'DNS Administration/' | url }}">
-        <strong>DNS Administration</strong>
-        <span>8 guides from DNS fundamentals to architecture and operations</span>
+      <a href="{{ 'DNS Administration/' | url }}" class="tx-topic--dns">
+        <div class="tx-topic__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        </div>
+        <div class="tx-topic__text">
+          <strong>DNS Administration</strong>
+          <span>8 guides from fundamentals to architecture and operations</span>
+        </div>
       </a>
-      <a href="{{ 'Git/git-getting-through-it/' | url }}">
-        <strong>Git</strong>
-        <span>Fundamentals and concepts for getting through it</span>
+      <a href="{{ 'Git/git-getting-through-it/' | url }}" class="tx-topic--git">
+        <div class="tx-topic__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/></svg>
+        </div>
+        <div class="tx-topic__text">
+          <strong>Git</strong>
+          <span>Fundamentals and concepts for getting through it</span>
+        </div>
       </a>
-      <a href="{{ 'Databases/pdrt-for-cpanel-innodb-recovery/' | url }}">
-        <strong>Databases</strong>
-        <span>InnoDB recovery with Percona Data Recovery Tool</span>
+      <a href="{{ 'Databases/pdrt-for-cpanel-innodb-recovery/' | url }}" class="tx-topic--databases">
+        <div class="tx-topic__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C7.58 3 4 4.79 4 7v10c0 2.21 3.58 4 8 4s8-1.79 8-4V7c0-2.21-3.58-4-8-4zm0 2c3.87 0 6 1.5 6 2s-2.13 2-6 2-6-1.5-6-2 2.13-2 6-2zm6 12c0 .5-2.13 2-6 2s-6-1.5-6-2v-2.23c1.61.78 3.72 1.23 6 1.23s4.39-.45 6-1.23V17zm0-5c0 .5-2.13 2-6 2s-6-1.5-6-2V9.77C7.61 10.55 9.72 11 12 11s4.39-.45 6-1.23V12z"/></svg>
+        </div>
+        <div class="tx-topic__text">
+          <strong>Databases</strong>
+          <span>InnoDB recovery with Percona Data Recovery Tool</span>
+        </div>
       </a>
-      <a href="{{ 'Dev Zero/Perl/perl_dev0_introduction/' | url }}">
-        <strong>Perl</strong>
-        <span>Developer introduction and learning roadmap</span>
+      <a href="{{ 'Dev Zero/Perl/perl_dev0_introduction/' | url }}" class="tx-topic--perl">
+        <div class="tx-topic__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+        </div>
+        <div class="tx-topic__text">
+          <strong>Perl</strong>
+          <span>Developer introduction and learning roadmap</span>
+        </div>
       </a>
     </div>
   </div>
+
+  <!-- Hero typing animation -->
+  <script>
+  (function() {
+    var commands = [
+      'cat /etc/shells',
+      'dig +short example.com',
+      'git log --oneline -5',
+      'grep -r "error" /var/log/',
+      'man bash'
+    ];
+    var el = document.getElementById('hero-typed');
+    if (!el) return;
+    var cmdIdx = 0, charIdx = 0, deleting = false;
+    function tick() {
+      var cmd = commands[cmdIdx];
+      if (!deleting) {
+        el.textContent = cmd.slice(0, charIdx + 1);
+        charIdx++;
+        if (charIdx >= cmd.length) {
+          setTimeout(function() { deleting = true; tick(); }, 2200);
+          return;
+        }
+        setTimeout(tick, 55 + Math.random() * 45);
+      } else {
+        el.textContent = cmd.slice(0, charIdx);
+        charIdx--;
+        if (charIdx < 0) {
+          deleting = false;
+          charIdx = 0;
+          cmdIdx = (cmdIdx + 1) % commands.length;
+          setTimeout(tick, 400);
+          return;
+        }
+        setTimeout(tick, 25);
+      }
+    }
+    tick();
+  })();
+  </script>
 {% endblock %}
