@@ -32,8 +32,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.sections
-    - navigation.expand
+    - navigation.tabs
     - navigation.top
     - navigation.instant
     - navigation.tracking
@@ -78,10 +77,12 @@ markdown_extensions:
 extra_css:
   - assets/stylesheets/extra.css
   - assets/stylesheets/interactive.css
+  - assets/stylesheets/lightbox.css
 
 extra_javascript:
   - assets/javascripts/interactive.js
   - assets/javascripts/giscus-theme.js
+  - assets/javascripts/lightbox.js
 
 extra:
   social:
