@@ -50,6 +50,7 @@
   function initComponents() {
     // Load storage first - components depend on window.RunbookStorage
     loadScript("assets/javascripts/lib/storage.js")
+      .then(() => loadScript("assets/javascripts/lib/analytics.js"))
       .then(() => {
         // Find all interactive divs on the page
         const types = Object.keys(COMPONENT_SCRIPTS);
@@ -84,6 +85,7 @@
       .catch(() => {
         // Storage failed to load - initialize components without it
         console.warn("[Runbook] Storage unavailable, progress will not persist");
+        loadScript("assets/javascripts/lib/analytics.js").catch(() => {});
         const types = Object.keys(COMPONENT_SCRIPTS);
         types.forEach((type) => {
           const divs = document.querySelectorAll(`.interactive-${type}`);
