@@ -1,1 +1,8 @@
 blank_issues_enabled: true
+contact_links:
+  - name: Ask a Question
+    url: https://github.com/ringo380/guides/discussions/new?category=q-a
+    about: Get help or ask questions about guide content
+  - name: Share an Idea
+    url: https://github.com/ringo380/guides/discussions/new?category=ideas
+    about: Suggest new topics, improvements, or features

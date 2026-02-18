@@ -353,6 +353,62 @@
 }
 
 /* ================================
+   Community Cards
+   ================================ */
+.tx-community {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.tx-community-card {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--md-default-fg-color);
+  transition: all 0.15s ease;
+}
+
+.tx-community-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  border-color: var(--md-primary-fg-color);
+}
+
+.tx-community-card__icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 0.75rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--md-primary-fg-color) 12%, transparent);
+  color: var(--md-primary-fg-color);
+}
+
+.tx-community-card__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.tx-community-card strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.tx-community-card span {
+  font-size: 0.82rem;
+  color: var(--md-default-fg-color--light);
+  line-height: 1.4;
+}
+
+/* ================================
    Mermaid & Diagrams
    ================================ */
 .mermaid {
@@ -393,5 +449,10 @@
   .tx-topics a {
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  .tx-community {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
   }
 }

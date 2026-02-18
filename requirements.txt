@@ -1,2 +1,4 @@
 mkdocs-material>=9.5
 mkdocs-open-in-new-tab>=1.0
+pillow>=10.0
+cairosvg>=2.7
