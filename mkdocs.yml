@@ -145,5 +145,19 @@ nav:
       - InnoDB Recovery (PDRT for cPanel): Databases/pdrt-for-cpanel-innodb-recovery.md
   - Dev Zero:
       - Perl:
+          - Index: Dev Zero/Perl/README.md
           - Introduction: Dev Zero/Perl/perl_dev0_introduction.md
+          - Scalars, Strings, and Numbers: Dev Zero/Perl/scalars-strings-numbers.md
+          - Arrays, Hashes, and Lists: Dev Zero/Perl/arrays-hashes-lists.md
+          - Control Flow: Dev Zero/Perl/control-flow.md
+          - Regular Expressions: Dev Zero/Perl/regular-expressions.md
+          - Subroutines and References: Dev Zero/Perl/subroutines-references.md
+          - File I/O and System: Dev Zero/Perl/file-io-and-system.md
+          - Modules and CPAN: Dev Zero/Perl/modules-and-cpan.md
+          - Object-Oriented Perl: Dev Zero/Perl/object-oriented-perl.md
+          - Error Handling and Debugging: Dev Zero/Perl/error-handling-debugging.md
+          - Testing: Dev Zero/Perl/testing.md
+          - Text Processing and One-Liners: Dev Zero/Perl/text-processing-oneliners.md
+          - Networking and Daemons: Dev Zero/Perl/networking-daemons.md
+          - Web Frameworks and APIs: Dev Zero/Perl/web-frameworks-apis.md
           - Developer Roadmap: Dev Zero/Perl/perl_developer_roadmap.md

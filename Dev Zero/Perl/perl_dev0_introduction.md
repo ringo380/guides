@@ -13,6 +13,40 @@ Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed und
 
 ---
 
+## The Perl Story
+
+[**Perl**](https://www.perl.org/) was created by **Larry Wall** in 1987. Wall was a linguist and Unix system administrator at Unisys who needed a tool that could handle report generation from scattered files across a network. The existing tools - `sed`, `awk`, and shell scripts - couldn't handle the job cleanly, so he built something new.
+
+![Larry Wall, creator of Perl](https://upload.wikimedia.org/wikipedia/commons/b/b3/Larry_Wall_YAPC_2007.jpg){ width="300" align="right" }
+
+Wall's background in linguistics shaped Perl's design philosophy. He borrowed the idea that there should be **more than one way to do it** (TMTOWTDI, pronounced "Tim Toady") - just as natural languages offer multiple ways to express the same thought. Perl's syntax draws from C, `sed`, `awk`, and shell scripting, making it feel familiar to Unix practitioners from day one.
+
+### Version History
+
+**Perl 1** (1987) was a text-processing language that replaced Wall's earlier `awk` scripts. **Perl 2** (1988) added a better regex engine. **Perl 3** (1989) added binary data support. **Perl 4** (1991) became the "Camel Book" edition - the version most 1990s sysadmins learned.
+
+**Perl 5** (1994) was a complete rewrite that introduced everything modern Perl developers rely on: lexical scoping with `my`, references for complex data structures, modules, objects (via `bless`), and the [**CPAN**](https://www.cpan.org/) ecosystem. Perl 5 remains the production version of Perl, actively maintained and released regularly.
+
+**Perl 6** was announced in 2000 as an ambitious redesign. After nearly two decades of development, it was renamed to [**Raku**](https://raku.org/) in 2019 to clarify that it is a separate language, not a replacement for Perl 5. The two languages share philosophy but have distinct syntax and runtimes.
+
+```mermaid
+timeline
+    title Perl Version History
+    1987 : Perl 1 - Text processing tool
+    1988 : Perl 2 - Improved regex engine
+    1989 : Perl 3 - Binary data support
+    1991 : Perl 4 - The Camel Book era
+    1994 : Perl 5 - Modules, references, OOP, CPAN
+    2000 : Perl 6 announced
+    2019 : Perl 6 renamed to Raku
+    2025 : Perl 5.40+ actively maintained
+```
+
+!!! tip
+    When people say "Perl" today, they mean Perl 5. Raku is its own language with its own community. This course teaches Perl 5.
+
+---
+
 ## The Unix Foundation
 
 Before writing a single line of Perl, you need to understand the operating system it was born on. Perl was created by Larry Wall in 1987 as a practical tool for Unix system administration - a "Swiss Army chainsaw" for processing text, managing files, and gluing programs together. Its design reflects Unix philosophy at every level.
@@ -195,9 +229,98 @@ options:
 
 ---
 
+## Perl in the Unix Tool Ecosystem
+
+Perl occupies a specific niche between shell scripts and compiled languages. Understanding where it fits helps you choose the right tool for each job.
+
+```mermaid
+flowchart LR
+    subgraph Quick Tasks
+        A[Shell / Bash]
+    end
+    subgraph Text Processing
+        B[sed / awk]
+    end
+    subgraph Scripting Power
+        C[Perl]
+    end
+    subgraph Application Development
+        D[Python / C]
+    end
+
+    A -->|"Too complex\nfor one-liners"| B
+    B -->|"Need variables,\nlogic, modules"| C
+    C -->|"Need frameworks,\nlarge teams"| D
+```
+
+Shell scripts are perfect for gluing commands together. `sed` and `awk` handle line-by-line text transformation. Perl bridges the gap when you need real data structures, error handling, regular expressions that span multiple lines, or access to thousands of CPAN modules - but don't need the overhead of a compiled language or a full application framework.
+
+In practice, Perl one-liners replace `sed` and `awk` commands that have grown too complex, and Perl scripts replace shell scripts that have grown too long. This positioning is why Perl was called "the duct tape of the Internet" during the 1990s web boom.
+
+---
+
+## Your First Perl Commands
+
+Before writing full scripts, try Perl directly from the command line. The `-e` flag lets you run Perl code without creating a file.
+
+```terminal
+title: First Perl Commands
+steps:
+  - command: "perl -v | head -2"
+    output: "This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-linux-gnu-thread-multi"
+    narration: "perl -v shows your installed version. Perl comes pre-installed on most Unix and Linux systems. Any version 5.16 or later works for this course."
+  - command: "perl -e 'print \"Hello, World!\\n\";'"
+    output: "Hello, World!"
+    narration: "The -e flag runs code from the command line. print sends text to stdout. The \\n is a newline. Every statement ends with a semicolon."
+  - command: "perl -e 'my $name = \"Perl\"; print \"Hello, $name!\\n\";'"
+    output: "Hello, Perl!"
+    narration: "Variables start with $ for scalars. The my keyword declares a new variable. Double quotes interpolate variables - $name becomes its value."
+  - command: "perl -ne 'print if /error/i' /var/log/syslog"
+    output: "Jan 15 03:22:14 server kernel: [error] disk read failure\nJan 15 09:41:03 server app[1234]: Connection error: timeout"
+    narration: "A practical one-liner: -n reads input line by line, print if /error/i prints lines matching the regex (case-insensitive). This replaces grep for complex patterns."
+```
+
+---
+
+## Anatomy of a Perl Script
+
+Every well-written Perl script follows a consistent structure. Here is the skeleton you should start every script with.
+
+```code-walkthrough
+language: perl
+title: Anatomy of a Perl Script
+code: |
+  #!/usr/bin/env perl
+  use strict;
+  use warnings;
+
+  my $greeting = "Hello";
+  my $target   = "World";
+
+  print "$greeting, $target!\n";
+annotations:
+  - line: 1
+    text: "The shebang line tells the OS to run this file with perl. Using /usr/bin/env perl finds perl in your PATH, which is more portable than hardcoding /usr/bin/perl."
+  - line: 2
+    text: "use strict forces you to declare all variables with my. Without it, a typo like $greting silently creates a new global variable instead of raising an error."
+  - line: 3
+    text: "use warnings alerts you to common mistakes: using uninitialized variables, writing to a read-only filehandle, or using a string where a number was expected."
+  - line: 5
+    text: "my declares a lexical (local) variable. The $ sigil marks it as a scalar - a single value. Perl has three main sigils: $ (scalar), @ (array), % (hash)."
+  - line: 6
+    text: "Aligning the = signs is a common Perl style convention. It makes assignments easier to scan when you have several in a row."
+  - line: 8
+    text: "print sends output to stdout. In double quotes, $greeting and $target are replaced with their values. The \\n adds a newline at the end."
+```
+
+!!! danger
+    Never skip `use strict` and `use warnings`. These two lines catch more bugs than any other practice in Perl. Experienced developers consider code without them to be broken by default.
+
+---
+
 ## Next Steps
 
-This introduction covers the Unix concepts you need before touching Perl syntax. For the full learning path - from basic OS knowledge through advanced Perl development - continue to the [Perl Developer Roadmap](perl_developer_roadmap.md).
+This introduction covers the Unix concepts that make Perl's design logical and the history behind the language. You're ready to start writing real Perl code - continue to [Scalars, Strings, and Numbers](scalars-strings-numbers.md) for your first deep look at Perl's data types.
 
 ---
 
@@ -208,3 +331,9 @@ This introduction covers the Unix concepts you need before touching Perl syntax.
 - [Perl.org](https://www.perl.org/) - official Perl community site
 - [The Unix Programming Environment](https://en.wikipedia.org/wiki/The_Unix_Programming_Environment) - Kernighan and Pike's classic on Unix philosophy
 - [Learning Perl](https://www.oreilly.com/library/view/learning-perl-8th/9781492094944/) - the "Llama Book," the standard introduction to Perl
+- [The Perl Programming Language](https://en.wikipedia.org/wiki/Perl_(programming_language)) - Wikipedia overview of Perl's history and design
+- [Raku](https://raku.org/) - the language formerly known as Perl 6
+
+---
+
+**Next:** [Scalars, Strings, and Numbers](scalars-strings-numbers.md) | [Back to Index](README.md)
