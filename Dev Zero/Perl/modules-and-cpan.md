@@ -2,8 +2,8 @@
 
 ## Code Organization and the Perl Ecosystem
 
-**Version:** 1.0\
-**Year:** 2025
+**Version:** 1.1
+**Year:** 2026
 
 ---
 

@@ -2,8 +2,8 @@
 
 ## Reading, Writing, and Talking to the OS
 
-**Version:** 1.0\
-**Year:** 2025
+**Version:** 1.1
+**Year:** 2026
 
 ---
 

@@ -2,8 +2,8 @@
 
 ## Why Perl, and Why Unix First
 
-**Version:** 1.5\\\
-**Year:** 2025
+**Version:** 1.6
+**Year:** 2026
 
 ---
 
@@ -17,7 +17,13 @@ Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed und
 
 [**Perl**](https://www.perl.org/) was created by **Larry Wall** in 1987. Wall was a linguist and Unix system administrator at Unisys who needed a tool that could handle report generation from scattered files across a network. The existing tools - `sed`, `awk`, and shell scripts - couldn't handle the job cleanly, so he built something new.
 
-![Larry Wall, creator of Perl](https://upload.wikimedia.org/wikipedia/commons/b/b3/Larry_Wall_YAPC_2007.jpg){ width="300" align="right" }
+<figure class="photo-frame photo-right" style="max-width: 300px;">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/Larry_Wall_YAPC_2007.jpg" alt="Larry Wall standing with arms crossed at the YAPC::NA conference in Houston, June 2007">
+  <figcaption>
+    Larry Wall, creator of Perl, at YAPC::NA 2007.
+    <span class="photo-credit">Photo: <a href="https://www.flickr.com/photos/15352839@N00/618129424/">Randal Schwartz</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0">CC BY-SA 2.0</a></span>
+  </figcaption>
+</figure>
 
 Wall's background in linguistics shaped Perl's design philosophy. He borrowed the idea that there should be **more than one way to do it** (TMTOWTDI, pronounced "Tim Toady") - just as natural languages offer multiple ways to express the same thought. Perl's syntax draws from C, `sed`, `awk`, and shell scripting, making it feel familiar to Unix practitioners from day one.
 
@@ -29,18 +35,9 @@ Wall's background in linguistics shaped Perl's design philosophy. He borrowed th
 
 **Perl 6** was announced in 2000 as an ambitious redesign. After nearly two decades of development, it was renamed to [**Raku**](https://raku.org/) in 2019 to clarify that it is a separate language, not a replacement for Perl 5. The two languages share philosophy but have distinct syntax and runtimes.
 
-```mermaid
-timeline
-    title Perl Version History
-    1987 : Perl 1 - Text processing tool
-    1988 : Perl 2 - Improved regex engine
-    1989 : Perl 3 - Binary data support
-    1991 : Perl 4 - The Camel Book era
-    1994 : Perl 5 - Modules, references, OOP, CPAN
-    2000 : Perl 6 announced
-    2019 : Perl 6 renamed to Raku
-    2025 : Perl 5.40+ actively maintained
-```
+<div class="diagram-container">
+  <img src="../../../assets/images/perl/perl-version-history.svg" alt="Perl Version History timeline showing major releases from Perl 1 in 1987 through Perl 5.40+ in 2025">
+</div>
 
 !!! tip
     When people say "Perl" today, they mean Perl 5. Raku is its own language with its own community. This course teaches Perl 5.

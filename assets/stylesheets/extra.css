@@ -409,6 +409,120 @@
 }
 
 /* ================================
+   Left Sidebar - Collapsed by Default
+   ================================ */
+
+/* Show hamburger toggle on desktop (Material hides it above 76.25em) */
+@media screen and (min-width: 76.25em) {
+  label[for="__drawer"] {
+    display: inline-block !important;
+    cursor: pointer;
+  }
+
+  /* Hide left sidebar by default on desktop */
+  .md-sidebar--primary {
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    height: 100vh;
+    background: var(--md-default-bg-color);
+    box-shadow: none;
+    padding-top: 3rem;
+  }
+
+  /* Show left sidebar when drawer is checked */
+  [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary {
+    transform: translateX(0);
+    opacity: 1;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* ================================
+   Photo Frames
+   ================================ */
+.md-content figure.photo-frame {
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--md-default-bg-color);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid color-mix(in srgb, var(--md-default-fg-color) 8%, transparent);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.md-content figure.photo-frame:hover {
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    0 12px 32px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.md-content figure.photo-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.md-content figure.photo-frame figcaption {
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--md-default-fg-color--light);
+  text-align: center;
+  border-top: 1px solid color-mix(in srgb, var(--md-default-fg-color) 6%, transparent);
+  background: color-mix(in srgb, var(--md-default-fg-color) 3%, var(--md-default-bg-color));
+}
+
+.md-content figure.photo-frame figcaption .photo-credit {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  opacity: 0.7;
+}
+
+.md-content figure.photo-frame figcaption .photo-credit a {
+  color: var(--md-default-fg-color--light);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--md-default-fg-color) 20%, transparent);
+  text-underline-offset: 2px;
+}
+
+.md-content figure.photo-frame figcaption .photo-credit a:hover {
+  color: var(--md-accent-fg-color);
+  text-decoration-color: var(--md-accent-fg-color);
+}
+
+/* Float variants */
+.md-content figure.photo-frame.photo-right {
+  float: right;
+  margin: 0.25rem 0 1rem 1.5rem;
+}
+
+.md-content figure.photo-frame.photo-left {
+  float: left;
+  margin: 0.25rem 1.5rem 1rem 0;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 600px) {
+  .md-content figure.photo-frame.photo-right,
+  .md-content figure.photo-frame.photo-left {
+    float: none;
+    margin: 1rem auto;
+    max-width: 100%;
+  }
+}
+
+/* ================================
    Mermaid & Diagrams
    ================================ */
 .mermaid {

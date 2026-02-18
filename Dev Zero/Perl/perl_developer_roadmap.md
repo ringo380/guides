@@ -2,8 +2,8 @@
 
 ## The Road to Perl Developer Mastery
 
-**Version:** 1.5\\\
-**Year:** 2025
+**Version:** 1.6
+**Year:** 2026
 
 ---
 

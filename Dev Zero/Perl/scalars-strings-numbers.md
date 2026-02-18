@@ -2,8 +2,8 @@
 
 ## Perl's Building Blocks: One Thing at a Time
 
-**Version:** 1.0\
-**Year:** 2025
+**Version:** 1.1
+**Year:** 2026
 
 ---
 
@@ -383,19 +383,12 @@ Without `scalar()`, `print` imposes list context on `@colors`, and you would get
 
 The surrounding code - the operator, function, or assignment target - dictates context. This flowchart summarizes the decision process:
 
-```mermaid
-flowchart TD
-    A[Expression Evaluated] --> B{What expects\nthe value?}
-    B -->|Assigned to $scalar| C[Scalar Context]
-    B -->|Assigned to @array| D[List Context]
-    B -->|Used with + - * /| C
-    B -->|Used with . x| C
-    B -->|In if/while condition| E[Boolean Context]
-    B -->|print argument| D
-    C --> F["@array returns count\n$hash returns 'X/Y'"]
-    D --> G["@array returns elements\n$scalar returns single-element list"]
-    E --> H["False: undef, '', 0, '0'\nTrue: everything else"]
-```
+<div class="diagram-container">
+  <picture>
+    <source srcset="../../../assets/images/perl/perl-context-flowchart-dark.png" media="(prefers-color-scheme: dark)">
+    <img src="../../../assets/images/perl/perl-context-flowchart-light.png" alt="Perl context flowchart showing how expressions are evaluated in scalar context (returns counts), list context (returns elements), or boolean context (truthy/falsy) based on the surrounding code">
+  </picture>
+</div>
 
 ```quiz
 question: "What does Perl's 'context' mean for the expression: my @arr = (1,2,3); my $x = @arr;"

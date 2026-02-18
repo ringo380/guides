@@ -2,8 +2,8 @@
 
 ## Pattern Matching and Text Transformation
 
-**Version:** 1.0\
-**Year:** 2025
+**Version:** 1.0
+**Year:** 2026
 
 ---
 
