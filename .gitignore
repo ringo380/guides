@@ -14,6 +14,7 @@ CLAUDE.local.md
 site/
 docs/
 hooks/__pycache__/
+.cache/
 
 # Unused design assets
 assets/images/runbook-logo.png
