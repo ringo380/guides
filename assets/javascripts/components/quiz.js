@@ -128,6 +128,15 @@
             detail: { quizId, correct: isCorrect, attempts },
           })
         );
+
+        if (window.RunbookAnalytics) {
+          window.RunbookAnalytics.track("quiz_answer", {
+            quiz_id: quizId,
+            correct: isCorrect,
+            attempts: attempts,
+            question: config.question || "",
+          });
+        }
       });
 
       optionsEl.appendChild(btn);
