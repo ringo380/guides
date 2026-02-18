@@ -141,8 +141,14 @@
         input.placeholder = opt.placeholder || "";
       }
 
-      input.addEventListener("input", updateCommand);
-      input.addEventListener("change", updateCommand);
+      input.addEventListener("input", () => {
+        updateCommand();
+        trackOptionChange({ base_command: base, flag: opt.flag });
+      });
+      input.addEventListener("change", () => {
+        updateCommand();
+        trackOptionChange({ base_command: base, flag: opt.flag });
+      });
       row.appendChild(input);
 
       // Explanation
@@ -226,7 +232,6 @@
         explanations.appendChild(dd);
       });
 
-      trackOptionChange({ base_command: base });
     }
 
     // Assemble
