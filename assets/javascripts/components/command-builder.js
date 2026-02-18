@@ -29,6 +29,10 @@
     const base = config.base || "command";
     const options = config.options || [];
 
+    const trackOptionChange = window.RunbookAnalytics
+      ? window.RunbookAnalytics.debounce("command_option_change", 1000)
+      : function () {};
+
     // Header
     const header = document.createElement("div");
     header.className = "interactive-header";
@@ -59,6 +63,13 @@
       navigator.clipboard.writeText(text).then(
         () => {
           copyBtn.textContent = "Copied!";
+
+          if (window.RunbookAnalytics) {
+            window.RunbookAnalytics.track("command_copy", {
+              base_command: base,
+            });
+          }
+
           setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
         },
         () => {
@@ -72,6 +83,13 @@
           document.execCommand("copy");
           document.body.removeChild(textarea);
           copyBtn.textContent = "Copied!";
+
+          if (window.RunbookAnalytics) {
+            window.RunbookAnalytics.track("command_copy", {
+              base_command: base,
+            });
+          }
+
           setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
         }
       );
@@ -207,6 +225,8 @@
         explanations.appendChild(dt);
         explanations.appendChild(dd);
       });
+
+      trackOptionChange({ base_command: base });
     }
 
     // Assemble
