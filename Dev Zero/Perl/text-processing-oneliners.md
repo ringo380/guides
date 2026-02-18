@@ -376,9 +376,9 @@ annotations:
     text: "Conditional counting: the hash only increments when the status is a 5xx error. The END block sorts by count descending."
   - line: 11
     text: "Single-pass analysis: all counters update on every line. This avoids reading the file three times."
-  - line: 16
+  - line: 18
     text: "printf with %% (literal percent sign) calculates each status code as a percentage of total requests."
-  - line: 20
+  - line: 23
     text: "Array slice [0..4] limits output to the top 5 error sources. If fewer than 5 IPs caused errors, Perl handles the short list gracefully."
 ```
 

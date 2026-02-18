@@ -238,7 +238,7 @@ code: |
 annotations:
   - line: 10
     text: "First try block handles file I/O errors. If the file does not exist, the die inside the or clause triggers the catch block."
-  - line: 14
+  - line: 13
     text: "local $/ undefines the input record separator, causing the diamond operator to slurp the entire file into $content as a single string."
   - line: 17
     text: "The catch block re-throws with additional context. Wrapping errors ('Config read failed:') builds an error chain that traces the problem to its source."
@@ -246,7 +246,7 @@ annotations:
     text: "Second try block handles JSON parsing errors. decode_json dies on malformed JSON, and catch adds context about which stage failed."
   - line: 33
     text: "validate_config uses die with descriptive messages for each rule violation. Callers can wrap this in try/catch to handle the errors."
-  - line: 42
+  - line: 43
     text: "The top-level try/catch catches anything that propagated up. The error chain might read: 'Startup failed: Config read failed: Cannot open app.json: No such file or directory'."
 ```
 

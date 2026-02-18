@@ -710,9 +710,9 @@ code: |
   # Usage
   rotate_logs('/var/log/app.log', 5);
 annotations:
-  - line: 5
+  - line: 3
     text: "File::Copy provides move() which works across filesystems, unlike rename() which only works within the same filesystem."
-  - line: 8
+  - line: 7
     text: "The //= operator assigns a default of 5 only if $max is undef. This lets callers omit the second argument."
   - line: 11
     text: "Delete the oldest rotated log first. If app.log.5 exists, it gets removed to make room. unlink returns the number of files removed."

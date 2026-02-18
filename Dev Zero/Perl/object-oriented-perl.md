@@ -331,6 +331,11 @@ code: |
       print $self->name . " makes a sound\n";
   }
 
+  sub describe {
+      my ($self) = @_;
+      printf "%s is a %s\n", $self->{name}, $self->{species};
+  }
+
   package Dog;
   use parent -norequire, 'Animal';
 
@@ -383,17 +388,19 @@ annotations:
     text: "The constructor receives the class name as the first argument. Using $class instead of hardcoding 'Animal' makes inheritance work - subclasses calling SUPER::new will pass their own class name."
   - line: 14
     text: "Compact accessor style. $_[0] is the invocant ($self). For simple read-only accessors, this one-line form is common."
-  - line: 22
-    text: "The -norequire flag tells use parent not to try loading Animal from a file. Needed here because Animal is defined in the same file."
-  - line: 25
-    text: "Dog's constructor sets the species, then delegates to Animal's constructor via SUPER::new. This ensures the parent's initialization logic runs."
+  - line: 21
+    text: "The describe method accesses the object's internal hash directly. Since Dog and Cat inherit from Animal, they get this method for free through @ISA."
   - line: 27
+    text: "The -norequire flag tells use parent not to try loading Animal from a file. Needed here because Animal is defined in the same file."
+  - line: 29
+    text: "Dog's constructor sets the species, then delegates to Animal's constructor via SUPER::new. This ensures the parent's initialization logic runs."
+  - line: 33
     text: "After the parent constructor returns, Dog adds its own attribute (tricks). The object is already blessed as a Dog thanks to $class propagation."
   - line: 50
     text: "Cat does not need extra attributes, so its constructor just sets species and delegates entirely to SUPER::new."
-  - line: 60
-    text: "In package main, we create objects with the subclass constructors. Dog->new and Cat->new both call SUPER::new internally, but the objects are blessed as Dog and Cat respectively."
   - line: 63
+    text: "In package main, we create objects with the subclass constructors. Dog->new and Cat->new both call SUPER::new internally, but the objects are blessed as Dog and Cat respectively."
+  - line: 69
     text: "Dog has no describe method, so Perl searches @ISA and finds Animal::describe. Inheritance provides the method automatically."
 ```
 

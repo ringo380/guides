@@ -384,7 +384,7 @@ annotations:
     text: "GET /api/tasks returns all tasks as a JSON array. The sort ensures consistent ordering by ID."
   - line: 13
     text: "$c->req->json parses the request body as JSON. If the body is not valid JSON, it returns undef."
-  - line: 22
+  - line: 23
     text: "Mojo::JSON exports true and false, which serialize to JSON true/false instead of 1/0. This matters for API consumers expecting proper JSON booleans."
   - line: 25
     text: "Setting the Location header on creation responses is a REST convention. It tells the client where to find the newly created resource."

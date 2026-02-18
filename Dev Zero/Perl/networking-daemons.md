@@ -286,17 +286,17 @@ code: |
 annotations:
   - line: 4
     text: "JSON::MaybeXS picks the fastest available JSON backend (Cpanel::JSON::XS, JSON::XS, or JSON::PP). It is the recommended way to handle JSON in Perl."
-  - line: 8
+  - line: 7
     text: "Create the HTTP::Tiny instance once and reuse it. This enables connection keep-alive across multiple requests to the same host."
-  - line: 11
+  - line: 10
     text: "verify_SSL enables certificate validation. Without this, HTTPS connections are vulnerable to man-in-the-middle attacks."
   - line: 20
     text: "encode_json converts a Perl hash reference into a JSON string for the request body. Content-Type is set to tell the server what format the body uses."
   - line: 27
     text: "HTTP::Tiny sets success to false for connection errors and 4xx/5xx responses. The status field contains the HTTP status code (or 599 for internal errors like DNS failures)."
-  - line: 36
+  - line: 34
     text: "decode_json parses the JSON response body back into a Perl data structure. Dies if the response is not valid JSON."
-  - line: 38
+  - line: 37
     text: "The try/catch block wraps the entire request sequence. Any die from api_request or JSON parsing is caught here and reported cleanly."
 ```
 

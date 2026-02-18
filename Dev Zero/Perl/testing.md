@@ -383,9 +383,9 @@ annotations:
     text: "Each subtest groups related assertions. If any assertion inside fails, the whole subtest fails."
   - line: 9
     text: "ok() checks the constructor returned a defined value. isa_ok() verifies the object's class."
-  - line: 15
+  - line: 16
     text: "dies {} captures a fatal error and returns the message. Returns undef if no error occurred."
-  - line: 17
+  - line: 19
     text: "like() with a regex validates error text without depending on exact wording."
   - line: 27
     text: "hash {} with field assertions checks specific keys. etc() allows extra keys. Use end() to reject unexpected keys."

@@ -933,4 +933,4 @@ solution: |
 
 ---
 
-**Next:** [Arrays, Hashes, and Lists](arrays-hashes-lists.md) | [Back to Index](README.md)
+**Previous:** [Introduction: Why Perl, and Why Unix First](perl_dev0_introduction.md) | **Next:** [Arrays, Hashes, and Lists](arrays-hashes-lists.md) | [Back to Index](README.md)

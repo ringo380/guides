@@ -246,7 +246,7 @@ annotations:
     text: "titlecase capitalizes the first letter of each word. \\u uppercases one character, \\L lowercases the rest. The \\w+ captures each word."
   - line: 21
     text: "truncate_str shortens a string to a maximum length, appending '...' if truncated. The //= operator provides a default of 80 if $max is undef."
-  - line: 28
+  - line: 29
     text: "The module must return a true value. 1; is the universal convention. Without it, use StringUtils would fail with 'did not return a true value.'"
 ```
 

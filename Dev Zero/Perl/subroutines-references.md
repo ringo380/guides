@@ -323,11 +323,11 @@ annotations:
     text: "The strict option controls error behavior - die on failure vs. warn and continue. Named params make this self-documenting at the call site."
   - line: 10
     text: "The do { ... } block lets you run multiple statements after 'or'. If strict mode is on, die. Otherwise, warn and return an empty config."
-  - line: 17
+  - line: 18
     text: "Skip comment lines (starting with #) and blank lines. The \\s* allows leading whitespace."
-  - line: 19
+  - line: 20
     text: "Regex captures the key (\\w+) and value (.+?) from lines like 'host = localhost'. The \\s* around = allows flexible spacing."
-  - line: 27
+  - line: 28
     text: "At the call site, named parameters read clearly - you see exactly what each argument means without counting positions."
 ```
 
