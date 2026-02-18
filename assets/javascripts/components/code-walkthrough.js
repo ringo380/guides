@@ -113,6 +113,14 @@
         highlightLine(ann.line);
         annotationEl.textContent = ann.text;
         stepInfo.textContent = `Step ${index + 1} of ${annotations.length}`;
+
+        if (window.RunbookAnalytics) {
+          window.RunbookAnalytics.track("walkthrough_step", {
+            walkthrough_title: config.title || "",
+            step_number: index + 1,
+            steps_total: annotations.length,
+          });
+        }
       }
 
       prevBtn.disabled = index <= 0;
@@ -144,6 +152,12 @@
         p.style.margin = "0.25rem 0";
         annotationEl.appendChild(p);
       });
+
+      if (window.RunbookAnalytics) {
+        window.RunbookAnalytics.track("walkthrough_show_all", {
+          walkthrough_title: config.title || "",
+        });
+      }
     }
 
     function exitShowAll() {
