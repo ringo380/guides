@@ -46,6 +46,26 @@
         "dns-architecture",
       ],
     },
+    "Dev Zero/Perl": {
+      prefix: "Dev Zero/Perl/",
+      guides: [
+        "perl_dev0_introduction",
+        "scalars-strings-numbers",
+        "arrays-hashes-lists",
+        "control-flow",
+        "regular-expressions",
+        "subroutines-references",
+        "file-io-and-system",
+        "modules-and-cpan",
+        "object-oriented-perl",
+        "error-handling-debugging",
+        "testing",
+        "text-processing-oneliners",
+        "networking-daemons",
+        "web-frameworks-apis",
+        "perl_developer_roadmap",
+      ],
+    },
   };
 
   function init() {

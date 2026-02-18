@@ -15,10 +15,10 @@ Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed und
 
 # Table of Contents
 
-1. [Introduction & Expectations](#introduction--expectations)
+1. [Introduction & Expectations](#introduction-expectations)
 2. [Phase 1: The Basics](#phase-1-the-basics)
 3. [Phase 2: Beginning Perl](#phase-2-beginning-perl)
-4. [Phase 3: Workflows, Testing & Debugging](#phase-3-workflows-testing--debugging)
+4. [Phase 3: Workflows, Testing & Debugging](#phase-3-workflows-testing-debugging)
 5. [Bibliography](#bibliography)
 
 ---
@@ -297,8 +297,8 @@ Familiarity with these services will not only support your scripting and automat
 
 Developing fluency in Perl starts with a clear understanding of its foundational elements:
 
-- **Data Types**: Gain comfort with scalars (`$`), arrays (`@`), and hashes (`%`), and learn how their behavior changes based on context (scalar vs. list).
-- **Control Flow**: Master core control structures like `if`, `unless`, `while`, `for`, and `foreach` to direct the logic of your programs.
+- **Data Types**: Gain comfort with scalars (`$`), arrays (`@`), and hashes (`%`), and learn how their behavior changes based on context (scalar vs. list). Start with [Scalars, Strings, and Numbers](scalars-strings-numbers.md), then [Arrays, Hashes, and Lists](arrays-hashes-lists.md).
+- **Control Flow**: Master core control structures like `if`, `unless`, `while`, `for`, and `foreach` to direct the logic of your programs. See [Control Flow](control-flow.md).
 - **Built-in Functions**: Leverage Perl's rich library of built-in functions for data manipulation, text processing, and file I/O.
 - **Code Style**: Perl's expressiveness allows multiple ways to solve problems, making it essential to develop good habits around clarity, consistency, and maintainability.
 
@@ -656,23 +656,222 @@ Staying fluent in Git and GitHub workflows will make you a stronger collaborator
 
 ### Debugging Methods
 
-- use warnings/strict
-- print/logging
-- Devel:: modules
-- Valgrind, gdb
+Effective debugging is a skill that separates productive developers from frustrated ones. Perl provides multiple layers of debugging tools, from compile-time checks to interactive debuggers.
+
+**Prevention first**: `use strict` and `use warnings` catch the majority of bugs before your code even runs. Undeclared variables, misused data types, and common mistakes are flagged immediately. See the [Introduction](perl_dev0_introduction.md) for why these two lines are non-negotiable.
+
+**Print debugging**: The simplest approach - add `print` or `warn` statements to trace variable values and execution flow. `warn` writes to STDERR (so it doesn't corrupt program output) and includes the file and line number. `Data::Dumper` displays complex data structures in a readable format:
+
+```perl
+use Data::Dumper;
+warn Dumper(\%config);  # Prints the entire hash structure to STDERR
+```
+
+**The Perl debugger**: Run any script with `perl -d script.pl` to start the interactive debugger. You can set breakpoints (`b`), step through code (`n` for next, `s` for step into), inspect variables (`x $var`), and evaluate expressions. The debugger is invaluable for tracing logic errors in unfamiliar code.
+
+**Devel:: modules**: [**Devel::NYTProf**](https://metacpan.org/pod/Devel::NYTProf) is a powerful profiler that identifies performance bottlenecks. [**Devel::Peek**](https://metacpan.org/pod/Devel::Peek) shows Perl's internal representation of variables. [**Devel::Cover**](https://metacpan.org/pod/Devel::Cover) measures test coverage so you know which code paths remain untested.
+
+For more on debugging strategies, see [Error Handling and Debugging](error-handling-debugging.md).
 
 ### Linux Package Managers
 
-- RPM, SRPM, yum
-- apt, deb
+Perl development on Linux means working with the system's package manager to install libraries, development headers, and tools that Perl modules depend on.
+
+**RPM-based systems** (RHEL, Rocky Linux, AlmaLinux, Fedora) use `yum` or its successor `dnf`:
+
+```bash
+# Install development tools and libraries
+sudo dnf groupinstall "Development Tools"
+sudo dnf install perl perl-devel perl-CPAN openssl-devel
+```
+
+**Debian-based systems** (Ubuntu, Debian) use `apt`:
+
+```bash
+sudo apt update
+sudo apt install build-essential perl perl-doc cpanminus libssl-dev
+```
+
+**Perl module installation** is handled separately from the system package manager. [**cpanm**](https://metacpan.org/pod/App::cpanminus) (cpanminus) is the recommended tool:
+
+```bash
+cpanm Mojolicious           # Install from CPAN
+cpanm --installdeps .       # Install dependencies from cpanfile
+```
+
+Use the system package manager for system libraries (like `libssl-dev`) and `cpanm` for Perl modules. Mixing the two (installing Perl modules via `apt`) can cause version conflicts.
 
 ### Application Security Awareness
 
-- XSS, SQL injection, privilege escalation
+Writing secure code is a professional responsibility. Perl applications face the same security threats as any web-facing software, plus some language-specific concerns.
+
+**Cross-Site Scripting (XSS)**: Any user-supplied data rendered in HTML must be escaped. Perl web frameworks like Mojolicious auto-escape template variables by default, but raw output (using `<%==` or `b()`) bypasses this protection. Always treat user input as untrusted.
+
+**SQL Injection**: Never interpolate variables directly into SQL queries. Use [**DBI**](https://metacpan.org/pod/DBI) placeholders instead:
+
+```perl
+# DANGEROUS - SQL injection vulnerability
+my $sth = $dbh->prepare("SELECT * FROM users WHERE name = '$name'");
+
+# SAFE - parameterized query
+my $sth = $dbh->prepare("SELECT * FROM users WHERE name = ?");
+$sth->execute($name);
+```
+
+**Taint mode**: Running Perl with the `-T` flag enables [**taint checking**](https://perldoc.perl.org/perlsec), which tracks data that came from outside the program (user input, environment variables, file reads) and prevents it from being used in system calls, file operations, or database queries until it's been explicitly validated through a regex match.
+
+**Input validation**: Validate all external data at system boundaries - command-line arguments, form submissions, API payloads, file uploads. Reject invalid input early rather than trying to sanitize it later.
 
 ### Additional Architecture Concepts
 
-- SOLID, web sockets, caching, Redis, Sphinx
+As your applications grow beyond single scripts, architectural patterns become important for maintainability and scalability.
+
+**SOLID principles** apply to Perl code just as they do to Java or Python. The most relevant for Perl development: **Single Responsibility** (each module does one thing), **Open/Closed** (extend behavior through composition, not modification), and **Dependency Inversion** (depend on interfaces, not implementations).
+
+**Caching** reduces repeated work. [**CHI**](https://metacpan.org/pod/CHI) provides a unified caching interface with backends for memory, file, [**Redis**](https://redis.io/), and Memcached. Cache database query results, API responses, or expensive computations.
+
+**Message queues** decouple producers from consumers in distributed systems. Perl integrates with [**RabbitMQ**](https://www.rabbitmq.com/) (via `Net::AMQP::RabbitMQ`), Redis pub/sub, and job queue systems like [**Minion**](https://metacpan.org/pod/Minion) (built into Mojolicious).
+
+**Full-text search** engines like [**Elasticsearch**](https://www.elastic.co/elasticsearch) or [**Sphinx**](http://sphinxsearch.com/) handle search queries that SQL `LIKE` clauses cannot scale to. Perl clients exist for both, and Elasticsearch is increasingly the standard for log analysis and search features.
+
+---
+
+## The Learning Journey
+
+The roadmap above covers a lot of ground. This diagram shows how the phases connect and where the dedicated guides in this course fit.
+
+```mermaid
+flowchart TD
+    subgraph Phase 1: Foundations
+        A[Unix & Linux Basics] --> B[Command Line Proficiency]
+        B --> C[Editor Mastery]
+    end
+
+    subgraph Phase 2: Perl Fundamentals
+        D[Scalars, Strings, Numbers] --> E[Arrays, Hashes, Lists]
+        E --> F[Control Flow]
+        F --> G[Regular Expressions]
+        G --> H[Subroutines & References]
+        H --> I[File I/O & System]
+    end
+
+    subgraph Phase 3: Professional Practice
+        J[Modules & CPAN] --> K[Object-Oriented Perl]
+        K --> L[Error Handling & Debugging]
+        L --> M[Testing]
+    end
+
+    subgraph Phase 4: Applied Perl
+        N[Text Processing & One-Liners]
+        O[Networking & Daemons]
+        P[Web Frameworks & APIs]
+    end
+
+    C --> D
+    I --> J
+    M --> N
+    M --> O
+    M --> P
+```
+
+### The CPAN Ecosystem
+
+CPAN is central to productive Perl development. Understanding how its components fit together saves time when you need to find, evaluate, and install modules.
+
+```mermaid
+flowchart TD
+    A[Your Perl Script] -->|use Module| B[Installed Modules]
+    B -->|installed by| C[cpanm / cpan]
+    C -->|downloads from| D[CPAN Mirror Network]
+    D -->|mirrors| E[PAUSE Upload Server]
+    F[Module Author] -->|uploads to| E
+    G[MetaCPAN] -->|indexes| D
+    G -->|shows| H[Documentation, Ratings, Dependencies]
+    C -->|resolves| I[Dependency Chain]
+    I -->|may require| J[System Libraries via apt/dnf]
+```
+
+[**PAUSE**](https://pause.perl.org/) is where authors upload distributions. [**MetaCPAN**](https://metacpan.org/) is the search and documentation interface. `cpanm` handles downloading, dependency resolution, building, testing, and installing. When a CPAN module needs a C library (like OpenSSL), you install that through your system package manager first.
+
+---
+
+## Setting Up Your Perl Environment
+
+Before starting the course exercises, verify your Perl installation and set up the essential tools.
+
+```terminal
+title: Setting Up a Perl Dev Environment
+steps:
+  - command: "perl -v | head -2"
+    output: "This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-linux-gnu-thread-multi"
+    narration: "Check your Perl version. Any version 5.16 or later works for this course. Most Linux distributions include Perl by default."
+  - command: "which cpanm || echo 'not installed'"
+    output: "/usr/local/bin/cpanm"
+    narration: "cpanm (App::cpanminus) is the preferred module installer. If not installed, run: curl -L https://cpanmin.us | perl - App::cpanminus"
+  - command: "cpanm --local-lib ~/perl5 Try::Tiny"
+    output: "--> Working on Try::Tiny\nFetching http://www.cpan.org/authors/id/E/ET/ETHER/Try-Tiny-0.31.tar.gz ... OK\nConfiguring Try-Tiny-0.31 ... OK\nBuilding and testing Try-Tiny-0.31 ... OK\nSuccessfully installed Try-Tiny-0.31"
+    narration: "Install modules to a local directory with --local-lib. This avoids needing root access and keeps your system Perl clean."
+  - command: "perl -e 'use strict; use warnings; print \"Ready to learn Perl!\\n\";'"
+    output: "Ready to learn Perl!"
+    narration: "If this prints without errors, your environment is working. Every script in this course starts with use strict and use warnings."
+```
+
+```exercise
+title: Create Your Learning Tracker
+difficulty: beginner
+scenario: |
+  Build a simple Perl script that tracks your progress through this roadmap.
+
+  The script should:
+  1. Define the three phases as an array of hash references
+  2. Each phase has a name, status (not started/in progress/complete), and a list of topics
+  3. Print a formatted summary showing each phase and its status
+  4. Calculate and print overall completion percentage
+
+  This exercise combines scalars, arrays, hashes, and loops - a preview of
+  the core language concepts covered in the next few guides.
+hints:
+  - "Create a phase: my $phase1 = { name => 'Foundations', status => 'complete', topics => ['Unix', 'CLI', 'Editor'] };"
+  - "Store phases in an array: my @phases = ($phase1, $phase2, $phase3);"
+  - "Loop with: for my $phase (@phases) { print $phase->{name}; }"
+  - "Count completed phases: my $done = grep { $_->{status} eq 'complete' } @phases;"
+solution: |
+  ```perl
+  use strict;
+  use warnings;
+
+  my @phases = (
+      { name => 'Phase 1: Foundations',
+        status => 'complete',
+        topics => ['Unix Basics', 'Command Line', 'Editor'] },
+      { name => 'Phase 2: Perl Fundamentals',
+        status => 'in progress',
+        topics => ['Scalars', 'Arrays/Hashes', 'Control Flow', 'Regex', 'Subroutines', 'File I/O'] },
+      { name => 'Phase 3: Professional Practice',
+        status => 'not started',
+        topics => ['Modules/CPAN', 'OOP', 'Debugging', 'Testing'] },
+  );
+
+  my $complete = 0;
+  for my $phase (@phases) {
+      my $marker = $phase->{status} eq 'complete'    ? '[x]'
+                 : $phase->{status} eq 'in progress' ? '[~]'
+                 :                                     '[ ]';
+      printf "%s %s (%s)\n", $marker, $phase->{name}, $phase->{status};
+      for my $topic (@{ $phase->{topics} }) {
+          print "    - $topic\n";
+      }
+      $complete++ if $phase->{status} eq 'complete';
+  }
+
+  my $pct = int($complete / scalar(@phases) * 100);
+  print "\nProgress: $complete/" . scalar(@phases) . " phases ($pct%)\n";
+  ```
+
+  This script previews several concepts covered in upcoming guides:
+  array references (`$phase->{topics}`), the arrow operator (`->`),
+  hash access (`$phase->{name}`), and `grep` for counting.
+```
 
 ---
 
@@ -681,7 +880,7 @@ Staying fluent in Git and GitHub workflows will make you a stronger collaborator
 - Barrett, D. J. *Linux Pocket Guide*
 - Conway, D. *Object Oriented Perl*
 - Feynman, R. P. *Surely You're Joking Mr. Feynman!*
-- Langworth, I. \*Perl Testing: A Developer's
+- Langworth, I. & chromatic. *Perl Testing: A Developer's Notebook*
 
 ---
 
@@ -690,3 +889,9 @@ Staying fluent in Git and GitHub workflows will make you a stronger collaborator
 - [Perl Official Documentation](https://perldoc.perl.org/) - comprehensive Perl language reference
 - [CPAN](https://www.cpan.org/) - Comprehensive Perl Archive Network
 - [Perl.org](https://www.perl.org/) - official Perl community site
+- [MetaCPAN](https://metacpan.org/) - modern CPAN search and documentation
+- [PerlMonks](https://www.perlmonks.org/) - community discussion and Q&A
+
+---
+
+**Previous:** [Control Flow](control-flow.md) | [Back to Index](README.md)
