@@ -131,6 +131,15 @@
         if (hintsRevealed < hints.length) {
           hintElements[hintsRevealed].classList.add("visible");
           hintsRevealed++;
+
+          if (window.RunbookAnalytics) {
+            window.RunbookAnalytics.track("exercise_hint", {
+              exercise_id: exerciseId,
+              hint_number: hintsRevealed,
+              hints_total: hints.length,
+            });
+          }
+
           if (hintsRevealed >= hints.length) {
             hintBtn.style.display = "none";
           } else {
@@ -164,6 +173,13 @@
         } else {
           solutionContainer.classList.add("visible");
           solutionBtn.textContent = "Hide Solution";
+
+          if (window.RunbookAnalytics) {
+            window.RunbookAnalytics.track("exercise_solution_view", {
+              exercise_id: exerciseId,
+              difficulty: config.difficulty || "unknown",
+            });
+          }
         }
       });
 
@@ -198,6 +214,13 @@
           detail: { exerciseId },
         })
       );
+
+      if (window.RunbookAnalytics) {
+        window.RunbookAnalytics.track("exercise_complete", {
+          exercise_id: exerciseId,
+          difficulty: config.difficulty || "unknown",
+        }, { once: true });
+      }
     });
 
     actions.appendChild(completeBtn);
