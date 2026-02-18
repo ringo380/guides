@@ -184,6 +184,15 @@
       }
 
       isAnimating = false;
+
+      if (window.RunbookAnalytics) {
+        window.RunbookAnalytics.track("terminal_step", {
+          terminal_title: config.title || "",
+          step_number: stepIndex + 1,
+          steps_total: steps.length,
+        });
+      }
+
       updateControls();
     }
 
@@ -201,6 +210,12 @@
 
     replayBtn.addEventListener("click", () => {
       if (!isAnimating) {
+        if (window.RunbookAnalytics) {
+          window.RunbookAnalytics.track("terminal_replay", {
+            terminal_title: config.title || "",
+          });
+        }
+
         currentStep = -1;
         terminalWindow.innerHTML = "";
         narration.style.display = "none";
