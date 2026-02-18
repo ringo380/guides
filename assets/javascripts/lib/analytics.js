@@ -46,7 +46,6 @@
 
       const opts = options || {};
       const sanitized = sanitizeParams(params || {});
-      sanitized.page_path = pagePath();
 
       if (opts.once) {
         const key = eventName + JSON.stringify(sanitized);
@@ -54,6 +53,7 @@
         fired.add(key);
       }
 
+      sanitized.page_path = pagePath();
       gtag("event", eventName, sanitized);
     },
 
@@ -70,9 +70,9 @@
   };
 
   // --- Code block copy tracking ---
-  // Material adds .md-clipboard buttons; listen via delegation.
+  // Material 9.x injects .md-code__button[data-md-type="copy"] buttons dynamically.
   document.addEventListener("click", function (e) {
-    const btn = e.target.closest(".md-clipboard");
+    const btn = e.target.closest('.md-code__button[data-md-type="copy"]');
     if (!btn) return;
 
     const codeBlock = btn.closest(".highlight");
