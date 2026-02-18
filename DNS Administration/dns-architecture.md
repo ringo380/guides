@@ -308,9 +308,9 @@ Email deliverability depends on getting five DNS record types correct. Missing o
 
 ```mermaid
 sequenceDiagram
-    participant Sender as Sending MTA<br/>(mail.sender.com)
+    participant Sender as Sending MTA (mail.sender.com)
     participant DNS as DNS
-    participant Receiver as Receiving MTA<br/>(mail.example.com)
+    participant Receiver as Receiving MTA (mail.example.com)
 
     Sender->>DNS: MX lookup for example.com
     DNS-->>Sender: 10 mail.example.com
