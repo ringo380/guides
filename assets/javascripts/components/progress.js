@@ -66,6 +66,28 @@
         "perl_developer_roadmap",
       ],
     },
+    Git: {
+      prefix: "Git/",
+      guides: [
+        "introduction",
+        "three-trees",
+        "commits-and-history",
+        "branches-and-merging",
+        "remote-repositories",
+        "rewriting-history",
+        "stashing-and-worktree",
+        "configuring-git",
+        "object-model",
+        "refs-reflog-dag",
+        "transfer-protocols",
+        "collaboration-workflows",
+        "platforms",
+        "hooks-and-automation",
+        "security",
+        "monorepos-and-scaling",
+        "troubleshooting-and-recovery",
+      ],
+    },
   };
 
   function init() {
@@ -196,7 +218,7 @@
       for (const guide of topicInfo.guides) {
         // Check all progress keys for this guide
         for (const key of Object.keys(allProgress)) {
-          if (key.includes(guide)) {
+          if (key.includes(topicInfo.prefix + guide)) {
             const pageData = allProgress[key];
             const hasActivity =
               (pageData.sections_read && pageData.sections_read.length > 0) ||
