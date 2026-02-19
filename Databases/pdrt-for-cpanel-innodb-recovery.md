@@ -80,7 +80,7 @@ _____________________________________________
 
 There are a few steps that are recommended to ensure that you react appropriately to an InnoDB data loss situation. Every person's data-loss scenario is going to differ, but for the most part I'm going to approach this from the perspective of someone who has immediately recognized and identified the data loss at the time that it occurs, and is seeking to recover that lost data. While not the only relevant scenario when it comes to InnoDB data loss, it is the most feasible when considering the use of PDRT for recovery purposes.
 
-When approaching data recovery using PDRT, it's a good idea to understand that - as more time passes after the data has been lost - you'll be increasingly less likely to recover everything that you've lost, and after a certain point, it can be lost permanently (save for further advanced/physical file system recovery methods, but that's something entirely diferent). With that in mind, it's critical to move quickly.
+When approaching data recovery using PDRT, it's a good idea to understand that - as more time passes after the data has been lost - you'll be increasingly less likely to recover everything that you've lost, and after a certain point, it can be lost permanently (save for further advanced/physical file system recovery methods, but that's something different). With that in mind, it's critical to move quickly.
 
 If you've recognized that data loss has occurred, you should do the following:
 
