@@ -218,7 +218,7 @@
       for (const guide of topicInfo.guides) {
         // Check all progress keys for this guide
         for (const key of Object.keys(allProgress)) {
-          if (key.includes(guide)) {
+          if (key.includes(topicInfo.prefix + guide)) {
             const pageData = allProgress[key];
             const hasActivity =
               (pageData.sections_read && pageData.sections_read.length > 0) ||

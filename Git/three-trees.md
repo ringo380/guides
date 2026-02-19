@@ -498,13 +498,13 @@ annotations:
     text: "Character class [cod] matches *.pyc, *.pyo, and *.pyd - all Python bytecode variants - in one pattern."
   - line: 4
     text: "*.egg-info/ ignores Python package metadata directories created during development installs."
-  - line: 13
+  - line: 15
     text: ".env.* matches .env.local, .env.production, etc. Combined with .env above, this catches all environment files."
-  - line: 14
+  - line: 16
     text: "The ! prefix negates a previous pattern. This tracks .env.example even though .env.* would ignore it. Negations must come after the pattern they override. This lets you include a template file showing required environment variables."
-  - line: 17
+  - line: 20
     text: "You can ignore specific files within a directory. This ignores VS Code settings but not other .vscode files like extensions.json."
-  - line: 27
+  - line: 29
     text: "*.sqlite3 prevents accidentally committing development databases. Production databases should never be in a Git repository."
 ```
 

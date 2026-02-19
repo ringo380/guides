@@ -71,13 +71,13 @@ language: bash
 annotations:
   - line: 1
     text: "Each branch is a file (or directory for branches with slashes) under .git/refs/heads/."
-  - line: 5
+  - line: 7
     text: "The file contains nothing but the 40-character SHA-1 hash of the commit the branch points to. This is all a branch is."
-  - line: 8
+  - line: 10
     text: "Different branches point to different commits. When you commit on a branch, Git updates this file with the new commit's hash."
-  - line: 11
+  - line: 13
     text: "HEAD is a symbolic reference - it contains the name of the current branch, not a commit hash directly. This is how Git knows which branch to advance on commit."
-  - line: 14
+  - line: 16
     text: "The commit hash in .git/refs/heads/main matches what git log shows. Branches are just named pointers into the commit graph."
 ```
 

@@ -239,7 +239,7 @@ annotations:
     text: "The default credential helper applies to all HTTPS Git operations. osxkeychain stores tokens in the macOS Keychain."
   - line: 7
     text: "You can set different helpers per host. This is useful for different platforms or work vs personal accounts."
-  - line: 10
+  - line: 11
     text: "The 'store' helper saves credentials to a plaintext file. Only use this for non-sensitive or single-user systems."
   - line: 13
     text: "SSH authentication doesn't use Git's credential system. The SSH agent manages keys. ssh-add loads your key into the agent for the session."

@@ -193,7 +193,7 @@ annotations:
     text: "Workflow name - appears in the Actions tab on GitHub."
   - line: 3
     text: "Trigger events. This workflow runs on pushes to main AND on pull requests targeting main."
-  - line: 10
+  - line: 9
     text: "Jobs define what runs. Each job gets a fresh virtual machine."
   - line: 11
     text: "runs-on specifies the runner OS. ubuntu-latest is the most common. macos-latest and windows-latest are also available."
@@ -203,9 +203,9 @@ annotations:
     text: "actions/checkout@v4 clones your repository into the runner. Nearly every workflow starts with this step."
   - line: 20
     text: "Actions from the marketplace handle common tasks. actions/setup-python installs and configures a specific Python version."
-  - line: 25
+  - line: 26
     text: "The run key executes shell commands. Multi-line commands use the pipe (|) syntax."
-  - line: 29
+  - line: 30
     text: "Each step runs in sequence. If any step fails, the job fails and subsequent steps are skipped (by default)."
 ```
 
@@ -321,19 +321,19 @@ annotations:
     text: "Jobs are named freely. This job runs in the 'test' stage."
   - line: 15
     text: "image specifies the Docker image for this job. Each job can use a different image."
-  - line: 17
+  - line: 16
     text: "script contains the commands to run. They execute sequentially in the job's container."
   - line: 19
     text: "Artifacts persist files between stages and are downloadable from the GitLab UI. JUnit XML reports appear as test results in the MR."
   - line: 23
     text: "The build job uses Docker-in-Docker (dind) to build container images within the CI pipeline."
-  - line: 28
+  - line: 29
     text: "CI_REGISTRY_IMAGE and CI_COMMIT_SHA are built-in variables. GitLab provides dozens of predefined variables for CI."
-  - line: 34
-    text: "environment connects this job to a deployment environment. GitLab tracks deployment history per environment."
   - line: 37
+    text: "environment connects this job to a deployment environment. GitLab tracks deployment history per environment."
+  - line: 40
     text: "'when: manual' means this job doesn't run automatically - someone must click 'Play' in the UI."
-  - line: 39
+  - line: 41
     text: "'only: main' restricts this job to the main branch. Feature branch pipelines won't include the deploy job."
 ```
 

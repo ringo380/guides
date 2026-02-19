@@ -534,21 +534,21 @@ annotations:
     text: "autocrlf = input converts CRLF to LF on commit but doesn't touch files on checkout. Standard for Linux/macOS developers."
   - line: 10
     text: "excludesFile points to a global gitignore for OS/editor patterns (.DS_Store, *.swp, .idea/) that shouldn't be in per-repo .gitignore files."
-  - line: 27
+  - line: 34
     text: "push.default = current pushes the current branch to a same-named branch on the remote. Less typing than specifying remote and branch every time."
-  - line: 28
+  - line: 35
     text: "autoSetupRemote (Git 2.37+) automatically configures tracking when you push a new branch. No more git push -u origin branch-name."
-  - line: 30
+  - line: 38
     text: "fetch.prune automatically removes remote-tracking branches that no longer exist on the remote. Keeps your branch list clean."
-  - line: 33
-    text: "diff.colorMoved highlights lines that were moved (not just added/removed) in a different color. Helpful when refactoring."
-  - line: 39
-    text: "rebase.autoSquash automatically reorders fixup! and squash! commits during interactive rebase."
-  - line: 40
-    text: "rebase.autoStash automatically stashes uncommitted changes before rebase and reapplies them after. No more 'cannot rebase: you have unstaged changes' errors."
   - line: 42
+    text: "diff.colorMoved highlights lines that were moved (not just added/removed) in a different color. Helpful when refactoring."
+  - line: 49
+    text: "rebase.autoSquash automatically reorders fixup! and squash! commits during interactive rebase."
+  - line: 50
+    text: "rebase.autoStash automatically stashes uncommitted changes before rebase and reapplies them after. No more 'cannot rebase: you have unstaged changes' errors."
+  - line: 53
     text: "rerere (REuse REcorded REsolution) remembers how you resolved merge conflicts. If the same conflict appears again (common during rebases), Git resolves it automatically."
-  - line: 45
+  - line: 55
     text: "Conditional include loads work-specific settings (different email, signing key) for repositories under ~/work/."
 ```
 
@@ -621,17 +621,17 @@ annotations:
     text: "The wildcard * with text=auto tells Git to detect text files automatically and normalize their line endings to LF in the repository."
   - line: 5
     text: "diff=python tells Git to use Python-aware diff heuristics. Diff headers will show function and class names instead of generic line numbers."
-  - line: 22
+  - line: 23
     text: "Shell scripts MUST have LF endings. A script with CRLF endings will fail on Linux/macOS with a confusing '/bin/bash^M: bad interpreter' error."
-  - line: 26
+  - line: 27
     text: "diff=markdown makes Git understand Markdown structure in diffs, showing section headings in diff context lines."
-  - line: 30
+  - line: 32
     text: "Windows batch files need CRLF. This ensures they work correctly even when cloned on a Linux system."
-  - line: 34
+  - line: 37
     text: "The binary attribute means: don't normalize line endings, don't attempt textual diff, don't try to merge. Binary files are stored as-is."
-  - line: 47
-    text: "Git LFS entries redirect large files to LFS storage. The filter=lfs handles clean/smudge, diff=lfs shows LFS-aware diffs, -text prevents line ending conversion."
   - line: 51
+    text: "Git LFS entries redirect large files to LFS storage. The filter=lfs handles clean/smudge, diff=lfs shows LFS-aware diffs, -text prevents line ending conversion."
+  - line: 55
     text: "Linguist overrides tell GitHub's language statistics to exclude these paths. Documentation, vendored code, and generated files don't represent your project's actual language composition."
 ```
 

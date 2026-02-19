@@ -77,7 +77,7 @@ annotations:
     text: "The author is who wrote the change. The number is a Unix timestamp and the -0500 is the timezone offset."
   - line: 6
     text: "The committer is who applied the change. Usually the same as the author, but differs during cherry-picks, rebases, or when applying patches from others."
-  - line: 8
+  - line: 7
     text: "A blank line separates the header from the message body."
   - line: 8
     text: "The first line is the subject - a short summary (ideally under 50 characters). This is what appears in git log --oneline."

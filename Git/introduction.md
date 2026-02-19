@@ -295,21 +295,21 @@ annotations:
     text: "autocrlf = input converts CRLF to LF on commit but leaves files as-is on checkout. Essential for cross-platform teams."
   - line: 9
     text: "The pager controls how Git displays long output. less -FRX exits if output fits one screen, preserves color, and doesn't clear the screen on exit."
-  - line: 14
+  - line: 12
     text: "[init] defaultBranch sets the name for the first branch in new repositories."
   - line: 19
     text: "Aliases save keystrokes for frequently used commands. 'git st' becomes 'git status'."
-  - line: 24
+  - line: 23
     text: "The lg alias is widely used - it shows a compact, colored, graph-based log of all branches."
-  - line: 25
+  - line: 24
     text: "'git unstage' is a readable alias for removing files from the staging area without losing changes."
-  - line: 28
+  - line: 27
     text: "pull.rebase = false means git pull does a merge by default (not a rebase). This is the safe default."
-  - line: 31
+  - line: 30
     text: "push.default = current pushes the current branch to a same-named remote branch. Less typing than specifying the remote branch every time."
-  - line: 32
+  - line: 31
     text: "autoSetupRemote = true (Git 2.37+) automatically sets up tracking when you push a new branch. No more 'git push -u origin branch-name' on first push."
-  - line: 35
+  - line: 33
     text: "[diff] and [merge] tool settings configure which external program opens for visual diffs and merge conflict resolution."
   - line: 38
     text: "conflictstyle = diff3 shows the original (base) version in merge conflicts alongside the two conflicting changes. Much easier to resolve conflicts when you can see what the code looked like before either change."

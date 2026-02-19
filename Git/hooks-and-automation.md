@@ -200,9 +200,9 @@ annotations:
     text: "The regex pattern matches: type, optional (scope), colon+space, description up to 72 characters."
   - line: 17
     text: "If the message doesn't match, show a helpful error with the expected format and examples."
-  - line: 32
+  - line: 30
     text: "Show the user's actual message so they can see what needs fixing."
-  - line: 33
+  - line: 31
     text: "Exit 1 aborts the commit. The user can fix the message and try again."
 ```
 
@@ -250,7 +250,7 @@ annotations:
   - line: 19
     text: "For existing refs (oldrev is not all-zeros), check if the push would remove commits."
   - line: 20
-    text: "rev-list oldrev..newrev shows commits in old that aren't in new. If any exist, this is a force push that would lose history."
+    text: "rev-list newrev..oldrev shows commits reachable from oldrev but not from newrev. If any exist, this is a force push that would lose history."
 ```
 
 ---
