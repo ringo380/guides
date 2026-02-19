@@ -659,7 +659,7 @@ annotations:
 _____________________________________________
 ## WHERE TO GO FROM HERE
 
-This documentation covered some of the basics when it comes to recovering data, but there are going to undoubtedly be a variety of scenarios you'll run into that are going to require some more in-depth procedures. Ideally, I've tried to cover the foundations so that anything described here can be applied on a larger-scale to accomplish recovery of just about any level. There's certainly quite bit of functionality that the PDRT tool set is capable of taht isn't covered here, though, and one of the best ways I can recommend to familiarize yourself with those capabilities is to look right into the source, which you can find here, at their launchpad site containing the latest development builds:
+This documentation covered some of the basics when it comes to recovering data, but there are going to undoubtedly be a variety of scenarios you'll run into that are going to require some more in-depth procedures. Ideally, I've tried to cover the foundations so that anything described here can be applied on a larger-scale to accomplish recovery of just about any level. There's certainly quite bit of functionality that the PDRT tool set is capable of that isn't covered here, though, and one of the best ways I can recommend to familiarize yourself with those capabilities is to look right into the source, which you can find here, at their launchpad site containing the latest development builds:
 
 > http://bazaar.launchpad.net/~percona-dev/percona-data-recovery-tool-for-innodb/trunk/files
 
