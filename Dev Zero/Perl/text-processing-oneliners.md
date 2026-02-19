@@ -217,7 +217,7 @@ This creates `nginx.conf.bak` (the original) and writes the modified content to 
 
 ```bash
 # Fix a typo across all config files
-perl -i.bak -pe 's/recieve/receive/g' *.conf
+perl -i.bak -pe 's/receive/receive/g' *.conf
 ```
 
 The safe workflow: run without `-i` first to preview, then add `-i.bak` to apply, then `diff` to verify, then delete backups:
