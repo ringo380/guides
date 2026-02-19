@@ -141,7 +141,24 @@ nav:
       - DNSSEC: DNS Administration/dnssec.md
       - DNS Architecture and Operations: DNS Administration/dns-architecture.md
   - Git:
-      - Getting Through It: Git/git-getting-through-it.md
+      - Index: Git/README.md
+      - Introduction: Git/introduction.md
+      - The Three Trees: Git/three-trees.md
+      - Commits and History: Git/commits-and-history.md
+      - Branches and Merging: Git/branches-and-merging.md
+      - Remote Repositories: Git/remote-repositories.md
+      - Rewriting History: Git/rewriting-history.md
+      - Stashing and the Worktree: Git/stashing-and-worktree.md
+      - Configuring Git: Git/configuring-git.md
+      - The Object Model: Git/object-model.md
+      - Refs, the Reflog, and the DAG: Git/refs-reflog-dag.md
+      - Transfer Protocols: Git/transfer-protocols.md
+      - Collaboration Workflows: Git/collaboration-workflows.md
+      - Platforms: Git/platforms.md
+      - Hooks and Automation: Git/hooks-and-automation.md
+      - Security: Git/security.md
+      - Monorepos and Scaling: Git/monorepos-and-scaling.md
+      - Troubleshooting and Recovery: Git/troubleshooting-and-recovery.md
   - Databases:
       - InnoDB Recovery (PDRT for cPanel): Databases/pdrt-for-cpanel-innodb-recovery.md
   - Dev Zero:

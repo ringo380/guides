@@ -66,6 +66,28 @@
         "perl_developer_roadmap",
       ],
     },
+    Git: {
+      prefix: "Git/",
+      guides: [
+        "introduction",
+        "three-trees",
+        "commits-and-history",
+        "branches-and-merging",
+        "remote-repositories",
+        "rewriting-history",
+        "stashing-and-worktree",
+        "configuring-git",
+        "object-model",
+        "refs-reflog-dag",
+        "transfer-protocols",
+        "collaboration-workflows",
+        "platforms",
+        "hooks-and-automation",
+        "security",
+        "monorepos-and-scaling",
+        "troubleshooting-and-recovery",
+      ],
+    },
   };
 
   function init() {
