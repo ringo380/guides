@@ -439,13 +439,13 @@ annotations:
     text: "VULNERABLE. The email variable is spliced directly into the SQL string. An attacker can terminate the string and inject arbitrary SQL: ' OR 1=1; DROP TABLE users; --"
   - line: 8
     text: "SAFE. The %s placeholder is not string formatting - the database driver sends the query structure and the parameter value separately. The database engine never parses the parameter as SQL."
-  - line: 13
+  - line: 14
     text: "VULNERABLE. JavaScript template literals make this look clean, but the userId value is still interpolated into the SQL string. An input like '1 OR 1=1' changes the query logic."
-  - line: 17
+  - line: 18
     text: "SAFE. The ? placeholder tells mysql2 to send this as a parameterized query. The userId value is bound separately and treated as a literal value by the database."
-  - line: 22
+  - line: 24
     text: "VULNERABLE. Java's Statement.executeQuery sends the entire concatenated string to the database. The name variable can contain SQL that alters the query."
-  - line: 26
+  - line: 29
     text: "SAFE. PreparedStatement separates the query template from parameters. pstmt.setString(1, name) binds the first parameter as a string literal, regardless of its content."
 ```
 

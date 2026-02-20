@@ -672,21 +672,21 @@ annotations:
     text: "GENERATED ALWAYS AS IDENTITY is the SQL standard way to create auto-incrementing primary keys. PostgreSQL supports this directly. In MySQL, you would use AUTO_INCREMENT instead."
   - line: 3
     text: "NOT NULL UNIQUE on name ensures every department has a name and no two departments share one. UNIQUE creates an implicit index."
-  - line: 8
+  - line: 9
     text: "The email column is both NOT NULL (required) and UNIQUE (no duplicates). This combination is common for natural identifiers."
-  - line: 10
-    text: "Foreign key with ON DELETE RESTRICT prevents deleting a department that still has employees. ON UPDATE CASCADE propagates any department_id changes to employees."
   - line: 11
+    text: "Foreign key with ON DELETE RESTRICT prevents deleting a department that still has employees. ON UPDATE CASCADE propagates any department_id changes to employees."
+  - line: 13
     text: "DECIMAL(10,2) stores exact values with up to 10 digits total and 2 decimal places. The CHECK constraint ensures salaries are positive."
-  - line: 12
+  - line: 14
     text: "DEFAULT CURRENT_DATE means inserts that omit hire_date automatically get today's date."
-  - line: 18
+  - line: 22
     text: "A CHECK constraint spanning multiple columns: end_date must be NULL (ongoing project) or on/after start_date. This prevents logically impossible date ranges."
-  - line: 21
+  - line: 26
     text: "ON DELETE CASCADE on both foreign keys means that when an employee or project is deleted, their assignments are automatically removed. This makes sense here because an assignment has no meaning without both its employee and project."
-  - line: 23
+  - line: 31
     text: "CHECK constraint limits role to a known set of values. This acts like an ENUM but is standard SQL and easier to modify."
-  - line: 25
+  - line: 33
     text: "Composite primary key on (employee_id, project_id) ensures each employee is assigned to each project at most once and creates a covering index for lookups by employee."
 ```
 
