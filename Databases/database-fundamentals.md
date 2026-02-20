@@ -29,7 +29,7 @@ In June 1970, Edgar F. Codd, a researcher at IBM's San Jose lab, published "A Re
 This was the birth of the **relational model**, and it changed everything. Instead of writing imperative navigation code, you would write declarative queries. The database system would figure out the optimal access path. This separation meant that the physical storage could change - indexes added or removed, data reorganized on disk - without breaking application code.
 
 <figure class="photo-frame photo-right" style="max-width: 250px;">
-  <img src="../assets/images/databases/michael-stonebraker.jpg" alt="Michael Stonebraker about to give a talk at UC Berkeley">
+  <img src="../../assets/images/databases/michael-stonebraker.jpg" alt="Michael Stonebraker about to give a talk at UC Berkeley">
   <figcaption>
     Michael Stonebraker at UC Berkeley, co-creator of Ingres and the 2014 Turing Award recipient.
     <span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Michael_Stonebraker_1.jpg">Dcoetzee</a>, <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a></span>
@@ -39,7 +39,7 @@ This was the birth of the **relational model**, and it changed everything. Inste
 IBM was slow to commercialize Codd's ideas (IMS was a cash cow), but two Berkeley researchers, Michael Stonebraker and Eugene Wong, built [**Ingres**](https://en.wikipedia.org/wiki/Ingres_(database)) in the mid-1970s. Larry Ellison read Codd's papers and built what became [**Oracle**](https://www.oracle.com/database/). IBM eventually shipped **System R**, which evolved into [**DB2**](https://www.ibm.com/products/db2). The SQL language emerged from System R and was standardized in 1986.
 
 <figure class="photo-frame photo-right" style="max-width: 250px;">
-  <img src="../assets/images/databases/larry-ellison.jpg" alt="Larry Ellison on stage at Oracle OpenWorld">
+  <img src="../../assets/images/databases/larry-ellison.jpg" alt="Larry Ellison on stage at Oracle OpenWorld">
   <figcaption>
     Larry Ellison, co-founder of Oracle, on stage at Oracle OpenWorld 2009.
     <span class="photo-credit">Photo: <a href="https://www.flickr.com/photos/43156897@N06/4013705452">Oracle Corporate Communications</a>, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></span>
