@@ -66,6 +66,28 @@
         "perl_developer_roadmap",
       ],
     },
+    Databases: {
+      prefix: "Databases/",
+      guides: [
+        "database-fundamentals",
+        "sql-essentials",
+        "database-design",
+        "mysql-installation-and-configuration",
+        "mysql-administration",
+        "mysql-performance",
+        "mysql-replication",
+        "postgresql-fundamentals",
+        "postgresql-administration",
+        "postgresql-advanced",
+        "nosql-concepts",
+        "mongodb",
+        "redis",
+        "backup-and-recovery",
+        "database-security",
+        "scaling-and-architecture",
+        "innodb-recovery-pdrt",
+      ],
+    },
     Git: {
       prefix: "Git/",
       guides: [

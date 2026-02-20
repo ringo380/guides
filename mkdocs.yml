@@ -160,7 +160,24 @@ nav:
       - Monorepos and Scaling: Git/monorepos-and-scaling.md
       - Troubleshooting and Recovery: Git/troubleshooting-and-recovery.md
   - Databases:
-      - InnoDB Recovery (PDRT for cPanel): Databases/pdrt-for-cpanel-innodb-recovery.md
+      - Course Overview: Databases/README.md
+      - Database Fundamentals: Databases/database-fundamentals.md
+      - SQL Essentials: Databases/sql-essentials.md
+      - Database Design & Modeling: Databases/database-design.md
+      - MySQL Installation & Configuration: Databases/mysql-installation-and-configuration.md
+      - MySQL Administration: Databases/mysql-administration.md
+      - MySQL Performance & Optimization: Databases/mysql-performance.md
+      - MySQL Replication & HA: Databases/mysql-replication.md
+      - PostgreSQL Fundamentals: Databases/postgresql-fundamentals.md
+      - PostgreSQL Administration: Databases/postgresql-administration.md
+      - PostgreSQL Advanced Features: Databases/postgresql-advanced.md
+      - NoSQL Concepts & Architecture: Databases/nosql-concepts.md
+      - MongoDB: Databases/mongodb.md
+      - Redis: Databases/redis.md
+      - Backup & Recovery Strategies: Databases/backup-and-recovery.md
+      - Database Security: Databases/database-security.md
+      - Scaling & Architecture Patterns: Databases/scaling-and-architecture.md
+      - InnoDB Recovery with PDRT: Databases/innodb-recovery-pdrt.md
   - Dev Zero:
       - Perl:
           - Index: Dev Zero/Perl/README.md
