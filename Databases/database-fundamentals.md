@@ -12,6 +12,14 @@ This worked when computers served one department and ran one program at a time. 
 
 ### Hierarchical Model: IMS
 
+<figure class="photo-frame photo-right" style="max-width: 280px;">
+  <img src="../../assets/images/databases/saturn-v-assembly-1967.jpg" alt="Saturn V first stage components awaiting assembly at NASA's Michoud Assembly Facility, October 1967">
+  <figcaption>
+    Saturn V first stage components at NASA's Michoud Assembly Facility, 1967. Tracking millions of parts like these drove the creation of IMS.
+    <span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Saturn_V_Production_at_MIchoud_Assembly_Facility_-1967_(MAF_19671005_ViewtoWest).jpg">NASA</a>, public domain</span>
+  </figcaption>
+</figure>
+
 In 1966, IBM and North American Aviation (now part of Boeing) built [**IMS**](https://www.ibm.com/products/ims) (Information Management System) to manage the bill of materials for the Saturn V rocket. IMS organized data as a tree - parent records owned child records, which owned grandchild records, and so on. Navigating from a rocket stage to its components to their suppliers meant walking down the tree.
 
 The **hierarchical model** was fast for the access patterns it was designed for. If your queries always started at the root and walked downward, IMS performed well. But if you needed to query across branches - "show me all suppliers who provide parts to more than one stage" - you were stuck writing complex application code to traverse multiple trees and correlate the results.
