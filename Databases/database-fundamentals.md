@@ -24,6 +24,16 @@ This was more flexible than IMS, but the programmer had to navigate the graph ma
 
 ### The Relational Revolution: Codd
 
+<figure class="photo-frame photo-right" style="max-width: 250px;">
+  <a href="https://dl.acm.org/doi/10.1145/362384.362685">
+    <img src="../../assets/images/databases/codd-1970-paper.jpg" alt="First page of Codd's 1970 paper 'A Relational Model of Data for Large Shared Data Banks'">
+  </a>
+  <figcaption>
+    The first page of Codd's landmark 1970 paper in <em>Communications of the ACM</em>.
+    <span class="photo-credit"><a href="https://dl.acm.org/doi/10.1145/362384.362685">Read the full paper</a></span>
+  </figcaption>
+</figure>
+
 In June 1970, Edgar F. Codd, a researcher at IBM's San Jose lab, published "A Relational Model of Data for Large Shared Data Banks" in Communications of the ACM. The paper proposed something radical: separate the logical organization of data from its physical storage. Data would be organized into **relations** (tables), and users would declare *what* data they wanted, not *how* to navigate to it.
 
 This was the birth of the **relational model**, and it changed everything. Instead of writing imperative navigation code, you would write declarative queries. The database system would figure out the optimal access path. This separation meant that the physical storage could change - indexes added or removed, data reorganized on disk - without breaking application code.
