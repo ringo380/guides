@@ -15,6 +15,9 @@ Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed und
 
 Perl was built for text processing. Before it was a web language, before CPAN existed, Perl was a tool for extracting information from files and generating reports. That heritage lives on in the command-line flags that turn Perl into a filter, a transformer, and a replacement for entire `sed`/`awk` pipelines - all in a single line. Every one-liner maps to a real script, and every script can be compressed into a one-liner. Understanding both directions makes you faster at solving text problems.
 
+!!! tip "See also"
+    Perl one-liners often replace `grep`, `sed`, and `awk`. For the Unix text processing tools that Perl builds on, see [Text Processing](../../Linux Essentials/text-processing.md).
+
 ---
 
 ## Command-Line Flags

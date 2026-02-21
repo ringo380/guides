@@ -95,6 +95,39 @@ options:
     feedback: "A lock would delay the read, not return stale data. The user would see a slow response, not missing data."
 ```
 
+```terminal
+title: Monitoring Replication Lag and Read Replica Status
+steps:
+  - command: "mysql -u admin -p -e \"SHOW REPLICA STATUS\\G\" | grep -E 'Replica_IO_Running|Replica_SQL_Running|Seconds_Behind_Source|Retrieved_Gtid_Set|Executed_Gtid_Set'"
+    output: |
+                   Replica_IO_Running: Yes
+                  Replica_SQL_Running: Yes
+              Seconds_Behind_Source: 0
+             Retrieved_Gtid_Set: 3E11FA47-71CA-11E1-9E33-C80AA9429562:1-847
+              Executed_Gtid_Set: 3E11FA47-71CA-11E1-9E33-C80AA9429562:1-847
+    narration: "On a MySQL replica, SHOW REPLICA STATUS reveals the health of replication. Replica_IO_Running and Replica_SQL_Running must both be Yes - the IO thread fetches binary log events from the primary, and the SQL thread applies them. Seconds_Behind_Source at 0 indicates the replica is caught up. The GTID sets show which transactions have been received versus applied."
+  - command: "mysql -u admin -p -e \"SHOW REPLICA STATUS\\G\" | grep -E 'Replica_IO_Running|Replica_SQL_Running|Seconds_Behind_Source'"
+    output: |
+                   Replica_IO_Running: Yes
+                  Replica_SQL_Running: Yes
+              Seconds_Behind_Source: 142
+    narration: "A Seconds_Behind_Source value of 142 means the replica is applying events that the primary generated 142 seconds ago. This level of lag may cause stale reads. Common causes include long-running queries on the replica, single-threaded SQL apply on the replica while the primary uses parallel writes, or insufficient replica hardware."
+  - command: "psql -U postgres -d myapp -c \"SELECT client_addr, state, sent_lsn, replay_lsn, pg_wal_lsn_diff(sent_lsn, replay_lsn) AS replay_lag_bytes, pg_wal_lsn_diff(pg_current_wal_lsn(), sent_lsn) AS send_lag_bytes FROM pg_stat_replication;\""
+    output: |
+        client_addr   |   state   |  sent_lsn   | replay_lsn  | replay_lag_bytes | send_lag_bytes
+      ----------------+-----------+-------------+-------------+------------------+----------------
+       10.0.1.12      | streaming | 0/5A3B8C10  | 0/5A3B8C10  |                0 |              0
+       10.0.1.13      | streaming | 0/5A3B8C10  | 0/5A3B7F28  |             3304 |              0
+       10.0.1.14      | streaming | 0/5A3B8C10  | 0/5A3B8C10  |                0 |              0
+    narration: "On a PostgreSQL primary, pg_stat_replication shows each connected replica. The state column confirms active streaming. replay_lag_bytes compares what was sent to what the replica has applied - replica 10.0.1.13 is 3,304 bytes behind. send_lag_bytes compares the primary's current WAL position to what has been sent - 0 means the network is keeping up. Both lag metrics should stay near zero under normal load."
+  - command: "psql -U postgres -d myapp -c \"SELECT now() - pg_last_xact_replay_timestamp() AS replication_delay;\""
+    output: |
+       replication_delay
+      -------------------
+       00:00:00.003217
+    narration: "Run this on a PostgreSQL replica to see replication delay as a time interval. This replica is 3.2 milliseconds behind the primary. If this value climbs to seconds or minutes, the replica is falling behind. This query only works on replicas - on the primary it returns NULL because pg_last_xact_replay_timestamp() only applies to standby servers."
+```
+
 ---
 
 ## Connection Pooling
@@ -102,6 +135,16 @@ options:
 Every database connection consumes memory - typically 5-10 MB per connection in PostgreSQL, somewhat less in MySQL. A server with 4 GB of RAM dedicated to connections supports a few hundred at most. When your application spawns thousands of short-lived connections (common with PHP, serverless functions, or microservices), the overhead of creating and tearing down connections becomes a bottleneck before you run out of query capacity.
 
 A **connection pooler** sits between your application and the database, maintaining a pool of persistent connections and multiplexing client requests across them. One hundred application instances sharing twenty database connections is common.
+
+```mermaid
+flowchart LR
+    A1[App Instance 1] --> P[Connection Pool<br/>PgBouncer / ProxySQL]
+    A2[App Instance 2] --> P
+    A3[App Instance 3] --> P
+    A4[App Instance 4] --> P
+    A5[App Instance N] --> P
+    P --> |"Fixed pool<br/>of connections"| DB[(Database Server)]
+```
 
 ### ProxySQL for MySQL
 
@@ -338,6 +381,21 @@ options:
     feedback: "Timestamp-based sharding creates severe hotspots because all new writes go to the latest shard. It also scatters a single tenant's data across many shards as time passes."
   - text: "A composite key of user_id + order_id for maximum cardinality"
     feedback: "High cardinality does not automatically make a good shard key. This composite key would scatter a single tenant's data across many shards, making tenant-scoped queries expensive cross-shard operations."
+```
+
+```quiz
+question: "Your application uses hash-based sharding with 4 shards (shard = hash(user_id) % 4). You need to expand to 6 shards to handle growth. What is the primary problem with this approach?"
+type: multiple-choice
+options:
+  - text: "The hash function will produce collisions on 6 shards"
+    feedback: "Hash collisions happen regardless of shard count - collisions map multiple keys to the same shard, which is expected behavior. The problem is about key-to-shard reassignment during expansion."
+  - text: "Most existing keys will remap to different shards, requiring massive data migration"
+    correct: true
+    feedback: "Correct! Changing the modulus from 4 to 6 causes the majority of keys to compute a different shard number. For example, a user_id whose hash is 17 maps to shard 1 with mod 4 (17 % 4 = 1) but shard 5 with mod 6 (17 % 6 = 5). Consistent hashing solves this by mapping keys and nodes onto a ring, so adding a node only moves keys between the new node and its immediate neighbor."
+  - text: "Six shards cannot distribute data evenly because 6 is not a power of 2"
+    feedback: "Modulo-based distribution works with any shard count, not just powers of 2. A good hash function distributes keys uniformly regardless of the divisor."
+  - text: "Cross-shard queries become impossible with more than 4 shards"
+    feedback: "Cross-shard queries are expensive at any shard count, but they are not impossible. The application or query coordinator can fan out to multiple shards and merge results. The real problem with changing the modulus is data redistribution."
 ```
 
 ---

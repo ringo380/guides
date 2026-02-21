@@ -169,6 +169,49 @@ START REPLICA;
 
 `SOURCE_AUTO_POSITION = 1` tells the replica to use GTID-based auto-positioning. The replica sends its `gtid_executed` set to the source, and the source determines what to send.
 
+```code-walkthrough
+title: "GTID Replication Configuration"
+description: A line-by-line breakdown of the source and replica configuration required for GTID-based replication.
+code: |
+  [mysqld]
+  gtid-mode                = ON
+  enforce-gtid-consistency = ON
+  log-bin                  = mysql-bin
+  log-replica-updates      = ON
+
+  CHANGE REPLICATION SOURCE TO
+      SOURCE_HOST = '10.0.0.1',
+      SOURCE_USER = 'repl',
+      SOURCE_PASSWORD = 'strong_password_here',
+      SOURCE_AUTO_POSITION = 1;
+
+  START REPLICA;
+language: ini
+annotations:
+  - line: 1
+    text: "The [mysqld] section header - all GTID settings go under this section in my.cnf on both the source and every replica."
+  - line: 2
+    text: "Enables GTID mode. Each transaction is assigned a globally unique identifier in the format server_uuid:transaction_id. All servers in the topology must have this set to ON."
+  - line: 3
+    text: "Blocks statements that cannot be represented as a single GTID, such as CREATE TABLE ... SELECT or transactions that mix InnoDB with non-transactional engines like MyISAM. This restriction is mandatory for GTID consistency."
+  - line: 4
+    text: "Enables the binary log with the file prefix mysql-bin. GTID replication still uses binary logs to transport events - the GTID is metadata attached to each event."
+  - line: 5
+    text: "Makes replicas write received events to their own binary log. Required for chained replication (replica of a replica) and for any replica to serve as a failover candidate, since a promoted replica needs its own binary log to serve as a source."
+  - line: 7
+    text: "This SQL command runs on the replica to configure the connection to the source server. With GTIDs, you no longer need SOURCE_LOG_FILE or SOURCE_LOG_POS."
+  - line: 8
+    text: "The IP address or hostname of the source server. The replica's I/O thread connects to this host to receive binary log events."
+  - line: 9
+    text: "The MySQL user account created on the source with REPLICATION SLAVE privilege. This user only needs replication permissions - no access to application data."
+  - line: 10
+    text: "The password for the replication user. In production, use encrypted replication channels (CHANGE REPLICATION SOURCE TO ... SOURCE_SSL = 1) to protect credentials in transit."
+  - line: 11
+    text: "The key GTID setting. Tells the replica to send its gtid_executed set to the source and let the source compute which transactions to send. This eliminates manual binary log position tracking and makes failover straightforward."
+  - line: 13
+    text: "Starts the replica's I/O and SQL threads. The I/O thread connects to the source, receives missing transactions, and writes them to the relay log. The SQL thread reads the relay log and applies events locally."
+```
+
 ### Inspecting GTID State
 
 Check which transactions have been executed:
@@ -198,6 +241,21 @@ options:
     feedback: "GTIDs still use binary logs to transport events. The GTID is metadata attached to each binary log event. You must have log-bin enabled for GTID replication."
   - text: "GTIDs guarantee zero replication lag"
     feedback: "GTIDs do not affect replication lag. Lag depends on network speed, replica hardware, and query complexity. GTIDs improve topology management and failover, not performance."
+```
+
+```quiz
+question: "A replica's gtid_executed variable shows 3E11FA47-71CA-11E1-9E33-C80AA9429562:1-42. What does the '1-42' portion represent?"
+type: multiple-choice
+options:
+  - text: "Transaction IDs 1 through 42 from the server with UUID 3E11FA47-71CA-11E1-9E33-C80AA9429562 have been executed on this replica"
+    correct: true
+    feedback: "Correct! A GTID set uses range notation. The format is server_uuid:transaction_range, where 1-42 means all transactions with IDs 1 through 42 originating from that server have been applied. A replica can have GTID ranges from multiple source UUIDs if it has been part of a topology with several sources over time."
+  - text: "The replica has 42 seconds of replication lag"
+    feedback: "The GTID set has nothing to do with time or lag. The numbers are transaction sequence IDs. Each transaction committed on a server increments the transaction_id counter by 1."
+  - text: "Binary log files 1 through 42 have been read from the source"
+    feedback: "GTID ranges are transaction counts, not binary log file numbers. A single binary log file can contain thousands of GTIDs, and GTID tracking is completely independent of binary log file numbering."
+  - text: "The replica has received but not yet applied 42 transactions"
+    feedback: "The gtid_executed set specifically tracks transactions that have been applied (executed), not pending ones. Transactions received but not yet applied are tracked in the RECEIVED_TRANSACTION_SET column in performance_schema.replication_connection_status."
 ```
 
 ---

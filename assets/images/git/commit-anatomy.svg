@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 520" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .connector-no-arrow { stroke: #9e9e9e; stroke-width: 1.2; fill: none; }
+    .divider { stroke: #ccc; stroke-width: 1; stroke-dasharray: 6,4; }
+    .arrow-label { font-size: 9px; font-weight: 600; fill: #009485; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .branch-tag { font-size: 9px; font-weight: 600; fill: #009485; }
+    .field-key { font-size: 10px; font-weight: 600; fill: #009485; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .heading { fill: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .connector-no-arrow { stroke: #666; }
+      .divider { stroke: rgba(255,255,255,0.15); }
+      .arrow-label { fill: #4db6ac; }
+      .branch-tag { fill: #4db6ac; }
+      .field-key { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- ===== TOP SECTION: Commit Object Anatomy ===== -->
+  <text x="375" y="22" text-anchor="middle" class="heading">Commit Object Anatomy</text>
+
+  <!-- Main commit object box -->
+  <rect x="30" y="38" width="320" height="210" class="box-accent"/>
+
+  <!-- SHA-1 header bar -->
+  <rect x="30" y="38" width="320" height="28" rx="8" ry="8" fill="#009485" opacity="0.12" stroke="none"/>
+  <!-- Square off bottom corners of header bar -->
+  <rect x="30" y="52" width="320" height="14" fill="#009485" opacity="0.12" stroke="none"/>
+  <text x="40" y="57" class="code" font-weight="700">commit a1b2c3d4e5f6...</text>
+
+  <!-- tree field -->
+  <text x="40" y="82" class="field-key">tree</text>
+  <text x="80" y="82" class="code">9f8e7d6c5b4a...</text>
+
+  <!-- parent field -->
+  <text x="40" y="100" class="field-key">parent</text>
+  <text x="92" y="100" class="code">f0e1d2c3b4a5...</text>
+
+  <!-- author field -->
+  <text x="40" y="118" class="field-key">author</text>
+  <text x="88" y="118" class="code">Jane Developer</text>
+  <text x="88" y="132" class="code">&lt;jane@example.com&gt;</text>
+  <text x="88" y="146" class="code">1700000000 +0000</text>
+
+  <!-- committer field -->
+  <text x="40" y="168" class="field-key">committer</text>
+  <text x="108" y="168" class="code">Jane Developer</text>
+  <text x="108" y="182" class="code">&lt;jane@example.com&gt;</text>
+  <text x="108" y="196" class="code">1700000000 +0000</text>
+
+  <!-- Separator line -->
+  <line x1="40" y1="206" x2="340" y2="206" class="divider"/>
+
+  <!-- Commit message -->
+  <text x="40" y="222" class="title">Add user authentication module</text>
+  <text x="40" y="236" class="label">(commit message)</text>
+
+  <!-- ===== Parent commit reference (arrow going left) ===== -->
+  <line x1="30" y1="97" x2="8" y2="97" class="connector"/>
+  <text x="4" y="92" text-anchor="end" class="label">parent</text>
+  <text x="4" y="104" text-anchor="end" class="label">commit</text>
+
+  <!-- ===== Tree pointer arrow from "tree" field to tree object ===== -->
+  <line x1="210" y1="79" x2="400" y2="79" class="connector"/>
+
+  <!-- ===== Tree Object (expanded) ===== -->
+  <rect x="410" y="38" width="310" height="150" class="box-accent"/>
+  <text x="420" y="57" class="field-key">tree</text>
+  <text x="454" y="57" class="code">9f8e7d6c5b4a...</text>
+
+  <!-- Tree entries -->
+  <!-- blob README.md -->
+  <rect x="426" y="68" width="280" height="24" class="box"/>
+  <text x="436" y="84" class="code">100644 blob 3a4b5c...</text>
+  <text x="616" y="84" class="title">README.md</text>
+
+  <!-- blob app.py -->
+  <rect x="426" y="98" width="280" height="24" class="box"/>
+  <text x="436" y="114" class="code">100644 blob 7d8e9f...</text>
+  <text x="616" y="114" class="title">app.py</text>
+
+  <!-- tree src/ -->
+  <rect x="426" y="128" width="280" height="24" class="box"/>
+  <text x="436" y="144" class="code">040000 tree e1f2a3...</text>
+  <text x="621" y="144" class="title">src/</text>
+
+  <!-- Labels for tree entries -->
+  <text x="420" y="174" class="label">Each entry: mode, type, SHA-1, and filename</text>
+
+  <!-- ===== HORIZONTAL DIVIDER ===== -->
+  <line x1="20" y1="270" x2="730" y2="270" class="divider"/>
+
+  <!-- ===== BOTTOM SECTION: Parent Chain ===== -->
+  <text x="375" y="296" text-anchor="middle" class="heading">Parent Chain</text>
+
+  <!-- Commit c0 (root) -->
+  <rect x="30" y="320" width="120" height="60" class="box"/>
+  <text x="90" y="339" text-anchor="middle" class="code">c0</text>
+  <text x="90" y="355" text-anchor="middle" class="label">Initial commit</text>
+  <text x="90" y="369" text-anchor="middle" class="label">(root - no parent)</text>
+
+  <!-- Arrow c0 -> c1 -->
+  <line x1="150" y1="350" x2="190" y2="350" class="connector"/>
+
+  <!-- Commit c1 -->
+  <rect x="200" y="320" width="120" height="60" class="box"/>
+  <text x="260" y="339" text-anchor="middle" class="code">c1</text>
+  <text x="260" y="355" text-anchor="middle" class="label">Add README</text>
+  <text x="260" y="369" text-anchor="middle" class="label">parent: c0</text>
+
+  <!-- Arrow c1 -> c2 -->
+  <line x1="320" y1="350" x2="390" y2="350" class="connector"/>
+
+  <!-- Commit c2 -->
+  <rect x="400" y="320" width="130" height="60" class="box"/>
+  <text x="465" y="339" text-anchor="middle" class="code">c2</text>
+  <text x="465" y="355" text-anchor="middle" class="label">Add auth module</text>
+  <text x="465" y="369" text-anchor="middle" class="label">parent: c1</text>
+
+  <!-- Arrow c2 -> c3 -->
+  <line x1="530" y1="350" x2="590" y2="350" class="connector"/>
+
+  <!-- Commit c3 (merge commit, accent border) -->
+  <rect x="600" y="320" width="130" height="60" class="box-accent"/>
+  <text x="665" y="339" text-anchor="middle" class="code">c3</text>
+  <text x="665" y="355" text-anchor="middle" class="title">Merge feature</text>
+  <text x="665" y="369" text-anchor="middle" class="label">parents: c2, c4</text>
+
+  <!-- Merge label -->
+  <rect x="632" y="305" width="66" height="16" rx="4" fill="none" stroke="#009485" stroke-width="1"/>
+  <text x="665" y="316" text-anchor="middle" class="branch-tag">merge commit</text>
+
+  <!-- ===== Branch: c4 branches off c1, merges at c3 ===== -->
+
+  <!-- Arrow from c1 down to c4 -->
+  <line x1="260" y1="380" x2="260" y2="430" class="connector-no-arrow"/>
+  <path d="M 260 430 Q 260 450 290 450" class="connector-no-arrow"/>
+  <line x1="290" y1="450" x2="390" y2="450" class="connector"/>
+
+  <!-- Commit c4 (branch) -->
+  <rect x="400" y="420" width="130" height="60" class="box"/>
+  <text x="465" y="439" text-anchor="middle" class="code">c4</text>
+  <text x="465" y="455" text-anchor="middle" class="label">Add tests</text>
+  <text x="465" y="469" text-anchor="middle" class="label">parent: c1</text>
+
+  <!-- Branch label on c4 -->
+  <rect x="418" y="405" width="94" height="16" rx="4" fill="none" stroke="#009485" stroke-width="1"/>
+  <text x="465" y="416" text-anchor="middle" class="branch-tag">feature branch</text>
+
+  <!-- Arrow from c4 up to c3 (second parent) -->
+  <line x1="530" y1="450" x2="620" y2="450" class="connector-no-arrow"/>
+  <path d="M 620 450 Q 665 450 665 420" class="connector-no-arrow"/>
+  <line x1="665" y1="420" x2="665" y2="380" class="connector"/>
+
+  <!-- Parent arrows legend -->
+  <text x="375" y="506" text-anchor="middle" class="label">Arrows indicate parent relationships (child points to parent). A merge commit has two or more parents.</text>
+</svg>

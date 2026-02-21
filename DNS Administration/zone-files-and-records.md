@@ -6,6 +6,8 @@ This guide covers the anatomy of DNS zone files - the files that define what you
 
 ## Zone File Anatomy
 
+<div class="diagram-container"><img src="../../assets/images/dns/zone-resolution-path.svg" alt="DNS zone resolution path showing how a query traverses root, TLD, and authoritative zones via NS delegation"></div>
+
 A zone file is a plain text file that describes a DNS zone. The format was defined in [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) in 1987, and the syntax hasn't changed since. Every authoritative DNS server reads zone data in this format (or loads equivalent data from a database).
 
 ### Directives

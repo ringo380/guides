@@ -14,6 +14,8 @@ Hooks are executable scripts stored in `.git/hooks/`. When Git reaches a trigger
 - **Server-side hooks** run on the remote when receiving pushes.
 - Hooks that exit with **non-zero** status abort the operation they guard.
 
+<div class="diagram-container"><img src="../../assets/images/git/hook-lifecycle.svg" alt="Git commit hook lifecycle showing pre-commit, prepare-commit-msg, commit-msg, and post-commit hooks with abort paths"></div>
+
 !!! warning "Hooks are local"
     Client-side hooks live in `.git/hooks/`, which isn't tracked by Git. You can't enforce them through the repository alone. That's why hook frameworks (covered below) exist - they let you commit hook definitions that teammates install locally.
 
@@ -51,6 +53,9 @@ fi
 
 exit 0
 ```
+
+!!! tip "See also"
+    Git hooks are shell scripts at their core. For Bash scripting fundamentals like conditionals, loops, and exit codes, see [Scripting Fundamentals](../Linux Essentials/scripting-fundamentals.md).
 
 #### `commit-msg`
 
@@ -132,6 +137,39 @@ Server-side hooks run on the remote repository when receiving pushes. They're ma
 | `post-receive` | After all refs are updated | Notifications, CI triggers, deploys |
 
 `pre-receive` is the enforcement point for server-side rules. If it exits non-zero, the entire push is rejected.
+
+```mermaid
+sequenceDiagram
+    participant D as Developer
+    participant L as Local Git
+    participant R as Remote Git
+    participant H as Server Hooks
+
+    D->>L: git push
+    L->>R: Connect and send pack
+    R->>H: pre-receive (all refs)
+    alt Hook rejects
+        H-->>R: Exit non-zero
+        R-->>L: Push rejected
+        L-->>D: Error (entire push fails)
+    else Hook accepts
+        H-->>R: Exit 0
+    end
+    loop Each ref being updated
+        R->>H: update (old, new, refname)
+        alt Hook rejects
+            H-->>R: Exit non-zero (ref skipped)
+        else Hook accepts
+            H-->>R: Exit 0
+            R->>R: Update ref
+        end
+    end
+    R->>H: post-receive (all updated refs)
+    Note over H: Notifications, CI triggers, deploys (cannot abort)
+    H-->>R: Done
+    R-->>L: Push result
+    L-->>D: Success
+```
 
 ```quiz
 question: "Where do client-side hooks run vs server-side hooks?"

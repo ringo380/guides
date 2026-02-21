@@ -6,6 +6,8 @@ A **commit** is Git's fundamental unit of work - a permanent snapshot of your en
 
 ## Anatomy of a Commit
 
+<div class="diagram-container"><img src="../../assets/images/git/commit-anatomy.svg" alt="Git commit object anatomy showing tree, parent, author, committer fields and the parent chain with merge commits"></div>
+
 Every commit in Git stores four pieces of information:
 
 1. **Tree** - a reference to a tree object that captures the state of every file and directory at the moment of the commit

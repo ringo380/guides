@@ -6,6 +6,8 @@ A database is only as secure as its weakest access path. Misconfigurations, defa
 
 ## Authentication Methods
 
+<div class="diagram-container"><img src="../../assets/images/databases/security-layers.svg" alt="Database security layers showing network, authentication, authorization, and encryption as defense in depth"></div>
+
 **Authentication** is the first gate. Every connection to your database must prove identity before it can do anything. Different methods vary in strength, complexity, and operational overhead.
 
 ### Password-Based Authentication

@@ -6,6 +6,8 @@ Performance problems in MySQL almost always trace back to one of three causes: m
 
 ## Understanding EXPLAIN
 
+<div class="diagram-container"><img src="../../assets/images/databases/query-execution-plan.svg" alt="MySQL query execution path from parser through optimizer to storage engine, and index selection decision tree"></div>
+
 The [**`EXPLAIN`**](https://dev.mysql.com/doc/refman/8.0/en/explain.html) statement is your primary tool for understanding how MySQL executes a query. Prefix any `SELECT`, `INSERT`, `UPDATE`, or `DELETE` with `EXPLAIN` and MySQL returns the execution plan - the sequence of steps the optimizer chose, which indexes it uses, and how many rows it estimates it needs to examine.
 
 ```sql

@@ -209,6 +209,9 @@ echo "hello" | perl script.pl
 
 The diamond operator looks at [**`@ARGV`**](https://perldoc.perl.org/perlvar#%40ARGV), which contains the command-line arguments. It `open`s each filename in `@ARGV` in sequence. If `@ARGV` is empty, it reads from `STDIN`. This is exactly how Unix utilities like `cat`, `grep`, and `sed` work - and Perl borrowed the pattern directly.
 
+!!! tip "See also"
+    Perl's filehandle model mirrors Unix standard streams. For the underlying OS concepts of STDIN, STDOUT, STDERR, and redirection, see [Streams and Redirection](../../Linux Essentials/streams-and-redirection.md).
+
 ```terminal
 title: Reading Files in Perl
 steps:

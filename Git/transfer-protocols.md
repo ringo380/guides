@@ -6,6 +6,8 @@ When you run `git fetch` or `git push`, Git negotiates with a remote server to f
 
 ## How Transfers Work
 
+<div class="diagram-container"><img src="../../assets/images/git/transfer-protocols.svg" alt="Comparison of Git transfer protocols showing SSH, Smart HTTP, Dumb HTTP, and Git protocol with transfer flow steps"></div>
+
 Every transfer between Git repositories follows the same basic pattern:
 
 1. **Discovery** - the client and server exchange lists of refs (branches, tags) and their commit hashes

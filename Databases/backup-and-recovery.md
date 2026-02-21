@@ -6,6 +6,8 @@ Your database is only as reliable as your ability to restore it. A backup you ha
 
 ## Logical vs Physical Backups
 
+<div class="diagram-container"><img src="../../assets/images/databases/backup-strategy-comparison.svg" alt="Comparison of logical and physical backup strategies with RTO and RPO timeline"></div>
+
 Every backup method falls into one of two categories, and understanding the trade-offs determines which tools you reach for.
 
 A **logical backup** exports data as SQL statements or delimited text. You get a portable, human-readable file that can be loaded into any compatible database version. The trade-off is speed - logical backups read every row through the SQL layer, and restoring means re-executing every `INSERT`. For a 500 GB database, that can take hours or days.
@@ -363,6 +365,18 @@ systemctl start mysql
 
 Backups give you a snapshot. **Point-in-time recovery** fills the gap between the snapshot and the moment of failure (or the moment before an accidental change). PITR replays transaction logs from the backup's position forward to a specific timestamp or log position.
 
+```mermaid
+flowchart LR
+    FB[Full Backup<br/>Sunday 02:00] --> WAL1[WAL Segment 1]
+    WAL1 --> WAL2[WAL Segment 2]
+    WAL2 --> WAL3[WAL Segment 3]
+    WAL3 --> F[Failure<br/>Wednesday 14:30]
+
+    FB --> R[Restore Base Backup]
+    R --> RP[Replay WAL/Binlog<br/>to Target Time]
+    RP --> REC[Recovered Database<br/>Wednesday 14:29]
+```
+
 ### MySQL: Binary Log Replay
 
 MySQL's **binary log** records every data-modifying statement or row change. PITR replays these logs with [**`mysqlbinlog`**](https://dev.mysql.com/doc/refman/8.0/en/mysqlbinlog.html).
@@ -640,6 +654,9 @@ A 500 GB database with GFS rotation:
 ### Filesystem Snapshots
 
 **Filesystem snapshots** (LVM, ZFS, EBS) create near-instant point-in-time copies of the underlying storage. They are the fastest backup method because they operate below the filesystem level.
+
+!!! tip "See also"
+    Filesystem-level backups often use LVM snapshots. For LVM concepts, snapshot creation, and filesystem management, see [Disk and Filesystem](../Linux Essentials/disk-and-filesystem.md).
 
 **LVM snapshots**:
 

@@ -101,6 +101,34 @@ options:
     feedback: "DNSSEC doesn't use consensus. It uses public-key cryptography to verify that signatures on records are valid, following the chain of trust from the root."
 ```
 
+The DS record is the critical link between zones. Without it, a resolver has no way to verify that a child zone's DNSKEY is legitimate. When you register DNSSEC with your registrar, you're providing the DS record (a hash of your KSK) to be placed in the parent zone. This creates a verifiable path from the parent's signature down to your zone's keys.
+
+```mermaid
+flowchart TD
+    Root["Root Zone '.'"] -->|"DS record for .com"| TLD["TLD '.com'"]
+    TLD -->|"DS record for example.com"| Domain["Zone 'example.com'"]
+    Domain -->|"DNSKEY signs"| RR["RRSIG on A record"]
+
+    Root -->|"DNSKEY self-signed<br/>by trust anchor"| RootKey["Root KSK"]
+    TLD -->|"DNSKEY signed by<br/>parent DS"| TLDKey[".com KSK"]
+    Domain -->|"DNSKEY signed by<br/>parent DS"| DomKey["example.com KSK"]
+```
+
+```quiz
+question: "What role does the DS (Delegation Signer) record play in the DNSSEC chain of trust?"
+type: multiple-choice
+options:
+  - text: "It encrypts the communication between the parent and child zone name servers"
+    feedback: "DNSSEC does not encrypt DNS traffic. The DS record is a cryptographic hash that links a parent zone to its child's signing key, enabling signature verification across the delegation boundary."
+  - text: "It contains a hash of the child zone's KSK, published in the parent zone, allowing a resolver to verify the child's DNSKEY is legitimate"
+    correct: true
+    feedback: "Correct! The DS record is published in the parent zone (e.g., .com) and contains a hash of the child zone's KSK. When a resolver follows the chain from root to .com to example.com, it uses the DS record in .com to confirm that example.com's DNSKEY is the authentic key, not one injected by an attacker."
+  - text: "It stores a backup copy of the child zone's private signing key in the parent zone"
+    feedback: "Private keys are never shared or stored in DNS records. The DS record contains only a hash of the child's public KSK - not the key itself, and certainly not the private key."
+  - text: "It delegates DNSSEC signing authority from the root zone directly to the domain's zone"
+    feedback: "The chain of trust is not a direct link from root to domain. Each zone's DS record connects only to its immediate child. The root signs .com's DS, .com signs example.com's DS - each delegation is a separate link in the chain."
+```
+
 ---
 
 ## DNSSEC Record Types
@@ -380,6 +408,32 @@ dnssec-signzone -A -3 $(head -c 8 /dev/urandom | od -A n -t x | tr -d ' ') \
 ```
 
 This generates a signed zone file (`example.com.zone.signed`) that must be referenced in `named.conf`. You need to re-sign before the signatures expire - typically via a cron job. `dnssec-policy` eliminates all of this manual work.
+
+```terminal
+title: "Generating DNSSEC Keys, Signing a Zone, and Verifying"
+steps:
+  - command: "dnssec-keygen -a ECDSAP256SHA256 example.com"
+    output: "Generating key pair.....++++++ \nKexample.com.+013+52918"
+    narration: "Generate a Zone Signing Key (ZSK). The -a flag specifies algorithm 13 (ECDSAP256SHA256). Without -f KSK, dnssec-keygen creates a ZSK by default (flag value 256). The output shows the key filename prefix - the +013 is the algorithm number and +52918 is the key tag."
+  - command: "dnssec-keygen -a ECDSAP256SHA256 -f KSK example.com"
+    output: "Generating key pair..............++++++ \nKexample.com.+013+31406"
+    narration: "Generate a Key Signing Key (KSK). The -f KSK flag sets the DNSKEY flag value to 257, marking this as a KSK. The KSK signs the DNSKEY record set, and its hash becomes the DS record submitted to the parent zone."
+  - command: "ls Kexample.com.+013+*"
+    output: "Kexample.com.+013+31406.key      Kexample.com.+013+31406.private\nKexample.com.+013+52918.key      Kexample.com.+013+52918.private"
+    narration: "Each key produces two files: a .key file containing the public DNSKEY record (included in the zone file) and a .private file containing the private key material used for signing. Keep .private files restricted - anyone with access to them can forge signatures for your zone."
+  - command: "cat Kexample.com.+013+31406.key"
+    output: "; This is a key-signing key, keyid 31406, for example.com.\n; Created: 20250201120000 (Sat Feb  1 12:00:00 2025)\nexample.com. IN DNSKEY 257 3 13 oJMRESz5E4gYzS/q6XDrvU1qMPYIjCWzJaOau8XNEZeq..."
+    narration: "The .key file is a DNSKEY record ready for inclusion in the zone. Flag 257 confirms this is the KSK. The 3 is the fixed protocol field, 13 is the algorithm (ECDSAP256SHA256), and the rest is the base64-encoded public key."
+  - command: "dnssec-signzone -A -3 $(head -c 8 /dev/urandom | od -A n -t x | tr -d ' ') -N INCREMENT -o example.com -t zones/example.com.zone"
+    output: "Verifying the zone using the following algorithms: ECDSAP256SHA256.\nZone fully signed:\nAlgorithm: ECDSAP256SHA256: KSKs: 1 active, 0 stand-by, 0 revoked\n                            ZSKs: 1 active, 0 stand-by, 0 revoked\nzones/example.com.zone.signed"
+    narration: "Sign the zone. The -A flag includes all DNSKEY records found in the key directory. The -3 flag enables NSEC3 with a random salt (generated by the subshell). The -N INCREMENT bumps the SOA serial. The -o flag sets the zone origin. The -t flag prints signing statistics. The output confirms both KSK and ZSK were used."
+  - command: "dig @localhost +dnssec example.com A"
+    output: ";; flags: qr aa rd; QUERY: 1, ANSWER: 2, AUTHORITY: 0\n;; ANSWER SECTION:\nexample.com.    86400   IN  A       93.184.216.34\nexample.com.    86400   IN  RRSIG   A 13 2 86400 20250301000000 20250201000000 52918 example.com. mHJz9k..."
+    narration: "Query the authoritative server for the signed record. The RRSIG appears alongside the A record. The key tag 52918 in the RRSIG matches the ZSK - this confirms the A record was signed by the ZSK, not the KSK. The ZSK signs data records; the KSK signs the DNSKEY set."
+  - command: "dnssec-dsfromkey -2 Kexample.com.+013+31406.key"
+    output: "example.com. IN DS 31406 13 2 abc123def456789012345678901234567890123456789012345678901234"
+    narration: "Generate the DS record from the KSK's public key. The -2 flag specifies SHA-256 as the digest algorithm. This DS record must be submitted to your registrar, who publishes it in the parent zone (.com). The DS links the parent's trust chain to your zone's KSK."
+```
 
 ---
 

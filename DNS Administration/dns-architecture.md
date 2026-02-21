@@ -217,6 +217,80 @@ options:
     feedback: "DNSSEC signing is all-or-nothing per zone. Split-horizon separates responses by client network (internal vs external), not by signing status."
 ```
 
+```exercise
+title: Configure Split-Horizon DNS with BIND Views
+difficulty: intermediate
+scenario: |
+  You manage DNS for `example.com` at a company with both internal and external users.
+  Internal clients (on `10.0.0.0/8`) need `app.example.com` to resolve to `10.0.1.50` (the internal application server).
+  External clients should see `app.example.com` resolve to `203.0.113.50` (the public-facing load balancer).
+
+  Write a BIND `named.conf` configuration using `view` blocks to implement this split-horizon setup. Each view needs:
+  - A `match-clients` directive scoping it to the correct network
+  - A zone definition for `example.com` with the appropriate zone file reference
+  - The internal view must be defined first (BIND evaluates views in order and uses the first match)
+hints:
+  - "BIND views use the syntax: view \"name\" { match-clients { ...; }; zone ... };"
+  - "The internal view should match-clients { 10.0.0.0/8; 127.0.0.0/8; }; to include localhost"
+  - "The external view should match-clients { any; }; to catch everything else"
+  - "Each view references a different zone file (e.g., zones/internal/example.com.zone vs zones/external/example.com.zone)"
+solution: |
+  ```
+  // named.conf - split-horizon configuration
+
+  acl "internal-nets" {
+      10.0.0.0/8;
+      127.0.0.0/8;
+  };
+
+  view "internal" {
+      match-clients { "internal-nets"; };
+      recursion yes;
+
+      zone "example.com" {
+          type primary;
+          file "zones/internal/example.com.zone";
+      };
+  };
+
+  view "external" {
+      match-clients { any; };
+      recursion no;
+
+      zone "example.com" {
+          type primary;
+          file "zones/external/example.com.zone";
+      };
+  };
+  ```
+
+  Internal zone file (`zones/internal/example.com.zone`):
+  ```
+  $TTL 3600
+  @   IN  SOA ns1.example.com. admin.example.com. (
+              2025011501 3600 900 604800 86400 )
+      IN  NS  ns1.example.com.
+      IN  NS  ns2.example.com.
+  app IN  A   10.0.1.50
+  ```
+
+  External zone file (`zones/external/example.com.zone`):
+  ```
+  $TTL 3600
+  @   IN  SOA ns1.example.com. admin.example.com. (
+              2025011501 3600 900 604800 86400 )
+      IN  NS  ns1.example.com.
+      IN  NS  ns2.example.com.
+  app IN  A   203.0.113.50
+  ```
+
+  Key points:
+  - The `internal` view is listed first because BIND evaluates views top-to-bottom and uses the first match
+  - `recursion yes` is safe in the internal view (trusted clients only); `recursion no` in the external view prevents open resolver abuse
+  - Each view has its own zone file with different A records for `app.example.com`
+  - The ACL is defined separately for clarity and reuse across multiple zone blocks
+```
+
 ---
 
 ## Anycast DNS
@@ -298,6 +372,39 @@ solution: |
   - Local resolvers in each office: fast resolution, resilient to WAN failures
   - Zone transfers to London: London authoritative has full zone copies, works during WAN outage
   - Public secondaries in multiple locations: high availability for external DNS
+```
+
+```terminal
+title: Verifying DNS Architecture with dig
+steps:
+  - command: "dig @ns1.example.com example.com SOA +short"
+    output: "ns1.example.com. admin.example.com. 2025011502 3600 900 604800 86400"
+    narration: "Query the SOA record from the first nameserver. The serial number (2025011502) is the reference point - all secondaries should match this value."
+  - command: "dig @ns2.example.com example.com SOA +short"
+    output: "ns1.example.com. admin.example.com. 2025011502 3600 900 604800 86400"
+    narration: "Same serial on ns2, confirming zone transfers are working. If this serial were lower than ns1's, the secondary is out of sync - check NOTIFY delivery and transfer ACLs."
+  - command: "dig example.com NS +short"
+    output: |
+      ns1.example.com.
+      ns2.example.com.
+    narration: "List the published NS records. These are the servers clients will query. In a hidden primary setup, the primary's hostname should NOT appear here."
+  - command: "dig @8.8.8.8 example.com A +short"
+    output: "198.51.100.10"
+    narration: "Query through a public resolver (Google DNS) to confirm the record propagated beyond your authoritative servers. This is what end users see."
+  - command: "dig @8.8.8.8 example.com A +noall +stats | grep 'Query time'"
+    output: ";; Query time: 12 msec"
+    narration: "First query to a caching resolver shows the full resolution time. This includes the resolver contacting your authoritative servers."
+  - command: "dig @8.8.8.8 example.com A +noall +stats | grep 'Query time'"
+    output: ";; Query time: 0 msec"
+    narration: "Second identical query returns instantly from the resolver's cache. The record will stay cached until the TTL expires. This is why lowering TTLs before migrations matters."
+  - command: "dig @ns1.example.com example.com AXFR +short 2>&1 | head -3"
+    output: "; Transfer failed."
+    narration: "Attempting a zone transfer from an unauthorized IP correctly fails. If this succeeds from a random host, your allow-transfer ACL is too permissive - anyone could dump your entire zone."
+  - command: "dig +trace example.com A | grep -A1 'example.com.*NS'"
+    output: |
+      example.com.    172800  IN  NS  ns1.example.com.
+      example.com.    172800  IN  NS  ns2.example.com.
+    narration: "The +trace flag walks the delegation chain from the root servers down. This shows which NS records the parent zone (.com) has for your domain - these must match your actual authoritative servers."
 ```
 
 ---

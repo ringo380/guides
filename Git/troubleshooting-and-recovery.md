@@ -8,6 +8,8 @@ Things go wrong with Git. Commits end up on the wrong branch, force pushes destr
 
 Before reaching for a specific command, identify your situation:
 
+<div class="diagram-container"><img src="../../assets/images/git/recovery-decision-tree.svg" alt="Git recovery decision tree showing paths through reflog, fsck, reset, and revert based on whether changes were pushed and how recently they occurred"></div>
+
 | What happened | Recovery |
 |---------------|----------|
 | Bad commit message | `git commit --amend` (if unpushed) |

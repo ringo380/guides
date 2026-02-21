@@ -349,6 +349,9 @@ nslookup
 
 `nslookup` uses its own resolver logic rather than the system resolver, which can give different results than `dig`. For troubleshooting, prefer `dig` - it gives you more control and more information.
 
+!!! tip "See also"
+    Many DNS tools overlap with general networking utilities. For broader coverage of `ip`, `ss`, `netstat`, and network troubleshooting, see [Networking](../Linux Essentials/networking.md).
+
 ---
 
 ## whois

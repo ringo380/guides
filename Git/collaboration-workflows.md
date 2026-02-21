@@ -214,6 +214,21 @@ flowchart LR
 
 This workflow protects the original repository. The maintainer reviews every contribution before it enters the codebase. The contributor doesn't need any special permissions.
 
+```quiz
+question: "A 15-person e-commerce team deploys to production several times per day. They have extensive automated test suites and use feature flags to control rollouts. Which workflow is the best fit?"
+type: multiple-choice
+options:
+  - text: "Gitflow with develop, release, and hotfix branches"
+    feedback: "Gitflow's release branches and dual-merge process (into both main and develop) add overhead that slows down a team deploying multiple times per day. It's designed for scheduled releases, not continuous deployment."
+  - text: "Trunk-based development"
+    correct: true
+    feedback: "Correct! A large team with strong CI/CD, comprehensive automated tests, and feature flags is the textbook case for trunk-based development. Short-lived branches (hours, not days) merge to main frequently, and feature flags gate incomplete work."
+  - text: "Forking workflow"
+    feedback: "The forking workflow is designed for open-source projects where contributors lack push access. For an internal team that already has repository access, forking adds unnecessary indirection."
+  - text: "Centralized workflow with everyone pushing to main directly"
+    feedback: "While trunk-based development also centers on main, it still uses short-lived branches and CI gates. The centralized workflow has no review process or automated quality checks, which is risky at this team size and deployment frequency."
+```
+
 ---
 
 ## Pull Requests / Merge Requests
@@ -331,6 +346,74 @@ The [Monorepos and Scaling Git](monorepos-and-scaling.md) guide covers the Git-s
 | Open source | Maintainer-gated | Forking workflow |
 
 There's no universally correct workflow. Start simple (feature branches with PRs), and add structure (release branches, hotfix process) only when the team's needs demand it.
+
+```exercise
+title: Design a Branching Strategy for a Team
+difficulty: advanced
+scenario: |
+  You are the new tech lead for a team of 8 developers building a SaaS billing platform. The product has these constraints:
+
+  - Quarterly compliance audits require traceability from code changes to tagged releases
+  - A staging environment must mirror the next release for QA testing
+  - Production hotfixes must ship within hours without waiting for the next release
+  - The team currently deploys every 2-4 weeks on a fixed schedule
+
+  Design a branching strategy for this team. Specify:
+
+  1. Which permanent and temporary branch types you would use
+  2. The merge direction between branches (what merges into what)
+  3. How a hotfix reaches production and gets back-merged
+  4. How you would tag releases for audit traceability
+  5. Why you chose this approach over simpler alternatives (feature branch workflow, trunk-based)
+hints:
+  - "The fixed release schedule and compliance requirements point toward a workflow with explicit release preparation stages"
+  - "Hotfixes need to reach both production (main) and the ongoing development line - missing either creates drift"
+  - "Annotated tags (git tag -a) store the tagger, date, and message - useful for audit trails"
+  - "Consider whether trunk-based development can meet compliance needs - some regulated teams use it with feature flags and release tags on main"
+solution: |
+  A Gitflow-based strategy fits these constraints well:
+
+  **Permanent branches:**
+  - `main` - production code, every commit is a tagged release or hotfix
+  - `develop` - integration branch where completed features accumulate
+
+  **Temporary branches:**
+  - `feature/*` - one per work item, branched from and merged back into `develop`
+  - `release/*` - branched from `develop` when a release cycle begins, merged into both `main` and `develop` when complete
+  - `hotfix/*` - branched from `main`, merged into both `main` and `develop` (or the active release branch)
+
+  **Merge flow:**
+  ```
+  feature/* --> develop --> release/* --> main
+                                     \-> develop
+  main --> hotfix/* --> main (tagged)
+                   \-> develop
+  ```
+
+  **Hotfix process:**
+  ```bash
+  git switch -c hotfix/billing-fix main
+  # Fix the issue, commit
+  git switch main
+  git merge --no-ff hotfix/billing-fix
+  git tag -a v2.3.1 -m "Hotfix: billing calculation error"
+  git push origin main --tags
+  git switch develop
+  git merge --no-ff hotfix/billing-fix
+  git branch -d hotfix/billing-fix
+  ```
+
+  **Release tagging:**
+  ```bash
+  git tag -a v2.4.0 -m "Release 2.4.0: Q2 billing features"
+  ```
+  Annotated tags record author, date, and description - providing the audit trail compliance requires.
+
+  **Why not simpler alternatives:**
+  - Feature branch workflow lacks a staging integration point (no `develop` or `release/*` branch for QA)
+  - Trunk-based development can work for regulated teams but requires sophisticated feature flags and the discipline to keep main always releasable - the fixed 2-4 week schedule doesn't demand that velocity
+  - Gitflow's release branches give QA a stable target while development continues on `develop`
+```
 
 ---
 

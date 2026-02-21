@@ -15,6 +15,8 @@ Two signing methods are available:
 | GPG signing | GPG key pair | Any | GitHub, GitLab, Bitbucket |
 | SSH signing | SSH key pair | 2.34+ | GitHub, GitLab |
 
+<div class="diagram-container"><img src="../../assets/images/git/signing-verification-flow.svg" alt="GPG and SSH commit signing and verification flow showing how private keys sign commit hashes and public keys verify signatures"></div>
+
 ---
 
 ## GPG Signing
@@ -172,6 +174,31 @@ options:
 ```
 
 ### Verifying Signatures
+
+When you run `git verify-commit` or a platform checks a pushed commit, the following sequence plays out:
+
+```mermaid
+sequenceDiagram
+    participant V as Verifier
+    participant G as Git
+    participant K as Key Store
+
+    V->>G: git verify-commit abc123
+    G->>G: Extract gpgsig from commit object
+    G->>K: Verify signature with public key
+    alt Key found and signature valid
+        K-->>G: Good signature
+        G-->>V: Verified (key ID, signer identity)
+    else Key not found
+        K-->>G: No public key
+        G-->>V: Cannot verify (unknown key)
+    else Signature invalid
+        K-->>G: Bad signature
+        G-->>V: Verification failed
+    end
+```
+
+The key store is GPG's keyring or the SSH `allowed_signers` file, depending on your signing format. Platforms perform the same check server-side using the public keys uploaded to your account.
 
 ```bash
 # Verify a commit

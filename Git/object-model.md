@@ -148,6 +148,9 @@ Each loose object is stored as: `type size\0content`, compressed with zlib.
 
 Git has two categories of commands: **porcelain** (user-facing: `commit`, `merge`, `push`) and **plumbing** (low-level: `hash-object`, `cat-file`, `write-tree`). Plumbing commands let you interact directly with the object database.
 
+!!! tip "See also"
+    Git's plumbing commands are designed for piping. For a deep dive into Unix pipes, redirection, and stream processing, see [Streams and Redirection](../Linux Essentials/streams-and-redirection.md).
+
 ### `git hash-object` - Store Content
 
 ```bash
@@ -175,6 +178,25 @@ git cat-file -s a1b2c3d
 
 # Pretty-print object content
 git cat-file -p a1b2c3d
+```
+
+```command-builder
+base: git cat-file
+description: Explore Git's object database with cat-file
+options:
+  - flag: ""
+    type: select
+    label: "Mode"
+    explanation: "What to display"
+    choices:
+      - ["-p", "Pretty-print object content"]
+      - ["-t", "Show object type"]
+      - ["-s", "Show object size"]
+  - flag: ""
+    type: text
+    label: "Object"
+    placeholder: "HEAD"
+    explanation: "Object reference (SHA, HEAD, tag, etc.)"
 ```
 
 ### `git ls-tree` - List Tree Contents
@@ -253,6 +275,61 @@ steps:
   - command: "git log --oneline"
     output: "a1b2c3d (HEAD -> main) First commit via plumbing"
     narration: "Our repository now has a valid commit, created entirely with plumbing commands. git log sees it as a normal commit because it IS a normal commit - same objects, same structure."
+```
+
+```exercise
+title: Inspect Git Objects After Creating Files
+difficulty: intermediate
+scenario: |
+  You have a fresh repository. Create the following structure and commit it:
+
+  - `notes.txt` containing "Git stores content, not files."
+  - `src/main.sh` containing "#!/bin/bash" followed by "echo 'running'"
+
+  After committing, use plumbing commands to answer these questions:
+
+  1. What is the blob hash for `notes.txt`? Verify with both `git hash-object` and `git ls-tree`.
+  2. What type and size does `git cat-file` report for the root tree of your commit?
+  3. How many entries does the root tree contain? What are their modes?
+  4. Follow the `src` subtree to find `main.sh` and confirm its content with `git cat-file -p`.
+hints:
+  - "Run git cat-file -p HEAD to get the root tree hash from the commit"
+  - "Use git ls-tree HEAD to list root entries - you should see a blob for notes.txt and a tree for src"
+  - "git cat-file -t <hash> shows the type; git cat-file -s <hash> shows the size in bytes"
+  - "git ls-tree <src-tree-hash> reveals main.sh's blob hash"
+solution: |
+  ```bash
+  git init inspect-demo && cd inspect-demo
+  echo "Git stores content, not files." > notes.txt
+  mkdir src
+  printf '#!/bin/bash\necho '\''running'\''\n' > src/main.sh
+  git add . && git commit -m "Initial commit"
+
+  # 1. Blob hash for notes.txt - two ways to confirm
+  git hash-object notes.txt
+  git ls-tree HEAD
+  # Both show the same hash for notes.txt
+
+  # 2. Type and size of the root tree
+  TREE=$(git cat-file -p HEAD | head -1 | awk '{print $2}')
+  git cat-file -t $TREE   # tree
+  git cat-file -s $TREE   # size in bytes
+
+  # 3. Root tree entries and modes
+  git ls-tree HEAD
+  # 100644 blob <hash>  notes.txt
+  # 040000 tree <hash>  src
+  # Two entries: a regular file (100644) and a subdirectory (040000)
+
+  # 4. Follow src subtree to main.sh
+  SRC_TREE=$(git ls-tree HEAD src | awk '{print $3}')
+  git ls-tree $SRC_TREE
+  # 100644 blob <hash>  main.sh
+  MAIN_BLOB=$(git ls-tree $SRC_TREE | awk '{print $3}')
+  git cat-file -p $MAIN_BLOB
+  # #!/bin/bash
+  # echo 'running'
+  ```
 ```
 
 ---

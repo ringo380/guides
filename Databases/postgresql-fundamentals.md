@@ -10,6 +10,8 @@ Three design principles distinguish PostgreSQL from other relational databases:
 
 PostgreSQL uses a **multi-version concurrency control** (MVCC) model that allows readers and writers to operate without blocking each other. Every transaction sees a consistent snapshot of the database, and old row versions are cleaned up later by the VACUUM process. This architecture trades some write overhead and storage for excellent concurrent read performance.
 
+<div class="diagram-container"><img src="../../assets/images/databases/mvcc-snapshot-isolation.svg" alt="PostgreSQL MVCC snapshot isolation showing how concurrent transactions see different row versions based on transaction IDs"></div>
+
 ---
 
 ## Installation
@@ -364,6 +366,50 @@ wal_level = 'replica'             # Logging level: minimal, replica, or logical
 
 !!! warning "WAL level changes require restart"
     Changing `wal_level` requires a full server restart. Set it to `replica` from the start if you might ever need replication or point-in-time recovery. Upgrading from `minimal` later means a restart window.
+
+### Transaction Isolation Levels
+
+PostgreSQL's MVCC engine supports four **transaction isolation levels**, defined by the SQL standard. Each level determines which concurrency anomalies a transaction can observe. Higher isolation provides stronger consistency guarantees but may increase contention between concurrent transactions.
+
+The three anomalies are:
+
+- **Dirty read** - a transaction reads data written by another transaction that has not yet committed. If that transaction rolls back, the reader saw data that never existed.
+- **Non-repeatable read** - a transaction reads the same row twice and gets different values because another transaction modified and committed the row between the two reads.
+- **Phantom read** - a transaction re-executes a query with a range condition and gets a different set of rows because another transaction inserted or deleted rows that match the condition.
+
+```mermaid
+flowchart TD
+    RU["Read Uncommitted<br/>(treated as Read Committed<br/>in PostgreSQL)"] --> DR["Dirty Reads"]
+    RU --> NR["Non-repeatable Reads"]
+    RU --> PH["Phantom Reads"]
+
+    RC["Read Committed<br/>(default)"] --> NR
+    RC --> PH
+
+    RR["Repeatable Read"] --> PH
+
+    SR["Serializable"] --> NONE["No Anomalies"]
+```
+
+PostgreSQL does not actually implement Read Uncommitted - if you request it, you get Read Committed behavior instead. The default isolation level is **Read Committed**, which prevents dirty reads but allows non-repeatable reads and phantom reads. Most applications never need to change this.
+
+Set the isolation level per transaction:
+
+```sql
+BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+-- All reads within this transaction see a consistent snapshot
+-- Conflicting concurrent transactions will be rolled back
+COMMIT;
+```
+
+Or set the default for all transactions on a session or role:
+
+```sql
+SET default_transaction_isolation = 'repeatable read';
+ALTER ROLE app_user SET default_transaction_isolation = 'serializable';
+```
+
+**Serializable** isolation in PostgreSQL uses **Serializable Snapshot Isolation** (SSI), which detects dependency cycles between concurrent transactions and aborts one of them. Unlike traditional locking-based serializable implementations, SSI does not block reads - it detects conflicts at commit time. Applications using Serializable must be prepared to retry transactions that fail with a serialization error (`SQLSTATE 40001`).
 
 ---
 

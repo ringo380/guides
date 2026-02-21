@@ -19,6 +19,9 @@ Perl's regex engine is so influential that it became the basis for [**PCRE**](ht
 
 This guide takes you from basic matching through advanced features like lookaround assertions and compiled patterns. Every concept builds on the previous one, so read it in order if this is your first pass through Perl regex.
 
+!!! tip "See also"
+    Regex fundamentals are shared across tools. For how `grep`, `sed`, and `awk` use regular expressions, see [Text Processing](../../Linux Essentials/text-processing.md).
+
 ---
 
 ## Matching with m//
@@ -110,6 +113,25 @@ steps:
     output: "zzz bbb zzz"
     narration: "Without /g, only the first 'aaa' would change. The /g modifier replaces all occurrences globally."
 ```
+
+### How Perl Processes a Match
+
+When you write `$str =~ /pattern/`, the regex engine does not simply scan through the string once. It follows a systematic process: it places a cursor at the start of the string, tries the pattern at that position, and if the match fails, advances the cursor by one character and tries again. This continues until the engine either finds a match or exhausts the entire string.
+
+```mermaid
+flowchart TD
+    Start[Start Match] --> Pos[Position cursor at start of string]
+    Pos --> Try[Try pattern at current position]
+    Try --> Match{Match found?}
+    Match --> |Yes| Cap[Capture groups populated<br/>Match variables set]
+    Cap --> Done[Return successful match]
+    Match --> |No| Advance[Advance cursor one position]
+    Advance --> End{Past end of string?}
+    End --> |No| Try
+    End --> |Yes| Fail[Match fails - return false]
+```
+
+This is why a pattern like `/World/` can find a match in the middle of `"Hello, World!"` - the engine tries position 0 ("H"), fails, tries position 1 ("e"), fails, and so on until position 7 where "World" matches. The `=~` operator hides this retry loop, but understanding it explains why regex can be expensive on long strings with no match - the engine must attempt the pattern at every single position before giving up.
 
 ---
 

@@ -49,9 +49,32 @@ options:
     feedback: "Centralized systems like SVN do support branches, though merging was historically painful. The core difference is whether each developer has the full history or just a working copy."
 ```
 
+```quiz
+question: "In a centralized VCS like SVN, what happens if the central server goes down?"
+type: multiple-choice
+options:
+  - text: "Developers can continue committing to their local copies and sync later"
+    feedback: "That describes how a distributed VCS works. In a centralized system, developers don't have local repositories - they have working copies that depend on the server for commits, logs, and diffs."
+  - text: "Nobody can commit changes, view history, or compare versions until the server is restored"
+    correct: true
+    feedback: "Correct. A centralized VCS stores all history on the server. Operations like committing, viewing logs, and diffing all require a network connection to that server. If it goes down, development stalls."
+  - text: "Developers lose all uncommitted changes permanently"
+    feedback: "Uncommitted changes exist in developers' working copies on their own machines and survive a server outage. The problem is that no new commits, history lookups, or version comparisons can happen until the server is back."
+  - text: "The system automatically fails over to a backup server"
+    feedback: "There is no built-in failover mechanism in traditional centralized VCS tools like CVS or SVN. Backup and redundancy required separate infrastructure that many teams did not have."
+```
+
 ---
 
 ## The Birth of Git
+
+<figure class="photo-frame photo-right" style="max-width: 250px;">
+<img src="../../assets/images/git/linus-torvalds.jpg" alt="Linus Torvalds, creator of Git and the Linux kernel">
+<figcaption>
+Linus Torvalds, creator of Git and the Linux kernel.
+<span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Linus_Torvalds.jpeg">Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a></span>
+</figcaption>
+</figure>
 
 In April 2005, Linus Torvalds started writing Git. The Linux kernel had 6.7 million lines of code and thousands of contributors. Linus had specific requirements based on his experience with BitKeeper and the kernel's scale:
 
@@ -339,6 +362,72 @@ This three-stage workflow is deliberate. The staging area lets you control exact
 Beyond these three areas, Git's entire storage model is built on four types of objects - blobs, trees, commits, and tags - all identified by SHA-1 hashes. This **content-addressable** design means Git can instantly tell if two files are identical, deduplicates storage automatically, and guarantees that any corruption is immediately detectable. The [Object Model](object-model.md) guide covers this in depth.
 
 For now, the key insight is: Git doesn't track files. It tracks content. A file's name and location are stored in tree objects, while the file's content is stored in blob objects. Rename a file and Git knows it's the same content with a new name.
+
+The following walkthrough puts this three-area workflow into practice - creating a repository from scratch, staging files, and committing a snapshot.
+
+```terminal
+title: Your First Repository
+steps:
+  - command: "mkdir my-project && cd my-project"
+    output: ""
+    narration: "Create a new directory for the project and move into it. Git repositories start as ordinary directories."
+  - command: "git init"
+    output: "Initialized empty Git repository in /home/user/my-project/.git/"
+    narration: "git init creates the .git subdirectory that holds the entire repository - object database, refs, config, and hooks. The working directory is now tracked by Git, but nothing has been committed yet."
+  - command: "git status"
+    output: |
+      On branch main
+
+      No commits yet
+
+      nothing to commit (create/copy files and use "git add" to track)
+    narration: "git status shows the state of the three areas. Right now the working directory is empty and there are no commits. Git tells you exactly what to do next."
+  - command: "echo '# My Project' > README.md && echo 'print(\"hello\")' > app.py"
+    output: ""
+    narration: "Create two files in the working directory. Git sees them as untracked - they exist on disk but Git is not yet managing them."
+  - command: "git status"
+    output: |
+      On branch main
+
+      No commits yet
+
+      Untracked files:
+        (use "git add <file>..." to include in what will be committed)
+      	README.md
+      	app.py
+
+      nothing added to commit but untracked files present (use "git add" to track)
+    narration: "Both files appear under 'Untracked files'. They are in the working directory but not in the staging area. Git will not include them in a commit until you explicitly add them."
+  - command: "git add README.md app.py"
+    output: ""
+    narration: "git add moves the files from the working directory into the staging area (the index). This tells Git you want these files included in the next commit."
+  - command: "git status"
+    output: |
+      On branch main
+
+      No commits yet
+
+      Changes to be committed:
+        (use "git rm --cached <file>..." to unstage)
+      	new file:   README.md
+      	new file:   app.py
+    narration: "The files are now staged - shown under 'Changes to be committed'. They have moved from the first area (working directory) to the second area (staging area). The next step records them permanently."
+  - command: "git commit -m 'Initial commit: add README and app'"
+    output: |
+      [main (root-commit) a1b2c3d] Initial commit: add README and app
+       2 files changed, 2 insertions(+)
+       create mode 100644 README.md
+       create mode 100644 app.py
+    narration: "git commit takes everything in the staging area and saves it as a permanent snapshot in the repository (the .git directory). The hash a1b2c3d uniquely identifies this commit. 'root-commit' means this is the very first commit in the repository."
+  - command: "git log"
+    output: |
+      commit a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0 (HEAD -> main)
+      Author: Jane Developer <jane@example.com>
+      Date:   Mon Apr 7 10:30:00 2025 -0500
+
+          Initial commit: add README and app
+    narration: "git log shows the commit history. You can see the full SHA-1 hash, the author identity from your git config, the timestamp, and the commit message. HEAD -> main indicates this is the latest commit on the main branch."
+```
 
 ---
 

@@ -6,6 +6,8 @@ You're halfway through a feature when an urgent bug comes in. Your working direc
 
 ## Git Stash
 
+<div class="diagram-container"><img src="../../assets/images/git/stash-stack.svg" alt="Git stash stack visualization showing LIFO ordering and worktree concept with multiple branches in separate directories"></div>
+
 `git stash` takes your modified tracked files and staged changes, saves them on a stack, and reverts your working directory to match HEAD. You can then switch branches, do other work, and come back to apply the stashed changes.
 
 ### Basic Stash Workflow
@@ -54,6 +56,19 @@ git stash push --include-untracked
 git stash push -a
 # or
 git stash push --all
+```
+
+The following diagram shows how file states transition during stash operations:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Modified: Edit files
+    Modified --> Staged: git add
+    Staged --> Stashed: git stash push
+    Modified --> Stashed: git stash push
+    Stashed --> Modified: git stash pop
+    Stashed --> Modified: git stash apply
+    Stashed --> [*]: git stash drop
 ```
 
 ### Inspecting Stashes

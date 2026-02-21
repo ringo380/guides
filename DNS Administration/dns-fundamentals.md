@@ -17,6 +17,14 @@ By the early 1980s this system was falling apart. The ARPANET was growing expone
 - **No consistency** - sites fetched updates at different times, so different machines had different views of the network
 - **Name collisions** - nothing prevented two sites from claiming the same hostname
 
+<figure class="photo-frame photo-right" style="max-width: 250px;">
+<img src="../../assets/images/dns/paul-mockapetris.jpg" alt="Paul Mockapetris, inventor of the Domain Name System">
+<figcaption>
+Paul Mockapetris, inventor of DNS, at a conference in Barcelona.
+<span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Paul_Mockapetris.JPG">Jordiipa</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a></span>
+</figcaption>
+</figure>
+
 In 1983, Paul Mockapetris at USC's Information Sciences Institute published [RFC 882](https://datatracker.ietf.org/doc/html/rfc882) and [RFC 883](https://datatracker.ietf.org/doc/html/rfc883), proposing a distributed, hierarchical naming system. His first implementation was called "Jeeves." Two years later, he refined the design into [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034) and [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) - the specifications that still define DNS today.
 
 ---

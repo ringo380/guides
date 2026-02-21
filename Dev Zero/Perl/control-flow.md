@@ -592,6 +592,20 @@ for my $server (@servers) {
     }
     ```
 
+The following diagram shows how each loop control keyword changes the flow within a single loop iteration:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Condition: Enter loop
+    Condition --> Body: Test passes
+    Condition --> [*]: Test fails (loop ends)
+    Body --> Continue: continue block
+    Continue --> Condition: Next iteration
+    Body --> Condition: next (skip to condition)
+    Body --> Body: redo (restart body, skip condition)
+    Body --> [*]: last (exit loop immediately)
+```
+
 ### Labeled Loops
 
 When you have nested loops, `next` and `last` affect the **innermost** loop by default. **Labels** let you target an outer loop:

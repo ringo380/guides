@@ -335,6 +335,8 @@ Perl has separate comparison operators for numbers and strings. Using the wrong 
 
 ## Context
 
+<div class="diagram-container"><img src="../../../assets/images/perl/perl-type-coercion.svg" alt="Perl type coercion rules showing automatic conversion between numeric, string, and boolean contexts"></div>
+
 **Context** is one of the most important concepts in Perl. It determines how expressions behave - the same expression can produce different results depending on what surrounds it. There are three primary contexts.
 
 ### Scalar Context

@@ -18,7 +18,7 @@ Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed und
 [**Perl**](https://www.perl.org/) was created by **Larry Wall** in 1987. Wall was a linguist and Unix system administrator at Unisys who needed a tool that could handle report generation from scattered files across a network. The existing tools - `sed`, `awk`, and shell scripts - couldn't handle the job cleanly, so he built something new.
 
 <figure class="photo-frame photo-right" style="max-width: 300px;">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b3/Larry_Wall_YAPC_2007.jpg" alt="Larry Wall standing with arms crossed at the YAPC::NA conference in Houston, June 2007">
+  <img src="../../../assets/images/perl/larry-wall.jpg" alt="Larry Wall standing with arms crossed at the YAPC::NA conference in Houston, June 2007">
   <figcaption>
     Larry Wall, creator of Perl, at YAPC::NA 2007.
     <span class="photo-credit">Photo: <a href="https://www.flickr.com/photos/15352839@N00/618129424/">Randal Schwartz</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0">CC BY-SA 2.0</a></span>

@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 380" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .small-code { font-size: 9px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .box-small { fill: #f5f5f5; stroke: #ccc; stroke-width: 0.8; rx: 3; }
+    .box-small-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1; rx: 3; }
+    .diamond { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .connector-no-arrow { stroke: #9e9e9e; stroke-width: 1.2; fill: none; }
+    .divider { stroke: #ccc; stroke-width: 1; stroke-dasharray: 4,3; }
+    .section-rule { stroke: #009485; stroke-width: 1; opacity: 0.3; }
+    .type-label { font-size: 10px; font-weight: 600; fill: #009485; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .small-code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .box-small { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-small-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .diamond { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .heading { fill: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .connector-no-arrow { stroke: #666; }
+      .divider { stroke: rgba(255,255,255,0.15); }
+      .section-rule { stroke: #4db6ac; }
+      .type-label { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- ==================== TOP SECTION: Data Structures ==================== -->
+  <text x="375" y="22" text-anchor="middle" class="heading">Redis Core Data Structures</text>
+  <line x1="220" y1="27" x2="530" y2="27" class="section-rule"/>
+
+  <!-- ===== 1. String ===== -->
+  <rect x="20" y="40" width="120" height="120" class="box-accent"/>
+  <text x="80" y="58" text-anchor="middle" class="type-label">String</text>
+
+  <rect x="32" y="68" width="46" height="18" class="box-small-accent"/>
+  <text x="55" y="81" text-anchor="middle" class="small-code">key</text>
+  <line x1="78" y1="77" x2="90" y2="77" class="connector"/>
+  <rect x="92" y="68" width="40" height="18" class="box-small"/>
+  <text x="112" y="81" text-anchor="middle" class="small-code">val</text>
+
+  <text x="80" y="105" text-anchor="middle" class="small-code">GET / SET</text>
+  <text x="80" y="118" text-anchor="middle" class="small-code">INCR</text>
+  <text x="80" y="131" text-anchor="middle" class="label">counters, cache</text>
+
+  <!-- ===== 2. List ===== -->
+  <rect x="155" y="40" width="120" height="120" class="box-accent"/>
+  <text x="215" y="58" text-anchor="middle" class="type-label">List</text>
+
+  <!-- Linked boxes -->
+  <rect x="163" y="68" width="26" height="18" class="box-small"/>
+  <text x="176" y="81" text-anchor="middle" class="small-code">a</text>
+  <rect x="193" y="68" width="26" height="18" class="box-small"/>
+  <text x="206" y="81" text-anchor="middle" class="small-code">b</text>
+  <rect x="223" y="68" width="26" height="18" class="box-small"/>
+  <text x="236" y="81" text-anchor="middle" class="small-code">c</text>
+  <rect x="253" y="68" width="14" height="18" class="box-small"/>
+  <text x="260" y="81" text-anchor="middle" class="label">..</text>
+
+  <!-- Arrows between list items -->
+  <line x1="189" y1="77" x2="193" y2="77" class="connector-no-arrow"/>
+  <line x1="219" y1="77" x2="223" y2="77" class="connector-no-arrow"/>
+  <line x1="249" y1="77" x2="253" y2="77" class="connector-no-arrow"/>
+
+  <text x="215" y="105" text-anchor="middle" class="small-code">LPUSH / RPOP</text>
+  <text x="215" y="118" text-anchor="middle" class="small-code">LRANGE</text>
+  <text x="215" y="131" text-anchor="middle" class="label">queues, feeds</text>
+
+  <!-- ===== 3. Hash ===== -->
+  <rect x="290" y="40" width="130" height="120" class="box-accent"/>
+  <text x="355" y="58" text-anchor="middle" class="type-label">Hash</text>
+
+  <!-- Field-value pairs -->
+  <rect x="300" y="68" width="46" height="16" class="box-small-accent"/>
+  <text x="323" y="79" text-anchor="middle" class="small-code">name</text>
+  <rect x="350" y="68" width="60" height="16" class="box-small"/>
+  <text x="380" y="79" text-anchor="middle" class="small-code">"Alice"</text>
+
+  <rect x="300" y="86" width="46" height="16" class="box-small-accent"/>
+  <text x="323" y="97" text-anchor="middle" class="small-code">age</text>
+  <rect x="350" y="86" width="60" height="16" class="box-small"/>
+  <text x="380" y="97" text-anchor="middle" class="small-code">"30"</text>
+
+  <text x="355" y="118" text-anchor="middle" class="small-code">HSET / HGET</text>
+  <text x="355" y="131" text-anchor="middle" class="label">objects, sessions</text>
+
+  <!-- ===== 4. Set ===== -->
+  <rect x="435" y="40" width="120" height="120" class="box-accent"/>
+  <text x="495" y="58" text-anchor="middle" class="type-label">Set</text>
+
+  <!-- Unique elements (scattered look) -->
+  <rect x="447" y="66" width="30" height="16" class="box-small"/>
+  <text x="462" y="77" text-anchor="middle" class="small-code">x</text>
+  <rect x="481" y="66" width="30" height="16" class="box-small"/>
+  <text x="496" y="77" text-anchor="middle" class="small-code">y</text>
+  <rect x="515" y="66" width="30" height="16" class="box-small"/>
+  <text x="530" y="77" text-anchor="middle" class="small-code">z</text>
+  <rect x="461" y="86" width="38" height="16" class="box-small"/>
+  <text x="480" y="97" text-anchor="middle" class="small-code">w</text>
+
+  <text x="495" y="118" text-anchor="middle" class="small-code">SADD / SMEMBERS</text>
+  <text x="495" y="131" text-anchor="middle" class="label">tags, unique IDs</text>
+
+  <!-- ===== 5. Sorted Set ===== -->
+  <rect x="570" y="40" width="160" height="120" class="box-accent"/>
+  <text x="650" y="58" text-anchor="middle" class="type-label">Sorted Set</text>
+
+  <!-- Elements with scores -->
+  <rect x="582" y="66" width="50" height="16" class="box-small-accent"/>
+  <text x="607" y="77" text-anchor="middle" class="small-code">1.0</text>
+  <rect x="636" y="66" width="50" height="16" class="box-small"/>
+  <text x="661" y="77" text-anchor="middle" class="small-code">alice</text>
+
+  <rect x="582" y="84" width="50" height="16" class="box-small-accent"/>
+  <text x="607" y="95" text-anchor="middle" class="small-code">2.5</text>
+  <rect x="636" y="84" width="50" height="16" class="box-small"/>
+  <text x="661" y="95" text-anchor="middle" class="small-code">bob</text>
+
+  <!-- score / member labels -->
+  <text x="607" y="112" text-anchor="middle" class="label">score</text>
+  <text x="661" y="112" text-anchor="middle" class="label">member</text>
+
+  <text x="650" y="131" text-anchor="middle" class="small-code">ZADD / ZRANGE</text>
+  <text x="650" y="145" text-anchor="middle" class="label">leaderboards, ranking</text>
+
+  <!-- ==================== SEPARATOR ==================== -->
+  <line x1="20" y1="175" x2="730" y2="175" class="divider"/>
+
+  <!-- ==================== BOTTOM SECTION: Eviction Policy ==================== -->
+  <text x="375" y="198" text-anchor="middle" class="heading">Eviction Policy Flowchart</text>
+  <line x1="230" y1="203" x2="520" y2="203" class="section-rule"/>
+
+  <!-- Diamond: Memory limit reached? -->
+  <polygon points="168,235 290,260 168,285 46,260" class="diamond"/>
+  <text x="168" y="257" text-anchor="middle" class="label">Memory limit</text>
+  <text x="168" y="268" text-anchor="middle" class="label">reached?</text>
+
+  <!-- No branch (down) -->
+  <line x1="168" y1="285" x2="168" y2="302" class="connector"/>
+  <text x="178" y="298" class="label">No</text>
+  <rect x="108" y="304" width="120" height="28" class="box-accent"/>
+  <text x="168" y="323" text-anchor="middle" class="title">Accept write</text>
+
+  <!-- Yes branch (right to second diamond) -->
+  <line x1="290" y1="260" x2="340" y2="260" class="connector"/>
+  <text x="305" y="254" class="label">Yes</text>
+
+  <!-- Diamond: Check policy -->
+  <polygon points="440,235 530,260 440,285 350,260" class="diamond"/>
+  <text x="440" y="257" text-anchor="middle" class="label">Check</text>
+  <text x="440" y="268" text-anchor="middle" class="label">maxmemory-policy</text>
+
+  <!-- Policy outcomes - branch lines -->
+  <!-- Top branch -->
+  <line x1="440" y1="235" x2="440" y2="215" class="connector-no-arrow"/>
+  <line x1="440" y1="215" x2="540" y2="215" class="connector-no-arrow"/>
+
+  <!-- Branch to volatile-lru -->
+  <line x1="540" y1="215" x2="540" y2="225" class="connector-no-arrow"/>
+  <line x1="540" y1="215" x2="550" y2="215" class="connector"/>
+  <rect x="552" y="204" width="90" height="24" class="box-accent"/>
+  <text x="597" y="220" text-anchor="middle" class="code">volatile-lru</text>
+
+  <!-- Branch to allkeys-lru -->
+  <line x1="540" y1="238" x2="550" y2="238" class="connector"/>
+  <rect x="552" y="226" width="90" height="24" class="box-accent"/>
+  <text x="597" y="242" text-anchor="middle" class="code">allkeys-lru</text>
+
+  <!-- Vertical connector line for middle branches -->
+  <line x1="540" y1="215" x2="540" y2="285" class="connector-no-arrow"/>
+
+  <!-- Branch to volatile-ttl -->
+  <line x1="540" y1="260" x2="550" y2="260" class="connector"/>
+  <rect x="552" y="248" width="90" height="24" class="box"/>
+  <text x="597" y="264" text-anchor="middle" class="code">volatile-ttl</text>
+
+  <!-- Branch to noeviction -->
+  <line x1="540" y1="282" x2="550" y2="282" class="connector"/>
+  <rect x="552" y="270" width="100" height="24" class="box"/>
+  <text x="602" y="286" text-anchor="middle" class="code">noeviction</text>
+
+  <!-- Descriptions to the right -->
+  <text x="650" y="220" class="label">evict least-recent (keys with TTL)</text>
+  <text x="650" y="242" class="label">evict least-recent (all keys)</text>
+  <text x="650" y="264" class="label">evict nearest-expiring keys</text>
+  <text x="660" y="286" class="label">reject writes (return error)</text>
+
+  <!-- Bottom label -->
+  <text x="375" y="345" text-anchor="middle" class="label">volatile-* policies only consider keys with an expiration set</text>
+  <text x="375" y="360" text-anchor="middle" class="label">allkeys-* policies consider all keys regardless of TTL</text>
+</svg>

@@ -92,6 +92,96 @@ options:
     feedback: "While zone blocks can override some options, they're not meant as complete overrides. They serve fundamentally different roles: global configuration vs per-zone configuration."
 ```
 
+```terminal
+title: Setting Up named.conf from Scratch
+steps:
+  - command: "cat /etc/named.conf"
+    output: |
+      //
+      // named.conf
+      //
+      // Provided by Red Hat bind package
+      //
+      options {
+              listen-on port 53 { 127.0.0.1; };
+              directory       "/var/named";
+              dump-file       "/var/named/data/cache_dump.db";
+              recursion yes;
+              allow-query     { localhost; };
+              dnssec-validation auto;
+      };
+
+      include "/etc/named.rfc1912.zones";
+      include "/etc/named.root.key";
+    narration: "The default named.conf on RHEL-based systems is minimal. It only listens on localhost and allows queries from localhost. You need to customize it for your environment."
+  - command: "sudo cp /etc/named.conf /etc/named.conf.bak"
+    output: ""
+    narration: "Back up the original configuration before making changes. If something breaks, you can restore this copy."
+  - command: "sudo vim /etc/named.conf"
+    output: |
+      acl "trusted" {
+              192.168.1.0/24;
+              localhost;
+      };
+
+      options {
+              listen-on port 53 { 127.0.0.1; 192.168.1.1; };
+              directory       "/var/named";
+              recursion yes;
+              allow-recursion { trusted; };
+              allow-query     { trusted; };
+              dnssec-validation auto;
+              version "not disclosed";
+      };
+
+      zone "internal.example.com" {
+              type primary;
+              file "zones/internal.example.com.zone";
+              allow-transfer { none; };
+      };
+
+      include "/etc/named.rfc1912.zones";
+      include "/etc/named.root.key";
+    narration: "The edited config adds an ACL for the trusted network, opens the listen address to the LAN interface, restricts recursion to trusted clients, hides the version string, and defines a primary zone for internal.example.com."
+  - command: "named-checkconf"
+    output: ""
+    narration: "No output means the configuration is valid. named-checkconf exits with code 0 on success. Any syntax errors (missing semicolons, unknown directives, mismatched braces) would be printed here."
+  - command: "named-checkconf -p | head -30"
+    output: |
+      acl "trusted" {
+              192.168.1.0/24;
+              localhost;
+      };
+      options {
+              listen-on port 53 {
+                      127.0.0.1;
+                      192.168.1.1;
+              };
+              directory "/var/named";
+              recursion yes;
+              allow-recursion {
+                      "trusted";
+              };
+              allow-query {
+                      "trusted";
+              };
+              dnssec-validation auto;
+              version "not disclosed";
+      };
+    narration: "The -p flag prints the parsed configuration with all includes expanded and defaults filled in. This is useful to verify BIND interprets your config the way you intended."
+  - command: "sudo systemctl reload named"
+    output: ""
+    narration: "Reload applies the new configuration without dropping existing connections. Use reload after config changes; reserve restart for major changes like listen-address modifications."
+  - command: "sudo rndc status"
+    output: |
+      version: BIND 9.16.23-RH
+      running on linux: Linux 5.14.0-362.el9.x86_64
+      boot time: Fri, 21 Feb 2026 10:00:00 GMT
+      server is up and running
+      number of zones: 6 (3 automatic)
+    narration: "The status confirms BIND is running and shows 6 zones: the 3 automatic zones (localhost, localhost reverse, root hints) plus the 3 from named.rfc1912.zones and our new internal.example.com zone."
+```
+
 ---
 
 ## Configuring a Caching Recursive Resolver
@@ -286,6 +376,74 @@ Reload the zone without restarting BIND:
 ```bash
 sudo rndc reload example.com          # reload a specific zone
 sudo rndc reload                      # reload all zones
+```
+
+```exercise
+title: Configure a Forward Zone in BIND
+difficulty: intermediate
+scenario: |
+  You are setting up a BIND authoritative server on a RHEL-based system. Your task is to configure a new forward zone for the domain `corp.widgets.io`. The server's IP is `10.20.30.1`.
+
+  Requirements:
+  - Add a primary zone definition for `corp.widgets.io` to `/etc/named.conf`
+  - Zone file should be stored at `zones/corp.widgets.io.zone` (relative to BIND's working directory)
+  - Disable zone transfers (no secondaries yet)
+  - Create the zone file with:
+    - SOA record using `ns1.corp.widgets.io` as the primary nameserver and `hostmaster.corp.widgets.io` as the contact
+    - Serial `2026022101`, refresh 3600, retry 900, expire 1209600, minimum TTL 300
+    - Two NS records: `ns1.corp.widgets.io` (10.20.30.1) and `ns2.corp.widgets.io` (10.20.30.2)
+    - An A record for the zone apex pointing to `10.20.30.10`
+    - A CNAME for `www` pointing to the zone apex
+    - An MX record with priority 10 for `mail.corp.widgets.io` (10.20.30.20)
+  - Validate both the configuration and the zone file
+hints:
+  - "The zone block in named.conf needs type, file, and allow-transfer directives."
+  - "Remember that all FQDNs in a zone file must end with a trailing dot, or BIND appends the origin."
+  - "Use named-checkconf for the config and named-checkzone for the zone file."
+  - "The SOA contact email replaces @ with a dot: hostmaster@corp.widgets.io becomes hostmaster.corp.widgets.io. in the SOA record."
+solution: |
+  **named.conf zone block** (add to `/etc/named.conf`):
+
+  ```
+  zone "corp.widgets.io" {
+      type primary;
+      file "zones/corp.widgets.io.zone";
+      allow-transfer { none; };
+  };
+  ```
+
+  **Zone file** at `/var/named/zones/corp.widgets.io.zone`:
+
+  ```
+  $TTL 3600
+  $ORIGIN corp.widgets.io.
+
+  @   IN  SOA ns1.corp.widgets.io. hostmaster.corp.widgets.io. (
+              2026022101  ; serial
+              3600        ; refresh
+              900         ; retry
+              1209600     ; expire
+              300         ; minimum
+  )
+
+  @       IN  NS      ns1.corp.widgets.io.
+  @       IN  NS      ns2.corp.widgets.io.
+  ns1     IN  A       10.20.30.1
+  ns2     IN  A       10.20.30.2
+
+  @       IN  A       10.20.30.10
+  www     IN  CNAME   corp.widgets.io.
+  mail    IN  A       10.20.30.20
+  @       IN  MX      10 mail.corp.widgets.io.
+  ```
+
+  **Validation commands:**
+
+  ```bash
+  named-checkconf
+  named-checkzone corp.widgets.io /var/named/zones/corp.widgets.io.zone
+  sudo rndc reload
+  ```
 ```
 
 ---

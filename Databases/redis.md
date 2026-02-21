@@ -11,6 +11,8 @@ Redis is not just a key-value store. It provides native data structures - string
 
 ## Data Structures
 
+<div class="diagram-container"><img src="../../assets/images/databases/redis-data-structures.svg" alt="Redis core data structures and memory eviction policy flowchart"></div>
+
 Every value in Redis is stored under a string key. What makes Redis powerful is the variety of value types and the atomic operations available for each.
 
 ### Strings
