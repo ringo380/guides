@@ -25,12 +25,12 @@ This was more flexible than IMS, but the programmer had to navigate the graph ma
 ### The Relational Revolution: Codd
 
 <figure class="photo-frame photo-right" style="max-width: 250px;">
-  <a href="https://dl.acm.org/doi/10.1145/362384.362685">
-    <img src="../../assets/images/databases/codd-1970-paper.jpg" alt="First page of Codd's 1970 paper 'A Relational Model of Data for Large Shared Data Banks'">
+  <a href="https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf" target="_blank">
+    <img src="../../assets/images/databases/codd-1970-paper.jpg" alt="First page of Codd's 1970 paper 'A Relational Model of Data for Large Shared Data Banks'" data-no-lightbox="true">
   </a>
   <figcaption>
     The first page of Codd's landmark 1970 paper in <em>Communications of the ACM</em>.
-    <span class="photo-credit"><a href="https://dl.acm.org/doi/10.1145/362384.362685">Read the full paper</a></span>
+    <span class="photo-credit"><a href="https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf" target="_blank">Read the full paper (PDF)</a></span>
   </figcaption>
 </figure>
 

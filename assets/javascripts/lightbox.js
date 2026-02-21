@@ -100,6 +100,7 @@
       var imgs = container.querySelectorAll("img");
       imgs.forEach(function (img) {
         if (img.dataset.lightbox === "true") return;
+        if (img.dataset.noLightbox === "true") return;
         img.dataset.lightbox = "true";
         img.classList.add("lightbox-ready");
 
