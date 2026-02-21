@@ -33,74 +33,74 @@
   <!-- Row 1: Brace → Tilde → Parameter → Arithmetic -->
 
   <!-- Box 1: Brace (accent) -->
-  <rect x="95" y="28" width="75" height="50" class="box-accent"/>
-  <text x="132.5" y="42" text-anchor="middle" class="step-number">1</text>
-  <text x="132.5" y="55" text-anchor="middle" class="title">Brace</text>
-  <text x="132.5" y="70" text-anchor="middle" class="label">{a,b,c}</text>
+  <rect x="146" y="28" width="90" height="50" class="box-accent"/>
+  <text x="191" y="42" text-anchor="middle" class="step-number">1</text>
+  <text x="191" y="55" text-anchor="middle" class="title">Brace</text>
+  <text x="191" y="70" text-anchor="middle" class="label">{a,b,c}</text>
 
   <!-- Arrow 1→2 -->
-  <line x1="170" y1="53" x2="195" y2="53" class="connector"/>
+  <line x1="236" y1="53" x2="256" y2="53" class="connector"/>
 
   <!-- Box 2: Tilde -->
-  <rect x="203" y="28" width="75" height="50" class="box"/>
-  <text x="240.5" y="42" text-anchor="middle" class="step-number">2</text>
-  <text x="240.5" y="55" text-anchor="middle" class="title">Tilde</text>
-  <text x="240.5" y="70" text-anchor="middle" class="label">~/docs</text>
+  <rect x="259" y="28" width="90" height="50" class="box"/>
+  <text x="304" y="42" text-anchor="middle" class="step-number">2</text>
+  <text x="304" y="55" text-anchor="middle" class="title">Tilde</text>
+  <text x="304" y="70" text-anchor="middle" class="label">~/docs</text>
 
   <!-- Arrow 2→3 -->
-  <line x1="278" y1="53" x2="303" y2="53" class="connector"/>
+  <line x1="349" y1="53" x2="369" y2="53" class="connector"/>
 
   <!-- Box 3: Parameter -->
-  <rect x="311" y="28" width="75" height="50" class="box"/>
-  <text x="348.5" y="42" text-anchor="middle" class="step-number">3</text>
-  <text x="348.5" y="55" text-anchor="middle" class="title">Parameter</text>
-  <text x="348.5" y="70" text-anchor="middle" class="label">${var}</text>
+  <rect x="372" y="28" width="90" height="50" class="box"/>
+  <text x="417" y="42" text-anchor="middle" class="step-number">3</text>
+  <text x="417" y="55" text-anchor="middle" class="title">Parameter</text>
+  <text x="417" y="70" text-anchor="middle" class="label">${var}</text>
 
   <!-- Arrow 3→4 -->
-  <line x1="386" y1="53" x2="411" y2="53" class="connector"/>
+  <line x1="462" y1="53" x2="482" y2="53" class="connector"/>
 
   <!-- Box 4: Arithmetic -->
-  <rect x="419" y="28" width="75" height="50" class="box"/>
-  <text x="456.5" y="42" text-anchor="middle" class="step-number">4</text>
-  <text x="456.5" y="55" text-anchor="middle" class="title">Arithmetic</text>
-  <text x="456.5" y="70" text-anchor="middle" class="label">$((1+2))</text>
+  <rect x="485" y="28" width="90" height="50" class="box"/>
+  <text x="530" y="42" text-anchor="middle" class="step-number">4</text>
+  <text x="530" y="55" text-anchor="middle" class="title">Arithmetic</text>
+  <text x="530" y="70" text-anchor="middle" class="label">$((1+2))</text>
 
   <!-- Arrow row 1 → row 2 (right of box 4, down, left, down into box 5) -->
-  <path d="M 494 53 L 515 53 L 515 83 L 75 83 L 75 113 L 87 113" class="connector"/>
+  <path d="M 575 53 L 596 53 L 596 83 L 126 83 L 126 113 L 138 113" class="connector"/>
 
   <!-- Row 2: Command Sub → Word Split → Pathname → Quote Removal -->
 
   <!-- Box 5: Command Sub -->
-  <rect x="95" y="88" width="75" height="50" class="box"/>
-  <text x="132.5" y="102" text-anchor="middle" class="step-number">5</text>
-  <text x="132.5" y="115" text-anchor="middle" class="title">Command Sub</text>
-  <text x="132.5" y="130" text-anchor="middle" class="label">$(cmd)</text>
+  <rect x="146" y="88" width="90" height="50" class="box"/>
+  <text x="191" y="102" text-anchor="middle" class="step-number">5</text>
+  <text x="191" y="115" text-anchor="middle" class="title">Command Sub</text>
+  <text x="191" y="130" text-anchor="middle" class="label">$(cmd)</text>
 
   <!-- Arrow 5→6 -->
-  <line x1="170" y1="113" x2="195" y2="113" class="connector"/>
+  <line x1="236" y1="113" x2="256" y2="113" class="connector"/>
 
   <!-- Box 6: Word Split -->
-  <rect x="203" y="88" width="75" height="50" class="box"/>
-  <text x="240.5" y="102" text-anchor="middle" class="step-number">6</text>
-  <text x="240.5" y="115" text-anchor="middle" class="title">Word Split</text>
-  <text x="240.5" y="130" text-anchor="middle" class="label">IFS splitting</text>
+  <rect x="259" y="88" width="90" height="50" class="box"/>
+  <text x="304" y="102" text-anchor="middle" class="step-number">6</text>
+  <text x="304" y="115" text-anchor="middle" class="title">Word Split</text>
+  <text x="304" y="130" text-anchor="middle" class="label">IFS splitting</text>
 
   <!-- Arrow 6→7 -->
-  <line x1="278" y1="113" x2="303" y2="113" class="connector"/>
+  <line x1="349" y1="113" x2="369" y2="113" class="connector"/>
 
   <!-- Box 7: Pathname -->
-  <rect x="311" y="88" width="75" height="50" class="box"/>
-  <text x="348.5" y="102" text-anchor="middle" class="step-number">7</text>
-  <text x="348.5" y="115" text-anchor="middle" class="title">Pathname</text>
-  <text x="348.5" y="130" text-anchor="middle" class="label">*.txt</text>
+  <rect x="372" y="88" width="90" height="50" class="box"/>
+  <text x="417" y="102" text-anchor="middle" class="step-number">7</text>
+  <text x="417" y="115" text-anchor="middle" class="title">Pathname</text>
+  <text x="417" y="130" text-anchor="middle" class="label">*.txt</text>
 
   <!-- Arrow 7→8 -->
-  <line x1="386" y1="113" x2="411" y2="113" class="connector"/>
+  <line x1="462" y1="113" x2="482" y2="113" class="connector"/>
 
   <!-- Box 8: Quote Removal (accent) -->
-  <rect x="419" y="88" width="75" height="50" class="box-accent"/>
-  <text x="456.5" y="102" text-anchor="middle" class="step-number">8</text>
-  <text x="456.5" y="115" text-anchor="middle" class="title">Quote Removal</text>
-  <text x="456.5" y="130" text-anchor="middle" class="label">final cleanup</text>
+  <rect x="485" y="88" width="90" height="50" class="box-accent"/>
+  <text x="530" y="102" text-anchor="middle" class="step-number">8</text>
+  <text x="530" y="115" text-anchor="middle" class="title">Quote Removal</text>
+  <text x="530" y="130" text-anchor="middle" class="label">final cleanup</text>
 
 </svg>

@@ -73,7 +73,7 @@
 <line x1="485" y1="203" x2="485" y2="220" class="connector"/>
 <text x="495" y="215" class="label">No</text>
 
-<rect x="445" y="220" width="80" height="26" class="box"/>
+<rect x="437" y="220" width="96" height="26" class="box"/>
 <text x="485" y="237" text-anchor="middle" class="label" style="font-size:8.5px;">Permission Denied</text>
 
 <!-- NO branch: down from UID diamond to GID diamond -->
@@ -109,7 +109,7 @@
 <line x1="485" y1="287" x2="485" y2="304" class="connector"/>
 <text x="495" y="299" class="label">No</text>
 
-<rect x="445" y="304" width="80" height="26" class="box"/>
+<rect x="437" y="304" width="96" height="26" class="box"/>
 <text x="485" y="321" text-anchor="middle" class="label" style="font-size:8.5px;">Permission Denied</text>
 
 <!-- NO branch: down from GID diamond to Check other perms -->
