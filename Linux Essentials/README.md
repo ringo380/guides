@@ -4,6 +4,10 @@ A comprehensive guide to working effectively on the Linux command line. These gu
 
 Each topic is covered in its own guide. Start anywhere - they're self-contained, but the order below follows a natural learning path.
 
+<div class="diagram-container">
+<img src="../assets/images/linux-essentials/learning-path.svg" alt="Linux Essentials learning path showing guide progression from fundamentals through file operations, system administration, and scripting">
+</div>
+
 ---
 
 ## Guides

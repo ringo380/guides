@@ -4,6 +4,10 @@
 
 ---
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/script-control-flow.svg" alt="Script execution flow showing set -euo pipefail, argument parsing, validation, main logic, error handling with traps, and cleanup">
+</div>
+
 ## Exit Codes
 
 Every command returns an **exit code** when it finishes. By convention:
@@ -91,6 +95,10 @@ The spaces inside `[ ]` and `[[ ]]` are required. They're not just syntax - `[` 
 
 In bash scripts, prefer `[[ ]]` - it's safer and more powerful.
 
+!!! tip "Use [[ ]] over [ ] in bash scripts"
+
+    **`[[ ]]`** doesn't word-split variables, so `[[ -n $var ]]` works even if `$var` is empty or contains spaces. It also supports pattern matching (`==`), regex (`=~`), and logical operators (`&&`, `||`) directly. The only reason to use `[ ]` is when writing portable POSIX `sh` scripts.
+
 ```quiz
 question: "What is the main advantage of [[ ]] over [ ] in bash?"
 type: multiple-choice
@@ -107,6 +115,10 @@ options:
 ```
 
 ### Test Operators
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/test-operator-categories.svg" alt="Test operator categories showing file tests, string tests, numeric tests, and pattern/regex tests">
+</div>
 
 **File tests:**
 
@@ -167,6 +179,10 @@ options:
 [[ $count -gt 10 ]]          # same with [[ ]] (quoting optional)
 (( count > 10 ))             # arithmetic context (cleanest for numbers)
 ```
+
+!!! tip "Use (( )) for arithmetic comparisons"
+
+    **`(( ))`** lets you write math comparisons using familiar operators like `>`, `<`, `==`, `>=` instead of the cryptic `-gt`, `-lt`, `-eq`, `-ge` flags. Variables inside `(( ))` don't need the `$` prefix. Use `(( ))` for numeric logic, `[[ ]]` for string and file tests.
 
 ---
 
@@ -315,6 +331,10 @@ Combined for a simple if/else:
 
 Be careful with this pattern. If the `&&` command fails, the `||` command also runs. For real conditional logic, use `if`.
 
+!!! warning "Avoid the && || pseudo-if for complex logic"
+
+    The pattern `condition && do_this || do_that` looks like an if/else but isn't. If `do_this` fails, `do_that` also runs - you get *both* branches. This is fine for simple cases like `[[ -f file ]] && echo "yes" || echo "no"` where `echo` won't fail, but for anything more complex, use a proper `if` statement.
+
 ---
 
 ## Loops
@@ -377,6 +397,10 @@ while IFS= read -r line; do
     echo "$line"
 done < <(find . -name "*.txt")
 ```
+
+!!! warning "The while-read-pipe subshell problem"
+
+    Piping into a `while` loop runs it in a **subshell**, so variable changes inside the loop are lost when it finishes: `cat file | while read line; do count=$((count+1)); done; echo $count` prints `0`. Use process substitution instead: `while read line; do ...; done < <(cat file)` or redirect from a file: `while read line; do ...; done < file`.
 
 ### until Loop
 
@@ -507,6 +531,10 @@ if is_valid_ip "192.168.1.1"; then
 fi
 ```
 
+!!! danger "return sets exit status, echo outputs data"
+
+    **`return`** only sets a numeric exit status (0-255) - it does not send data back to the caller. To pass data out of a function, use **`echo`** (or `printf`) and capture it with `$(function_name)`. Confusing the two is a common bug: `result=$(my_func)` captures stdout, while `$?` captures the return code.
+
 To get data out of a function, print it and capture with command substitution:
 
 ```bash
@@ -534,6 +562,10 @@ echo "$global_var"  # this leaks out
 ```
 
 Always use `local` for function variables unless you intentionally want them to be global.
+
+!!! tip "Use local for all function variables"
+
+    Without **`local`**, every variable in a function is **global** - it persists after the function returns and can collide with variables in other functions or the main script. Always declare function variables with `local` unless you deliberately want them visible outside the function. This is especially important in scripts with multiple functions that might reuse common names like `i`, `result`, or `file`.
 
 ```code-walkthrough
 language: bash
@@ -624,6 +656,14 @@ set -euo pipefail
 
 This catches the vast majority of common scripting errors: unhandled failures, typos in variable names, and hidden pipeline failures.
 
+!!! warning "set -e exceptions: if, &&, ||, while"
+
+    **`set -e`** doesn't exit on *every* failure. Commands used as conditions in `if`, `while`, or `until` statements are exempt, as are commands in `&&` and `||` chains. This is by design - the shell needs to evaluate the exit code to make a decision. Be aware that `cmd && other` silently swallows `cmd`'s failure under `set -e`.
+
+!!! danger "set -u catches rm -rf $UNSET_VAR expanding to rm -rf /"
+
+    Without **`set -u`**, referencing an unset variable silently expands to an empty string. This turns `rm -rf "$DEPLOY_DIR/app"` into `rm -rf /app` when `DEPLOY_DIR` is unset. With `-u`, bash immediately raises an error instead of expanding the empty variable. This single option prevents an entire class of catastrophic scripting bugs.
+
 ```quiz
 question: "What does set -e do in a bash script?"
 type: multiple-choice
@@ -657,6 +697,10 @@ tmpfile=$(mktemp)
 # ... use tmpfile ...
 # cleanup runs automatically when the script exits
 ```
+
+!!! tip "trap EXIT for guaranteed cleanup"
+
+    **`trap cleanup EXIT`** fires when the script exits for *any* reason: normal completion, `set -e` abort, `Ctrl-C`, or `kill`. This makes it the single most reliable cleanup mechanism. Always use `EXIT` rather than trapping individual signals, unless you need different behavior for different signals.
 
 Common signals to trap:
 

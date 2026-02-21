@@ -58,6 +58,10 @@ tar -xf archive.tar -C /target/directory/   # extract to specific directory
 
 Modern `tar` auto-detects the compression format, so you don't need `-z`, `-j`, or `-J` when extracting.
 
+!!! tip "Modern tar auto-detects compression when extracting"
+
+    You don't need to remember whether an archive uses gzip, bzip2, or xz. Just use **`tar xf archive.tar.*`** and tar reads the magic bytes to determine the compression format automatically. The `-z`, `-j`, `-J` flags are only needed when *creating* archives - tar needs to know which compressor to invoke.
+
 ```quiz
 question: "When extracting with modern tar, do you need to specify -z, -j, or -J?"
 type: multiple-choice
@@ -107,7 +111,13 @@ tar -czf "backup_$(date +%Y%m%d).tar.gz" /var/www
 
 # Append files to an existing (uncompressed) archive
 tar -rf archive.tar newfile.txt
+```
 
+!!! danger "tar -rf only works on uncompressed archives"
+
+    The **`-r`** (append) flag only works on plain `.tar` files, not on compressed archives (`.tar.gz`, `.tar.xz`). Attempting `tar -rf archive.tar.gz newfile` silently fails or corrupts the archive. To add files to a compressed archive, you must decompress it first, append, then recompress.
+
+```bash
 # Compare archive against filesystem
 tar -df archive.tar
 ```
@@ -197,6 +207,10 @@ options:
 
 [**`gzip`**](https://www.gnu.org/software/gzip/manual/) compresses individual files. It replaces the original file with a `.gz` version.
 
+!!! warning "gzip replaces the original file by default"
+
+    Running **`gzip file.txt`** deletes the original and creates `file.txt.gz`. This catches many people off guard. Use **`gzip -k`** (keep) to preserve the original file, or **`gzip -c file.txt > file.txt.gz`** to write to stdout without modifying the original.
+
 ```bash
 gzip file.txt                   # creates file.txt.gz, removes file.txt
 gzip -k file.txt                # keep the original file
@@ -219,6 +233,10 @@ options:
   - text: "gzip only works on tar archives, not regular files"
     feedback: "gzip works on any file. It's often paired with tar, but you can gzip any file directly."
 ```
+
+!!! tip "Default gzip level (-6) is usually optimal"
+
+    Compression levels `-1` through `-9` trade speed for size, but the returns diminish sharply above `-6`. The jump from `-6` to `-9` typically saves only 5-15% more space while taking 2-3x longer. Use `-1` when speed matters (pipelines, real-time compression) and `-9` only when compressing once for many downloads (software releases).
 
 Compression levels from `-1` to `-9` control the tradeoff between speed and compression ratio. Lower numbers use less CPU time and memory but produce larger files. Higher numbers spend more CPU and memory searching for better ways to encode the data. The difference in file size between `-1` and `-9` is often modest (5-15% on typical files), so the default level (`-6` for gzip) is usually the right choice. Use `-1` when speed matters (compressing data in a pipeline or on a slow machine) and `-9` only when you're compressing once and distributing many times (like software releases).
 
@@ -275,6 +293,10 @@ xz -d file.txt.xz              # decompress (same as unxz)
 xz -T 0 file.txt               # use all CPU cores (much faster)
 ```
 
+!!! tip "Use xz -T 0 to use all CPU cores"
+
+    By default, **`xz`** uses a single CPU core, making it painfully slow on large files. The **`-T 0`** flag enables **multithreaded** compression using all available cores, dramatically reducing compression time. For a 1GB file on an 8-core machine, this can cut compression time by 5-7x.
+
 **`unxz`** decompresses:
 
 ```bash
@@ -311,11 +333,19 @@ unzip -o archive.zip                       # overwrite without prompting
 
 ### zip Limitations
 
+!!! warning "zip doesn't preserve Unix file permissions"
+
+    Extracted files get **default permissions** based on your umask, not the original permissions. Scripts that were executable before zipping won't be executable after unzipping. For Unix-to-Unix transfers where permissions, ownership, and symlinks matter, use **`tar`** instead.
+
 Classic zip has a few limitations to be aware of. It doesn't preserve Unix file permissions by default - extracted files get default permissions based on your umask, which can break scripts that need to be executable. The original zip format has a **4GB limit** for individual files and a **4GB limit** for the total archive size. Modern implementations support zip64 extensions to overcome this, but not all unzip tools handle zip64 correctly. For Unix-to-Unix transfers where you need to preserve permissions, ownership, and symlinks, `tar` archives are the better choice.
 
 ---
 
 ## When to Use Which
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/compression-decision-tree.svg" alt="Compression format decision tree: sharing with Windows leads to zip, max compression leads to tar.xz, speed priority leads to tar.gz, default is tar.gz">
+</div>
 
 | Format | Use When |
 |--------|----------|

@@ -6,6 +6,10 @@ Job control lets you manage multiple processes from a single terminal - running 
 
 ## Foreground and Background Processes
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/job-state-transitions.svg" alt="Job state transitions between running foreground, stopped, and running background states">
+</div>
+
 By default, when you run a command, it runs in the **foreground**. Your terminal waits for it to finish before giving you a new prompt.
 
 A **background** process runs without blocking your terminal.
@@ -20,6 +24,9 @@ sleep 300 &
 ```
 
 The shell prints the **job number** in brackets and the **process ID**. You get your prompt back immediately.
+
+!!! warning "Background processes still output to the terminal"
+    Running a command with `&` only detaches it from stdin. The process can still write to stdout and stderr, which will appear in your terminal unexpectedly. Redirect output when backgrounding noisy commands: `command > output.log 2>&1 &`.
 
 ### Viewing Jobs
 
@@ -92,9 +99,16 @@ steps:
 | `%string` | Job whose command starts with "string" |
 | `%?string` | Job whose command contains "string" |
 
+!!! tip "Use %?string to reference jobs by partial command"
+    Instead of remembering job numbers, use `%?` to match by substring: `fg %?deploy` brings back the job whose command contains "deploy." This is faster than running `jobs` to look up the number, especially when you have several background jobs.
+
 ---
 
 ## Signals
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/signal-handling.svg" alt="Signal handling flow showing how SIGTERM, SIGKILL, SIGTSTP, and SIGCONT are processed">
+</div>
 
 **Signals** are software interrupts sent to processes. They tell a process to do something - usually to stop, pause, or terminate.
 
@@ -142,6 +156,9 @@ kill -TERM 12345      # same thing, by name
 kill -9 12345         # sends SIGKILL (cannot be caught)
 kill -KILL 12345      # same thing, by name
 ```
+
+!!! danger "SIGKILL gives no chance for cleanup"
+    `kill -9` terminates the process immediately at the kernel level. Temporary files are left behind, database transactions remain uncommitted, lock files are not removed, and child processes may be orphaned. Always try `kill` (SIGTERM) first and wait a few seconds before resorting to `kill -9`.
 
 Always try `SIGTERM` first. It gives the process a chance to clean up (close files, remove temp files, etc.). Only use `SIGKILL` as a last resort - the process gets no chance to clean up.
 
@@ -211,6 +228,9 @@ disown %1          # remove job 1 from shell's job table
 disown -h %1       # keep in job table but don't send SIGHUP on exit
 ```
 
+!!! tip "Use disown when you forgot nohup"
+    Started a long process and now need to log out? Press `Ctrl-Z`, then `bg` to resume it in the background, then `disown %1` to detach it from your shell. The process will continue running after you close the terminal.
+
 The key difference: **`nohup`** is preventive - you use it *before* starting a process. **`disown`** is reactive - you use it *after* a process is already running and you realize you need it to survive terminal closure. A common workflow: you start a long build, realize you need to log out, press `Ctrl-Z` to suspend it, `bg` to resume in the background, and `disown` to detach it from the shell. If you'd planned ahead, you would have used `nohup` from the start.
 
 ```quiz
@@ -261,6 +281,9 @@ Key columns in `ps aux`:
 | `TIME` | Cumulative CPU time |
 | `COMMAND` | Command that started the process |
 
+!!! tip "Check VSZ vs RSS for memory usage"
+    **RSS** (Resident Set Size) shows actual physical RAM usage - this is what matters for system capacity. **VSZ** (Virtual Memory Size) includes mapped but unused memory and is almost always much larger. When checking if a process is consuming too much memory, look at RSS.
+
 **VSZ** (Virtual Memory Size) is the total amount of memory the process has *mapped*, including shared libraries, memory-mapped files, and memory that's been allocated but never used. **RSS** (Resident Set Size) is how much physical RAM the process is actually using right now. VSZ is almost always larger than RSS because virtual memory includes pages that haven't been loaded from disk yet and shared libraries counted in full even though they're shared with other processes. When checking if a process is using too much memory, look at RSS. When checking if a process might run into address space limits, look at VSZ.
 
 Process states in the `STAT` column:
@@ -273,7 +296,13 @@ Process states in the `STAT` column:
 | `T` | Stopped |
 | `Z` | Zombie (finished but parent hasn't collected status) |
 
+!!! danger "D-state processes cannot be killed, even with SIGKILL"
+    A process in D (uninterruptible sleep) state is waiting for kernel-level I/O that cannot be interrupted. No signal, including `SIGKILL`, can terminate it until the I/O completes. If you see stuck D-state processes, the root cause is usually failing hardware or an unresponsive NFS mount.
+
 The **D state** (uninterruptible sleep) deserves special attention. A process in D state is waiting on I/O that the kernel considers non-interruptible - typically disk or network I/O at the kernel level. You cannot kill a D-state process, not even with SIGKILL, because the kernel won't deliver signals to it until the I/O completes. Processes stuck in D state are commonly seen with NFS mounts that have become unreachable or failing disk drives. If you see many processes in D state, investigate your storage and network mounts.
+
+!!! warning "Zombie processes can't be killed directly"
+    A zombie (Z state) has already exited - there's no process to kill. The zombie entry exists only because the parent hasn't called `wait()` to collect the exit status. To clear zombies, kill or restart the parent process. The `init`/`systemd` process will then adopt and reap the orphaned zombies.
 
 The **Z state** (zombie) means the process has finished executing but its parent hasn't called `wait()` to collect its exit status. The zombie takes up no resources other than a process table entry. A few zombies are harmless, but a large accumulation suggests the parent process has a bug. You can't kill a zombie directly - killing the parent (or restarting it) clears them, because `init`/`systemd` adopts orphaned processes and reaps their exit status.
 
@@ -454,6 +483,9 @@ tmux attach -t deploy
 ```
 
 This is especially useful over SSH connections. If your connection drops, the tmux session keeps running. Just SSH back in and reattach.
+
+!!! tip "tmux over screen for new setups"
+    If you're choosing a terminal multiplexer for a new system, pick **tmux**. It has better split-pane support, a scriptable command interface, and more active development. Use **screen** only when it's already installed on a server and you can't install tmux.
 
 **Which to choose?** If you're setting up a new system, use **tmux** - it has better split-pane support, more intuitive configuration, and a scriptable command interface. Use **screen** if it's already installed on a server you're working with and you don't want to (or can't) install additional software. screen is nearly universal on older systems, while tmux may not be pre-installed. The core workflow (start a session, detach, reattach later) is the same in both.
 

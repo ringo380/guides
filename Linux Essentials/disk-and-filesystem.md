@@ -31,6 +31,10 @@ Key columns:
 - **Use%** - percentage used (calculated against non-reserved space)
 - **Mounted on** - where the filesystem is accessible
 
+!!! danger "A filesystem at 100% causes unpredictable application failures"
+
+    When a filesystem fills up, applications don't get a clean "disk full" error - they crash, corrupt data, fail to write logs, or hang. Databases refuse writes, log rotation breaks, and even `ssh` may stop working if `/var` is full. Monitor `Use%` with alerts at 80% and 90% thresholds to avoid emergencies.
+
 A filesystem at 100% causes applications to fail in unexpected ways. Keep an eye on `Use%`.
 
 Running out of inodes (`df -i`) is a less common but equally disabling problem. It happens when you have a huge number of tiny files.
@@ -63,6 +67,10 @@ du -sh * | sort -rh
 ```
 
 ### du vs df Discrepancy
+
+!!! warning "df and du can show different numbers"
+
+    **`df`** reports from the filesystem's perspective (including space held by deleted-but-open files). **`du`** only counts visible files. When `df` shows more usage than `du` can account for, a process is holding a deleted file open. Find it with `lsof +L1 | grep deleted`.
 
 `du` and `df` can show different numbers. `df` reports space from the filesystem's perspective (including space held by deleted-but-open files). `du` counts only visible files. If `df` shows full but `du` doesn't account for all the space, a process may be holding a deleted file open. Find it with:
 
@@ -100,7 +108,15 @@ findmnt                      # tree view of mounts (cleaner output)
 findmnt -t ext4              # filter by filesystem type
 ```
 
+!!! tip "Use findmnt for cleaner mount output"
+
+    The plain **`mount`** command outputs a wall of text that's hard to parse. **`findmnt`** shows mounts as a tree with clean columns. Use `findmnt -t ext4,xfs` to filter by filesystem type, or `findmnt /data` to check a specific mount point. It's the modern replacement for `mount | grep`.
+
 ### Mounting a Filesystem
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/filesystem-mount-hierarchy.svg" alt="Typical filesystem mount hierarchy showing root, boot, home, var, tmp, and mnt directories with their filesystem types">
+</div>
 
 ```bash
 mount /dev/sdb1 /mnt/data              # mount a partition
@@ -236,9 +252,17 @@ Common options:
 
 Some options worth understanding:
 
+!!! tip "noatime improves performance on SSDs"
+
+    The **`noatime`** mount option stops the kernel from writing a new "last accessed" timestamp on every file read. On SSDs, this reduces unnecessary writes (extending drive life). On HDDs, it reduces I/O overhead. There's rarely a reason not to use it unless you have software that depends on access times.
+
 - **`noatime`** stops the kernel from updating the 'last accessed' timestamp every time a file is read. On SSDs, this reduces unnecessary writes and improves performance. On HDDs with busy filesystems, it reduces I/O overhead. There's rarely a reason *not* to use `noatime` unless you have software that depends on access times.
 - **`noexec`** prevents executing any binary on the filesystem. It's a security hardening measure commonly applied to `/tmp` - if an attacker writes a malicious binary to `/tmp`, they can't execute it directly. Note that it doesn't prevent `bash /tmp/script.sh` (which runs bash, not the script), so it's a layer of defense, not a complete solution.
 - **`nosuid`** tells the kernel to ignore setuid and setgid bits on the filesystem. This is important for removable media and network mounts - you don't want someone plugging in a USB drive containing a setuid-root binary that could escalate privileges.
+
+!!! tip "Use UUIDs in fstab instead of device names"
+
+    Device names like `/dev/sdb1` can change between boots if disks are added, removed, or detected in a different order. **UUIDs** are stored on the filesystem itself and never change. Always use `UUID=...` in `/etc/fstab` instead of `/dev/sdX` paths. Run `blkid` to find UUIDs.
 
 Using UUIDs instead of device names (like `/dev/sdb1`) is safer because device names can change between boots:
 
@@ -381,6 +405,10 @@ mkfs.ext4 -L "backups" /dev/sdb1         # set a label
 mkfs.ext4 -m 1 /dev/sdb1                 # reserve only 1% for root (default is 5%)
 ```
 
+!!! warning "XFS filesystems can be grown but not shrunk"
+
+    Once you create an **XFS** filesystem, you can expand it with `xfs_growfs` but you can **never shrink** it. If you might need to resize partitions smaller in the future, choose **ext4** instead, which supports both growing (`resize2fs`) and shrinking. Plan your XFS partition sizes carefully.
+
 **ext4 vs XFS:** **ext4** is the default choice on most Linux distributions. It's well-tested, has excellent tooling ([`e2fsck`](https://e2fsprogs.sourceforge.net/), `tune2fs`, `resize2fs`), and handles general workloads well. [**XFS**](https://xfs.wiki.kernel.org/) excels at handling large files and parallel I/O - it's the default on RHEL/CentOS and a strong choice for database servers, media storage, or any workload with many concurrent large writes. XFS can't be shrunk after creation (only grown), while ext4 can be both grown and shrunk. For most use cases, go with your distribution's default.
 
 ---
@@ -388,6 +416,10 @@ mkfs.ext4 -m 1 /dev/sdb1                 # reserve only 1% for root (default is 
 ## Filesystem Checks
 
 **`fsck`** checks and repairs filesystems. Only run this on unmounted or read-only filesystems.
+
+!!! danger "Never run fsck on a mounted filesystem"
+
+    Running **`fsck`** on a mounted filesystem can **corrupt data irreversibly**. The kernel's in-memory metadata cache and `fsck`'s direct disk writes will conflict, causing lost files, broken directories, or an unmountable filesystem. Always unmount first, or boot from a live USB to check the root partition.
 
 ```bash
 fsck /dev/sdb1               # check and prompt for repairs
@@ -467,6 +499,10 @@ solution: |
 ```
 
 ### Adding a New Disk
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/new-disk-workflow.svg" alt="New disk workflow showing steps from lsblk through parted, mkfs, mkdir, mount, blkid, fstab, to mount -a">
+</div>
 
 ```bash
 # 1. Identify the new disk

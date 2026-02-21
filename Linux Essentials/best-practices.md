@@ -34,6 +34,10 @@ rm -rf "$DEPLOY_DIR/app"      # if DEPLOY_DIR is unset, script exits with an err
 
 Without `-u`, an unset `DEPLOY_DIR` expands to empty, and you'd run `rm -rf /app`.
 
+!!! danger "Without set -u, unset variable in rm -rf expands to empty"
+
+    This is one of the most dangerous scripting bugs. `rm -rf "$UNSET_VAR/"` becomes `rm -rf /` when the variable is empty. The **`-u`** option makes bash abort immediately on any reference to an unset variable, turning a catastrophic silent failure into a clear error message.
+
 **`set -o pipefail`** - a pipeline fails if any command in it fails:
 
 ```bash
@@ -193,6 +197,10 @@ brew install shellcheck           # macOS
 
 Run it in CI/CD to catch shell script bugs before they reach production.
 
+!!! tip "Use shellcheck in CI/CD pipelines"
+
+    Add `shellcheck *.sh` to your CI pipeline to catch bugs automatically on every commit. ShellCheck's exit code is non-zero when it finds issues, making it easy to integrate. Use `# shellcheck disable=SC2086` comments to suppress specific warnings when you know what you're doing.
+
 Here's what shellcheck output looks like on a buggy script:
 
 ```bash
@@ -326,6 +334,10 @@ find . -type f -print0 | while IFS= read -r -d '' file; do
 done
 ```
 
+!!! warning "Globbing handles spaces correctly where ls parsing does not"
+
+    Shell **globbing** (`for f in *.txt`) expands filenames as properly quoted tokens, so `my file.txt` stays as one argument. Parsing `ls` output (`for f in $(ls)`) splits on whitespace, turning `my file.txt` into two separate arguments: `my` and `file.txt`. Globbing is both safer and simpler.
+
 ```quiz
 question: "Why is it dangerous to parse the output of ls in scripts?"
 type: multiple-choice
@@ -373,6 +385,10 @@ arr+=("four")                 # append
 # Build arrays from command output
 mapfile -t lines < file.txt   # read file into array (one line per element)
 ```
+
+!!! tip "Use mapfile to read files into arrays"
+
+    **`mapfile -t lines < file.txt`** (also called `readarray`) reads an entire file into an array with one element per line. The `-t` flag strips trailing newlines. This is safer than `lines=($(cat file))` which breaks on spaces and globbing characters.
 
 ```exercise
 title: Rewrite a Script with Proper Quoting and Arrays
@@ -445,6 +461,10 @@ If your script needs to run on minimal systems (Docker containers, embedded syst
 
 If you need bash features, make sure your shebang is `#!/bin/bash`, not `#!/bin/sh`. On some systems, `/bin/sh` is `dash`, which doesn't support bash extensions.
 
+!!! warning "#!/bin/sh may not be bash on all systems"
+
+    On **Debian**, **Ubuntu**, and **Alpine**, `/bin/sh` is **`dash`** (or `ash`), not bash. If your script uses `[[ ]]`, arrays, `$RANDOM`, process substitution, or any bash-specific feature, it will silently break or produce wrong results under `dash`. Always use `#!/bin/bash` for bash scripts.
+
 **When to target POSIX sh:** Docker scratch images and minimal containers often only have `/bin/sh` (usually dash or busybox ash). Cron jobs on minimal systems may run under `sh` by default. CI/CD pipeline scripts that need to run across different environments (Alpine Linux, Ubuntu, macOS) are safer with POSIX sh. **When bash is fine:** application scripts, developer tools, interactive helpers, and anything where you control the execution environment. If you're writing a deployment script that only runs on your Ubuntu servers, use bash and enjoy its features - forcing POSIX compatibility on a known-bash environment just makes the code harder to read.
 
 ---
@@ -452,6 +472,10 @@ If you need bash features, make sure your shebang is `#!/bin/bash`, not `#!/bin/
 ## Avoid Common Pitfalls
 
 ### Don't Use eval
+
+!!! danger "eval is almost always a security risk"
+
+    **`eval`** interprets its arguments as shell code, meaning any user-controlled input becomes executable commands. An attacker passing `; rm -rf /` as input to `eval "process $input"` gets arbitrary command execution. Use **indirect expansion** (`${!var}`), **associative arrays**, or **`declare -n`** nameref variables instead.
 
 `eval` executes a string as a command. It's almost always a security risk and there's usually a better way.
 
@@ -504,6 +528,10 @@ readonly MAX_RETRIES=3
 
 `readonly` prevents accidental reassignment. Use it for values that should never change.
 
+!!! tip "Use readonly for configuration constants"
+
+    Declare values that should never change with **`readonly`**: paths, URLs, retry counts, and other configuration. If any code accidentally tries to reassign a `readonly` variable, bash raises an error immediately rather than silently using the wrong value.
+
 ### Use Epoch Timestamps
 
 For log files and backups, use epoch timestamps or ISO dates to avoid collisions and ensure sorting:
@@ -518,7 +546,15 @@ logfile="deploy_$(date +%Y%m%d_%H%M%S).log"
 
 ---
 
+!!! tip "Always use --dry-run when available before destructive operations"
+
+    Many commands offer a **`--dry-run`** (or `-n`) flag that shows what *would* happen without actually doing it. Use it before `rsync --delete`, `rm -rf`, `apt autoremove`, `git clean`, and similar destructive operations. The few seconds spent previewing can prevent hours of recovery work.
+
 ## Script Template
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/script-template-structure.svg" alt="Ideal script structure showing shebang, readonly constants, utility functions, cleanup trap, usage, main function, arg parsing, business logic, and main call at bottom">
+</div>
 
 A starting point for new scripts:
 

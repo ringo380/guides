@@ -40,6 +40,9 @@ How to interpret them:
 - On a **single-CPU** system, a load of 1.0 means the CPU is fully utilized. Above 1.0, processes are waiting.
 - On a **4-core** system, a load of 4.0 means full utilization. Above 4.0, processes are queuing.
 
+!!! tip "Divide load average by nproc to assess CPU pressure"
+    A load average of 8.0 on a 2-core machine means severe overload, but on a 16-core machine it means the system is barely working. Always divide by the number of CPU cores (`nproc`) to get a meaningful ratio. Consistently above 1.0 per core indicates the system needs attention.
+
 General rule: divide the load by the number of CPU cores. If the result is consistently above 1.0, the system is overloaded.
 
 ```bash
@@ -90,6 +93,9 @@ Key columns:
 - **buff/cache** - memory used for filesystem buffers and page cache
 - **available** - memory that can be used for new processes (free + reclaimable cache)
 
+!!! warning "Low 'free' memory is normal - check 'available' instead"
+    Linux intentionally uses free RAM for disk caching, so the `free` column in `free -h` is often near zero on a healthy system. The **`available`** column is what matters - it shows how much memory can actually be used by new applications, including reclaimable cache. Only worry if `available` is low.
+
 The **available** column is what matters. Linux aggressively uses free memory for caching disk data. This cached memory is immediately available when a process needs it. A system with low "free" but high "available" is healthy.
 
 If **swap** is heavily used, the system is running low on RAM and performance will suffer.
@@ -126,6 +132,9 @@ Key fields:
 - **Socket(s)** - number of physical CPUs
 - **Model name** - CPU model
 - **CPU MHz** - current clock speed
+
+!!! tip "Sockets x Cores x Threads = Total logical CPUs"
+    The formula `Sockets x Cores per socket x Threads per core` gives the total logical CPU count shown by `nproc`. A 2-socket server with 8 cores per socket and 2 threads per core has 32 logical CPUs. This number is what you compare load averages against.
 
 The formula for total logical CPUs is: **Sockets x Cores per socket x Threads per core**. For example, a machine with 2 sockets, 8 cores per socket, and 2 threads per core has 2 x 8 x 2 = 32 logical CPUs. The "threads per core" value is usually 1 (no hyperthreading) or 2 (hyperthreading/SMT enabled). **Hyperthreading** lets each physical core present itself as two logical CPUs by sharing execution resources. It helps with workloads that have a mix of CPU-bound and I/O-waiting threads, but doesn't double performance - expect 15-30% improvement at best for most workloads.
 
@@ -165,6 +174,9 @@ lsof -i @192.168.1.100           # connections to a specific host
 lsof +L1                         # files with zero link count (deleted but open)
 ```
 
+!!! danger "lsof +L1 finds deleted files still consuming disk space"
+    When `df` shows a full disk but `du` can't account for all the space, deleted files still held open by running processes are often the cause. Run `lsof +L1` to find them. The space is only freed when the process closes the file or is restarted.
+
 This is useful when `df` shows a disk is full but `du` can't account for all the space.
 
 ---
@@ -172,6 +184,9 @@ This is useful when `df` shows a disk is full but `du` can't account for all the
 ## vmstat - System Performance Snapshot
 
 [**`vmstat`**](https://gitlab.com/procps-ng/procps) reports virtual memory, CPU, and I/O statistics.
+
+!!! tip "vmstat's first line is an average since boot - ignore it"
+    The first line of `vmstat` output shows averages since the system booted, not current values. Always use `vmstat N` (e.g., `vmstat 1 5`) to get real-time samples, and read from the second line onward for meaningful data.
 
 ```bash
 vmstat                   # single snapshot
@@ -298,6 +313,10 @@ solution: |
 
 ## /proc and /sys
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/proc-sys-hierarchy.svg" alt="/proc and /sys virtual filesystem hierarchy showing key files and directories">
+</div>
+
 The [**`/proc`**](https://www.kernel.org/doc/html/latest/) filesystem is a virtual filesystem that exposes kernel and process information as files.
 
 **/proc** and **/sys** are **virtual filesystems** - they don't exist on disk. The kernel generates their contents on the fly when you read them. **/proc** exposes process information and kernel internals: every running process gets a directory at `/proc/<PID>/`, and files like `/proc/cpuinfo` and `/proc/meminfo` provide system-wide stats. **/sys** is organized around the kernel's internal object model - devices, drivers, buses, and kernel subsystems. The key difference: `/proc` is older and somewhat disorganized (it mixes process info with hardware info), while `/sys` follows a clean hierarchy. New kernel features expose their interfaces through `/sys`.
@@ -335,6 +354,9 @@ Both `/proc` and `/sys` are virtual - they don't take up disk space. They're gen
 ## dmesg - Kernel Messages
 
 [**`dmesg`**](https://github.com/util-linux/util-linux) displays kernel ring buffer messages - hardware detection, driver loading, errors, and warnings.
+
+!!! warning "dmesg -T timestamps may not be accurate across suspend/resume"
+    The `-T` flag converts kernel timestamps to wall-clock time using the system's boot time as a reference. If the system has been suspended and resumed, these timestamps drift because the kernel timer doesn't advance during suspend. For accurate timestamps on systems that sleep, cross-reference with `journalctl`.
 
 ```bash
 dmesg                      # all kernel messages
@@ -377,11 +399,18 @@ dmesg -T | grep -i 'oom\|killed process'
 # [Mon Jan 15 15:45:22 2024] Out of memory: Killed process 3421 (java) total-vm:4096000kB
 ```
 
+!!! danger "OOM killer events in dmesg indicate critical memory pressure"
+    If `dmesg` shows "Out of memory: Killed process," the system exhausted both RAM and swap and the kernel's OOM killer chose a process to terminate. This is a last-resort measure that indicates the system needs more RAM, a larger swap file, or investigation into which process is consuming excessive memory.
+
 The OOM (Out of Memory) killer activates when the system runs out of RAM and swap. It picks the process using the most memory and kills it. If you see this, you either need more RAM, a swap file, or to investigate why that process consumed so much memory.
 
 ---
 
 ## Putting It Together
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/troubleshooting-flowchart.svg" alt="System performance troubleshooting flowchart from uptime through vmstat, free, and df">
+</div>
 
 When troubleshooting a slow or unresponsive system, check in this order:
 

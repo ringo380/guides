@@ -27,6 +27,9 @@ find . -iname "readme*"        # case-insensitive name match
 find . -path "*/src/*.js"      # match against the full path
 ```
 
+!!! tip "Use -iname for case-insensitive matching"
+    File naming conventions vary across projects and platforms. Use `-iname` instead of `-name` when you're unsure about capitalization: `find . -iname 'readme*'` matches `README.md`, `Readme.txt`, and `readme.rst` all at once.
+
 **By type:**
 
 | Flag | Type |
@@ -52,6 +55,9 @@ find . -size 100c              # exactly 100 bytes
 Size suffixes: `c` (bytes), `k` (kilobytes), `M` (megabytes), `G` (gigabytes). Without a suffix, the unit is 512-byte blocks.
 
 **By time:**
+
+!!! warning "-mtime counts in 24-hour periods, not calendar days"
+    `find -mtime +7` means "more than 7 full 24-hour periods ago," not "more than 7 calendar days." A file modified 7.5 days ago has an mtime of 7 (truncated), so `+7` won't match it - you'd need `+6`. For minute-level precision, use `-mmin` instead.
 
 Timestamps are measured in 24-hour periods. `+7` means "more than 7 days ago", `-1` means "within the last day", and `7` (no sign) means "between exactly 7 and 8 days ago."
 
@@ -113,6 +119,9 @@ find . -mindepth 1             # skip the starting directory itself
 find . -mindepth 2 -maxdepth 3 # between 2 and 3 levels deep
 ```
 
+!!! tip "Use -maxdepth 1 for current directory only"
+    `find . -maxdepth 1 -type f` lists files in the current directory without recursing into subdirectories. This is often more reliable than `ls` parsing for scripts, and you can combine it with other find tests like `-name` or `-mtime`.
+
 ```quiz
 question: "What does find /home -maxdepth 1 -type d do?"
 type: multiple-choice
@@ -164,6 +173,10 @@ steps:
 
 ### Logical Operators
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/find-expression-tree.svg" alt="find expression evaluation chain showing how tests are evaluated left to right with short-circuit logic">
+</div>
+
 ```bash
 find . -name "*.txt" -and -size +1M    # both conditions (-and is implicit)
 find . -name "*.txt" -or -name "*.md"  # either condition
@@ -191,6 +204,9 @@ find . -name "*.tmp" -exec rm {} +
 
 The `+` passes as many filenames as possible to a single command invocation. This is much faster when operating on many files.
 
+!!! warning "-exec {} + doesn't work with commands needing a single filename"
+    The `+` terminator batches multiple filenames into one command invocation. This means the command sees all files as arguments at once. Commands like `mv` that expect a specific filename argument structure need `\;` (one invocation per file) or `xargs -I {}` for placeholder substitution.
+
 The performance difference between `\;` and `+` is significant. With `\;`, find spawns a new process for every single file. If you're operating on 1000 files, that's 1000 separate `rm` processes. With `+`, find passes as many filenames as will fit on one command line, so 1000 files might be handled in a single `rm` invocation. The limit on how many arguments `+` can batch is determined by **`ARG_MAX`** (the kernel's maximum argument length, typically 2MB on modern Linux). You can check it with `getconf ARG_MAX`. For very large file sets, `+` will make multiple invocations as needed to stay within this limit.
 
 ```quiz
@@ -216,6 +232,9 @@ find . -name "*.tmp" -delete
 
 Built-in deletion - faster than `-exec rm`. Note that `-delete` implies `-depth` (processes files before their parent directories).
 
+!!! danger "-delete implies -depth processing order"
+    When you use `-delete`, find automatically enables `-depth` mode, processing directory contents before the directory itself. This changes the order that other expressions see files. If your command combines `-delete` with `-prune`, they will conflict - `-prune` needs breadth-first traversal, but `-delete` forces depth-first.
+
 **`-print0`:**
 
 ```bash
@@ -223,6 +242,9 @@ find . -name "*.txt" -print0
 ```
 
 Separates results with null characters instead of newlines. This handles filenames containing spaces, newlines, or other special characters. Pair with `xargs -0`.
+
+!!! tip "Always pair -print0 with xargs -0"
+    The null byte is the only character that cannot appear in a Unix filename. Using `-print0 | xargs -0` is the only fully safe way to pass filenames between commands. Regular newline-delimited output breaks on the (legal) filename `my\nfile.txt`.
 
 ### Practical Examples
 
@@ -238,6 +260,9 @@ find . -type d -exec chmod 755 {} +
 
 # Find empty files and directories
 find . -empty
+
+# Find zero-byte files only
+find . -type f -empty
 
 # Find broken symlinks
 find . -xtype l
@@ -425,6 +450,9 @@ find . -name "*.png" -print0 | xargs -0 -P 4 -I {} convert {} -resize 50% {}
 ```
 
 This runs up to 4 `convert` processes at a time.
+
+!!! danger "xargs -P with output-producing commands causes interleaved output"
+    When using `xargs -P` for parallel execution, output from concurrent processes can mix together unpredictably. This is safe for silent operations like `gzip` or `chmod`, but produces garbled results for commands like `grep` or `wc`. For parallel output, consider GNU `parallel` which buffers output per job.
 
 A few things to be aware of with parallel `xargs`. First, **output interleaving**: when multiple processes write to the terminal simultaneously, their output lines can mix together. This is fine for operations that don't produce output (like `gzip` or `chmod`), but problematic for commands that do. Second, **choosing a `-P` value**: a good starting point is the number of CPU cores (`nproc`), but for I/O-bound tasks you can often go higher. Third, **safety**: parallel execution is safe when each invocation operates on independent files. It's risky when operations have side effects that interact - for example, parallel appends to the same log file will produce garbled output.
 

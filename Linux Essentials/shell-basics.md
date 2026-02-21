@@ -8,6 +8,14 @@ This guide covers how the shell works under the hood - what it is, how it starts
 
 A **shell** is a program that interprets your commands and passes them to the operating system. When you open a terminal, the shell is the program that shows you a prompt and waits for input.
 
+<figure class="photo-frame photo-right" style="max-width: 280px;">
+<img src="../../assets/images/linux-essentials/thompson-ritchie-pdp11.jpg" alt="Ken Thompson and Dennis Ritchie at a PDP-11 computer, 1973">
+<figcaption>
+Ken Thompson (sitting) and Dennis Ritchie at a PDP-11 running Unix, 1973. Thompson wrote the first Unix shell; Ritchie created the C language that made Unix portable.
+<span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Ken_Thompson_and_Dennis_Ritchie--1973.jpg">Wikimedia Commons</a>, Public Domain</span>
+</figcaption>
+</figure>
+
 There are several shells in common use:
 
 | Shell | Path | Notes |
@@ -115,6 +123,10 @@ options:
 
 ## Configuration File Load Order
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/shell-startup-flow.svg" alt="Bash shell startup file load order showing decision tree for login vs non-login and interactive vs non-interactive shells">
+</div>
+
 Bash reads different files depending on the shell type. Here's the load order:
 
 ### Login Shell
@@ -220,6 +232,9 @@ source ~/.bashrc
 ```
 
 The dot (`.`) is the POSIX-compatible way to source a file. `source` is a bash built-in that does the same thing.
+
+!!! tip "The dot (.) shorthand"
+    `.` is the POSIX-standard way to source a file and works in every shell. `source` is a bash/zsh convenience alias. In scripts targeting `/bin/sh` or running on minimal systems, always use `.` instead of `source`.
 
 If you run a script normally (`bash script.sh` or `./script.sh`), it executes in a new subshell. Any variables it sets disappear when it finishes.
 
@@ -346,6 +361,9 @@ A **shell variable** exists only in the current shell session:
 greeting="hello"
 echo $greeting    # hello
 ```
+
+!!! tip "Shell vs Environment Variables"
+    A **shell variable** only exists in the current session. An **environment variable** (created with `export`) is inherited by child processes. Use `export` when programs you launch need to see the value - for example, `EDITOR`, `PATH`, or application config. Keep internal script variables unexported to avoid polluting child environments.
 
 An **environment variable** is exported to child processes. Any program you launch from the shell can read it:
 
@@ -490,6 +508,9 @@ for item in $data; do echo "$item"; done
 # three
 ```
 
+!!! danger "IFS changes are global"
+    Modifying `IFS` affects every subsequent unquoted expansion in the current shell. A forgotten `IFS` change can silently break commands that rely on default whitespace splitting. Always reset it or confine the change to a subshell.
+
 Always reset `IFS` after changing it, or set it only in a subshell:
 
 ```bash
@@ -531,6 +552,10 @@ The shell processes your command line through several expansion stages before ex
 Otherwise known as:
 _Big Tasty Pies Always Come With Perfect Quiche._
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/shell-expansion-order.svg" alt="Shell expansion order showing eight stages from brace expansion through quote removal">
+</div>
+
 ### Brace Expansion
 
 **Brace expansion** generates strings. It happens before any other expansion, so it works even with non-existent files.
@@ -542,6 +567,9 @@ echo {a,b,c}           # a b c
 echo file.{txt,md,sh}  # file.txt file.md file.sh
 mkdir -p project/{src,tests,docs}
 ```
+
+!!! warning "Brace expansion happens before variable expansion"
+    Because brace expansion is step 1, expressions like `{$a,$b}` don't work as expected - the braces are processed before `$a` and `$b` are resolved. Use an array or a loop if you need variable-driven lists.
 
 Sequences:
 
@@ -617,6 +645,9 @@ echo ${str:6}       # World       (from position 6 to end)
 echo ${str:0:5}     # Hello       (from position 0, length 5)
 ```
 
+!!! tip "Case modification is bash 4+"
+    The `${var^}` and `${var,,}` syntax requires bash 4.0 or later. macOS ships with bash 3.2 (due to GPLv3 licensing), so these won't work there unless you install a newer bash via Homebrew.
+
 Case modification (bash 4+):
 
 ```bash
@@ -682,6 +713,9 @@ ls log[0-9].txt   # log0.txt through log9.txt
 ```
 
 Globbing only matches filenames that exist. If no files match, the pattern is passed through literally (unless `failglob` or `nullglob` is set).
+
+!!! warning "Globbing treats dotfiles differently"
+    By default, `*` does not match files starting with `.` (hidden files). This protects dotfiles like `.bashrc` from accidental bulk operations. Enable `shopt -s dotglob` if you intentionally need to match them.
 
 Hidden files (starting with `.`) are not matched by `*` unless you enable `dotglob`:
 

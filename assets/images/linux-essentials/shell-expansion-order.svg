@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 160" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 10px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 8.5px; fill: #555; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 6; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 6; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .heading { font-size: 12px; font-weight: 700; fill: #009485; }
+    .step-number { font-size: 8px; font-weight: 700; fill: #009485; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .heading { fill: #4db6ac; }
+      .step-number { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- Heading -->
+  <text x="360" y="16" text-anchor="middle" class="heading">Shell Expansion Order</text>
+
+  <!-- Row 1: Brace → Tilde → Parameter → Arithmetic -->
+
+  <!-- Box 1: Brace (accent) -->
+  <rect x="95" y="28" width="75" height="50" class="box-accent"/>
+  <text x="132.5" y="42" text-anchor="middle" class="step-number">1</text>
+  <text x="132.5" y="55" text-anchor="middle" class="title">Brace</text>
+  <text x="132.5" y="70" text-anchor="middle" class="label">{a,b,c}</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="170" y1="53" x2="195" y2="53" class="connector"/>
+
+  <!-- Box 2: Tilde -->
+  <rect x="203" y="28" width="75" height="50" class="box"/>
+  <text x="240.5" y="42" text-anchor="middle" class="step-number">2</text>
+  <text x="240.5" y="55" text-anchor="middle" class="title">Tilde</text>
+  <text x="240.5" y="70" text-anchor="middle" class="label">~/docs</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="278" y1="53" x2="303" y2="53" class="connector"/>
+
+  <!-- Box 3: Parameter -->
+  <rect x="311" y="28" width="75" height="50" class="box"/>
+  <text x="348.5" y="42" text-anchor="middle" class="step-number">3</text>
+  <text x="348.5" y="55" text-anchor="middle" class="title">Parameter</text>
+  <text x="348.5" y="70" text-anchor="middle" class="label">${var}</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="386" y1="53" x2="411" y2="53" class="connector"/>
+
+  <!-- Box 4: Arithmetic -->
+  <rect x="419" y="28" width="75" height="50" class="box"/>
+  <text x="456.5" y="42" text-anchor="middle" class="step-number">4</text>
+  <text x="456.5" y="55" text-anchor="middle" class="title">Arithmetic</text>
+  <text x="456.5" y="70" text-anchor="middle" class="label">$((1+2))</text>
+
+  <!-- Arrow row 1 → row 2 (right of box 4, down, left, down into box 5) -->
+  <path d="M 494 53 L 515 53 L 515 83 L 75 83 L 75 113 L 87 113" class="connector"/>
+
+  <!-- Row 2: Command Sub → Word Split → Pathname → Quote Removal -->
+
+  <!-- Box 5: Command Sub -->
+  <rect x="95" y="88" width="75" height="50" class="box"/>
+  <text x="132.5" y="102" text-anchor="middle" class="step-number">5</text>
+  <text x="132.5" y="115" text-anchor="middle" class="title">Command Sub</text>
+  <text x="132.5" y="130" text-anchor="middle" class="label">$(cmd)</text>
+
+  <!-- Arrow 5→6 -->
+  <line x1="170" y1="113" x2="195" y2="113" class="connector"/>
+
+  <!-- Box 6: Word Split -->
+  <rect x="203" y="88" width="75" height="50" class="box"/>
+  <text x="240.5" y="102" text-anchor="middle" class="step-number">6</text>
+  <text x="240.5" y="115" text-anchor="middle" class="title">Word Split</text>
+  <text x="240.5" y="130" text-anchor="middle" class="label">IFS splitting</text>
+
+  <!-- Arrow 6→7 -->
+  <line x1="278" y1="113" x2="303" y2="113" class="connector"/>
+
+  <!-- Box 7: Pathname -->
+  <rect x="311" y="88" width="75" height="50" class="box"/>
+  <text x="348.5" y="102" text-anchor="middle" class="step-number">7</text>
+  <text x="348.5" y="115" text-anchor="middle" class="title">Pathname</text>
+  <text x="348.5" y="130" text-anchor="middle" class="label">*.txt</text>
+
+  <!-- Arrow 7→8 -->
+  <line x1="386" y1="113" x2="411" y2="113" class="connector"/>
+
+  <!-- Box 8: Quote Removal (accent) -->
+  <rect x="419" y="88" width="75" height="50" class="box-accent"/>
+  <text x="456.5" y="102" text-anchor="middle" class="step-number">8</text>
+  <text x="456.5" y="115" text-anchor="middle" class="title">Quote Removal</text>
+  <text x="456.5" y="130" text-anchor="middle" class="label">final cleanup</text>
+
+</svg>

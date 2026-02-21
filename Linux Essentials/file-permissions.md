@@ -24,6 +24,10 @@ Each level has three permissions:
 
 ---
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/permission-evaluation.svg" alt="Permission evaluation flowchart showing how Linux checks user, group, then other permissions">
+</div>
+
 ## Reading ls -l Output
 
 ```bash
@@ -96,6 +100,9 @@ To calculate octal permissions from a symbolic string like `rwxr-xr-x`, work thr
 
 Result: **755**. Going the other direction, if someone tells you to `chmod 640`, break it down: 6 = r+w, 4 = r, 0 = nothing. So `640` means `rw-r-----` - the owner can read and write, the group can read, and others have no access.
 
+!!! tip "Use octal for exact permissions, symbolic for changes"
+    Octal mode (`chmod 644`) sets all permission bits at once - ideal for scripting where you need a known state. Symbolic mode (`chmod u+x`) adds or removes specific bits without affecting others - ideal for interactive use. When you "know the number," use octal. When you "just need to add execute," use symbolic.
+
 ```bash
 chmod 755 script.sh
 chmod 644 config.txt
@@ -122,6 +129,9 @@ options:
 ```bash
 chmod -R 755 directory/     # apply to directory and all contents
 ```
+
+!!! danger "Recursive chmod applies same permissions to files and directories"
+    Running `chmod -R 755` makes every file executable, which is almost never what you want. Use `find` to set directories to `755` and files to `644` separately: `find path -type d -exec chmod 755 {} +` followed by `find path -type f -exec chmod 644 {} +`.
 
 Be careful with recursive chmod. You usually don't want the same permissions on files and directories (files shouldn't be executable unless they're scripts). A common pattern:
 
@@ -176,6 +186,9 @@ chown -R ryan:developers dir/    # recursive
 chgrp developers file.txt        # change group
 chgrp -R developers dir/         # recursive
 ```
+
+!!! warning "Only root can chown files"
+    Regular users cannot change file ownership - only root can run `chown`. This prevents users from evading disk quotas by giving files away and from creating setuid binaries owned by other users. Regular users *can* use `chgrp` to change a file's group, but only to a group they belong to.
 
 Only root can change a file's owner. Regular users can change the group to any group they belong to.
 
@@ -234,6 +247,9 @@ umask 022        # set umask
 umask -S         # display in symbolic form (u=rwx,g=rx,o=rx)
 ```
 
+!!! tip "umask 027 is good for multi-user servers"
+    The default umask `022` lets everyone read your files. On shared servers, `027` is more appropriate: the owner gets full access, the group gets read, and others get nothing. Add `umask 027` to your `.bashrc` to make it permanent.
+
 The typical default is `022`, which gives the owner full access and everyone else read access.
 
 ```quiz
@@ -255,6 +271,10 @@ options:
 
 ## Special Permission Bits
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/special-permissions.svg" alt="Special permission bits: setuid and setgid on files versus setgid and sticky bit on directories">
+</div>
+
 Three additional permission bits exist beyond the standard read/write/execute.
 
 ### Setuid (4)
@@ -272,6 +292,9 @@ The `s` in the user execute position means setuid is set. This is why regular us
 chmod u+s program          # set setuid
 chmod 4755 program         # set setuid with octal (note the leading 4)
 ```
+
+!!! danger "setuid on scripts is ignored by modern Linux kernels"
+    The setuid bit only works on compiled binaries. Modern Linux kernels ignore setuid on interpreted scripts (`#!/bin/bash`, `#!/usr/bin/python`) because of a race condition between the kernel opening the script and the interpreter reading it. If you need elevated privileges from a script, use `sudo` with a properly configured sudoers entry.
 
 ### Setgid (2)
 
@@ -345,6 +368,9 @@ chmod 1777 /tmp         # sticky + rwxrwxrwx
 ---
 
 ## Practical Examples
+
+!!! warning "SSH refuses keys with incorrect permissions silently"
+    If your private key file is readable by group or others, SSH will silently ignore it and fall back to password authentication (or fail entirely). You won't get an error message unless you use `ssh -v`. Always set private keys to `600` and `~/.ssh` to `700`.
 
 ### Securing SSH Keys
 
@@ -472,6 +498,9 @@ solution: |
 ```
 
 ### Finding Permission Issues
+
+!!! tip "Find world-writable files as a security audit"
+    Run `find / -type f -perm -002 2>/dev/null` periodically to discover files writable by any user. World-writable files outside `/tmp` are potential security risks - an attacker who gains limited access can modify them to escalate privileges.
 
 ```bash
 # Find world-writable files

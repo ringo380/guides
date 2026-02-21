@@ -34,6 +34,9 @@ grep "error" *.log                     # search files matching a glob
 | `-E` | Use extended regular expressions |
 | `-P` | Use Perl-compatible regular expressions |
 
+!!! tip "Use -F for literal string searches"
+    When searching for strings that contain regex metacharacters like `.`, `*`, `[`, or `?`, use `grep -F` to treat the pattern as a fixed string. This avoids unexpected matches and is also slightly faster since grep skips the regex engine entirely.
+
 The most used flags in practice: **`-r`** to search an entire project tree, **`-l`** when you just need to know *which files* contain something (not the matching lines themselves), **`-o`** to extract just the matched text (useful for pulling values out of structured data), **`-c`** to count matches per file without seeing the actual lines, **`-F`** when your search string contains regex metacharacters like `.` or `*` and you want to search for them literally, and **`-P`** when you need advanced features like lookahead or non-greedy matching that basic and extended regex can't do.
 
 ### Context Lines
@@ -54,6 +57,9 @@ grep -rn "TODO" src/                   # same, with line numbers
 grep -r --include="*.py" "import" .    # only search .py files
 grep -r --exclude-dir=".git" "pattern" .  # skip .git directory
 ```
+
+!!! tip "grep -r --include is more efficient than find | grep"
+    Use `grep -r --include='*.py' pattern .` instead of `find . -name '*.py' | xargs grep pattern`. The `--include` flag lets grep handle file filtering internally, avoiding the overhead of spawning separate processes. Add `--exclude-dir=.git` to skip version control directories.
 
 ### Practical Examples
 
@@ -170,6 +176,9 @@ grep -P '\d+(?= dollars)' catalog.txt     # match digits followed by " dollars"
 grep -oP '".*?"' data.json                # match shortest quoted strings
 ```
 
+!!! warning "grep -P is not available everywhere"
+    The `-P` flag (Perl-compatible regex) is a GNU grep extension. macOS ships BSD grep, which lacks `-P` entirely. Install GNU grep via Homebrew (`brew install grep`, then use `ggrep -P`) or rewrite the pattern using `-E` (extended regex) when portability matters.
+
 `-P` is a GNU grep extension and may not be available on all systems (notably macOS, where you can install GNU grep via Homebrew as `ggrep`).
 
 ```quiz
@@ -240,6 +249,10 @@ options:
 ---
 
 ## sed
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/sed-processing-model.svg" alt="sed processing model showing the read-match-apply cycle for each line of input">
+</div>
 
 [**`sed`**](https://www.gnu.org/software/sed/manual/) (stream editor) transforms text line by line. It reads input, applies editing commands, and writes the result.
 
@@ -321,7 +334,16 @@ sed -n '/start/,/end/p' file.txt # print between patterns (inclusive)
 
 The `-n` flag suppresses default output, so only explicitly printed lines appear.
 
+!!! tip "Use sed -n with p for selective printing"
+    Combining `-n` (suppress default output) with the `p` command turns sed into a powerful line extractor. `sed -n '10,20p'` prints only lines 10-20, and `sed -n '/start/,/end/p'` prints blocks between patterns. Without `-n`, you'd see every line twice - once from default output and once from `p`.
+
 ### In-Place Editing
+
+!!! danger "In-place sed without backup can destroy data"
+    Running `sed -i` without a backup suffix modifies the file directly with no undo. If your substitution has a bug, the original content is gone. Always use `sed -i.bak` to create a backup, or test with `sed 's/old/new/g' file.txt` (no `-i`) first to preview the output.
+
+!!! warning "macOS sed requires -i ''"
+    GNU sed and BSD sed (macOS) handle `-i` differently. GNU sed allows `sed -i 's/...'` with no argument, but macOS sed requires an explicit backup extension: `sed -i '' 's/...'` (empty string for no backup) or `sed -i .bak 's/...'`. Scripts that must run on both need conditional handling or should use GNU sed from Homebrew.
 
 ```bash
 sed -i 's/old/new/g' file.txt           # edit file directly (GNU sed)
@@ -383,6 +405,14 @@ options:
 ---
 
 ## awk
+
+<figure class="photo-frame photo-left" style="max-width: 250px;">
+<img src="../../assets/images/linux-essentials/brian-kernighan.jpg" alt="Brian Kernighan at Bell Labs">
+<figcaption>
+Brian Kernighan at a Bell Labs tribute to Dennis Ritchie, 2012. The "K" in awk, Kernighan co-authored "The C Programming Language" and coined the name "Unix."
+<span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Brian_Kernighan_in_2012_at_Bell_Labs_1.jpg">Ben Lowe</a>, CC BY 2.0</span>
+</figcaption>
+</figure>
 
 [**`awk`**](https://www.gnu.org/software/gawk/manual/) is a pattern-scanning and text-processing language. It excels at working with structured, column-based data.
 
@@ -505,6 +535,9 @@ awk '{ printf "%-20s %10.2f\n", $1, $3 }' data.txt
 
 ### Variables and Arithmetic
 
+!!! tip "awk initializes unset variables to 0 or empty string"
+    Unlike most languages, awk doesn't require variable declarations or initialization. Unset numeric variables default to `0` and unset string variables default to `""`. This is why `awk '{ sum += $3 }'` works without initializing `sum` - it starts as `0` automatically.
+
 ```bash
 # Sum a column
 awk '{ sum += $3 } END { print sum }' data.txt
@@ -609,6 +642,9 @@ cut -c1-10 file.txt             # first 10 characters
 cut -c5- file.txt               # from character 5 to end
 ```
 
+!!! warning "cut cannot handle quoted CSV fields"
+    `cut` splits on every occurrence of the delimiter character, even inside quoted fields. A CSV line like `"Smith, John",25,Engineer` will be split at the comma inside the quotes. For quoted CSV data, use `awk` with `FPAT` (GNU awk) or a dedicated CSV parser like `csvtool` or Python's `csv` module.
+
 `cut` is fast but limited. For complex field extraction, use `awk`.
 
 **When to use `cut` vs `awk`:** `cut` is simpler and faster for extracting fixed-position fields from cleanly delimited data. Use `awk` when you need conditional logic, multiple delimiters, or field reordering. One gotcha: `cut` defaults to tab as its delimiter, not spaces. If your data is space-separated, you need `-d' '`, but `cut` can't handle multiple consecutive spaces as a single delimiter the way `awk` does. Also, `cut` has no way to handle quoted CSV fields - a field containing a comma inside quotes will be split incorrectly. For anything beyond simple TSV or single-character-delimited data, use `awk`.
@@ -647,6 +683,9 @@ du -a /var/log | sort -rn | head -10
 
 The **`-s`** (stable sort) flag preserves the original order of lines that compare as equal. This matters when sorting by multiple keys in separate passes - without stable sort, the second sort might scramble the ordering you established in the first. For example, to sort a list of employees by department and then by name within each department, a stable sort on name followed by a stable sort on department gives you the right result.
 
+!!! tip "sort -h for human-readable sizes"
+    Use `sort -h` to correctly sort output from `du -h` or `ls -lh`. It understands unit suffixes like K, M, and G, so `2M` sorts above `100K`. Without `-h`, numeric sort sees only the leading digit and gets the order wrong.
+
 **Human-numeric sort** (`-h`) understands unit suffixes, which makes it essential for sorting `du` output:
 
 ```bash
@@ -677,6 +716,9 @@ sort access.log | uniq -c | sort -rn | head -10
 # Count unique IP addresses
 awk '{ print $1 }' access.log | sort | uniq -c | sort -rn
 ```
+
+!!! danger "uniq only removes adjacent duplicates"
+    `uniq` compares each line to the one immediately before it. If identical lines are separated by other content, they won't be detected as duplicates. Always `sort` first, or use `sort -u` to deduplicate in one step. To deduplicate while preserving original order, use `awk '!seen[$0]++'`.
 
 **Why must input be sorted?** `uniq` only compares each line against the one directly before it. If duplicate lines appear in different parts of the file with other lines between them, `uniq` won't detect them. Sorting brings identical lines together so `uniq` can find them. If sorting would destroy meaningful ordering, use `sort -u` (which deduplicates as it sorts) or `awk '!seen[$0]++'` (which deduplicates while preserving original order).
 
@@ -732,6 +774,9 @@ tr -d '[:space:]' < file.txt             # remove all whitespace
 tr -dc '[:print:]' < file.txt            # keep only printable characters
 ```
 
+!!! warning "tr operates on characters, not strings"
+    `tr 'hello' 'world'` does not replace the word "hello" with "world." It maps individual characters: h to w, e to o, l to r, l to l, o to d. For string replacement, use `sed 's/hello/world/g'`.
+
 `tr` works on a **one-to-one character mapping** model. Each character in SET1 maps to the character at the same position in SET2. If SET1 is longer than SET2, the last character of SET2 is repeated to fill the gap. That's why `tr 'aeiou' '*'` replaces all five vowels with `*` - the single `*` gets repeated for each remaining position.
 
 ### Practical Examples
@@ -784,6 +829,9 @@ ls | wc -l
 grep -c "error" log.txt    # more efficient than grep | wc -l
 ```
 
+!!! tip "wc -m vs wc -c for multibyte encodings"
+    Use `wc -c` for byte count (file size on disk) and `wc -m` for character count (human-readable characters). They differ for UTF-8 files: a single emoji or CJK character can be 3-4 bytes but counts as 1 character.
+
 The difference between **`-c`** (bytes) and **`-m`** (characters) matters with multibyte encodings like **UTF-8**. An ASCII file will show the same count for both, but a file containing non-ASCII characters (accented letters, emoji, CJK characters) will have more bytes than characters. Use `-c` when you care about file size on disk, and `-m` when you care about the number of human-readable characters.
 
 ---
@@ -797,9 +845,12 @@ The difference between **`-c`** (bytes) and **`-m`** (characters) matters with m
 ```bash
 head file.txt            # first 10 lines
 head -n 5 file.txt       # first 5 lines
-head -n -5 file.txt      # all lines EXCEPT the last 5
+head -n -5 file.txt      # all lines EXCEPT the last 5 (GNU only)
 head -c 100 file.txt     # first 100 bytes
 ```
+
+!!! warning "head -n -N syntax is GNU-specific"
+    The negative form `head -n -5` (all lines except the last 5) is a GNU coreutils extension. BSD `head` (macOS) doesn't support it. For portable scripts, use `awk` or `sed` alternatives instead.
 
 ### tail
 
@@ -829,6 +880,9 @@ tail -F /var/log/syslog                     # follow even if file is rotated
 
 `-F` is like `-f` but handles log rotation (file is deleted and recreated).
 
+!!! tip "tail -F survives log rotation"
+    Use `tail -F` (uppercase) instead of `tail -f` (lowercase) when following log files. Lowercase `-f` tracks the file descriptor, so when logrotate replaces the file, `-f` keeps reading the old (now renamed) file. Uppercase `-F` tracks the filename and automatically reopens it after rotation.
+
 ---
 
 ## tee
@@ -838,6 +892,10 @@ tail -F /var/log/syslog                     # follow even if file is rotated
 ---
 
 ## Combining Tools
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/text-tool-decision.svg" alt="Decision tree for choosing the right text processing tool: grep, sed, awk, cut, tr, or sort plus uniq">
+</div>
 
 The real power of text processing tools comes from combining them in pipelines.
 

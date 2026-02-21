@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .diamond { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .diamond { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .heading { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- Heading -->
+  <text x="300" y="24" text-anchor="middle" class="heading">Choosing a Compression Format</text>
+
+  <!-- Start box (accent) -->
+  <rect x="30" y="45" width="170" height="36" class="box-accent"/>
+  <text x="115" y="68" text-anchor="middle" class="title">What's your priority?</text>
+
+  <!-- Arrow to first diamond -->
+  <line x1="200" y1="63" x2="230" y2="63" class="connector"/>
+
+  <!-- Diamond 1: Sharing with Windows? -->
+  <polygon points="300,63 355,90 300,117 245,90" class="diamond"/>
+  <text x="300" y="88" text-anchor="middle" class="label">Sharing with</text>
+  <text x="300" y="99" text-anchor="middle" class="label">Windows?</text>
+
+  <!-- Yes from Diamond 1 (up-right to zip) -->
+  <polyline points="355,90 420,90 420,63 460,63" class="connector"/>
+  <text x="370" y="84" class="label">Yes</text>
+
+  <!-- zip result (accent) -->
+  <rect x="460" y="47" width="100" height="32" class="box-accent"/>
+  <text x="510" y="68" text-anchor="middle" class="code">zip</text>
+
+  <!-- No from Diamond 1 (down) -->
+  <line x1="300" y1="117" x2="300" y2="140" class="connector"/>
+  <text x="310" y="133" class="label">No</text>
+
+  <!-- Diamond 2: Max compression? -->
+  <polygon points="300,140 355,167 300,194 245,167" class="diamond"/>
+  <text x="300" y="164" text-anchor="middle" class="label">Max</text>
+  <text x="300" y="175" text-anchor="middle" class="label">compression?</text>
+
+  <!-- Yes from Diamond 2 (right to tar.xz) -->
+  <polyline points="355,167 420,167 460,167" class="connector"/>
+  <text x="370" y="161" class="label">Yes</text>
+
+  <!-- tar.xz result (accent) -->
+  <rect x="460" y="151" width="100" height="32" class="box-accent"/>
+  <text x="510" y="172" text-anchor="middle" class="code">tar.xz</text>
+
+  <!-- No from Diamond 2 (down) -->
+  <line x1="300" y1="194" x2="300" y2="217" class="connector"/>
+  <text x="310" y="210" class="label">No</text>
+
+  <!-- Diamond 3: Speed priority? -->
+  <polygon points="300,217 355,244 300,271 245,244" class="diamond"/>
+  <text x="300" y="241" text-anchor="middle" class="label">Speed</text>
+  <text x="300" y="252" text-anchor="middle" class="label">priority?</text>
+
+  <!-- Yes from Diamond 3 (right to tar.gz) -->
+  <polyline points="355,244 420,244 460,244" class="connector"/>
+  <text x="370" y="238" class="label">Yes</text>
+
+  <!-- tar.gz result (accent) -->
+  <rect x="460" y="228" width="100" height="32" class="box-accent"/>
+  <text x="510" y="249" text-anchor="middle" class="code">tar.gz</text>
+
+  <!-- No from Diamond 3 (down to default) -->
+  <polyline points="300,271 300,284 420,284 460,284" class="connector"/>
+  <text x="310" y="282" class="label">No</text>
+
+  <!-- Default tar.gz (accent) -->
+  <rect x="460" y="268" width="130" height="36" class="box-accent"/>
+  <text x="525" y="283" text-anchor="middle" class="code">tar.gz</text>
+  <text x="525" y="296" text-anchor="middle" class="label">Default choice</text>
+</svg>

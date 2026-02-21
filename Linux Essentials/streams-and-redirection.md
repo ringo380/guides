@@ -6,6 +6,14 @@ Every program in a Unix-like system communicates through streams. Understanding 
 
 ## Standard Streams
 
+<figure class="photo-frame photo-right" style="max-width: 250px;">
+<img src="../../assets/images/linux-essentials/vt100-terminal.jpg" alt="DEC VT100 terminal">
+<figcaption>
+The DEC VT100 (1978) - one of the most influential video terminals. Its ANSI escape codes became the standard that modern terminal emulators still follow.
+<span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:DEC_VT100_terminal.jpg">Jason Scott</a>, CC BY 2.0</span>
+</figcaption>
+</figure>
+
 Every process starts with three open file descriptors:
 
 | Stream | File Descriptor | Default | Purpose |
@@ -15,6 +23,10 @@ Every process starts with three open file descriptors:
 | **STDERR** | 2 | Terminal | Error messages and diagnostics |
 
 These are just numbers the kernel uses to track open files. The fact that 0, 1, and 2 are pre-assigned is a convention that every Unix program follows.
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/standard-streams.svg" alt="Standard streams diagram showing keyboard input through fd 0, process output through fd 1, and error output through fd 2">
+</div>
 
 ```bash
 # A program reads from STDIN (fd 0), writes output to STDOUT (fd 1),
@@ -50,6 +62,9 @@ echo "Hello, World!" > output.txt
 ```
 
 This creates `output.txt` if it doesn't exist, or **overwrites** it if it does.
+
+!!! warning "Overwriting files with >"
+    The `>` operator silently destroys the previous contents of the target file. There is no confirmation prompt and no undo. If you meant to append, use `>>` instead. Enable `noclobber` (`set -o noclobber`) as a safety net against accidental overwrites.
 
 ### Redirecting STDIN
 
@@ -147,6 +162,9 @@ command > file.txt 2>&1    # both go to file
 
 Think of `2>&1` as "make fd 2 point to wherever fd 1 is pointing right now." If fd 1 hasn't been redirected yet, it still points to the terminal.
 
+!!! danger "Redirection order matters"
+    `cmd > file 2>&1` captures both streams. `cmd 2>&1 > file` only captures stdout - stderr still goes to the terminal. Redirections are processed left to right, and `2>&1` copies fd 2 to wherever fd 1 is pointing **at that moment**, not where it will point later.
+
 ```quiz
 question: "What is the difference between cmd > file 2>&1 and cmd 2>&1 > file?"
 type: multiple-choice
@@ -178,6 +196,9 @@ command 2> /dev/null
 # Discard only normal output, see only errors
 command > /dev/null
 ```
+
+!!! tip "/dev/null reads as empty"
+    Reading from `/dev/null` returns EOF immediately. This makes it useful as empty input too: `command < /dev/null` ensures a command gets no stdin, preventing it from blocking while waiting for input.
 
 A common pattern for checking if a command succeeds without seeing its output:
 
@@ -222,6 +243,9 @@ If you're worried about accidentally overwriting files with `>`, you can enable 
 set -o noclobber
 echo "data" > existing_file.txt   # bash: existing_file.txt: cannot overwrite existing file
 ```
+
+!!! tip "noclobber as a safety net"
+    Enable `noclobber` in your `.bashrc` (`set -o noclobber`) to prevent `>` from overwriting existing files. When you actually need to overwrite, use `>|` to bypass the protection. This one setting prevents the most common data-loss mistake on the command line.
 
 To force overwrite even with `noclobber` set, use `>|`:
 
@@ -289,6 +313,9 @@ This is literal: $USER $(date)
 No expansion happens here.
 EOF
 ```
+
+!!! warning "Here document delimiter must start at column 1"
+    The closing delimiter (e.g., `EOF`) must appear on a line by itself with no leading whitespace. If you indent it to match your code, the shell won't recognize the end of the here document. Use `<<-` with tabs (not spaces) if you need indented here documents.
 
 ### Indented Here Documents
 
@@ -409,6 +436,10 @@ annotations:
 
 ## Pipelines
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/pipeline-data-flow.svg" alt="Pipeline data flow showing stdout piped between commands while stderr flows separately to the terminal">
+</div>
+
 A **pipeline** connects the STDOUT of one command to the STDIN of the next using the `|` operator:
 
 ```bash
@@ -487,6 +518,9 @@ command | tee file1.txt file2.txt
 ls -la | tee listing.txt | grep "\.txt"
 ```
 
+!!! tip "Use tee /dev/stderr for pipeline debugging"
+    Insert `tee /dev/stderr` between pipeline stages to see intermediate data on your terminal without disrupting the pipeline's data flow. Since stderr bypasses the pipe, the debug output appears on screen while stdout continues to the next command.
+
 A common use is capturing intermediate output in a pipeline for debugging:
 
 ```bash
@@ -536,6 +570,9 @@ cat /tmp/mypipe    # Hello from process A
 
 The writer blocks until a reader opens the pipe, and vice versa. This makes named pipes useful for inter-process communication.
 
+!!! danger "Named pipes block until both ends connect"
+    A process writing to a named pipe will hang indefinitely until another process opens it for reading, and vice versa. If you forget to open the other end, your terminal appears frozen with no error message. Always test named pipes with two terminals, and remember to `rm` the FIFO when you're done.
+
 Clean up when you're done:
 
 ```bash
@@ -573,6 +610,9 @@ Subshells are created in several situations:
 - **Background processes**: `command &`
 - **Process substitution**: `<(command)` and `>(command)`
 
+!!! warning "Pipeline subshell gotcha"
+    Each command in a pipeline runs in its own subshell. Variables set inside a `while read` loop on the right side of a pipe are lost when the subshell exits. This is the most common cause of "my variable is still empty after the loop" bugs.
+
 The pipeline subshell issue is a common gotcha:
 
 ```bash
@@ -594,6 +634,9 @@ echo -e "one\ntwo\nthree" | while read -r line; do
 done
 echo $count    # 3
 ```
+
+!!! tip "Use process substitution to avoid subshell variable loss"
+    Rewrite `cmd | while read line` as `while read line; done < <(cmd)`. Process substitution feeds the command's output through a file descriptor, so the `while` loop runs in the current shell and variable changes persist.
 
 Or use process substitution instead (works everywhere, including interactive shells):
 

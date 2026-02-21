@@ -31,6 +31,10 @@ Reading the output:
 
 The summary at the end shows packet loss percentage and min/avg/max/stddev latency.
 
+!!! tip "TTL starting values hint at the remote OS"
+
+    A TTL of **64** usually means Linux or macOS, **128** means Windows, and **255** means a network device (router/switch). Each hop decrements TTL by 1, so a received TTL of 118 likely means a Windows host 10 hops away (128 - 10 = 118). This is a quick heuristic, not a guarantee.
+
 Common **TTL** starting values can hint at the remote OS: **64** usually means Linux or macOS, **128** means Windows, and **255** means a network device (router, switch). Each router hop decrements TTL by 1, so a TTL of 118 likely means a Windows host 10 hops away (128 - 118 = 10). The **stddev** (standard deviation) in the summary indicates latency consistency - a low stddev means a stable connection, while a high stddev suggests network congestion or routing instability.
 
 ### traceroute and tracepath
@@ -51,6 +55,10 @@ tracepath google.com
 ```
 
 **How traceroute works:** it sends packets with incrementally increasing **TTL** (Time To Live) values. The first packet has TTL=1. The first router decrements it to 0, discards the packet, and sends back an ICMP "Time Exceeded" message - revealing its address. The next packet has TTL=2, making it one hop further before the same thing happens. This continues until the packet reaches the destination. Each hop shows three round-trip times because traceroute sends three probes per TTL value.
+
+!!! warning "Stars in traceroute don't always mean a problem"
+
+    Many routers are configured to **not respond** to ICMP or UDP probes, so `* * *` at a hop just means the router is silent - not that packets are being dropped. Only worry if *all subsequent hops* also show stars (indicating a true block) or if latency jumps sharply and stays high past a specific hop.
 
 **Reading the output:** stars (`* * *`) at a hop don't necessarily mean a problem - many routers are configured to not respond to these probes. A sudden jump in latency at a specific hop suggests congestion at that point. If latency increases at one hop but *stays high* for all subsequent hops, the bottleneck is at that hop. If latency spikes at one hop but returns to normal at the next, the router is just slow at responding to ICMP (not a real bottleneck).
 
@@ -176,6 +184,10 @@ steps:
           "User-Agent": "curl/8.4.0"
     narration: "-H adds custom headers. httpbin.org/headers echoes back what it received, so you can verify your headers are sent correctly."
 ```
+
+!!! tip "curl -w for custom output formats"
+
+    The **`-w`** (write-out) flag lets you extract specific response data: `curl -s -o /dev/null -w '%{http_code}'` gets just the status code, `%{time_total}` gives request duration, and `%{size_download}` gives response size. Combine with `-s -o /dev/null` to suppress all other output.
 
 **HTTP method semantics** in brief: **GET** reads a resource without changing anything, **POST** creates a new resource or triggers an action, **PUT** replaces an entire resource with the provided data, **PATCH** updates specific fields of a resource, and **DELETE** removes a resource. When debugging failed requests, start with `curl -v` to see the full request and response headers - the status code and response body usually tell you what went wrong. Common issues: `401` means your authentication is wrong, `403` means the server understood your credentials but you lack permission, `404` means the URL is wrong, and `422` means the request body doesn't match what the API expects.
 
@@ -346,6 +358,10 @@ solution: |
 
 **Port forwarding:**
 
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/ssh-port-forwarding.svg" alt="SSH local port forwarding diagram showing localhost:3307 tunneled through SSH to remote server localhost:3306 MySQL">
+</div>
+
 ```bash
 # Local: forward localhost:3307 to port 3306 on remote_host's end
 ssh -L 3307:localhost:3306 user@remote_host
@@ -358,6 +374,10 @@ ssh -D 1080 user@remote_host
 ```
 
 **Jump hosts:**
+
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/ssh-jump-host.svg" alt="SSH jump host topology showing your machine connecting through a bastion host to reach an internal server behind a firewall">
+</div>
 
 ```bash
 ssh -J jumphost user@internal_server
@@ -373,6 +393,10 @@ ssh -A user@hostname     # forward your SSH agent (use your local keys on the re
 
 Only use agent forwarding with trusted hosts - a compromised server could use your forwarded agent.
 
+!!! danger "Agent forwarding on untrusted hosts is a security risk"
+
+    When you use **`ssh -A`**, the remote server can use your local SSH keys to authenticate to *other* servers as long as your session is active. A compromised host's root user could hijack your forwarded agent socket to access any server your keys unlock. Only forward your agent to hosts you fully trust, and prefer **`ProxyJump`** (`ssh -J`) for reaching internal hosts through bastion servers instead.
+
 ### scp
 
 **`scp`** copies files over SSH:
@@ -383,6 +407,10 @@ scp user@host:/remote/file.txt ./local/       # download
 scp -r directory/ user@host:/remote/path/     # recursive (directories)
 scp -P 2222 file.txt user@host:/path/         # non-standard port
 ```
+
+!!! warning "scp is deprecated in favor of rsync and sftp"
+
+    The OpenSSH project has **deprecated `scp`** because its protocol can't handle filenames with special characters safely and has limited features. Use **`rsync`** for file synchronization (it's faster for repeated transfers) or **`sftp`** for interactive file management. Both use SSH transport and are drop-in replacements for most `scp` use cases.
 
 ### rsync
 
@@ -410,6 +438,14 @@ Common flags:
 | `-P` | Show progress and allow resuming |
 
 Note the trailing slash on source paths. `source/` means "the contents of source." `source` (no slash) means "the directory itself."
+
+!!! warning "rsync trailing slash on source changes behavior"
+
+    `rsync source/ dest/` copies the **contents** of `source` into `dest`. `rsync source dest/` copies the **directory itself**, creating `dest/source/`. This single character is the most common rsync mistake and can create unexpected nested directories or put files in the wrong location.
+
+!!! tip "Use rsync --dry-run before large transfers"
+
+    Always preview with **`rsync -avn`** (or `--dry-run`) before running destructive operations, especially with `--delete`. The dry run shows exactly which files would be transferred, deleted, or skipped - catching mistakes before they cause data loss.
 
 The trailing slash difference is the most common rsync mistake:
 
@@ -509,6 +545,10 @@ options:
 ## Network Inspection
 
 ### ss
+
+!!! tip "ss -tlnp shows what's listening on which port"
+
+    The combination **`ss -tlnp`** is the go-to command for answering "what's running on this port?" - **`-t`** filters to TCP, **`-l`** shows only listening sockets, **`-n`** skips slow DNS resolution, and **`-p`** reveals the process name and PID. Memorize this one.
 
 [**`ss`**](https://wiki.linuxfoundation.org/networking/iproute2) (socket statistics) shows network connections. It replaces the older `netstat` command.
 
@@ -629,6 +669,10 @@ dig @8.8.8.8 example.com            # query a specific nameserver
 dig -x 142.250.80.46                # reverse DNS lookup
 dig +trace example.com              # show the full resolution path
 ```
+
+!!! tip "Use dig +short for concise DNS answers"
+
+    **`dig +short`** strips away all the verbose output and returns just the answer records. It's perfect for scripting: `ip=$(dig +short example.com)` gives you the IP address directly. For debugging, use the full output - the **ANSWER**, **AUTHORITY**, and **ADDITIONAL** sections tell you exactly what the resolver did.
 
 ```exercise
 title: Trace DNS Resolution with dig
