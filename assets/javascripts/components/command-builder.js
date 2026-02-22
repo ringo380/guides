@@ -187,6 +187,12 @@
         }
       });
       updateCommand();
+
+      if (window.RunbookAnalytics) {
+        window.RunbookAnalytics.track("command_builder_reset", {
+          base_command: base,
+        });
+      }
     });
     actions.appendChild(resetBtn);
     body.appendChild(actions);

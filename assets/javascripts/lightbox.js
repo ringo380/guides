@@ -66,7 +66,9 @@
     closeBtn.focus();
 
     if (window.RunbookAnalytics) {
-      window.RunbookAnalytics.track("lightbox_open", { image_src: src });
+      var imagePath = src;
+      try { imagePath = new URL(src, window.location.origin).pathname; } catch (e) {}
+      window.RunbookAnalytics.track("lightbox_open", { image_src: imagePath });
     }
   }
 
@@ -76,9 +78,9 @@
     document.body.classList.remove("lightbox-open");
 
     if (window.RunbookAnalytics) {
-      window.RunbookAnalytics.track("lightbox_close", {
-        image_src: modalImg.src,
-      });
+      var closedPath = modalImg.src;
+      try { closedPath = new URL(modalImg.src, window.location.origin).pathname; } catch (e) {}
+      window.RunbookAnalytics.track("lightbox_close", { image_src: closedPath });
     }
   }
 

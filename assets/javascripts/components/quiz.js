@@ -163,6 +163,14 @@
       feedbackEl.className = "quiz-feedback";
       retryBtn.style.display = "none";
       scoreEl.style.display = "none";
+
+      if (window.RunbookAnalytics) {
+        window.RunbookAnalytics.track("quiz_retry", {
+          quiz_id: quizId,
+          attempts: attempts,
+          question: config.question || "",
+        });
+      }
     });
 
     const scoreEl = document.createElement("div");

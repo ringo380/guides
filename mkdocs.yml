@@ -96,6 +96,18 @@ extra:
       link: https://mastodon.social/@runbook
     - icon: fontawesome/brands/threads
       link: https://threads.net/@robworks_software
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to recognize repeat visits and measure engagement with
+      guides. With your consent, you help us improve the content.
+    cookies:
+      analytics:
+        name: Google Analytics
+        checked: true
+    actions:
+      - accept
+      - reject
   analytics:
     provider: google
     property: G-56L2QXTFGR

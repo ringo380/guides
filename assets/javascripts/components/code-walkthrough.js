@@ -104,7 +104,7 @@
       }
     }
 
-    function showStep(index) {
+    function showStep(index, direction) {
       if (showAll) return;
       currentStepIndex = index;
 
@@ -119,7 +119,15 @@
             walkthrough_title: config.title || "",
             step_number: index + 1,
             steps_total: annotations.length,
+            direction: direction || "next",
           });
+        }
+
+        if (window.RunbookAnalytics && index === annotations.length - 1) {
+          window.RunbookAnalytics.track("walkthrough_complete", {
+            walkthrough_title: config.title || "",
+            steps_total: annotations.length,
+          }, { once: true });
         }
       }
 
@@ -166,21 +174,21 @@
       showAllBtn.textContent = "Show All";
 
       if (currentStepIndex >= 0) {
-        showStep(currentStepIndex);
+        showStep(currentStepIndex, "next");
       } else if (annotations.length > 0) {
-        showStep(0);
+        showStep(0, "next");
       }
     }
 
     nextBtn.addEventListener("click", () => {
       if (currentStepIndex < annotations.length - 1) {
-        showStep(currentStepIndex + 1);
+        showStep(currentStepIndex + 1, "next");
       }
     });
 
     prevBtn.addEventListener("click", () => {
       if (currentStepIndex > 0) {
-        showStep(currentStepIndex - 1);
+        showStep(currentStepIndex - 1, "prev");
       }
     });
 
@@ -200,7 +208,7 @@
         el.style.cursor = "pointer";
         el.addEventListener("click", () => {
           if (showAll) exitShowAll();
-          showStep(annIndex);
+          showStep(annIndex, "jump");
         });
       }
     });

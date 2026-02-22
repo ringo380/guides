@@ -124,7 +124,7 @@
       }
     }
 
-    async function animateStep(stepIndex) {
+    async function animateStep(stepIndex, direction) {
       if (isAnimating) return;
       isAnimating = true;
       currentStep = stepIndex;
@@ -190,7 +190,15 @@
           terminal_title: config.title || "",
           step_number: stepIndex + 1,
           steps_total: steps.length,
+          direction: direction || "auto",
         });
+      }
+
+      if (window.RunbookAnalytics && stepIndex === steps.length - 1) {
+        window.RunbookAnalytics.track("terminal_complete", {
+          terminal_title: config.title || "",
+          steps_total: steps.length,
+        }, { once: true });
       }
 
       updateControls();
@@ -198,13 +206,13 @@
 
     nextBtn.addEventListener("click", () => {
       if (currentStep < steps.length - 1 && !isAnimating) {
-        animateStep(currentStep + 1);
+        animateStep(currentStep + 1, "next");
       }
     });
 
     prevBtn.addEventListener("click", () => {
       if (currentStep > 0 && !isAnimating) {
-        animateStep(currentStep - 1);
+        animateStep(currentStep - 1, "prev");
       }
     });
 
@@ -220,7 +228,7 @@
         terminalWindow.innerHTML = "";
         narration.style.display = "none";
         if (steps.length > 0) {
-          animateStep(0);
+          animateStep(0, "replay");
         }
       }
     });
@@ -234,7 +242,7 @@
 
     // Auto-start first step
     if (steps.length > 0) {
-      animateStep(0);
+      animateStep(0, "auto");
     }
 
     updateControls();

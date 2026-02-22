@@ -178,7 +178,7 @@
             window.RunbookAnalytics.track("exercise_solution_view", {
               exercise_id: exerciseId,
               difficulty: config.difficulty || "unknown",
-            });
+            }, { once: true });
           }
         }
       });

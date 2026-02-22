@@ -135,8 +135,37 @@
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const sectionId = entry.target.id;
+            const wasAlreadyRead = storage.getSectionsRead().includes(sectionId);
             storage.markSectionRead(sectionId);
             updateProgressBar(storage, headings.length);
+
+            if (!wasAlreadyRead && window.RunbookAnalytics) {
+              const sectionIndex = Array.from(headings).findIndex(
+                (h) => h.id === sectionId
+              );
+
+              window.RunbookAnalytics.track("section_read", {
+                section_id: sectionId,
+                section_index: sectionIndex + 1,
+                sections_total: headings.length,
+              }, { once: true });
+
+              // Milestone events at 50% and 100%
+              const sectionsRead = storage.getSectionsRead();
+              const pct = Math.round((sectionsRead.length / headings.length) * 100);
+              if (pct >= 50) {
+                window.RunbookAnalytics.track("page_progress_milestone", {
+                  milestone: 50,
+                  sections_total: headings.length,
+                }, { once: true });
+              }
+              if (pct >= 100) {
+                window.RunbookAnalytics.track("page_progress_milestone", {
+                  milestone: 100,
+                  sections_total: headings.length,
+                }, { once: true });
+              }
+            }
           }
         });
       },

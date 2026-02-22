@@ -48,7 +48,7 @@
       const sanitized = sanitizeParams(params || {});
 
       if (opts.once) {
-        const key = eventName + JSON.stringify(sanitized);
+        const key = eventName + pagePath() + JSON.stringify(sanitized);
         if (fired.has(key)) return;
         fired.add(key);
       }
