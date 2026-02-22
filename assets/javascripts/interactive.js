@@ -51,6 +51,9 @@
     // Load storage first - components depend on window.RunbookStorage
     loadScript("assets/javascripts/lib/storage.js")
       .then(() => loadScript("assets/javascripts/lib/analytics.js"))
+      .then(() => loadScript("assets/javascripts/lib/analytics-observers.js"))
+      .then(() => loadScript("assets/javascripts/lib/topics.js"))
+      .then(() => loadScript("assets/javascripts/lib/analytics-journey.js"))
       .then(() => {
         // Find all interactive divs on the page
         const types = Object.keys(COMPONENT_SCRIPTS);
@@ -72,11 +75,15 @@
                     div.dataset.initialized = "true";
                   } catch (e) {
                     console.error(`[Runbook] Error initializing ${type}:`, e);
+                    if (window.RunbookAnalytics) window.RunbookAnalytics.trackError("component_init:" + type, e);
                   }
                 });
               }
             })
-            .catch((err) => console.error(`[Runbook]`, err));
+            .catch((err) => {
+              console.error(`[Runbook]`, err);
+              if (window.RunbookAnalytics) window.RunbookAnalytics.trackError("script_load", err);
+            });
         });
 
         // Always load progress tracker
@@ -85,7 +92,11 @@
       .catch(() => {
         // Storage failed to load - initialize components without it
         console.warn("[Runbook] Storage unavailable, progress will not persist");
-        loadScript("assets/javascripts/lib/analytics.js").catch(() => {});
+        loadScript("assets/javascripts/lib/analytics.js")
+          .then(() => loadScript("assets/javascripts/lib/analytics-observers.js"))
+          .then(() => loadScript("assets/javascripts/lib/topics.js"))
+          .then(() => loadScript("assets/javascripts/lib/analytics-journey.js"))
+          .catch(() => {});
         const types = Object.keys(COMPONENT_SCRIPTS);
         types.forEach((type) => {
           const divs = document.querySelectorAll(`.interactive-${type}`);
@@ -102,11 +113,15 @@
                     div.dataset.initialized = "true";
                   } catch (e) {
                     console.error(`[Runbook] Error initializing ${type}:`, e);
+                    if (window.RunbookAnalytics) window.RunbookAnalytics.trackError("component_init_fallback:" + type, e);
                   }
                 });
               }
             })
-            .catch((err) => console.error(`[Runbook]`, err));
+            .catch((err) => {
+              console.error(`[Runbook]`, err);
+              if (window.RunbookAnalytics) window.RunbookAnalytics.trackError("script_load_fallback", err);
+            });
         });
       });
   }
