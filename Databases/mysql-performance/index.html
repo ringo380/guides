@@ -1,0 +1,4657 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Databases/mysql-performance/">
+      
+      
+        <link rel="prev" href="../mysql-administration/">
+      
+      
+        <link rel="next" href="../mysql-replication/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>MySQL Performance & Optimization - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="MySQL Performance & Optimization - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Databases/mysql-performance.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Databases/mysql-performance/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="MySQL Performance & Optimization - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Databases/mysql-performance.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mysql-performance-optimization" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MySQL Performance & Optimization
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Dev%20Zero/Perl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-explain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding EXPLAIN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding EXPLAIN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-columns-in-explain-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Columns in EXPLAIN Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-types-best-to-worst" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access Types (Best to Worst)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-extra-column" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Extra Column
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explain-analyze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXPLAIN ANALYZE
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index Strategies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Index Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-column-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-Column Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-multi-column-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite (Multi-Column) Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#covering-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Covering Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefix Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index-condition-pushdown-icp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index Condition Pushdown (ICP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#buffer-pool-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buffer Pool Tuning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Buffer Pool Tuning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sizing-the-buffer-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sizing the Buffer Pool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buffer-pool-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buffer Pool Instances
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-the-buffer-pool-hit-ratio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring the Buffer Pool Hit Ratio
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Profiling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query Profiling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set-profiling-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SET profiling (Legacy)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#slow-query-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow Query Log
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Slow Query Log">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-the-slow-query-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling the Slow Query Log
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analyzing-with-pt-query-digest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analyzing with pt-query-digest
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimizer-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimizer Hints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Optimizer Hints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#table-level-index-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table-Level Index Hints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-80-optimizer-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MySQL 8.0 Optimizer Hints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Anti-Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Anti-Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SELECT *
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-indexes-on-join-columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing Indexes on JOIN Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n1-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N+1 Queries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions-on-indexed-columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions on Indexed Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicit-type-conversions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicit Type Conversions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimization-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization Workflow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Dev%20Zero/Perl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-explain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding EXPLAIN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding EXPLAIN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-columns-in-explain-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Columns in EXPLAIN Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-types-best-to-worst" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access Types (Best to Worst)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-extra-column" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Extra Column
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explain-analyze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXPLAIN ANALYZE
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index Strategies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Index Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-column-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-Column Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-multi-column-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite (Multi-Column) Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#covering-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Covering Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefix Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index-condition-pushdown-icp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index Condition Pushdown (ICP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#buffer-pool-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buffer Pool Tuning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Buffer Pool Tuning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sizing-the-buffer-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sizing the Buffer Pool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buffer-pool-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buffer Pool Instances
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-the-buffer-pool-hit-ratio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring the Buffer Pool Hit Ratio
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Profiling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query Profiling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set-profiling-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SET profiling (Legacy)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#slow-query-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slow Query Log
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Slow Query Log">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-the-slow-query-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling the Slow Query Log
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analyzing-with-pt-query-digest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analyzing with pt-query-digest
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimizer-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimizer Hints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Optimizer Hints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#table-level-index-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table-Level Index Hints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mysql-80-optimizer-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MySQL 8.0 Optimizer Hints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Anti-Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Anti-Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SELECT *
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-indexes-on-join-columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing Indexes on JOIN Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n1-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N+1 Queries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions-on-indexed-columns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functions on Indexed Columns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicit-type-conversions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicit Type Conversions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimization-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization Workflow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Databases/mysql-performance.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="mysql-performance-optimization">MySQL Performance &amp; Optimization<a class="headerlink" href="#mysql-performance-optimization" title="Permanent link">&para;</a></h1>
+<p>Performance problems in MySQL almost always trace back to one of three causes: missing or misused indexes, queries that scan more rows than necessary, or server settings mismatched to the workload. This guide covers the tools and techniques for finding and fixing those problems - from reading <code>EXPLAIN</code> output and building the right indexes, to tuning the buffer pool and analyzing the slow query log.</p>
+<hr />
+<h2 id="understanding-explain">Understanding EXPLAIN<a class="headerlink" href="#understanding-explain" title="Permanent link">&para;</a></h2>
+<div class="diagram-container"><img src="../../assets/images/databases/query-execution-plan.svg" alt="MySQL query execution path from parser through optimizer to storage engine, and index selection decision tree"></div>
+
+<p>The <a href="https://dev.mysql.com/doc/refman/8.0/en/explain.html"><strong><code>EXPLAIN</code></strong></a> statement is your primary tool for understanding how MySQL executes a query. Prefix any <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, or <code>DELETE</code> with <code>EXPLAIN</code> and MySQL returns the execution plan - the sequence of steps the optimizer chose, which indexes it uses, and how many rows it estimates it needs to examine.</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">total</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="k">c</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">JOIN</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">WHERE</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">country</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;US&#39;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">AND</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">created_at</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="s1">&#39;2025-01-01&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<h3 id="key-columns-in-explain-output">Key Columns in EXPLAIN Output<a class="headerlink" href="#key-columns-in-explain-output" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>What it tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>The query step number. Same <code>id</code> means tables are joined; different <code>id</code> values indicate subqueries.</td>
+</tr>
+<tr>
+<td><code>select_type</code></td>
+<td>Whether this is a <code>SIMPLE</code> query, <code>PRIMARY</code>, <code>SUBQUERY</code>, <code>DERIVED</code> table, or <code>UNION</code>.</td>
+</tr>
+<tr>
+<td><code>table</code></td>
+<td>Which table this row of the plan applies to.</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>The <strong>access type</strong> - how MySQL finds rows in this table. The most important column.</td>
+</tr>
+<tr>
+<td><code>possible_keys</code></td>
+<td>Indexes the optimizer considered.</td>
+</tr>
+<tr>
+<td><code>key</code></td>
+<td>The index the optimizer actually chose. <code>NULL</code> means no index is used.</td>
+</tr>
+<tr>
+<td><code>key_len</code></td>
+<td>How many bytes of the index are used. Helps you tell whether the full composite index is used or just a prefix.</td>
+</tr>
+<tr>
+<td><code>ref</code></td>
+<td>What is compared against the index - a constant, a column from another table, or <code>NULL</code>.</td>
+</tr>
+<tr>
+<td><code>rows</code></td>
+<td>Estimated number of rows MySQL must examine. This is an estimate, not an exact count.</td>
+</tr>
+<tr>
+<td><code>filtered</code></td>
+<td>Percentage of rows that survive after applying the <code>WHERE</code> conditions. Lower means more rows are discarded.</td>
+</tr>
+<tr>
+<td><code>Extra</code></td>
+<td>Additional execution details. Watch for <code>Using filesort</code>, <code>Using temporary</code>, and <code>Using where</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="access-types-best-to-worst">Access Types (Best to Worst)<a class="headerlink" href="#access-types-best-to-worst" title="Permanent link">&para;</a></h3>
+<p>The <code>type</code> column is the single most important indicator of query efficiency. From best to worst:</p>
+<table>
+<thead>
+<tr>
+<th>Access Type</th>
+<th>Meaning</th>
+<th>Typical Scenario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>system</code></td>
+<td>Table has exactly one row</td>
+<td>System tables</td>
+</tr>
+<tr>
+<td><code>const</code></td>
+<td>At most one matching row, read at optimization time</td>
+<td><code>WHERE id = 1</code> on a primary key</td>
+</tr>
+<tr>
+<td><code>eq_ref</code></td>
+<td>One row per combination from the previous table</td>
+<td>JOIN on a primary key or unique index</td>
+</tr>
+<tr>
+<td><code>ref</code></td>
+<td>All rows matching a single value in the index</td>
+<td>JOIN or WHERE on a non-unique index</td>
+</tr>
+<tr>
+<td><code>range</code></td>
+<td>Index scan over a range of values</td>
+<td><code>WHERE created_at &gt; '2025-01-01'</code></td>
+</tr>
+<tr>
+<td><code>index</code></td>
+<td>Full scan of the index tree (every entry)</td>
+<td>Covering index query, but scans all rows</td>
+</tr>
+<tr>
+<td><code>ALL</code></td>
+<td>Full table scan - reads every row</td>
+<td>No usable index found</td>
+</tr>
+</tbody>
+</table>
+<p>Anything from <code>const</code> through <code>range</code> is generally acceptable for production queries. Seeing <code>index</code> or <code>ALL</code> on a large table is a red flag.</p>
+<h3 id="the-extra-column">The Extra Column<a class="headerlink" href="#the-extra-column" title="Permanent link">&para;</a></h3>
+<p>Some values in the <code>Extra</code> column deserve immediate attention:</p>
+<ul>
+<li><strong><code>Using index</code></strong> - the query is satisfied entirely from the index without touching the table data (a <strong>covering index</strong>). This is ideal.</li>
+<li><strong><code>Using where</code></strong> - MySQL applies a <code>WHERE</code> filter after reading rows. Normal, but check whether an index could push the filter earlier.</li>
+<li><strong><code>Using temporary</code></strong> - MySQL created an internal temporary table, often for <code>GROUP BY</code> or <code>DISTINCT</code> on columns that aren't indexed.</li>
+<li><strong><code>Using filesort</code></strong> - MySQL performs an extra sort pass because the result order doesn't match any index order. Expensive on large result sets.</li>
+<li><strong><code>Using index condition</code></strong> - <strong>Index Condition Pushdown</strong> (ICP) is active. MySQL evaluates part of the <code>WHERE</code> clause at the storage engine level, reducing the number of full-row reads.</li>
+</ul>
+<div class="interactive-code-walkthrough" data-config="{&quot;title&quot;: &quot;Reading EXPLAIN Output&quot;, &quot;description&quot;: &quot;Analyzing the execution plan for a two-table join query to understand how MySQL processes it.&quot;, &quot;code&quot;: &quot;EXPLAIN SELECT c.name, o.order_id, o.total\nFROM customers c\nJOIN orders o ON o.customer_id = c.id\nWHERE c.country = &#39;US&#39;\nAND o.total > 100.00;\n\n-- id | select_type | table | type  | possible_keys        | key          | key_len | ref              | rows  | filtered | Extra\n-- 1  | SIMPLE      | c     | ref   | PRIMARY,idx_country  | idx_country  | 3       | const            | 4520  | 100.00   | NULL\n-- 1  | SIMPLE      | o     | ref   | idx_customer_id      | idx_customer_id | 4    | shop.c.id        | 8     | 33.33    | Using where\n&quot;, &quot;language&quot;: &quot;sql&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 1, &quot;text&quot;: &quot;Prefix any DML statement with EXPLAIN to see the execution plan instead of running the query.&quot;}, {&quot;line&quot;: 3, &quot;text&quot;: &quot;The JOIN condition tells MySQL how to connect rows between tables. An index on orders.customer_id is critical here.&quot;}, {&quot;line&quot;: 4, &quot;text&quot;: &quot;WHERE clauses filter rows. The optimizer decides which filter to apply first based on index availability and estimated selectivity.&quot;}, {&quot;line&quot;: 7, &quot;text&quot;: &quot;The EXPLAIN output is a table with one row per table accessed. Both rows have id=1 and select_type=SIMPLE, meaning this is a single-step join with no subqueries.&quot;}, {&quot;line&quot;: 8, &quot;text&quot;: &quot;type=ref means MySQL uses the idx_country index to find all US customers. It estimates 4520 matching rows. ref=const means it&#39;s matching against the constant value &#39;US&#39;.&quot;}, {&quot;line&quot;: 9, &quot;text&quot;: &quot;For each customer, MySQL uses idx_customer_id with type=ref to find matching orders (estimated 8 per customer). &#39;Using where&#39; means the o.total > 100.00 filter is applied after the index lookup. filtered=33.33 tells you only about a third of each customer&#39;s orders survive that filter.&quot;}]}"><noscript><p><strong>Reading EXPLAIN Output</strong> (requires JavaScript)</p></noscript></div>
+<h3 id="explain-analyze">EXPLAIN ANALYZE<a class="headerlink" href="#explain-analyze" title="Permanent link">&para;</a></h3>
+<p>MySQL 8.0.18 introduced <strong><code>EXPLAIN ANALYZE</code></strong>, which actually runs the query and reports real execution statistics alongside the plan. The output includes actual row counts, loop counts, and execution time per step.</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">order_count</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="k">c</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">JOIN</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">WHERE</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">country</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;US&#39;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</span></code></pre></div>
+<p>The output uses a tree format showing nested operations with actual timing:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>-&gt; Group aggregate: count(0)  (cost=1856 rows=4520) (actual time=0.127..45.3 rows=4210 loops=1)
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    -&gt; Nested loop join  (cost=1412 rows=36160) (actual time=0.089..38.7 rows=33680 loops=1)
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>        -&gt; Index lookup on c using idx_country (country=&#39;US&#39;)  (cost=502 rows=4520) (actual time=0.067..4.2 rows=4520 loops=1)
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        -&gt; Index lookup on o using idx_customer_id (customer_id=c.id)  (cost=0.25 rows=8) (actual time=0.005..0.007 rows=7.45 loops=4520)
+</span></code></pre></div>
+<p>The key difference: <code>rows=4520</code> is the estimate, while <code>actual ... rows=4520</code> is what actually happened. When these numbers diverge significantly, the optimizer may be making poor decisions based on stale statistics. Run <code>ANALYZE TABLE</code> to refresh them.</p>
+<div class="admonition tip">
+<p class="admonition-title">Use EXPLAIN ANALYZE on development, not production</p>
+<p><code>EXPLAIN ANALYZE</code> executes the full query. On a slow query against a large table, that means waiting for the full execution. Use regular <code>EXPLAIN</code> for initial investigation, then <code>EXPLAIN ANALYZE</code> on a staging environment to validate.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;In EXPLAIN output, what does access type &#39;ALL&#39; indicate?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;MySQL is using all available indexes for maximum performance&quot;, &quot;feedback&quot;: &quot;&#39;ALL&#39; does not mean &#39;all indexes.&#39; It means the opposite - MySQL is scanning every row in the table because no usable index was found.&quot;}, {&quot;text&quot;: &quot;The query returns all columns from the table&quot;, &quot;feedback&quot;: &quot;The access type describes how rows are located, not which columns are returned. &#39;ALL&#39; means a full table scan.&quot;}, {&quot;text&quot;: &quot;MySQL is performing a full table scan, reading every row&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! type=ALL means MySQL reads every row in the table and filters them one by one. On large tables, this is almost always a performance problem that an appropriate index can fix.&quot;}, {&quot;text&quot;: &quot;All rows matched the WHERE clause&quot;, &quot;feedback&quot;: &quot;The access type describes how MySQL finds rows, not how many matched. Even with type=ALL, the WHERE clause may filter out most rows - but MySQL still had to read all of them to check.&quot;}]}"><noscript><p><strong>In EXPLAIN output, what does access type 'ALL' indicate?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="index-strategies">Index Strategies<a class="headerlink" href="#index-strategies" title="Permanent link">&para;</a></h2>
+<p>Indexes are the single biggest lever you have for query performance. A well-chosen index can turn a query from scanning millions of rows to reading a handful. A missing or poorly designed index is behind most slow queries in production.</p>
+<h3 id="single-column-indexes">Single-Column Indexes<a class="headerlink" href="#single-column-indexes" title="Permanent link">&para;</a></h3>
+<p>The simplest index covers one column:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+</span></code></pre></div>
+<p>This speeds up queries that filter or sort by <code>email</code>. MySQL can use it for exact matches (<code>WHERE email = 'user@example.com'</code>), prefix matches (<code>WHERE email LIKE 'user@%'</code>), and range scans (<code>WHERE email BETWEEN 'a' AND 'm'</code>).</p>
+<h3 id="composite-multi-column-indexes">Composite (Multi-Column) Indexes<a class="headerlink" href="#composite-multi-column-indexes" title="Permanent link">&para;</a></h3>
+<p>A <strong>composite index</strong> covers multiple columns in a defined order:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_country_city</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="p">(</span><span class="n">country</span><span class="p">,</span><span class="w"> </span><span class="n">city</span><span class="p">);</span>
+</span></code></pre></div>
+<p>MySQL can use this index for:</p>
+<ul>
+<li><code>WHERE country = 'US'</code> - uses the first column</li>
+<li><code>WHERE country = 'US' AND city = 'Austin'</code> - uses both columns</li>
+<li><code>WHERE country = 'US' AND city &gt; 'M'</code> - uses first column for equality, second for range</li>
+</ul>
+<p>MySQL <strong>cannot</strong> use this index for:</p>
+<ul>
+<li><code>WHERE city = 'Austin'</code> - skips the first column (violates the leftmost prefix rule)</li>
+</ul>
+<p>This is the <strong>leftmost prefix rule</strong>: a composite index on <code>(a, b, c)</code> can satisfy queries that filter on <code>(a)</code>, <code>(a, b)</code>, or <code>(a, b, c)</code>, but not <code>(b)</code>, <code>(c)</code>, or <code>(b, c)</code>. The columns must be used in order from left to right, though MySQL does not require all columns to be present.</p>
+<div class="admonition warning">
+<p class="admonition-title">Column order matters</p>
+<p>When designing composite indexes, put the most selective equality column first, followed by additional equality columns, and put any range condition column last. Once MySQL hits a range condition in the index, it stops using subsequent index columns for filtering.</p>
+</div>
+<h3 id="covering-indexes">Covering Indexes<a class="headerlink" href="#covering-indexes" title="Permanent link">&para;</a></h3>
+<p>A <strong>covering index</strong> contains all the columns a query needs - both for filtering and for the result set. When MySQL can satisfy a query entirely from the index, it never reads the actual table rows. You see <code>Using index</code> in the <code>Extra</code> column of <code>EXPLAIN</code>.</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">-- Query</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1">-- Covering index for this query</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_covering</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">total</span><span class="p">);</span>
+</span></code></pre></div>
+<p>The index contains both <code>customer_id</code> (for filtering) and <code>total</code> (for the result), so MySQL reads only the index. This avoids the random I/O cost of looking up each row in the table data.</p>
+<h3 id="prefix-indexes">Prefix Indexes<a class="headerlink" href="#prefix-indexes" title="Permanent link">&para;</a></h3>
+<p>For long string columns, you can index only the first N characters:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email_prefix</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">(</span><span class="mi">10</span><span class="p">));</span>
+</span></code></pre></div>
+<p>Prefix indexes use less storage and memory but cannot be used for <code>ORDER BY</code> or as covering indexes. Choose a prefix length that provides good selectivity:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">-- Check selectivity at different prefix lengths</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">SELECT</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="k">LEFT</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">sel_5</span><span class="p">,</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="k">LEFT</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">sel_10</span><span class="p">,</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="k">LEFT</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">sel_15</span><span class="p">,</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">sel_full</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Pick the shortest prefix where selectivity is close to the full-column selectivity.</p>
+<h3 id="index-condition-pushdown-icp">Index Condition Pushdown (ICP)<a class="headerlink" href="#index-condition-pushdown-icp" title="Permanent link">&para;</a></h3>
+<p><strong>Index Condition Pushdown</strong> is an optimization where MySQL evaluates <code>WHERE</code> conditions at the storage engine level during an index scan, before reading the full row. Without ICP, the server reads the full row for every index match and then applies the filter. With ICP, rows that fail the condition are skipped at the index level.</p>
+<p>ICP is enabled by default in MySQL 5.6+ and appears as <code>Using index condition</code> in <code>EXPLAIN</code> output. You rarely need to think about it, but it explains why some queries are faster than their <code>EXPLAIN</code> row estimates suggest.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;Given a composite index on (country, city, zip_code), which WHERE clause can fully use all three index columns?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;WHERE city = &#39;Austin&#39; AND zip_code = &#39;78701&#39;&quot;, &quot;feedback&quot;: &quot;This skips the first column (country), violating the leftmost prefix rule. MySQL cannot use this index at all for these conditions.&quot;}, {&quot;text&quot;: &quot;WHERE country = &#39;US&#39; AND zip_code = &#39;78701&#39;&quot;, &quot;feedback&quot;: &quot;This skips the middle column (city). MySQL can use the index for country but cannot skip to zip_code. Only the first column is used.&quot;}, {&quot;text&quot;: &quot;WHERE country = &#39;US&#39; AND city = &#39;Austin&#39; AND zip_code = &#39;78701&#39;&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! All three columns are used left to right with equality conditions. This is the ideal case for a composite index - MySQL traverses the B-tree using all three columns to find the exact matching rows.&quot;}, {&quot;text&quot;: &quot;WHERE country > &#39;T&#39; AND city = &#39;Austin&#39; AND zip_code = &#39;78701&#39;&quot;, &quot;feedback&quot;: &quot;The range condition on country (the first column) prevents MySQL from using city and zip_code in the index. Once a range condition appears, subsequent index columns are not used for filtering.&quot;}]}"><noscript><p><strong>Given a composite index on (country, city, zip_code), which WHERE clause can fully use all three index columns?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="buffer-pool-tuning">Buffer Pool Tuning<a class="headerlink" href="#buffer-pool-tuning" title="Permanent link">&para;</a></h2>
+<p>The <strong>InnoDB buffer pool</strong> is MySQL's main memory cache. It holds table data pages, index pages, the change buffer, and the adaptive hash index. Every read and write to InnoDB data goes through the buffer pool. If the data you need is already in memory, MySQL avoids a disk read. If it isn't, MySQL reads from disk and caches the page for future use.</p>
+<h3 id="sizing-the-buffer-pool">Sizing the Buffer Pool<a class="headerlink" href="#sizing-the-buffer-pool" title="Permanent link">&para;</a></h3>
+<p>The <code>innodb_buffer_pool_size</code> setting controls the buffer pool's total size. The general guidance:</p>
+<ul>
+<li><strong>Dedicated database server</strong>: 70-80% of total RAM. A server with 64 GB of RAM should have a buffer pool of 45-50 GB.</li>
+<li><strong>Shared server</strong> (running web server, application, and database): 40-50% of RAM, leaving room for the OS, application processes, and filesystem cache.</li>
+</ul>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">-- Check current buffer pool size</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">SHOW</span><span class="w"> </span><span class="n">VARIABLES</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;innodb_buffer_pool_size&#39;</span><span class="p">;</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1">-- Set dynamically (MySQL 5.7+)</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">innodb_buffer_pool_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">48</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 48 GB</span>
+</span></code></pre></div>
+<p>For permanent changes, set it in <code>my.cnf</code>:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">[mysqld]</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="na">innodb_buffer_pool_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">48G</span>
+</span></code></pre></div>
+<h3 id="buffer-pool-instances">Buffer Pool Instances<a class="headerlink" href="#buffer-pool-instances" title="Permanent link">&para;</a></h3>
+<p>The <code>innodb_buffer_pool_instances</code> setting splits the buffer pool into multiple independent regions, reducing contention on the buffer pool mutex when many threads read and write concurrently. MySQL 8.0 defaults to 8 instances when the buffer pool is 1 GB or larger.</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">[mysqld]</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="na">innodb_buffer_pool_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">48G</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="na">innodb_buffer_pool_instances</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">16</span>
+</span></code></pre></div>
+<p>Each instance should be at least 1 GB. A pool of 48 GB with 16 instances gives 3 GB per instance.</p>
+<h3 id="monitoring-the-buffer-pool-hit-ratio">Monitoring the Buffer Pool Hit Ratio<a class="headerlink" href="#monitoring-the-buffer-pool-hit-ratio" title="Permanent link">&para;</a></h3>
+<p>The <strong>hit ratio</strong> tells you what percentage of read requests are served from memory rather than disk. A healthy buffer pool has a hit ratio above 99%.</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">SHOW</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">STATUS</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;Innodb_buffer_pool_read%&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Calculate the ratio:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">SELECT</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">VARIABLE_VALUE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">performance_schema</span><span class="p">.</span><span class="n">global_status</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">VARIABLE_NAME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Innodb_buffer_pool_reads&#39;</span><span class="p">)</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="o">/</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">VARIABLE_VALUE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">performance_schema</span><span class="p">.</span><span class="n">global_status</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">VARIABLE_NAME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Innodb_buffer_pool_read_requests&#39;</span><span class="p">)</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">  </span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">buffer_pool_hit_ratio</span><span class="p">;</span>
+</span></code></pre></div>
+<ul>
+<li><code>Innodb_buffer_pool_read_requests</code> - total logical reads (satisfied from buffer pool or disk)</li>
+<li><code>Innodb_buffer_pool_reads</code> - reads that required a disk I/O</li>
+</ul>
+<p>If the hit ratio is below 99%, your buffer pool is likely too small for the working set, or your queries are scanning large amounts of data that don't fit in memory.</p>
+<div class="admonition tip">
+<p class="admonition-title">Warm up the buffer pool after restart</p>
+<p>MySQL 5.6+ can dump and reload the buffer pool contents across restarts. Enable <code>innodb_buffer_pool_dump_at_shutdown</code> and <code>innodb_buffer_pool_load_at_startup</code> in <code>my.cnf</code> to avoid a cold cache after a restart.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;For a dedicated MySQL server with 64 GB of RAM, what is a reasonable innodb_buffer_pool_size?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;4 GB - keep most memory free for the OS&quot;, &quot;feedback&quot;: &quot;4 GB on a 64 GB server leaves the vast majority of RAM unused. InnoDB relies heavily on in-memory caching; an undersized buffer pool forces excessive disk I/O.&quot;}, {&quot;text&quot;: &quot;64 GB - use all available RAM&quot;, &quot;feedback&quot;: &quot;Allocating all RAM to the buffer pool leaves nothing for the OS, InnoDB&#39;s per-thread buffers, temporary tables, or other processes. The server will swap and perform worse.&quot;}, {&quot;text&quot;: &quot;45-50 GB (70-80% of RAM)&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! The standard recommendation for a dedicated database server is 70-80% of total RAM. On 64 GB, that&#39;s 45-50 GB. The remaining memory covers the OS page cache, per-connection buffers, temporary tables, and other MySQL internal structures.&quot;}, {&quot;text&quot;: &quot;32 GB - exactly half&quot;, &quot;feedback&quot;: &quot;50% is conservative for a dedicated database server. You&#39;d leave more memory idle than necessary. 70-80% is the standard recommendation.&quot;}]}"><noscript><p><strong>For a dedicated MySQL server with 64 GB of RAM, what is a reasonable innodb_buffer_pool_size?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="query-profiling">Query Profiling<a class="headerlink" href="#query-profiling" title="Permanent link">&para;</a></h2>
+<p>When <code>EXPLAIN</code> tells you what the optimizer plans to do, profiling tells you what actually happened and where time was spent.</p>
+<h3 id="set-profiling-legacy">SET profiling (Legacy)<a class="headerlink" href="#set-profiling-legacy" title="Permanent link">&para;</a></h3>
+<p>The <code>SET profiling</code> approach is deprecated but still available in MySQL 8.0 and commonly referenced in older documentation:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">SET</span><span class="w"> </span><span class="n">profiling</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;shipped&#39;</span><span class="p">;</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="k">SHOW</span><span class="w"> </span><span class="n">PROFILES</span><span class="p">;</span>
+</span></code></pre></div>
+<p><code>SHOW PROFILES</code> lists recent queries with their total execution time. For a breakdown by stage:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">SHOW</span><span class="w"> </span><span class="n">PROFILE</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="n">QUERY</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span></code></pre></div>
+<p>This outputs each stage (opening tables, executing, sending data, cleaning up) with its duration. Useful for a quick check, but the Performance Schema provides more detail.</p>
+<h3 id="performance-schema">Performance Schema<a class="headerlink" href="#performance-schema" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://dev.mysql.com/doc/refman/8.0/en/performance-schema.html"><strong>Performance Schema</strong></a> is MySQL's instrumentation framework. It records detailed timing and statistics for every stage of query execution with minimal overhead.</p>
+<p>Enable statement instrumentation (usually on by default):</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1">-- Check if events_statements instrumentation is enabled</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">performance_schema</span><span class="p">.</span><span class="n">setup_instruments</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">NAME</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;statement/%&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">ENABLED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;YES&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Query recent statement execution statistics:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">SELECT</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="n">DIGEST_TEXT</span><span class="p">,</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">  </span><span class="n">COUNT_STAR</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">exec_count</span><span class="p">,</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">  </span><span class="n">ROUND</span><span class="p">(</span><span class="n">AVG_TIMER_WAIT</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1</span><span class="n">e12</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">avg_seconds</span><span class="p">,</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">  </span><span class="n">ROUND</span><span class="p">(</span><span class="n">SUM_TIMER_WAIT</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1</span><span class="n">e12</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_seconds</span><span class="p">,</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">  </span><span class="n">SUM_ROWS_EXAMINED</span><span class="p">,</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">  </span><span class="n">SUM_ROWS_SENT</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="k">FROM</span><span class="w"> </span><span class="n">performance_schema</span><span class="p">.</span><span class="n">events_statements_summary_by_digest</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">SUM_TIMER_WAIT</span><span class="w"> </span><span class="k">DESC</span>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+</span></code></pre></div>
+<p>This query surfaces the 10 most time-consuming query patterns in your workload. The <code>DIGEST_TEXT</code> column normalizes queries (replacing literal values with <code>?</code>), so all executions of the same query pattern are grouped together.</p>
+<p>For per-stage profiling of a specific query:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1">-- Run the query</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1">-- Find its event ID</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">EVENT_ID</span><span class="p">,</span><span class="w"> </span><span class="n">SQL_TEXT</span><span class="p">,</span><span class="w"> </span><span class="n">TIMER_WAIT</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1</span><span class="n">e12</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">seconds</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="k">FROM</span><span class="w"> </span><span class="n">performance_schema</span><span class="p">.</span><span class="n">events_statements_history</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">SQL_TEXT</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;%customer_id = 42%&#39;</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">EVENT_ID</span><span class="w"> </span><span class="k">DESC</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="c1">-- Get stage-level breakdown</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">EVENT_NAME</span><span class="p">,</span><span class="w"> </span><span class="n">TIMER_WAIT</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1</span><span class="n">e12</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">seconds</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="k">FROM</span><span class="w"> </span><span class="n">performance_schema</span><span class="p">.</span><span class="n">events_stages_history_long</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">NESTING_EVENT_ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="n">event_id</span><span class="o">&gt;</span>
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">TIMER_START</span><span class="p">;</span>
+</span></code></pre></div>
+<hr />
+<h2 id="slow-query-log">Slow Query Log<a class="headerlink" href="#slow-query-log" title="Permanent link">&para;</a></h2>
+<p>The <strong>slow query log</strong> captures every query that exceeds a configurable time threshold. It's the primary way to find problematic queries in production without actively monitoring the server.</p>
+<h3 id="enabling-the-slow-query-log">Enabling the Slow Query Log<a class="headerlink" href="#enabling-the-slow-query-log" title="Permanent link">&para;</a></h3>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1">-- Enable dynamically</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">slow_query_log</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;ON&#39;</span><span class="p">;</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">slow_query_log_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;/var/log/mysql/slow.log&#39;</span><span class="p">;</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">long_query_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">    </span><span class="c1">-- Log queries taking more than 1 second</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">log_queries_not_using_indexes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">  </span><span class="c1">-- Also log queries without indexes</span>
+</span></code></pre></div>
+<p>For persistent configuration in <code>my.cnf</code>:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="k">[mysqld]</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="na">slow_query_log</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="na">slow_query_log_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/var/log/mysql/slow.log</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="na">long_query_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="na">log_queries_not_using_indexes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span></code></pre></div>
+<p>The <code>long_query_time</code> accepts decimal values. Setting it to <code>0.5</code> captures queries over 500 milliseconds. On a busy system, start with <code>1</code> or <code>2</code> seconds to avoid filling the log, then lower the threshold as you fix the worst offenders.</p>
+<div class="admonition warning">
+<p class="admonition-title">Disk space</p>
+<p>The slow query log can grow quickly on a busy server. Monitor its size and rotate it regularly with <code>logrotate</code> or by running <code>FLUSH SLOW LOGS</code> after rotating the file.</p>
+</div>
+<h3 id="analyzing-with-pt-query-digest">Analyzing with pt-query-digest<a class="headerlink" href="#analyzing-with-pt-query-digest" title="Permanent link">&para;</a></h3>
+<p>Reading raw slow query logs is impractical on a busy server - you might have thousands of entries. <a href="https://docs.percona.com/percona-toolkit/pt-query-digest.html"><strong><code>pt-query-digest</code></strong></a> from Percona Toolkit aggregates the log into a ranked summary.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>pt-query-digest<span class="w"> </span>/var/log/mysql/slow.log
+</span></code></pre></div>
+<p>The output ranks query patterns by total execution time and shows:</p>
+<ul>
+<li><strong>Response time</strong> - total and average per execution</li>
+<li><strong>Calls</strong> - how many times this query pattern ran</li>
+<li><strong>Rows examined vs. rows sent</strong> - the ratio between rows MySQL read and rows returned to the client. A high ratio indicates the query is reading far more data than needed.</li>
+<li><strong>Query fingerprint</strong> - the normalized query with literal values replaced</li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Filter to a specific time window</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>pt-query-digest<span class="w"> </span>--since<span class="w"> </span><span class="s1">&#39;2025-06-01&#39;</span><span class="w"> </span>--until<span class="w"> </span><span class="s1">&#39;2025-06-02&#39;</span><span class="w"> </span>/var/log/mysql/slow.log
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># Filter to queries affecting a specific table</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>pt-query-digest<span class="w"> </span>--filter<span class="w"> </span><span class="s1">&#39;$event-&gt;{arg} =~ m/orders/&#39;</span><span class="w"> </span>/var/log/mysql/slow.log
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="c1"># Output as JSON for automated processing</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>pt-query-digest<span class="w"> </span>--output<span class="w"> </span>json<span class="w"> </span>/var/log/mysql/slow.log
+</span></code></pre></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Diagnosing a Slow Query with EXPLAIN&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;mysql -e \&quot;SET GLOBAL slow_query_log = &#39;ON&#39;; SET GLOBAL long_query_time = 0.5;\&quot;&quot;, &quot;output&quot;: &quot;&quot;, &quot;narration&quot;: &quot;Enable the slow query log and set the threshold to 500 milliseconds. Any query taking longer than that will be recorded.&quot;}, {&quot;command&quot;: &quot;mysql -e \&quot;SELECT o.order_id, c.name, o.total FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.status = &#39;pending&#39; ORDER BY o.created_at DESC LIMIT 100;\&quot;&quot;, &quot;output&quot;: &quot;100 rows in set (3.42 sec)\n&quot;, &quot;narration&quot;: &quot;This query is taking 3.42 seconds - well above the threshold. It will appear in the slow query log.&quot;}, {&quot;command&quot;: &quot;mysql -e \&quot;EXPLAIN SELECT o.order_id, c.name, o.total FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.status = &#39;pending&#39; ORDER BY o.created_at DESC LIMIT 100;\&quot;&quot;, &quot;output&quot;: &quot;+----+-------------+-------+------+---------------+------+---------+------+---------+----------------------------------------------+\n| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows    | Extra                                        |\n+----+-------------+-------+------+---------------+------+---------+------+---------+----------------------------------------------+\n|  1 | SIMPLE      | o     | ALL  | NULL          | NULL | NULL    | NULL | 1250000 | Using where; Using temporary; Using filesort |\n|  1 | SIMPLE      | c     | eq_ref | PRIMARY     | PRIMARY | 4   | shop.o.customer_id | 1 | NULL                            |\n+----+-------------+-------+------+---------------+------+---------+------+---------+----------------------------------------------+\n&quot;, &quot;narration&quot;: &quot;The EXPLAIN reveals the problem. The orders table has type=ALL (full table scan of 1.25 million rows), no index is used, and MySQL needs a temporary table and filesort for the ORDER BY. The customers table join is fine - eq_ref on the primary key.&quot;}, {&quot;command&quot;: &quot;mysql -e \&quot;CREATE INDEX idx_status_created ON orders (status, created_at);\&quot;&quot;, &quot;output&quot;: &quot;Query OK, 0 rows affected (4.87 sec)&quot;, &quot;narration&quot;: &quot;Create a composite index on the two columns used in WHERE and ORDER BY. Status first (equality filter), created_at second (sort order).&quot;}, {&quot;command&quot;: &quot;mysql -e \&quot;EXPLAIN SELECT o.order_id, c.name, o.total FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.status = &#39;pending&#39; ORDER BY o.created_at DESC LIMIT 100;\&quot;&quot;, &quot;output&quot;: &quot;+----+-------------+-------+------+--------------------+--------------------+---------+-------------------+------+-------------+\n| id | select_type | table | type | possible_keys      | key                | key_len | ref               | rows | Extra       |\n+----+-------------+-------+------+--------------------+--------------------+---------+-------------------+------+-------------+\n|  1 | SIMPLE      | o     | ref  | idx_status_created | idx_status_created | 52      | const             | 8340 | Using where |\n|  1 | SIMPLE      | c     | eq_ref | PRIMARY          | PRIMARY            | 4       | shop.o.customer_id | 1  | NULL        |\n+----+-------------+-------+------+--------------------+--------------------+---------+-------------------+------+-------------+\n&quot;, &quot;narration&quot;: &quot;After adding the index, the orders table access changed from ALL (1.25M rows) to ref (8,340 rows). The filesort and temporary table are gone because the index already delivers rows in created_at order. The query now reads 150x fewer rows.&quot;}, {&quot;command&quot;: &quot;mysql -e \&quot;SELECT o.order_id, c.name, o.total FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.status = &#39;pending&#39; ORDER BY o.created_at DESC LIMIT 100;\&quot;&quot;, &quot;output&quot;: &quot;100 rows in set (0.02 sec)\n&quot;, &quot;narration&quot;: &quot;The same query now runs in 20 milliseconds instead of 3.4 seconds - a 170x improvement from a single composite index.&quot;}]}"><noscript><p><strong>Diagnosing a Slow Query with EXPLAIN</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Analyzing the Slow Query Log with pt-query-digest&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;pt-query-digest /var/log/mysql/slow.log --limit 3&quot;, &quot;output&quot;: &quot;# 340ms user time, 20ms system time, 42.56M rss, 98.12M vsz\n# Current date: Thu Jun 12 14:23:01 2025\n# Hostname: db-prod-01\n# Files: /var/log/mysql/slow.log\n# Overall: 2.84k total, 47 unique, 4.73 QPS, 2.41x concurrency\n\n# Profile\n# Rank Query ID                           Response time  Calls  R/Call  V/M\n# ==== ==================================  =============  =====  ======  ====\n#    1 0xABC123DEF456789012345678ABCDEF01  1842.3 68.2%    892  2.0652  0.34  SELECT orders customers\n#    2 0x123456789ABCDEF0123456789ABCDEF0   534.8 19.8%   1247  0.4288  0.12  SELECT products\n#    3 0xDEF0123456789ABCDEF0123456789ABC   186.2  6.9%     38  4.9000  1.87  SELECT order_items orders\n&quot;, &quot;narration&quot;: &quot;pt-query-digest groups queries by their normalized fingerprint and ranks them by total response time. Query #1 consumed 68% of all slow query time - that&#39;s where to focus first.&quot;}, {&quot;command&quot;: &quot;pt-query-digest /var/log/mysql/slow.log --limit 1&quot;, &quot;output&quot;: &quot;# Query 1: 1.49 QPS, 3.07x concurrency, ID 0xABC123DEF456789012345678ABCDEF01\n# Scores: V/M = 0.34\n# Time range: 2025-06-11T00:00:01 to 2025-06-12T14:22:58\n# Attribute    pct   total     min     max     avg     95%  stddev  median\n# ============ ===  ======  ======  ======  ======  ======  ======  ======\n# Count         31     892\n# Exec time     68   1842s   380ms   12.4s   2.07s   4.21s   1.12s   1.84s\n# Rows sent      2   86.4k       1     100   99.23  100.00    2.41  100.00\n# Rows examine  89  1.09G   1.23M   1.25M   1.25M   1.25M   4.21k   1.25M\n# Query_time distribution\n#   1us\n#  10us\n# 100us\n#   1ms\n#  10ms\n# 100ms  ###\n#    1s  ###############################################\n#  10s+  ##\n# Tables\n#    SHOW TABLE STATUS LIKE &#39;orders&#39;\\G\n#    SHOW CREATE TABLE &#39;orders&#39;\\G\n# EXPLAIN /*!50100 PARTITIONS*/\nSELECT o.order_id, c.name, o.total FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.status = &#39;pending&#39; ORDER BY o.created_at DESC LIMIT 100\\G\n&quot;, &quot;narration&quot;: &quot;The detailed view for the worst query shows it examined 1.25 million rows per execution but sent only 100 rows back - a 12,500:1 read-to-return ratio. The Rows examine column is the clearest signal that an index is missing. The query fingerprint at the bottom is what you feed to EXPLAIN.&quot;}]}"><noscript><p><strong>Analyzing the Slow Query Log with pt-query-digest</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="optimizer-hints">Optimizer Hints<a class="headerlink" href="#optimizer-hints" title="Permanent link">&para;</a></h2>
+<p>Sometimes the optimizer makes a suboptimal choice - it picks the wrong index, or avoids an index you know is faster. MySQL provides two levels of influence over the optimizer.</p>
+<h3 id="table-level-index-hints">Table-Level Index Hints<a class="headerlink" href="#table-level-index-hints" title="Permanent link">&para;</a></h3>
+<p>These legacy hints are placed after the table name in the <code>FROM</code> clause:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1">-- Suggest an index (optimizer can still ignore it)</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">USE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="p">(</span><span class="n">idx_status</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;pending&#39;</span><span class="p">;</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1">-- Force an index (optimizer must use it or do a full scan)</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">FORCE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="p">(</span><span class="n">idx_created_at</span><span class="p">)</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="s1">&#39;2025-01-01&#39;</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">created_at</span><span class="p">;</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="c1">-- Exclude an index from consideration</span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">IGNORE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="p">(</span><span class="n">idx_status</span><span class="p">)</span>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;pending&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="s1">&#39;2025-01-01&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<p><code>USE INDEX</code> gives the optimizer a suggestion. <code>FORCE INDEX</code> removes all other index options, leaving only the specified index and a full table scan. <code>IGNORE INDEX</code> removes a specific index from consideration.</p>
+<h3 id="mysql-80-optimizer-hints">MySQL 8.0 Optimizer Hints<a class="headerlink" href="#mysql-80-optimizer-hints" title="Permanent link">&para;</a></h3>
+<p>MySQL 8.0 introduced a more granular hint syntax using <code>/*+ ... */</code> comments placed immediately after the <code>SELECT</code> keyword:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1">-- Force a join order</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="cm">/*+ JOIN_ORDER(c, o) */</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">total</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="k">WHERE</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">country</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;US&#39;</span><span class="p">;</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="c1">-- Disable index merge optimization</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="k">SELECT</span><span class="w"> </span><span class="cm">/*+ NO_INDEX_MERGE(orders) */</span><span class="w"> </span><span class="o">*</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;pending&#39;</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="c1">-- Set a per-query resource limit</span>
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="k">SELECT</span><span class="w"> </span><span class="cm">/*+ MAX_EXECUTION_TIME(5000) */</span><span class="w"> </span><span class="o">*</span>
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;pending&#39;</span><span class="p">;</span>
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="c1">-- Hint the optimizer to use a specific index</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="k">SELECT</span><span class="w"> </span><span class="cm">/*+ INDEX(o idx_status_created) */</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">order_id</span>
+</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;pending&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Common optimizer hints:</p>
+<table>
+<thead>
+<tr>
+<th>Hint</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>JOIN_ORDER(t1, t2)</code></td>
+<td>Force a specific join order</td>
+</tr>
+<tr>
+<td><code>NO_JOIN_ORDER()</code></td>
+<td>Let the optimizer choose join order freely</td>
+</tr>
+<tr>
+<td><code>INDEX(tbl idx)</code></td>
+<td>Use a specific index</td>
+</tr>
+<tr>
+<td><code>NO_INDEX(tbl idx)</code></td>
+<td>Avoid a specific index</td>
+</tr>
+<tr>
+<td><code>MERGE(tbl)</code> / <code>NO_MERGE(tbl)</code></td>
+<td>Force or prevent merging a derived table into the outer query</td>
+</tr>
+<tr>
+<td><code>MAX_EXECUTION_TIME(ms)</code></td>
+<td>Kill the query if it exceeds the time limit</td>
+</tr>
+<tr>
+<td><code>SET_VAR(var=val)</code></td>
+<td>Set a session variable for the duration of this query</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition danger">
+<p class="admonition-title">Hints are a last resort</p>
+<p>In most cases, the optimizer makes correct decisions when it has accurate statistics and well-designed indexes. If you find yourself relying on hints, first check whether <code>ANALYZE TABLE</code> would fix stale statistics, whether a better index exists, or whether you can rewrite the query. Hints create maintenance burden because they bypass the optimizer's ability to adapt to data changes.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is the difference between USE INDEX and FORCE INDEX?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;They are interchangeable - both force MySQL to use the specified index&quot;, &quot;feedback&quot;: &quot;They behave differently. USE INDEX is a suggestion the optimizer can ignore if it estimates a table scan would be cheaper. FORCE INDEX is stronger.&quot;}, {&quot;text&quot;: &quot;USE INDEX suggests an index (optimizer can still choose a table scan if cheaper); FORCE INDEX removes all other index options, leaving only the specified index or a full table scan&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! USE INDEX limits the optimizer&#39;s index choices but still allows it to pick a table scan if that&#39;s estimated as cheaper. FORCE INDEX is more aggressive - the optimizer will use the specified index unless a table scan is the only other option.&quot;}, {&quot;text&quot;: &quot;USE INDEX works on SELECT; FORCE INDEX works on INSERT and UPDATE&quot;, &quot;feedback&quot;: &quot;Both hints work on the same statement types. The difference is in how strongly they influence the optimizer&#39;s index choice.&quot;}, {&quot;text&quot;: &quot;FORCE INDEX creates the index if it doesn&#39;t exist; USE INDEX only works with existing indexes&quot;, &quot;feedback&quot;: &quot;Neither hint creates indexes. Both reference existing indexes by name. If the named index doesn&#39;t exist, MySQL returns an error.&quot;}]}"><noscript><p><strong>What is the difference between USE INDEX and FORCE INDEX?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="common-anti-patterns">Common Anti-Patterns<a class="headerlink" href="#common-anti-patterns" title="Permanent link">&para;</a></h2>
+<p>These mistakes account for the majority of MySQL performance problems in application code.</p>
+<h3 id="select">SELECT *<a class="headerlink" href="#select" title="Permanent link">&para;</a></h3>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="c1">-- Bad: reads every column, even those you don&#39;t need</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="c1">-- Good: read only what you need</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">order_id</span><span class="p">,</span><span class="w"> </span><span class="n">total</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</span></code></pre></div>
+<p><code>SELECT *</code> prevents the use of covering indexes, transfers unnecessary data over the network, and breaks if columns are added or removed. Always specify the columns you need.</p>
+<h3 id="missing-indexes-on-join-columns">Missing Indexes on JOIN Columns<a class="headerlink" href="#missing-indexes-on-join-columns" title="Permanent link">&para;</a></h3>
+<p>Every column used in a <code>JOIN ... ON</code> condition should have an index. Without one, MySQL scans the entire table for each row from the driving table.</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1">-- If orders.customer_id has no index, this is a full scan of orders for each customer</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">total</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="k">c</span>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="k">JOIN</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Check for missing indexes with:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">;</span><span class="w">  </span><span class="c1">-- Look for type=ALL on joined tables</span>
+</span></code></pre></div>
+<h3 id="n1-queries">N+1 Queries<a class="headerlink" href="#n1-queries" title="Permanent link">&para;</a></h3>
+<p>The <strong>N+1 problem</strong> happens when application code fetches a list of records, then makes a separate query for each row's related data:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># N+1 anti-pattern</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="n">customers</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM customers WHERE country = &#39;US&#39;&quot;</span><span class="p">)</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="k">for</span> <span class="n">customer</span> <span class="ow">in</span> <span class="n">customers</span><span class="p">:</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="n">orders</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SELECT * FROM orders WHERE customer_id = </span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>This fires one query for the customer list, then N queries for orders - one per customer. If there are 10,000 US customers, that's 10,001 queries.</p>
+<p>Fix it with a single JOIN or a batch <code>IN</code> query:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1">-- Single query with JOIN</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">order_id</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">total</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="k">c</span>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="k">JOIN</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="k">WHERE</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">country</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;US&#39;</span><span class="p">;</span>
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="c1">-- Or batch the IDs</span>
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p">...);</span>
+</span></code></pre></div>
+<h3 id="functions-on-indexed-columns">Functions on Indexed Columns<a class="headerlink" href="#functions-on-indexed-columns" title="Permanent link">&para;</a></h3>
+<p>Applying a function to an indexed column prevents MySQL from using the index:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1">-- Bad: function on the indexed column prevents index usage</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">YEAR</span><span class="p">(</span><span class="n">created_at</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2025</span><span class="p">;</span>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="c1">-- Good: rewrite as a range that preserves the index</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="s1">&#39;2025-01-01&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="s1">&#39;2026-01-01&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="c1">-- Bad: LOWER() prevents index usage</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">LOWER</span><span class="p">(</span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;user@example.com&#39;</span><span class="p">;</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="c1">-- Good: use a case-insensitive collation, or a generated column with an index</span>
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="n">email_lower</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">GENERATED</span><span class="w"> </span><span class="n">ALWAYS</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="k">LOWER</span><span class="p">(</span><span class="n">email</span><span class="p">))</span><span class="w"> </span><span class="n">STORED</span><span class="p">;</span>
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email_lower</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span><span class="n">email_lower</span><span class="p">);</span>
+</span></code></pre></div>
+<p>The optimizer cannot "see through" function calls to know that the result corresponds to index entries. Any transformation - <code>YEAR()</code>, <code>DATE()</code>, <code>LOWER()</code>, <code>CAST()</code>, arithmetic - makes the index invisible to that query.</p>
+<div class="admonition tip">
+<p class="admonition-title">MySQL 8.0 functional indexes</p>
+<p>MySQL 8.0.13+ supports <strong>functional indexes</strong> that index expression results directly:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_year</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">((</span><span class="k">YEAR</span><span class="p">(</span><span class="n">created_at</span><span class="p">)));</span>
+</span></code></pre></div>
+<p>This creates a hidden generated column and indexes it. Now <code>WHERE YEAR(created_at) = 2025</code> can use the index.</p>
+</div>
+<h3 id="implicit-type-conversions">Implicit Type Conversions<a class="headerlink" href="#implicit-type-conversions" title="Permanent link">&para;</a></h3>
+<p>When the <code>WHERE</code> clause compares a column to a value of a different type, MySQL silently converts one side. If it converts the column, the index becomes unusable:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="c1">-- orders.order_ref is VARCHAR(20), indexed</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="c1">-- Bad: comparing a string column to an integer triggers implicit conversion</span>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">order_ref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12345</span><span class="p">;</span>
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a><span class="c1">-- Good: match the type</span>
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">order_ref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;12345&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<p>MySQL converts the <code>VARCHAR</code> column to a number for every row, turning an index lookup into a full table scan. Always match the literal type to the column type.</p>
+<hr />
+<h2 id="optimization-workflow">Optimization Workflow<a class="headerlink" href="#optimization-workflow" title="Permanent link">&para;</a></h2>
+<p>When a query is slow, follow this sequence:</p>
+<ol>
+<li><strong>Get the query</strong> - from the slow query log, <code>pt-query-digest</code>, or application logs</li>
+<li><strong>Run EXPLAIN</strong> - identify full table scans, missing indexes, filesorts, and temporary tables</li>
+<li><strong>Check the indexes</strong> - does the table have appropriate indexes for the <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code>, and <code>GROUP BY</code> clauses?</li>
+<li><strong>Check for anti-patterns</strong> - functions on indexed columns, implicit conversions, <code>SELECT *</code>, N+1 queries</li>
+<li><strong>Add or adjust indexes</strong> - create composite indexes that cover the query's filtering and sorting needs</li>
+<li><strong>Verify with EXPLAIN again</strong> - confirm the new index is used and row estimates dropped</li>
+<li><strong>Measure</strong> - run the query and compare before/after execution times</li>
+</ol>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Optimize a Slow Query&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;You are investigating a report that the order summary page is slow. The application runs this query, which takes 4.8 seconds:\n\n```sql\nSELECT c.name, c.email, COUNT(o.order_id) AS order_count,\n       SUM(o.total) AS total_spent, MAX(o.created_at) AS last_order\nFROM customers c\nLEFT JOIN orders o ON o.customer_id = c.id\nWHERE c.signup_date > &#39;2024-01-01&#39;\nGROUP BY c.id\nORDER BY total_spent DESC\nLIMIT 50;\n```\n\nTable information:\n- `customers` has 500,000 rows. Primary key on `id`. No other indexes.\n- `orders` has 5,000,000 rows. Primary key on `order_id`. No other indexes.\n\nYour task:\n1. Predict what EXPLAIN will show for this query (access types, row estimates, Extra column)\n2. Identify the missing indexes\n3. Write the CREATE INDEX statements to fix the performance\n4. Determine whether a covering index is possible for either table\n5. Predict the EXPLAIN output after adding your indexes\n&quot;, &quot;hints&quot;: [&quot;Start with the JOIN condition - every ON column needs an index on the joined table&quot;, &quot;The WHERE clause on signup_date needs an index on the customers table&quot;, &quot;For a composite index, put equality columns before range columns&quot;, &quot;Think about what columns the query actually reads from each table - could an index cover all of them?&quot;, &quot;The GROUP BY on c.id is already the primary key, so no extra index needed for grouping&quot;], &quot;solution&quot;: &quot;**Step 1 - Predict EXPLAIN before indexes:**\n\n- `customers` table: type=ALL (no index on signup_date), rows=500000, Extra: Using where; Using temporary; Using filesort\n- `orders` table: type=ALL (no index on customer_id), rows=5000000 per customer match\n\n**Step 2 - Missing indexes:**\n\n- `orders.customer_id` - needed for the JOIN condition\n- `customers.signup_date` - needed for the WHERE filter\n\n**Step 3 - CREATE INDEX statements:**\n\n```sql\n-- Index for the JOIN on orders\nCREATE INDEX idx_customer_id ON orders (customer_id);\n\n-- Index for the WHERE filter on customers\nCREATE INDEX idx_signup_date ON customers (signup_date);\n```\n\n**Step 4 - Covering index analysis:**\n\nThe query reads `customer_id`, `order_id`, `total`, and `created_at` from orders. A covering index would be:\n\n```sql\nCREATE INDEX idx_orders_covering ON orders (customer_id, total, created_at, order_id);\n```\n\nThis lets MySQL compute COUNT, SUM, and MAX entirely from the index without touching the table data. For customers, the query needs `name` and `email` which vary in length - a covering index is less practical since it would include all output columns.\n\n**Step 5 - EXPLAIN after indexes:**\n\n- `customers` table: type=range (using idx_signup_date), rows ~50000, Extra: Using index condition\n- `orders` table: type=ref (using idx_customer_id or idx_orders_covering), rows ~10 per customer, Extra: Using index (if covering index is used)\n\nThe query should drop from 4.8 seconds to under 100 milliseconds.&quot;}"><noscript><p><strong>Optimize a Slow Query</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/explain-output.html">MySQL EXPLAIN Output Format</a> - official reference for every column and value in EXPLAIN output</li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/optimization.html">MySQL Optimization Guide</a> - the full MySQL optimization reference covering indexes, query tuning, and server configuration</li>
+<li><a href="https://docs.percona.com/percona-toolkit/">Percona Toolkit Documentation</a> - documentation for <code>pt-query-digest</code> and the full Percona Toolkit suite</li>
+<li><a href="https://use-the-index-luke.com/">Use The Index, Luke</a> - a site dedicated to SQL indexing and tuning, with database-agnostic explanations of how indexes work</li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/performance-schema.html">MySQL Performance Schema</a> - official documentation for the Performance Schema instrumentation framework</li>
+<li><a href="https://www.oreilly.com/library/view/high-performance-mysql/9781492080503/">High Performance MySQL, 4th Edition</a> - comprehensive book covering MySQL performance from schema design to server tuning</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../mysql-administration/">MySQL Administration</a> | <strong>Next:</strong> <a href="../mysql-replication/">MySQL Replication &amp; High Availability</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+MySQL%20Performance%20%26%20Optimization" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

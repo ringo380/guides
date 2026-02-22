@@ -1,0 +1,4474 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Linux%20Essentials/shell-basics/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../streams-and-redirection/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>Shell Basics - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Shell Basics - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Linux%20Essentials/shell-basics.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Linux%20Essentials/shell-basics/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Shell Basics - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Linux%20Essentials/shell-basics.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#shell-basics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Shell Basics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Dev%20Zero/Perl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-a-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Shell?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#login-vs-non-login-shells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Login vs Non-Login Shells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-file-load-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration File Load Order
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration File Load Order">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#login-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Login Shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-login-interactive-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-Login Interactive Shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zsh-for-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zsh (for comparison)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sourcing-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sourcing Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-path-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The PATH Variable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#finding-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shell-variables-vs-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell Variables vs Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variable-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variable Naming
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#referencing-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Referencing Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quoting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quoting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quoting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#double-quotes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Double Quotes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-quotes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single Quotes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-quotes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No Quotes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#escaping-with-backslash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Escaping with Backslash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-splitting-and-ifs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Word Splitting and IFS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shell-expansions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell Expansions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Shell Expansions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#order-of-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order of Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brace-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brace Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tilde-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tilde Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameter-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameter Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arithmetic-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arithmetic Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-substitution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Substitution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pathname-expansion-globbing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pathname Expansion (Globbing)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Dev%20Zero/Perl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-a-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Shell?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#login-vs-non-login-shells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Login vs Non-Login Shells
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-file-load-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration File Load Order
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration File Load Order">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#login-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Login Shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-login-interactive-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-Login Interactive Shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zsh-for-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zsh (for comparison)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sourcing-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sourcing Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-path-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The PATH Variable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#finding-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Commands
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shell-variables-vs-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell Variables vs Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variable-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variable Naming
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#referencing-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Referencing Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quoting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quoting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quoting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#double-quotes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Double Quotes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-quotes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single Quotes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-quotes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No Quotes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#escaping-with-backslash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Escaping with Backslash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#word-splitting-and-ifs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Word Splitting and IFS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shell-expansions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell Expansions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Shell Expansions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#order-of-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order of Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brace-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brace Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tilde-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tilde Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameter-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameter Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arithmetic-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arithmetic Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-substitution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Substitution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pathname-expansion-globbing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pathname Expansion (Globbing)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Linux Essentials/shell-basics.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="shell-basics">Shell Basics<a class="headerlink" href="#shell-basics" title="Permanent link">&para;</a></h1>
+<p>This guide covers how the shell works under the hood - what it is, how it starts up, how it finds commands, and how it processes what you type before anything runs.</p>
+<hr />
+<h2 id="what-is-a-shell">What Is a Shell?<a class="headerlink" href="#what-is-a-shell" title="Permanent link">&para;</a></h2>
+<p>A <strong>shell</strong> is a program that interprets your commands and passes them to the operating system. When you open a terminal, the shell is the program that shows you a prompt and waits for input.</p>
+<figure class="photo-frame photo-right" style="max-width: 280px;">
+<img src="../../assets/images/linux-essentials/thompson-ritchie-pdp11.jpg" alt="Ken Thompson and Dennis Ritchie at a PDP-11 computer, 1973">
+<figcaption>
+Ken Thompson (sitting) and Dennis Ritchie at a PDP-11 running Unix, 1973. Thompson wrote the first Unix shell; Ritchie created the C language that made Unix portable.
+<span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Ken_Thompson_and_Dennis_Ritchie--1973.jpg">Wikimedia Commons</a>, Public Domain</span>
+</figcaption>
+</figure>
+
+<p>There are several shells in common use:</p>
+<table>
+<thead>
+<tr>
+<th>Shell</th>
+<th>Path</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bash</code></td>
+<td><code>/bin/bash</code></td>
+<td>Default on most Linux distributions</td>
+</tr>
+<tr>
+<td><code>zsh</code></td>
+<td><code>/bin/zsh</code></td>
+<td>Default on macOS since Catalina</td>
+</tr>
+<tr>
+<td><code>sh</code></td>
+<td><code>/bin/sh</code></td>
+<td>POSIX-compliant, minimal</td>
+</tr>
+<tr>
+<td><code>dash</code></td>
+<td><code>/bin/dash</code></td>
+<td>Lightweight, used as <code>/bin/sh</code> on Debian/Ubuntu</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://www.gnu.org/software/bash/manual/"><strong>bash</strong></a> is the default on most Linux servers and the shell you'll encounter in nearly every tutorial and sysadmin guide. If you're SSH'd into a Linux box, you're probably running bash.</p>
+<p><a href="https://www.zsh.org/"><strong>zsh</strong></a> has better interactive features like smarter tab completion and spelling correction. macOS switched to it as the default because of bash's licensing - newer bash versions are GPLv3, which Apple avoids.</p>
+<p><a href="http://gondor.apana.org.au/~herbert/dash/"><strong>dash</strong></a> exists for speed. Debian and Ubuntu use it as <code>/bin/sh</code> for system boot scripts because it starts and runs faster than bash. You won't use it interactively, but your system runs hundreds of dash scripts during boot.</p>
+<p><strong>sh</strong> is the <a href="https://pubs.opengroup.org/onlinepubs/9799919799/"><strong>POSIX</strong></a> compatibility baseline. Scripts written for <code>sh</code> are portable across Unix-like systems. On modern Linux, <code>/bin/sh</code> is usually a symlink to dash or bash.</p>
+<p>Check which shell you're currently running:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$SHELL</span><span class="w">      </span><span class="c1"># Your default login shell</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$0</span><span class="w">          </span><span class="c1"># The shell running right now</span>
+</span></code></pre></div>
+<p>These can differ. <code>$SHELL</code> is set at login based on <code>/etc/passwd</code>. <code>$0</code> shows what's actually executing.</p>
+<p>To see all available shells on your system:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>cat<span class="w"> </span>/etc/shells
+</span></code></pre></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Identifying Your Shell&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;echo $SHELL&quot;, &quot;output&quot;: &quot;/bin/bash&quot;, &quot;narration&quot;: &quot;$SHELL shows your default login shell - the one assigned in /etc/passwd.&quot;}, {&quot;command&quot;: &quot;echo $0&quot;, &quot;output&quot;: &quot;-bash&quot;, &quot;narration&quot;: &quot;$0 shows the shell actually running right now. The leading dash means it&#39;s a login shell.&quot;}, {&quot;command&quot;: &quot;cat /etc/shells&quot;, &quot;output&quot;: &quot;/bin/sh\n/bin/bash\n/usr/bin/bash\n/bin/zsh\n/usr/bin/zsh\n/bin/dash\n&quot;, &quot;narration&quot;: &quot;These are all the shells installed and registered on this system. Any of them can be set as a user&#39;s login shell.&quot;}]}"><noscript><p><strong>Identifying Your Shell</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What does the $SHELL variable tell you?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;The shell that is currently executing your commands&quot;, &quot;feedback&quot;: &quot;That&#39;s $0 - which shows the currently running shell.&quot;}, {&quot;text&quot;: &quot;Your default login shell as set in /etc/passwd&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! $SHELL is set at login time from /etc/passwd and doesn&#39;t change if you switch shells.&quot;}, {&quot;text&quot;: &quot;The most recently installed shell on the system&quot;, &quot;feedback&quot;: &quot;$SHELL is per-user and comes from /etc/passwd, not from installation order.&quot;}, {&quot;text&quot;: &quot;The fastest shell available on the system&quot;, &quot;feedback&quot;: &quot;$SHELL has nothing to do with performance - it&#39;s your configured login shell.&quot;}]}"><noscript><p><strong>What does the $SHELL variable tell you?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="login-vs-non-login-shells">Login vs Non-Login Shells<a class="headerlink" href="#login-vs-non-login-shells" title="Permanent link">&para;</a></h2>
+<p>The distinction matters because it determines which configuration files get loaded.</p>
+<p>A <strong>login shell</strong> is the first shell that starts when you log in to the system - via SSH, a virtual console, or <code>su -</code>. It reads a specific set of startup files.</p>
+<p>A <strong>non-login shell</strong> is what you get when you open a new terminal window in a desktop environment, or run <code>bash</code> from an existing shell. It reads a different set of files.</p>
+<p>You can test whether your current shell is a login shell:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">shopt</span><span class="w"> </span>-q<span class="w"> </span>login_shell<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;login&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;non-login&quot;</span>
+</span></code></pre></div>
+<p>An <strong>interactive</strong> shell is one where you type commands at a prompt. A <strong>non-interactive</strong> shell runs a script file without user input.</p>
+<div class="admonition tip">
+<p class="admonition-title">Quick mental model</p>
+<p>Think of it as a 2x2 grid: shells are <strong>login or non-login</strong>, and independently <strong>interactive or non-interactive</strong>. SSH gives you a login interactive shell. Running <code>./script.sh</code> gives you a non-login non-interactive shell. The startup files loaded depend on both dimensions.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;Which of the following gives you a login shell?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Opening a new terminal tab in your desktop environment&quot;, &quot;feedback&quot;: &quot;Terminal tabs typically start non-login shells. They inherit the login shell&#39;s environment from the original session.&quot;}, {&quot;text&quot;: &quot;SSH&#39;ing into a remote server&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! SSH starts a login shell, which reads /etc/profile and ~/.bash_profile (or equivalent).&quot;}, {&quot;text&quot;: &quot;Running &#39;bash&#39; from an existing shell&quot;, &quot;feedback&quot;: &quot;Running &#39;bash&#39; without the -l flag starts a non-login shell. Use &#39;bash -l&#39; or &#39;bash --login&#39; for a login shell.&quot;}, {&quot;text&quot;: &quot;Running a bash script with ./script.sh&quot;, &quot;feedback&quot;: &quot;Scripts run in a non-interactive, non-login subshell. They don&#39;t read any startup files unless explicitly sourced.&quot;}]}"><noscript><p><strong>Which of the following gives you a login shell?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="configuration-file-load-order">Configuration File Load Order<a class="headerlink" href="#configuration-file-load-order" title="Permanent link">&para;</a></h2>
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/shell-startup-flow.svg" alt="Bash shell startup file load order showing decision tree for login vs non-login and interactive vs non-interactive shells">
+</div>
+
+<p>Bash reads different files depending on the shell type. Here's the load order:</p>
+<h3 id="login-shell">Login Shell<a class="headerlink" href="#login-shell" title="Permanent link">&para;</a></h3>
+<ol>
+<li><code>/etc/profile</code> - system-wide, runs for all users</li>
+<li>Then the <strong>first</strong> of these that exists (in order):</li>
+<li><code>~/.bash_profile</code></li>
+<li><code>~/.bash_login</code></li>
+<li><code>~/.profile</code></li>
+</ol>
+<p>On logout, bash reads <code>~/.bash_logout</code> if it exists.</p>
+<h3 id="non-login-interactive-shell">Non-Login Interactive Shell<a class="headerlink" href="#non-login-interactive-shell" title="Permanent link">&para;</a></h3>
+<ol>
+<li><code>~/.bashrc</code></li>
+</ol>
+<p>This is why most people put their aliases and prompt customizations in <code>~/.bashrc</code>, and then source it from <code>~/.bash_profile</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># ~/.bash_profile</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span>~/.bashrc<span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nb">source</span><span class="w"> </span>~/.bashrc
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">fi</span>
+</span></code></pre></div>
+<h3 id="zsh-for-comparison">Zsh (for comparison)<a class="headerlink" href="#zsh-for-comparison" title="Permanent link">&para;</a></h3>
+<p>Zsh has its own load order:</p>
+<ol>
+<li><code>/etc/zshenv</code> then <code>~/.zshenv</code> (always)</li>
+<li><code>/etc/zprofile</code> then <code>~/.zprofile</code> (login shells)</li>
+<li><code>/etc/zshrc</code> then <code>~/.zshrc</code> (interactive shells)</li>
+<li><code>/etc/zlogin</code> then <code>~/.zlogin</code> (login shells)</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Common gotcha</p>
+<p>If you put aliases in <code>~/.bash_profile</code> but not <code>~/.bashrc</code>, they'll be available in SSH sessions but missing when you open a terminal tab on a desktop. Always put interactive settings (aliases, prompt, functions) in <code>~/.bashrc</code> and source it from <code>~/.bash_profile</code>.</p>
+</div>
+<div class="interactive-code-walkthrough" data-config="{&quot;language&quot;: &quot;bash&quot;, &quot;title&quot;: &quot;Understanding .bash_profile&quot;, &quot;code&quot;: &quot;# ~/.bash_profile\nif [ -f ~/.bashrc ]; then\n    source ~/.bashrc\nfi\nexport PATH=\&quot;$HOME/bin:$PATH\&quot;\nexport EDITOR=\&quot;vim\&quot;\n&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 1, &quot;text&quot;: &quot;This comment indicates the file location. bash_profile runs only for login shells.&quot;}, {&quot;line&quot;: 2, &quot;text&quot;: &quot;Check if ~/.bashrc exists before trying to source it - prevents errors on minimal systems.&quot;}, {&quot;line&quot;: 3, &quot;text&quot;: &quot;Source bashrc so login shells get the same aliases, prompt, and functions as non-login shells.&quot;}, {&quot;line&quot;: 5, &quot;text&quot;: &quot;Add ~/bin to PATH. This goes in bash_profile (not bashrc) because it only needs to run once per session.&quot;}, {&quot;line&quot;: 6, &quot;text&quot;: &quot;Set the default editor. Environment variables that child processes need belong in bash_profile.&quot;}]}"><noscript><p><strong>Understanding .bash_profile</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Find Your Shell Configuration&quot;, &quot;difficulty&quot;: &quot;beginner&quot;, &quot;scenario&quot;: &quot;You&#39;ve logged into a new Linux server via SSH. You need to figure out which\nshell configuration files exist on this system and what&#39;s in them.\n\nDetermine: Which shell are you running? Which config files are present\nin your home directory? Is `.bashrc` being sourced from `.bash_profile`?\n&quot;, &quot;hints&quot;: [&quot;Use `echo $0` to check your current shell, and `echo $SHELL` for your login shell&quot;, &quot;List hidden files with `ls -la ~` to see which dotfiles exist&quot;, &quot;Look inside `.bash_profile` with `cat ~/.bash_profile` to see if it sources `.bashrc`&quot;], &quot;solution&quot;: &quot;```bash\n# Check your shell\necho $0          # Current shell\necho $SHELL      # Login shell\n\n# Find config files\nls -la ~ | grep -E &#39;^\\.&#39;\n\n# Check if bash_profile sources bashrc\ncat ~/.bash_profile\n# Look for: source ~/.bashrc  or  . ~/.bashrc\n```\n\nIf `.bash_profile` doesn&#39;t source `.bashrc`, your login shell won&#39;t have\naliases and prompt customizations defined in `.bashrc`. Add the sourcing\npattern shown in the Configuration File Load Order section.&quot;}"><noscript><p><strong>Find Your Shell Configuration</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="sourcing-files">Sourcing Files<a class="headerlink" href="#sourcing-files" title="Permanent link">&para;</a></h2>
+<p><strong>Sourcing</strong> a file runs it in the current shell rather than in a subshell. This means any variables, functions, or settings defined in the file affect your current session.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">source</span><span class="w"> </span>~/.bashrc
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># or equivalently:</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>.<span class="w"> </span>~/.bashrc
+</span></code></pre></div>
+<p>The dot (<code>.</code>) is the POSIX-compatible way to source a file. <code>source</code> is a bash built-in that does the same thing.</p>
+<div class="admonition tip">
+<p class="admonition-title">The dot (.) shorthand</p>
+<p><code>.</code> is the POSIX-standard way to source a file and works in every shell. <code>source</code> is a bash/zsh convenience alias. In scripts targeting <code>/bin/sh</code> or running on minimal systems, always use <code>.</code> instead of <code>source</code>.</p>
+</div>
+<p>If you run a script normally (<code>bash script.sh</code> or <code>./script.sh</code>), it executes in a new subshell. Any variables it sets disappear when it finishes.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># This sets VAR in a subshell - your current shell won&#39;t see it</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>bash<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;VAR=hello&#39;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$VAR</span><span class="w">    </span><span class="c1"># empty</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1"># This sets VAR in the current shell</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nb">source</span><span class="w"> </span>&lt;<span class="o">(</span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;VAR=hello&#39;</span><span class="o">)</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$VAR</span><span class="w">    </span><span class="c1"># hello</span>
+</span></code></pre></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;You added a new alias to ~/.bashrc. What&#39;s the fastest way to use it without logging out?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Run: source ~/.bashrc&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Sourcing re-reads the file in your current shell, making the new alias immediately available.&quot;}, {&quot;text&quot;: &quot;Run: bash ~/.bashrc&quot;, &quot;feedback&quot;: &quot;This runs bashrc in a subshell. The alias would be set in that subshell, then lost when it exits.&quot;}, {&quot;text&quot;: &quot;Run: exec ~/.bashrc&quot;, &quot;feedback&quot;: &quot;exec replaces the current process. Running it on a config file would try to execute it as a standalone script, not source it.&quot;}, {&quot;text&quot;: &quot;Close and reopen the terminal&quot;, &quot;feedback&quot;: &quot;This works but it&#39;s slow. Sourcing the file is instant and doesn&#39;t lose your current working directory or history.&quot;}]}"><noscript><p><strong>You added a new alias to ~/.bashrc. What's the fastest way to use it without logging out?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="the-path-variable">The PATH Variable<a class="headerlink" href="#the-path-variable" title="Permanent link">&para;</a></h2>
+<p>When you type a command like <code>ls</code>, the shell needs to find the actual program to run. It does this by searching through directories listed in the <strong><code>PATH</code></strong> environment variable.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span>
+</span></code></pre></div>
+<p>This prints a colon-separated list of directories:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+</span></code></pre></div>
+<p>The shell searches these directories left to right and runs the first match it finds. If the command isn't found in any <code>PATH</code> directory, you get <code>command not found</code>.</p>
+<p>To add a directory to your <code>PATH</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Prepend (searched first)</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;/opt/mytools/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Append (searched last)</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PATH</span><span class="s2">:</span><span class="nv">$HOME</span><span class="s2">/bin&quot;</span>
+</span></code></pre></div>
+<p>Put <code>PATH</code> modifications in <code>~/.bashrc</code> or <code>~/.bash_profile</code> to make them permanent.</p>
+<div class="admonition note">
+<p class="admonition-title">Prepend vs Append</p>
+<p>Prepending puts your directory first, so your version of a command wins over the system version. Appending puts it last, so system commands take priority. Prepend when you want to override system tools (e.g., a newer version of <code>git</code>). Append when you're adding new commands that don't conflict.</p>
+</div>
+<hr />
+<h2 id="finding-commands">Finding Commands<a class="headerlink" href="#finding-commands" title="Permanent link">&para;</a></h2>
+<p>The shell provides several ways to find out what a command actually is and where it lives.</p>
+<p><strong><code>type</code></strong> - shows how the shell interprets a command:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">type</span><span class="w"> </span>ls<span class="w">        </span><span class="c1"># ls is aliased to &#39;ls --color=auto&#39;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">type</span><span class="w"> </span><span class="nb">cd</span><span class="w">        </span><span class="c1"># cd is a shell builtin</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nb">type</span><span class="w"> </span>bash<span class="w">      </span><span class="c1"># bash is /usr/bin/bash</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nb">type</span><span class="w"> </span><span class="k">if</span><span class="w">        </span><span class="c1"># if is a shell keyword</span>
+</span></code></pre></div>
+<p><strong><code>which</code></strong> - searches <code>PATH</code> for the command's location:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>which<span class="w"> </span>python3<span class="w">  </span><span class="c1"># /usr/bin/python3</span>
+</span></code></pre></div>
+<p><code>which</code> only finds external commands. It won't find builtins or aliases.</p>
+<p><strong><code>command -v</code></strong> - the POSIX-portable way to check if a command exists:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>git<span class="w">   </span><span class="c1"># /usr/bin/git</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span><span class="nb">cd</span><span class="w">    </span><span class="c1"># cd (builtin)</span>
+</span></code></pre></div>
+<p>This is the preferred method for scripts because it works across shells and handles builtins:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">if</span><span class="w"> </span><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>docker<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Docker is installed&quot;</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="k">fi</span>
+</span></code></pre></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;Which command should you use in a portable shell script to check if a program is installed?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;which&quot;, &quot;feedback&quot;: &quot;which only finds external commands and behaves differently across systems. Some versions print errors to stderr, others don&#39;t.&quot;}, {&quot;text&quot;: &quot;type&quot;, &quot;feedback&quot;: &quot;type works well in bash but its output format varies between shells, making it harder to parse in scripts.&quot;}, {&quot;text&quot;: &quot;command -v&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! command -v is POSIX-specified, works across all shells, finds builtins and externals, and exits silently if not found.&quot;}, {&quot;text&quot;: &quot;whereis&quot;, &quot;feedback&quot;: &quot;whereis searches broader locations (man pages, source) and isn&#39;t POSIX-standard. It&#39;s useful for exploration but not for scripts.&quot;}]}"><noscript><p><strong>Which command should you use in a portable shell script to check if a program is installed?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">&para;</a></h2>
+<h3 id="shell-variables-vs-environment-variables">Shell Variables vs Environment Variables<a class="headerlink" href="#shell-variables-vs-environment-variables" title="Permanent link">&para;</a></h3>
+<p>A <strong>shell variable</strong> exists only in the current shell session:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nv">greeting</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$greeting</span><span class="w">    </span><span class="c1"># hello</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Shell vs Environment Variables</p>
+<p>A <strong>shell variable</strong> only exists in the current session. An <strong>environment variable</strong> (created with <code>export</code>) is inherited by child processes. Use <code>export</code> when programs you launch need to see the value - for example, <code>EDITOR</code>, <code>PATH</code>, or application config. Keep internal script variables unexported to avoid polluting child environments.</p>
+</div>
+<p>An <strong>environment variable</strong> is exported to child processes. Any program you launch from the shell can read it:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">API_KEY</span><span class="o">=</span><span class="s2">&quot;abc123&quot;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="c1"># or:</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="nv">API_KEY</span><span class="o">=</span><span class="s2">&quot;abc123&quot;</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="nb">export</span><span class="w"> </span>API_KEY
+</span></code></pre></div>
+<p>To see all environment variables:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>env<span class="w">       </span><span class="c1"># or: printenv</span>
+</span></code></pre></div>
+<p>To see all shell variables (including non-exported ones):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nb">set</span>
+</span></code></pre></div>
+<p>To remove a variable:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nb">unset</span><span class="w"> </span>greeting
+</span></code></pre></div>
+<h3 id="variable-naming">Variable Naming<a class="headerlink" href="#variable-naming" title="Permanent link">&para;</a></h3>
+<p>Variable names can contain letters, numbers, and underscores. They cannot start with a number. By convention, environment variables use <code>UPPER_CASE</code> and local shell variables use <code>lower_case</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nv">MY_CONFIG</span><span class="o">=</span><span class="s2">&quot;/etc/app.conf&quot;</span><span class="w">    </span><span class="c1"># conventional naming for an env var (export separately)</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nv">counter</span><span class="o">=</span><span class="m">0</span><span class="w">                     </span><span class="c1"># local shell variable</span>
+</span></code></pre></div>
+<h3 id="referencing-variables">Referencing Variables<a class="headerlink" href="#referencing-variables" title="Permanent link">&para;</a></h3>
+<p>Use <code>$VARIABLE</code> or <code>${VARIABLE}</code> to reference a variable's value:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;world&quot;</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello </span><span class="nv">$name</span><span class="s2">&quot;</span><span class="w">       </span><span class="c1"># Hello world</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello </span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">     </span><span class="c1"># Hello world</span>
+</span></code></pre></div>
+<p>Braces are required when the variable name could be ambiguous:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nv">fruit</span><span class="o">=</span><span class="s2">&quot;apple&quot;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$fruits</span><span class="s2">&quot;</span><span class="w">       </span><span class="c1"># empty - shell looks for variable &#39;fruits&#39;</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">fruit</span><span class="si">}</span><span class="s2">s&quot;</span><span class="w">     </span><span class="c1"># apples</span>
+</span></code></pre></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Variables in Action&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;greeting=&#39;hello world&#39;&quot;, &quot;narration&quot;: &quot;Set a shell variable. No spaces around the = sign, and quote values with spaces.&quot;}, {&quot;command&quot;: &quot;echo $greeting&quot;, &quot;output&quot;: &quot;hello world&quot;, &quot;narration&quot;: &quot;The variable exists in this shell session.&quot;}, {&quot;command&quot;: &quot;bash -c &#39;echo $greeting&#39;&quot;, &quot;output&quot;: &quot;&quot;, &quot;narration&quot;: &quot;Empty! Shell variables aren&#39;t visible to child processes. The subshell can&#39;t see it.&quot;}, {&quot;command&quot;: &quot;export greeting&quot;, &quot;narration&quot;: &quot;Export promotes the shell variable to an environment variable.&quot;}, {&quot;command&quot;: &quot;bash -c &#39;echo $greeting&#39;&quot;, &quot;output&quot;: &quot;hello world&quot;, &quot;narration&quot;: &quot;Now the child process can see it. Export makes variables available to subshells and child programs.&quot;}]}"><noscript><p><strong>Variables in Action</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="quoting">Quoting<a class="headerlink" href="#quoting" title="Permanent link">&para;</a></h2>
+<p>Quoting controls how the shell interprets special characters.</p>
+<h3 id="double-quotes">Double Quotes<a class="headerlink" href="#double-quotes" title="Permanent link">&para;</a></h3>
+<p><strong>Double quotes</strong> preserve whitespace and prevent word splitting and pathname expansion, but allow variable expansion and command substitution:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;Ryan Robson&quot;</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$name</span><span class="w">       </span><span class="c1"># Ryan Robson (two arguments to echo - works by coincidence)</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$name</span><span class="s2">&quot;</span><span class="w">     </span><span class="c1"># Ryan Robson (one argument to echo - correct)</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="nv">files</span><span class="o">=</span><span class="s2">&quot;*.txt&quot;</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$files</span><span class="w">      </span><span class="c1"># expands to matching filenames</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$files</span><span class="s2">&quot;</span><span class="w">    </span><span class="c1"># literally: *.txt</span>
+</span></code></pre></div>
+<h3 id="single-quotes">Single Quotes<a class="headerlink" href="#single-quotes" title="Permanent link">&para;</a></h3>
+<p><strong>Single quotes</strong> preserve everything literally. No expansion of any kind happens inside single quotes:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;$HOME&#39;</span><span class="w">           </span><span class="c1"># literally: $HOME</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;$(whoami)&#39;</span><span class="w">       </span><span class="c1"># literally: $(whoami)</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;it&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;s here&#39;</span><span class="w">    </span><span class="c1"># it&#39;s here (break out and back in to include a single quote)</span>
+</span></code></pre></div>
+<h3 id="no-quotes">No Quotes<a class="headerlink" href="#no-quotes" title="Permanent link">&para;</a></h3>
+<p>Without quotes, the shell performs word splitting, pathname expansion, and variable expansion. This is usually not what you want for strings that might contain spaces:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nv">file</span><span class="o">=</span><span class="s2">&quot;my document.txt&quot;</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>cat<span class="w"> </span><span class="nv">$file</span><span class="w">        </span><span class="c1"># tries to open &#39;my&#39; and &#39;document.txt&#39; separately</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>cat<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w">      </span><span class="c1"># opens &#39;my document.txt&#39; correctly</span>
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">Always quote your variables</p>
+<p>Unquoted variables are the #1 source of subtle shell bugs. When <code>$file</code> contains spaces, <code>cat $file</code> silently does the wrong thing. Always use <code>"$file"</code> unless you specifically need word splitting.</p>
+</div>
+<h3 id="escaping-with-backslash">Escaping with Backslash<a class="headerlink" href="#escaping-with-backslash" title="Permanent link">&para;</a></h3>
+<p>A <strong>backslash</strong> (<code>\</code>) escapes a single character, removing its special meaning:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;The price is \$5&quot;</span><span class="w">    </span><span class="c1"># The price is $5</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;She said \&quot;hi\&quot;&quot;</span><span class="w">     </span><span class="c1"># She said &quot;hi&quot;</span>
+</span></code></pre></div>
+<h3 id="word-splitting-and-ifs">Word Splitting and IFS<a class="headerlink" href="#word-splitting-and-ifs" title="Permanent link">&para;</a></h3>
+<p>When the shell expands an unquoted variable, it splits the result into separate words based on the <strong><code>IFS</code></strong> (Internal Field Separator) variable. By default, <code>IFS</code> contains space, tab, and newline.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nv">data</span><span class="o">=</span><span class="s2">&quot;one:two:three&quot;</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="c1"># Default IFS - no splitting on colons</span>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="k">for</span><span class="w"> </span>item<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$data</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$item</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">done</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="c1"># one:two:three</span>
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="c1"># Custom IFS</span>
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="nv">IFS</span><span class="o">=</span><span class="s2">&quot;:&quot;</span>
+</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a><span class="k">for</span><span class="w"> </span>item<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$data</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$item</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">done</span>
+</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="c1"># one</span>
+</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a><span class="c1"># two</span>
+</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a><span class="c1"># three</span>
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">IFS changes are global</p>
+<p>Modifying <code>IFS</code> affects every subsequent unquoted expansion in the current shell. A forgotten <code>IFS</code> change can silently break commands that rely on default whitespace splitting. Always reset it or confine the change to a subshell.</p>
+</div>
+<p>Always reset <code>IFS</code> after changing it, or set it only in a subshell:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="o">(</span><span class="nv">IFS</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>item<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$data</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$item</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">done</span><span class="o">)</span>
+</span></code></pre></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What does echo &#39;$HOME&#39; print?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Your home directory path (e.g., /home/ryan)&quot;, &quot;feedback&quot;: &quot;That&#39;s what double quotes would give you. Single quotes prevent all expansion.&quot;}, {&quot;text&quot;: &quot;Literally: $HOME&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Single quotes preserve everything literally. No variable expansion, no command substitution, no escaping.&quot;}, {&quot;text&quot;: &quot;An error because $HOME isn&#39;t defined&quot;, &quot;feedback&quot;: &quot;$HOME is almost always defined, but that&#39;s not the issue here. Single quotes prevent expansion entirely.&quot;}, {&quot;text&quot;: &quot;Nothing (empty output)&quot;, &quot;feedback&quot;: &quot;Single quotes don&#39;t suppress output - they preserve the literal text, including the $ sign.&quot;}]}"><noscript><p><strong>What does echo '$HOME' print?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="shell-expansions">Shell Expansions<a class="headerlink" href="#shell-expansions" title="Permanent link">&para;</a></h2>
+<p>The shell processes your command line through several expansion stages before executing anything. Understanding the order helps you predict what the shell will do with your input.</p>
+<h3 id="order-of-expansion">Order of Expansion<a class="headerlink" href="#order-of-expansion" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Brace expansion</li>
+<li>Tilde expansion</li>
+<li>Parameter and variable expansion</li>
+<li>Arithmetic expansion</li>
+<li>Command substitution (left to right)</li>
+<li>Word splitting</li>
+<li>Pathname expansion (globbing)</li>
+<li>Quote removal</li>
+</ol>
+<p>Otherwise known as:
+<em>Big Tasty Pies Always Come With Perfect Quiche.</em></p>
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/shell-expansion-order.svg" alt="Shell expansion order showing eight stages from brace expansion through quote removal">
+</div>
+
+<h3 id="brace-expansion">Brace Expansion<a class="headerlink" href="#brace-expansion" title="Permanent link">&para;</a></h3>
+<p><strong>Brace expansion</strong> generates strings. It happens before any other expansion, so it works even with non-existent files.</p>
+<p>Lists:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nb">echo</span><span class="w"> </span><span class="o">{</span>a,b,c<span class="o">}</span><span class="w">           </span><span class="c1"># a b c</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="nb">echo</span><span class="w"> </span>file.<span class="o">{</span>txt,md,sh<span class="o">}</span><span class="w">  </span><span class="c1"># file.txt file.md file.sh</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>project/<span class="o">{</span>src,tests,docs<span class="o">}</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Brace expansion happens before variable expansion</p>
+<p>Because brace expansion is step 1, expressions like <code>{$a,$b}</code> don't work as expected - the braces are processed before <code>$a</code> and <code>$b</code> are resolved. Use an array or a loop if you need variable-driven lists.</p>
+</div>
+<p>Sequences:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nb">echo</span><span class="w"> </span><span class="o">{</span><span class="m">1</span>..5<span class="o">}</span><span class="w">            </span><span class="c1"># 1 2 3 4 5</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="nb">echo</span><span class="w"> </span><span class="o">{</span>a..f<span class="o">}</span><span class="w">            </span><span class="c1"># a b c d e f</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="nb">echo</span><span class="w"> </span><span class="o">{</span><span class="m">01</span>..10<span class="o">}</span><span class="w">          </span><span class="c1"># 01 02 03 04 05 06 07 08 09 10</span>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="nb">echo</span><span class="w"> </span><span class="o">{</span><span class="m">0</span>..20..5<span class="o">}</span><span class="w">        </span><span class="c1"># 0 5 10 15 20 (step of 5)</span>
+</span></code></pre></div>
+<p>Combinations:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="nb">echo</span><span class="w"> </span><span class="o">{</span>A,B<span class="o">}{</span><span class="m">1</span>,2<span class="o">}</span><span class="w">        </span><span class="c1"># A1 A2 B1 B2</span>
+</span></code></pre></div>
+<h3 id="tilde-expansion">Tilde Expansion<a class="headerlink" href="#tilde-expansion" title="Permanent link">&para;</a></h3>
+<p><strong>Tilde expansion</strong> converts <code>~</code> to directory paths:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="nb">echo</span><span class="w"> </span>~<span class="w">           </span><span class="c1"># /home/ryan (your home directory)</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="nb">echo</span><span class="w"> </span>~root<span class="w">       </span><span class="c1"># /root (root&#39;s home directory)</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="nb">echo</span><span class="w"> </span>~+<span class="w">         </span><span class="c1"># current working directory ($PWD)</span>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="nb">echo</span><span class="w"> </span>~-<span class="w">         </span><span class="c1"># previous working directory ($OLDPWD)</span>
+</span></code></pre></div>
+<h3 id="parameter-expansion">Parameter Expansion<a class="headerlink" href="#parameter-expansion" title="Permanent link">&para;</a></h3>
+<p><strong>Parameter expansion</strong> is how the shell substitutes variable values. Beyond basic <code>${var}</code>, bash supports several transformations:</p>
+<p>Default values:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">name</span><span class="k">:-</span><span class="s2">&quot;Anonymous&quot;</span><span class="si">}</span><span class="w">     </span><span class="c1"># Use &quot;Anonymous&quot; if name is unset or empty</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">name</span><span class="p">:=</span><span class="s2">&quot;Anonymous&quot;</span><span class="si">}</span><span class="w">     </span><span class="c1"># Same, but also assign the default to name</span>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">name</span><span class="p">:+</span><span class="s2">&quot;has a name&quot;</span><span class="si">}</span><span class="w">    </span><span class="c1"># If name is set and non-empty, use &quot;has a name&quot;</span>
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">name</span><span class="p">:?</span><span class="s2">&quot;name is required&quot;</span><span class="si">}</span><span class="w">  </span><span class="c1"># If name is unset or empty, print error and exit</span>
+</span></code></pre></div>
+<p>String length:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/usr/local/bin&quot;</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${#</span><span class="nv">path</span><span class="si">}</span><span class="w">                 </span><span class="c1"># 14</span>
+</span></code></pre></div>
+<p>Substring removal:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="nv">file</span><span class="o">=</span><span class="s2">&quot;archive.tar.gz&quot;</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">%.*</span><span class="si">}</span><span class="w">       </span><span class="c1"># archive.tar  (remove shortest match from end)</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">%%.*</span><span class="si">}</span><span class="w">      </span><span class="c1"># archive      (remove longest match from end)</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">#*.</span><span class="si">}</span><span class="w">       </span><span class="c1"># tar.gz       (remove shortest match from start)</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="p">##*.</span><span class="si">}</span><span class="w">      </span><span class="c1"># gz           (remove longest match from start)</span>
+</span></code></pre></div>
+<p>A handy mnemonic: <code>#</code> is on the left side of <code>$</code> on the keyboard (removes from the left), <code>%</code> is on the right (removes from the right).</p>
+<p>String replacement:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="nv">text</span><span class="o">=</span><span class="s2">&quot;hello world hello&quot;</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">text</span><span class="p">/hello/goodbye</span><span class="si">}</span><span class="w">    </span><span class="c1"># goodbye world hello  (first match)</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">text</span><span class="p">//hello/goodbye</span><span class="si">}</span><span class="w">   </span><span class="c1"># goodbye world goodbye (all matches)</span>
+</span></code></pre></div>
+<p>Substring extraction:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="nv">str</span><span class="o">=</span><span class="s2">&quot;Hello World&quot;</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">str</span><span class="p">:</span><span class="nv">6</span><span class="si">}</span><span class="w">       </span><span class="c1"># World       (from position 6 to end)</span>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">str</span><span class="p">:</span><span class="nv">0</span><span class="p">:</span><span class="nv">5</span><span class="si">}</span><span class="w">     </span><span class="c1"># Hello       (from position 0, length 5)</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Case modification is bash 4+</p>
+<p>The <code>${var^}</code> and <code>${var,,}</code> syntax requires bash 4.0 or later. macOS ships with bash 3.2 (due to GPLv3 licensing), so these won't work there unless you install a newer bash via Homebrew.</p>
+</div>
+<p>Case modification (bash 4+):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;hello world&quot;</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">name</span><span class="p">^</span><span class="si">}</span><span class="w">       </span><span class="c1"># Hello world  (capitalize first character)</span>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">name</span><span class="p">^^</span><span class="si">}</span><span class="w">      </span><span class="c1"># HELLO WORLD  (capitalize all)</span>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a><span class="nv">upper</span><span class="o">=</span><span class="s2">&quot;HELLO&quot;</span>
+</span><span id="__span-36-6"><a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">upper</span><span class="p">,</span><span class="si">}</span><span class="w">      </span><span class="c1"># hELLO        (lowercase first character)</span>
+</span><span id="__span-36-7"><a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">upper</span><span class="p">,,</span><span class="si">}</span><span class="w">     </span><span class="c1"># hello         (lowercase all)</span>
+</span></code></pre></div>
+<h3 id="arithmetic-expansion">Arithmetic Expansion<a class="headerlink" href="#arithmetic-expansion" title="Permanent link">&para;</a></h3>
+<p><strong>Arithmetic expansion</strong> evaluates mathematical expressions:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="nb">echo</span><span class="w"> </span><span class="k">$((</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="k">))</span><span class="w">       </span><span class="c1"># 8</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a><span class="nb">echo</span><span class="w"> </span><span class="k">$((</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="k">))</span><span class="w">      </span><span class="c1"># 3 (integer division)</span>
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="nb">echo</span><span class="w"> </span><span class="k">$((</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="k">))</span><span class="w">      </span><span class="c1"># 1 (modulo)</span>
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="nb">echo</span><span class="w"> </span><span class="k">$((</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="k">))</span><span class="w">     </span><span class="c1"># 1024 (exponentiation)</span>
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>
+</span><span id="__span-37-6"><a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="nv">count</span><span class="o">=</span><span class="m">5</span>
+</span><span id="__span-37-7"><a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="nb">echo</span><span class="w"> </span><span class="k">$((</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="k">))</span><span class="w">   </span><span class="c1"># 6 (no $ needed inside $(( )))</span>
+</span><span id="__span-37-8"><a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a><span class="o">((</span><span class="w"> </span>count++<span class="w"> </span><span class="o">))</span><span class="w">            </span><span class="c1"># increment count</span>
+</span></code></pre></div>
+<h3 id="command-substitution">Command Substitution<a class="headerlink" href="#command-substitution" title="Permanent link">&para;</a></h3>
+<p><strong>Command substitution</strong> captures the output of a command and inserts it into the command line:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="nv">today</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span>
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Today is </span><span class="nv">$today</span><span class="s2">&quot;</span>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="c1"># Backtick syntax (older, harder to nest - prefer $())</span>
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a><span class="nv">today</span><span class="o">=</span><span class="sb">`</span>date<span class="w"> </span>+%Y-%m-%d<span class="sb">`</span>
+</span></code></pre></div>
+<p>Command substitutions can be nested:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Files in </span><span class="k">$(</span>basename<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">))</span><span class="s2">: </span><span class="k">$(</span>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+<h3 id="pathname-expansion-globbing">Pathname Expansion (Globbing)<a class="headerlink" href="#pathname-expansion-globbing" title="Permanent link">&para;</a></h3>
+<p><strong>Pathname expansion</strong> matches filenames using wildcard patterns:</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*</code></td>
+<td>Any string of characters (including empty)</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>Any single character</td>
+</tr>
+<tr>
+<td><code>[abc]</code></td>
+<td>Any one of <code>a</code>, <code>b</code>, or <code>c</code></td>
+</tr>
+<tr>
+<td><code>[a-z]</code></td>
+<td>Any character in the range <code>a</code> through <code>z</code></td>
+</tr>
+<tr>
+<td><code>[^abc]</code> or <code>[!abc]</code></td>
+<td>Any character NOT <code>a</code>, <code>b</code>, or <code>c</code></td>
+</tr>
+</tbody>
+</table>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>ls<span class="w"> </span>*.txt<span class="w">          </span><span class="c1"># all .txt files</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>ls<span class="w"> </span>file?.log<span class="w">      </span><span class="c1"># file1.log, fileA.log, etc.</span>
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>ls<span class="w"> </span><span class="o">[</span>Mm<span class="o">]</span>akefile<span class="w">    </span><span class="c1"># Makefile or makefile</span>
+</span><span id="__span-40-4"><a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>ls<span class="w"> </span>log<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>.txt<span class="w">   </span><span class="c1"># log0.txt through log9.txt</span>
+</span></code></pre></div>
+<p>Globbing only matches filenames that exist. If no files match, the pattern is passed through literally (unless <code>failglob</code> or <code>nullglob</code> is set).</p>
+<div class="admonition warning">
+<p class="admonition-title">Globbing treats dotfiles differently</p>
+<p>By default, <code>*</code> does not match files starting with <code>.</code> (hidden files). This protects dotfiles like <code>.bashrc</code> from accidental bulk operations. Enable <code>shopt -s dotglob</code> if you intentionally need to match them.</p>
+</div>
+<p>Hidden files (starting with <code>.</code>) are not matched by <code>*</code> unless you enable <code>dotglob</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="nb">shopt</span><span class="w"> </span>-s<span class="w"> </span>dotglob<span class="w">    </span><span class="c1"># now * matches hidden files too</span>
+</span></code></pre></div>
+<p>Extended globbing (enabled with <code>shopt -s extglob</code>):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="nb">shopt</span><span class="w"> </span>-s<span class="w"> </span>extglob
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>ls<span class="w"> </span>!<span class="o">(</span>*.log<span class="o">)</span><span class="w">          </span><span class="c1"># everything except .log files</span>
+</span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>ls<span class="w"> </span>*<span class="o">(</span>pattern<span class="o">)</span><span class="w">        </span><span class="c1"># zero or more matches</span>
+</span><span id="__span-42-4"><a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>ls<span class="w"> </span>+<span class="o">(</span>pattern<span class="o">)</span><span class="w">        </span><span class="c1"># one or more matches</span>
+</span><span id="__span-42-5"><a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>ls<span class="w"> </span>?<span class="o">(</span>pattern<span class="o">)</span><span class="w">        </span><span class="c1"># zero or one match</span>
+</span><span id="__span-42-6"><a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>ls<span class="w"> </span>@<span class="o">(</span>pat1<span class="p">|</span>pat2<span class="o">)</span><span class="w">      </span><span class="c1"># exactly one of the patterns</span>
+</span></code></pre></div>
+<p>Extended globs are most useful for selecting everything <em>except</em> certain files. For example, to delete everything in a directory except <code>.conf</code> files:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="nb">shopt</span><span class="w"> </span>-s<span class="w"> </span>extglob
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>rm<span class="w"> </span>!<span class="o">(</span>*.conf<span class="o">)</span>
+</span></code></pre></div>
+<p>Or match multiple extensions at once:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>ls<span class="w"> </span>*.@<span class="o">(</span>jpg<span class="p">|</span>png<span class="p">|</span>gif<span class="o">)</span><span class="w">    </span><span class="c1"># all image files</span>
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>cp<span class="w"> </span>!<span class="o">(</span>*.log<span class="p">|</span>*.tmp<span class="o">)</span><span class="w"> </span>/backup/<span class="w">    </span><span class="c1"># copy everything except logs and temp files</span>
+</span></code></pre></div>
+<p>Without extglob, you'd need <code>find</code> with <code>-not</code> flags to achieve the same thing.</p>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Expansion Prediction Challenge&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;Without running these commands, predict what each one will output.\nThen check your answers by running them in a terminal.\n\n1. `echo {web,api,db}-server-{01..03}`\n2. `file=\&quot;backup.2024.tar.gz\&quot;; echo ${file%%.*}`\n3. `echo $(( 2 ** 8 ))`\n4. `name=\&quot;hello\&quot;; echo \&quot;${name:1:3}\&quot;`\n&quot;, &quot;hints&quot;: [&quot;Brace expansion generates all combinations: {a,b}-{1,2} becomes a-1 a-2 b-1 b-2&quot;, &quot;%% removes the longest match from the end. With .*, it strips from the first dot onward&quot;, &quot;** is exponentiation. 2^8 = 256&quot;, &quot;${name:1:3} extracts 3 characters starting at position 1 (0-indexed)&quot;], &quot;solution&quot;: &quot;1. `web-server-01 web-server-02 web-server-03 api-server-01 api-server-02 api-server-03 db-server-01 db-server-02 db-server-03`\n2. `backup` (removes everything from the first dot)\n3. `256`\n4. `ell` (positions 1, 2, 3 of \&quot;hello\&quot;)\n\nThe key insight is knowing the order of operations. Brace expansion happens first\n(before variable expansion), which is why `{$a,$b}` doesn&#39;t work the way you might\nexpect - the braces are processed before `$a` and `$b` are expanded.&quot;}"><noscript><p><strong>Expansion Prediction Challenge</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://www.gnu.org/software/bash/manual/">Bash Reference Manual</a> - comprehensive guide to bash syntax, builtins, and behavior</li>
+<li><a href="https://www.zsh.org/">Zsh Documentation</a> - official zsh project and manual</li>
+<li><a href="https://pubs.opengroup.org/onlinepubs/9799919799/">POSIX Shell Command Language</a> - the portable shell specification</li>
+<li><a href="http://gondor.apana.org.au/~herbert/dash/">dash</a> - Debian Almquist Shell project page</li>
+</ul>
+<hr />
+<p><strong>Next:</strong> <a href="../streams-and-redirection/">Streams and Redirection</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+Shell%20Basics" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

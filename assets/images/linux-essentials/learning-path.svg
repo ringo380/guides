@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 480" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .group-label { font-size: 11px; font-weight: 600; fill: #009485; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .heading { fill: #4db6ac; }
+      .group-label { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- Diagram Title -->
+  <text x="350" y="28" text-anchor="middle" class="heading">Linux Essentials Learning Path</text>
+
+  <!-- ========== GROUP 1: FUNDAMENTALS ========== -->
+  <text x="30" y="72" class="group-label">Fundamentals</text>
+
+  <!-- Shell Basics (accent - first in group) -->
+  <rect x="130" y="56" width="140" height="32" class="box-accent"/>
+  <text x="200" y="77" text-anchor="middle" class="title">Shell Basics</text>
+
+  <!-- Arrow: Shell Basics → Streams & Redirection -->
+  <line x1="270" y1="72" x2="290" y2="72" class="connector"/>
+
+  <!-- Streams & Redirection -->
+  <rect x="300" y="56" width="140" height="32" class="box"/>
+  <text x="370" y="77" text-anchor="middle" class="title">Streams &amp; Redirection</text>
+
+  <!-- Arrow: Streams & Redirection → Text Processing -->
+  <line x1="440" y1="72" x2="460" y2="72" class="connector"/>
+
+  <!-- Text Processing -->
+  <rect x="470" y="56" width="140" height="32" class="box"/>
+  <text x="540" y="77" text-anchor="middle" class="title">Text Processing</text>
+
+  <!-- Vertical arrow: Group 1 → Group 2 -->
+  <line x1="350" y1="88" x2="350" y2="150" class="connector"/>
+
+  <!-- ========== GROUP 2: FILE OPERATIONS ========== -->
+  <text x="30" y="178" class="group-label">File Operations</text>
+
+  <!-- Finding Files (accent - first in group) -->
+  <rect x="215" y="162" width="140" height="32" class="box-accent"/>
+  <text x="285" y="183" text-anchor="middle" class="title">Finding Files</text>
+
+  <!-- Arrow: Finding Files → File Permissions -->
+  <line x1="355" y1="178" x2="375" y2="178" class="connector"/>
+
+  <!-- File Permissions -->
+  <rect x="385" y="162" width="140" height="32" class="box"/>
+  <text x="455" y="183" text-anchor="middle" class="title">File Permissions</text>
+
+  <!-- Vertical arrow: Group 2 → Group 3 -->
+  <line x1="350" y1="194" x2="350" y2="256" class="connector"/>
+
+  <!-- ========== GROUP 3: SYSTEM ========== -->
+  <text x="30" y="284" class="group-label">System</text>
+
+  <!-- Job Control (accent - first in group) -->
+  <rect x="46" y="268" width="140" height="32" class="box-accent"/>
+  <text x="116" y="289" text-anchor="middle" class="title">Job Control</text>
+
+  <!-- Arrow: Job Control → System Information -->
+  <line x1="186" y1="284" x2="206" y2="284" class="connector"/>
+
+  <!-- System Information -->
+  <rect x="216" y="268" width="140" height="32" class="box"/>
+  <text x="286" y="289" text-anchor="middle" class="title">System Information</text>
+
+  <!-- Arrow: System Information → Disk & Filesystem -->
+  <line x1="356" y1="284" x2="376" y2="284" class="connector"/>
+
+  <!-- Disk & Filesystem -->
+  <rect x="386" y="268" width="140" height="32" class="box"/>
+  <text x="456" y="289" text-anchor="middle" class="title">Disk &amp; Filesystem</text>
+
+  <!-- Arrow: Disk & Filesystem → Networking -->
+  <line x1="526" y1="284" x2="546" y2="284" class="connector"/>
+
+  <!-- Networking -->
+  <rect x="546" y="268" width="120" height="32" class="box"/>
+  <text x="606" y="289" text-anchor="middle" class="title">Networking</text>
+
+  <!-- Vertical arrow: Group 3 → Group 4 -->
+  <line x1="350" y1="300" x2="350" y2="362" class="connector"/>
+
+  <!-- ========== GROUP 4: SCRIPTING ========== -->
+  <text x="30" y="390" class="group-label">Scripting</text>
+
+  <!-- Scripting Fundamentals (accent - first in group) -->
+  <rect x="110" y="374" width="140" height="32" class="box-accent"/>
+  <text x="180" y="393" text-anchor="middle" class="title">Scripting Fundamentals</text>
+
+  <!-- Arrow: Scripting Fundamentals → Best Practices -->
+  <line x1="250" y1="390" x2="270" y2="390" class="connector"/>
+
+  <!-- Best Practices -->
+  <rect x="280" y="374" width="140" height="32" class="box"/>
+  <text x="350" y="393" text-anchor="middle" class="title">Best Practices</text>
+
+  <!-- Arrow: Best Practices → Archiving & Compression -->
+  <line x1="420" y1="390" x2="440" y2="390" class="connector"/>
+
+  <!-- Archiving & Compression -->
+  <rect x="450" y="374" width="160" height="32" class="box"/>
+  <text x="530" y="393" text-anchor="middle" class="title">Archiving &amp; Compression</text>
+
+  <!-- Footer note -->
+  <text x="350" y="450" text-anchor="middle" class="label" style="font-style: italic;">Guides build on each other - start at the top and work your way down.</text>
+</svg>

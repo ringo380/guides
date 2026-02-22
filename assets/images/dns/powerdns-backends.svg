@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 480" font-family="'Helvetica Neue', Arial, sans-serif">
+  <style>
+    .bg { fill: #1e1e2e; }
+    .box { rx: 8; stroke-width: 2; }
+    .label { fill: #fff; font-weight: bold; font-size: 14px; text-anchor: middle; }
+    .sublabel { fill: #fff; font-size: 11px; text-anchor: middle; opacity: 0.85; }
+    .arrow { stroke-width: 2; fill: none; marker-end: url(#arrowhead2); }
+    .arrow-bi { stroke-width: 2; fill: none; }
+    .arrow-label { fill: #cdd6f4; font-size: 11px; text-anchor: middle; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#cdd6f4"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="700" height="480" rx="8"/>
+
+  <!-- Title -->
+  <text x="350" y="30" fill="#cdd6f4" font-size="16" font-weight="bold" text-anchor="middle">PowerDNS: Pluggable Backend Architecture</text>
+
+  <!-- DNS Clients -->
+  <rect x="225" y="50" width="250" height="40" class="box" fill="#585b70" stroke="#7f849c"/>
+  <text x="350" y="75" class="label">DNS Clients</text>
+
+  <!-- Arrow down -->
+  <path d="M350,90 L350,130" class="arrow" stroke="#cdd6f4"/>
+  <text x="390" y="115" class="arrow-label">UDP/TCP :53</text>
+
+  <!-- PowerDNS Authoritative Server (main box) -->
+  <rect x="125" y="130" width="450" height="100" class="box" fill="#7287fd" stroke="#89b4fa"/>
+  <text x="350" y="160" class="label" font-size="16">PowerDNS Authoritative Server</text>
+  <text x="350" y="180" class="sublabel" font-size="12">Core engine with on-the-fly DNSSEC signing</text>
+
+  <!-- Backend interface line -->
+  <line x1="145" y1="205" x2="555" y2="205" stroke="#89b4fa" stroke-width="1" opacity="0.5"/>
+  <text x="350" y="220" class="sublabel" font-size="11">Backend Interface (pluggable modules)</text>
+
+  <!-- HTTP API on the side -->
+  <rect x="600" y="145" width="85" height="70" class="box" fill="#fab387" stroke="#e64553"/>
+  <text x="642" y="175" class="label" font-size="11">HTTP</text>
+  <text x="642" y="191" class="label" font-size="11">API</text>
+  <text x="642" y="207" class="sublabel" font-size="10">:8081</text>
+  <path d="M575,180 L600,180" class="arrow-bi" stroke="#fab387" stroke-dasharray="4,3"/>
+  <circle cx="598" cy="180" r="2" fill="#fab387"/>
+  <circle cx="577" cy="180" r="2" fill="#fab387"/>
+
+  <!-- Backend boxes -->
+  <!-- MySQL -->
+  <path d="M195,230 L195,280" class="arrow" stroke="#a6e3a1"/>
+  <rect x="130" y="280" width="130" height="65" class="box" fill="#40a02b" stroke="#a6e3a1"/>
+  <text x="195" y="305" class="label" font-size="13">MySQL</text>
+  <text x="195" y="322" class="sublabel" font-size="11">gmysql backend</text>
+  <text x="195" y="337" class="sublabel" font-size="10">Most common</text>
+
+  <!-- PostgreSQL -->
+  <path d="M305,230 L305,280" class="arrow" stroke="#89b4fa"/>
+  <rect x="240" y="280" width="130" height="65" class="box" fill="#1e66f5" stroke="#89b4fa"/>
+  <text x="305" y="305" class="label" font-size="13">PostgreSQL</text>
+  <text x="305" y="322" class="sublabel" font-size="11">gpgsql backend</text>
+
+  <!-- SQLite -->
+  <path d="M415,230 L415,280" class="arrow" stroke="#cba6f7"/>
+  <rect x="350" y="280" width="130" height="65" class="box" fill="#8839ef" stroke="#cba6f7"/>
+  <text x="415" y="305" class="label" font-size="13">SQLite</text>
+  <text x="415" y="322" class="sublabel" font-size="11">gsqlite3 backend</text>
+  <text x="415" y="337" class="sublabel" font-size="10">Lightweight</text>
+
+  <!-- LMDB -->
+  <path d="M525,230 L525,280" class="arrow" stroke="#94e2d5"/>
+  <rect x="460" y="280" width="130" height="65" class="box" fill="#179299" stroke="#94e2d5"/>
+  <text x="525" y="305" class="label" font-size="13">LMDB</text>
+  <text x="525" y="322" class="sublabel" font-size="11">lmdb backend</text>
+  <text x="525" y="337" class="sublabel" font-size="10">Key-value store</text>
+
+  <!-- Key differentiator note -->
+  <rect x="130" y="375" width="460" height="80" class="box" fill="#313244" stroke="#45475a"/>
+  <text x="360" y="400" fill="#cdd6f4" font-size="12" font-weight="bold" text-anchor="middle">Key Advantage: No zone files, no serial numbers, no reloads</text>
+  <text x="360" y="420" fill="#a6adc8" font-size="11" text-anchor="middle">INSERT a DNS record with SQL → it's live immediately</text>
+  <text x="360" y="438" fill="#a6adc8" font-size="11" text-anchor="middle">Manage thousands of zones programmatically via database or REST API</text>
+</svg>

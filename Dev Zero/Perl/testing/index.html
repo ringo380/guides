@@ -1,0 +1,4646 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Dev%20Zero/Perl/testing/">
+      
+      
+        <link rel="prev" href="../error-handling-debugging/">
+      
+      
+        <link rel="next" href="../text-processing-oneliners/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>Testing - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Testing - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Dev%20Zero/Perl/testing.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Dev%20Zero/Perl/testing/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Testing - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Dev%20Zero/Perl/testing.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#testing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Testing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#perls-testing-culture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Perl's Testing Culture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copyright Notice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testmore-basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test::More Basics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test::More Basics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-first-test-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your First Test File
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-test-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Test Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ok-vs-is-vs-is_deeply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ok vs. is vs. is_deeply
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plan Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-tap-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The TAP Protocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The TAP Protocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tap-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TAP Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skip-and-todo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SKIP and TODO
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prove-the-test-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        prove: The Test Runner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="prove: The Test Runner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-prove-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common prove Flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subtests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subtests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test2suite-the-modern-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test2::Suite - The Modern API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test2::Suite - The Modern API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test2v0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test2::V0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-comparisons" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Comparisons
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exception-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exception Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mocking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mocking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testmockmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test::MockModule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testmockobject" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test::MockObject
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-fixtures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Fixtures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-coverage-with-develcover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Coverage with Devel::Cover
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-driven-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test-Driven Development
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test-Driven Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tdd-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDD in Practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI/CD Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI/CD Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-actions-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Actions Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercises
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#perls-testing-culture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Perl's Testing Culture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copyright Notice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testmore-basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test::More Basics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test::More Basics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-first-test-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your First Test File
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-test-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Test Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ok-vs-is-vs-is_deeply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ok vs. is vs. is_deeply
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plan Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-tap-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The TAP Protocol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The TAP Protocol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tap-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TAP Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skip-and-todo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SKIP and TODO
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prove-the-test-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        prove: The Test Runner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="prove: The Test Runner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-prove-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common prove Flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subtests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subtests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test2suite-the-modern-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test2::Suite - The Modern API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test2::Suite - The Modern API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test2v0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test2::V0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-comparisons" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Comparisons
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exception-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exception Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mocking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mocking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testmockmodule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test::MockModule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testmockobject" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test::MockObject
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-fixtures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Fixtures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-coverage-with-develcover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Coverage with Devel::Cover
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-driven-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test-Driven Development
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test-Driven Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tdd-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TDD in Practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI/CD Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CI/CD Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-actions-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Actions Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercises
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Dev Zero/Perl/testing.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h1>
+<h2 id="perls-testing-culture">Perl's Testing Culture<a class="headerlink" href="#perls-testing-culture" title="Permanent link">&para;</a></h2>
+<p><strong>Version:</strong> 1.1
+<strong>Year:</strong> 2026</p>
+<hr />
+<h2 id="copyright-notice">Copyright Notice<a class="headerlink" href="#copyright-notice" title="Permanent link">&para;</a></h2>
+<p>Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed under <a href="../../LICENSE-CONTENT">CC BY-NC-ND 4.0</a>. You may share this material for non-commercial purposes with attribution, but you may not distribute modified versions.</p>
+<hr />
+<p>Perl has one of the oldest and most deeply embedded testing cultures in programming. Every CPAN distribution ships with tests. The <code>prove</code> command and TAP protocol originated in Perl. When you install a module with <code>cpanm</code>, the test suite runs automatically before the module lands on your system.</p>
+<hr />
+<h2 id="testmore-basics">Test::More Basics<a class="headerlink" href="#testmore-basics" title="Permanent link">&para;</a></h2>
+<p><a href="https://perldoc.perl.org/Test::More"><strong><code>Test::More</code></strong></a> is the standard testing module that ships with Perl. It provides functions that compare actual results against expected values and produce structured output.</p>
+<h3 id="your-first-test-file">Your First Test File<a class="headerlink" href="#your-first-test-file" title="Permanent link">&para;</a></h3>
+<p>Test files live in a <code>t/</code> directory and have the <code>.t</code> extension. They are plain Perl scripts:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># t/basic.t</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">use</span><span class="w"> </span><span class="nn">strict</span><span class="p">;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">use</span><span class="w"> </span><span class="nn">warnings</span><span class="p">;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test::More</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">ok</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;addition works&#39;</span><span class="p">);</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">is</span><span class="p">(</span><span class="nb">lc</span><span class="p">(</span><span class="s">&#39;HELLO&#39;</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;hello&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;lc lowercases a string&#39;</span><span class="p">);</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">like</span><span class="p">(</span><span class="s">&#39;user@example.com&#39;</span><span class="p">,</span><span class="w"> </span><span class="sx">qr/@/</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;email contains @&#39;</span><span class="p">);</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">isnt</span><span class="p">(</span><span class="s">&#39;foo&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;bar&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;foo is not bar&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<p>The <code>tests =&gt; 4</code> declaration tells the harness how many tests to expect. If the script exits early or runs extra tests, the harness flags it as a failure.</p>
+<h3 id="core-test-functions">Core Test Functions<a class="headerlink" href="#core-test-functions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ok($test, $name)</code></td>
+<td>Passes if <code>$test</code> is true</td>
+</tr>
+<tr>
+<td><code>is($got, $expected, $name)</code></td>
+<td>Passes if <code>$got eq $expected</code></td>
+</tr>
+<tr>
+<td><code>isnt($got, $unexpected, $name)</code></td>
+<td>Passes if <code>$got ne $unexpected</code></td>
+</tr>
+<tr>
+<td><code>like($got, qr/regex/, $name)</code></td>
+<td>Passes if <code>$got</code> matches the regex</td>
+</tr>
+<tr>
+<td><code>unlike($got, qr/regex/, $name)</code></td>
+<td>Passes if <code>$got</code> does not match</td>
+</tr>
+<tr>
+<td><code>is_deeply($got, $expected, $name)</code></td>
+<td>Deep comparison of structures</td>
+</tr>
+<tr>
+<td><code>can_ok($module, @methods)</code></td>
+<td>Checks a module has the methods</td>
+</tr>
+<tr>
+<td><code>isa_ok($obj, $class)</code></td>
+<td>Checks an object's class</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ok-vs-is-vs-is_deeply">ok vs. is vs. is_deeply<a class="headerlink" href="#ok-vs-is-vs-is_deeply" title="Permanent link">&para;</a></h3>
+<p><code>ok</code> only reports pass/fail. <code>is</code> shows both the expected and received values on failure. <code>is_deeply</code> handles nested arrays, hashes, and mixed structures:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># ok - minimal failure output: just &quot;not ok&quot;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">ok</span><span class="p">(</span><span class="nv">$result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;answer is 42&#39;</span><span class="p">);</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># is - shows got vs. expected on failure</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">is</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;answer is 42&#39;</span><span class="p">);</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="c1">#   got: 41</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1">#   expected: 42</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># is_deeply - deep comparison for nested structures</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">is_deeply</span><span class="p">(</span><span class="nv">$config</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">host</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">port</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">8080</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s">&#39;config defaults&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Always prefer is() over ok()</p>
+<p>When comparing values, <code>is()</code> provides dramatically better failure messages than <code>ok()</code>. The line <code>ok($x == 5)</code> tells you only that the check failed. <code>is($x, 5)</code> tells you what <code>$x</code> actually was.</p>
+</div>
+<h3 id="plan-strategies">Plan Strategies<a class="headerlink" href="#plan-strategies" title="Permanent link">&para;</a></h3>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test::More</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w">       </span><span class="c1"># exact count - strictest</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test::More</span><span class="p">;</span><span class="w">                    </span><span class="c1"># no plan - call done_testing() at end</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test::More</span><span class="w"> </span><span class="n">skip_all</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;No database available&#39;</span><span class="w"> </span><span class="k">unless</span><span class="w"> </span><span class="nv">$ENV</span><span class="p">{</span><span class="n">TEST_DB</span><span class="p">};</span>
+</span></code></pre></div>
+<p>The <code>done_testing()</code> function tells the harness you finished successfully. Use it when the number of tests varies at runtime.</p>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Writing and Running Your First Tests&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;mkdir -p /tmp/myproject/t /tmp/myproject/lib &amp;&amp; cat > /tmp/myproject/lib/MathUtils.pm << &#39;MODEOF&#39;\npackage MathUtils;\nuse strict;\nuse warnings;\nuse Exporter &#39;import&#39;;\nour @EXPORT_OK = qw(add subtract multiply);\nsub add      { $_[0] + $_[1] }\nsub subtract { $_[0] - $_[1] }\nsub multiply { $_[0] * $_[1] }\n1;\nMODEOF\necho &#39;Module created&#39;&quot;, &quot;output&quot;: &quot;Module created&quot;, &quot;narration&quot;: &quot;Create a simple module to test. MathUtils exports three arithmetic functions.&quot;}, {&quot;command&quot;: &quot;cat > /tmp/myproject/t/math.t << &#39;TESTEOF&#39;\nuse strict;\nuse warnings;\nuse Test::More tests => 6;\nuse lib &#39;./lib&#39;;\nuse MathUtils qw(add subtract multiply);\n\nis(add(2, 3), 5, &#39;add positive numbers&#39;);\nis(add(-1, 1), 0, &#39;add negative and positive&#39;);\nis(subtract(10, 3), 7, &#39;subtract&#39;);\nis(subtract(3, 10), -7, &#39;subtract produces negative&#39;);\nis(multiply(4, 5), 20, &#39;multiply&#39;);\nis(multiply(0, 99), 0, &#39;multiply by zero&#39;);\nTESTEOF\necho &#39;Test file created&#39;&quot;, &quot;output&quot;: &quot;Test file created&quot;, &quot;narration&quot;: &quot;Create a test file in t/ with six is() calls. Each compares a function result against the expected value.&quot;}, {&quot;command&quot;: &quot;cd /tmp/myproject &amp;&amp; perl t/math.t&quot;, &quot;output&quot;: &quot;1..6\nok 1 - add positive numbers\nok 2 - add negative and positive\nok 3 - subtract\nok 4 - subtract produces negative\nok 5 - multiply\nok 6 - multiply by zero&quot;, &quot;narration&quot;: &quot;Running the test directly produces TAP output. The 1..6 is the plan, each ok line is a result.&quot;}, {&quot;command&quot;: &quot;cd /tmp/myproject &amp;&amp; prove -v t/math.t&quot;, &quot;output&quot;: &quot;t/math.t ..\nok 1 - add positive numbers\nok 2 - add negative and positive\nok 3 - subtract\nok 4 - subtract produces negative\nok 5 - multiply\nok 6 - multiply by zero\nok\nAll tests successful.\nResult: PASS&quot;, &quot;narration&quot;: &quot;prove parses the TAP and produces a summary. The -v flag shows individual results.&quot;}]}"><noscript><p><strong>Writing and Running Your First Tests</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;A test fails with this output: &#39;not ok 1 - answer is 42&#39;. No other diagnostic information is shown. Which test function was most likely used?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;ok($result == 42, &#39;answer is 42&#39;)&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct. ok() only reports pass/fail with no diagnostics on failure. You see &#39;not ok&#39; but not what $result actually was, making debugging harder.&quot;}, {&quot;text&quot;: &quot;is($result, 42, &#39;answer is 42&#39;)&quot;, &quot;feedback&quot;: &quot;is() would show &#39;got: ...&#39; and &#39;expected: 42&#39; in the failure output. The absence of diagnostic detail points to ok(), not is().&quot;}, {&quot;text&quot;: &quot;is_deeply($result, 42, &#39;answer is 42&#39;)&quot;, &quot;feedback&quot;: &quot;is_deeply() also provides detailed diagnostics showing the expected vs. actual value. The lack of diagnostic output rules it out.&quot;}, {&quot;text&quot;: &quot;like($result, qr/42/, &#39;answer is 42&#39;)&quot;, &quot;feedback&quot;: &quot;like() tests against a regex and would show what the value was and what pattern it failed to match.&quot;}]}"><noscript><p><strong>A test fails with this output: 'not ok 1 - answer is 42'. No other diagnostic information is shown. Which test function was most likely used?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="the-tap-protocol">The TAP Protocol<a class="headerlink" href="#the-tap-protocol" title="Permanent link">&para;</a></h2>
+<p><strong>Test Anything Protocol (TAP)</strong> is the text-based format that Perl test scripts produce, now used across many languages.</p>
+<h3 id="tap-format">TAP Format<a class="headerlink" href="#tap-format" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>1..4
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>ok 1 - addition works
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>not ok 2 - subtraction is broken
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>#          got: &#39;7&#39;
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>#     expected: &#39;6&#39;
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>ok 3 - multiplication
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>ok 4 # skip no database configured
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1..N</code></td>
+<td>Plan line - expect N tests</td>
+</tr>
+<tr>
+<td><code>ok N</code> / <code>not ok N</code></td>
+<td>Pass / fail</td>
+</tr>
+<tr>
+<td><code># text</code></td>
+<td>Diagnostic comment</td>
+</tr>
+<tr>
+<td><code># skip</code> / <code># TODO</code></td>
+<td>Skipped / expected failure</td>
+</tr>
+</tbody>
+</table>
+<h3 id="skip-and-todo">SKIP and TODO<a class="headerlink" href="#skip-and-todo" title="Permanent link">&para;</a></h3>
+<p><code>SKIP</code> marks tests that cannot run in the current environment. <code>TODO</code> marks tests that are expected to fail:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">SKIP:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="n">skip</span><span class="w"> </span><span class="s">&#39;No network available&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">unless</span><span class="w"> </span><span class="nv">$ENV</span><span class="p">{</span><span class="n">TEST_NETWORK</span><span class="p">};</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="n">ok</span><span class="p">(</span><span class="n">ping</span><span class="p">(</span><span class="s">&#39;example.com&#39;</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;can reach example.com&#39;</span><span class="p">);</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="n">ok</span><span class="p">(</span><span class="n">fetch</span><span class="p">(</span><span class="s">&#39;https://example.com&#39;</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;can fetch page&#39;</span><span class="p">);</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">}</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="n">TODO:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="nb">local</span><span class="w"> </span><span class="nv">$TODO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;Unicode normalization not yet implemented&#39;</span><span class="p">;</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="n">is</span><span class="p">(</span><span class="n">normalize</span><span class="p">(</span><span class="s">&quot;\x{e9}&quot;</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;e\x{301}&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;decomposes e-acute&#39;</span><span class="p">);</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Both count as passed in the harness. A TODO test that unexpectedly passes is reported as a bonus.</p>
+<hr />
+<h2 id="prove-the-test-runner">prove: The Test Runner<a class="headerlink" href="#prove-the-test-runner" title="Permanent link">&para;</a></h2>
+<p><a href="https://perldoc.perl.org/prove"><strong><code>prove</code></strong></a> is Perl's standard test harness. It finds test files, runs them, parses TAP output, and summarizes results.</p>
+<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>prove<span class="w">                     </span><span class="c1"># run all tests in t/</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>prove<span class="w"> </span>t/specific.t<span class="w">        </span><span class="c1"># run one test file</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>prove<span class="w"> </span>-v<span class="w">                  </span><span class="c1"># verbose - show individual test results</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>prove<span class="w"> </span>-l<span class="w">                  </span><span class="c1"># add lib/ to @INC</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>prove<span class="w"> </span>-r<span class="w"> </span>t/<span class="w">               </span><span class="c1"># recurse into subdirectories</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>prove<span class="w"> </span>-j4<span class="w">                 </span><span class="c1"># run 4 tests in parallel</span>
+</span></code></pre></div>
+<h3 id="test-organization">Test Organization<a class="headerlink" href="#test-organization" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>myproject/
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  lib/
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    MyApp.pm
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    MyApp/
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>      Config.pm
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>      Database.pm
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>  t/
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    00-load.t           # verify modules compile
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    01-config.t         # unit tests for Config
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>    02-database.t       # unit tests for Database
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>    03-integration.t    # integration tests
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>  cpanfile
+</span></code></pre></div>
+<p>Prefix test files with numbers for execution order. Use <code>00-load.t</code> to verify modules compile. Group tests by module or feature, and separate unit tests from integration tests.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["t/ directory"] --&gt; B["00-load.t\nModule compilation checks"]
+    A --&gt; C["01-unit-*.t\nUnit tests per module"]
+    A --&gt; D["02-integration-*.t\nCross-module tests"]
+    A --&gt; E["03-acceptance-*.t\nEnd-to-end tests"]
+    B --&gt; F["prove parses TAP\nfrom each file"]
+    C --&gt; F
+    D --&gt; F
+    E --&gt; F
+    F --&gt; G["Summary:\nFiles, Tests, Pass/Fail"]</code></pre>
+<h3 id="common-prove-flags">Common prove Flags<a class="headerlink" href="#common-prove-flags" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-v</code></td>
+<td>Verbose output</td>
+</tr>
+<tr>
+<td><code>-l</code></td>
+<td>Add <code>lib/</code> to <code>@INC</code></td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>Recurse into subdirectories</td>
+</tr>
+<tr>
+<td><code>-j N</code></td>
+<td>Run N test files in parallel</td>
+</tr>
+<tr>
+<td><code>--shuffle</code></td>
+<td>Randomize test file order</td>
+</tr>
+<tr>
+<td><code>--state=save</code></td>
+<td>Re-run failures first next time</td>
+</tr>
+<tr>
+<td><code>--timer</code></td>
+<td>Show elapsed time per file</td>
+</tr>
+</tbody>
+</table>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;prove Options and Test Organization&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;cd /tmp/myproject &amp;&amp; cat > t/00-load.t << &#39;EOF&#39;\nuse strict;\nuse warnings;\nuse Test::More tests => 1;\nuse_ok(&#39;MathUtils&#39;);\nEOF\nprove -lv t/&quot;, &quot;output&quot;: &quot;t/00-load.t ..\n1..1\nok 1 - use MathUtils;\nok\nt/math.t ..\n1..6\nok 1 - add positive numbers\nok 2 - add negative and positive\nok 3 - subtract\nok 4 - subtract produces negative\nok 5 - multiply\nok 6 - multiply by zero\nok\nAll tests successful.\nFiles=2, Tests=7,  0 wallclock secs\nResult: PASS&quot;, &quot;narration&quot;: &quot;prove runs all .t files in t/. The -l flag adds lib/ to @INC. The -v flag shows each test result.&quot;}, {&quot;command&quot;: &quot;cd /tmp/myproject &amp;&amp; prove -l --timer t/&quot;, &quot;output&quot;: &quot;t/00-load.t .. ok       12 ms\nt/math.t ..... ok       15 ms\nAll tests successful.\nFiles=2, Tests=7,  0 wallclock secs\nResult: PASS&quot;, &quot;narration&quot;: &quot;The --timer flag shows per-file timing. Useful for identifying slow tests in large suites.&quot;}, {&quot;command&quot;: &quot;cd /tmp/myproject &amp;&amp; prove -l -j2 --shuffle t/&quot;, &quot;output&quot;: &quot;t/math.t ..... ok\nt/00-load.t .. ok\nAll tests successful.\nFiles=2, Tests=7,  0 wallclock secs\nResult: PASS&quot;, &quot;narration&quot;: &quot;The -j2 flag runs files in parallel. The --shuffle flag randomizes order. Both catch hidden inter-test dependencies.&quot;}]}"><noscript><p><strong>prove Options and Test Organization</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-command-builder" data-config="{&quot;base&quot;: &quot;prove&quot;, &quot;description&quot;: &quot;Build a prove command to run Perl tests with specific options&quot;, &quot;options&quot;: [{&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;text&quot;, &quot;label&quot;: &quot;Test path&quot;, &quot;explanation&quot;: &quot;Path to a test file or directory (default: t/)&quot;, &quot;placeholder&quot;: &quot;t/&quot;}, {&quot;flag&quot;: &quot;-l&quot;, &quot;type&quot;: &quot;flag&quot;, &quot;label&quot;: &quot;Add lib/ to @INC&quot;, &quot;explanation&quot;: &quot;Add lib/ to the module search path so project modules load without use lib&quot;}, {&quot;flag&quot;: &quot;-v&quot;, &quot;type&quot;: &quot;flag&quot;, &quot;label&quot;: &quot;Verbose output&quot;, &quot;explanation&quot;: &quot;Show individual test results instead of just a per-file summary&quot;}, {&quot;flag&quot;: &quot;-r&quot;, &quot;type&quot;: &quot;flag&quot;, &quot;label&quot;: &quot;Recurse subdirectories&quot;, &quot;explanation&quot;: &quot;Search for .t files in subdirectories&quot;}, {&quot;flag&quot;: &quot;-j&quot;, &quot;type&quot;: &quot;text&quot;, &quot;label&quot;: &quot;Parallel jobs&quot;, &quot;explanation&quot;: &quot;Number of test files to run simultaneously (tests must be independent)&quot;, &quot;placeholder&quot;: &quot;4&quot;}, {&quot;flag&quot;: &quot;--shuffle&quot;, &quot;type&quot;: &quot;flag&quot;, &quot;label&quot;: &quot;Randomize order&quot;, &quot;explanation&quot;: &quot;Run test files in random order to catch hidden dependencies&quot;}, {&quot;flag&quot;: &quot;--timer&quot;, &quot;type&quot;: &quot;flag&quot;, &quot;label&quot;: &quot;Show timing&quot;, &quot;explanation&quot;: &quot;Display elapsed time for each test file&quot;}]}"><noscript><p><strong>Command Builder</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="subtests">Subtests<a class="headerlink" href="#subtests" title="Permanent link">&para;</a></h2>
+<p><a href="https://perldoc.perl.org/Test::More#subtest"><strong>Subtests</strong></a> group related tests under a single test point. A subtest counts as one test in the parent plan, regardless of how many assertions it contains:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test::More</span><span class="p">;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">subtest</span><span class="w"> </span><span class="s">&#39;addition&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="n">is</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;positive&#39;</span><span class="p">);</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="n">is</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;negative&#39;</span><span class="p">);</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="n">is</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;zeros&#39;</span><span class="p">);</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="p">};</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">done_testing</span><span class="p">();</span>
+</span></code></pre></div>
+<p>Subtests produce nested TAP and provide natural setup/teardown boundaries - variables declared inside do not leak out.</p>
+<hr />
+<h2 id="test2suite-the-modern-api">Test2::Suite - The Modern API<a class="headerlink" href="#test2suite-the-modern-api" title="Permanent link">&para;</a></h2>
+<p><a href="https://metacpan.org/pod/Test2::Suite"><strong><code>Test2::Suite</code></strong></a> is the next generation of Perl testing tools, providing a cleaner API and better diagnostics while remaining TAP-compatible.</p>
+<h3 id="test2v0">Test2::V0<a class="headerlink" href="#test2v0" title="Permanent link">&para;</a></h3>
+<p>The <code>Test2::V0</code> bundle imports the most common functions:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test2::V0</span><span class="p">;</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">is</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;addition&#39;</span><span class="p">);</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">like</span><span class="p">(</span><span class="nv">$email</span><span class="p">,</span><span class="w"> </span><span class="sx">qr/@/</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;has at-sign&#39;</span><span class="p">);</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="c1"># Deep comparison with structured validators</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="n">is</span><span class="p">(</span><span class="nv">$config</span><span class="p">,</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="n">field</span><span class="w"> </span><span class="n">host</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span><span class="p">;</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">    </span><span class="n">field</span><span class="w"> </span><span class="n">port</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">8080</span><span class="p">;</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="n">end</span><span class="p">();</span><span class="w">     </span><span class="c1"># no extra keys allowed</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="p">},</span><span class="w"> </span><span class="s">&#39;config structure matches&#39;</span><span class="p">);</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="n">done_testing</span><span class="p">();</span>
+</span></code></pre></div>
+<h3 id="advanced-comparisons">Advanced Comparisons<a class="headerlink" href="#advanced-comparisons" title="Permanent link">&para;</a></h3>
+<p>Test2::V0 provides structured validators for arrays, hashes, and objects:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test2::V0</span><span class="p">;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">is</span><span class="p">(</span><span class="o">\</span><span class="nv">@results</span><span class="p">,</span><span class="w"> </span><span class="n">array</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="n">item</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;first&#39;</span><span class="p">;</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="n">item</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">match</span><span class="w"> </span><span class="sx">qr/^\d+$/</span><span class="p">;</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="n">end</span><span class="p">();</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="p">},</span><span class="w"> </span><span class="s">&#39;array matches pattern&#39;</span><span class="p">);</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">is</span><span class="p">(</span><span class="nv">$user</span><span class="p">,</span><span class="w"> </span><span class="n">object</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span><span class="n">call</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;Alice&#39;</span><span class="p">;</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">    </span><span class="n">call</span><span class="w"> </span><span class="n">age</span><span class="w">  </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">30</span><span class="p">;</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="p">},</span><span class="w"> </span><span class="s">&#39;user has expected attributes&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Test2::V0 vs. Test::More</p>
+<p>For new projects, <code>Test2::V0</code> is the recommended choice. It provides better error messages and structured validators. <code>Test::More</code> is still widely used and works fine - you do not need to rewrite existing test suites.</p>
+</div>
+<div class="interactive-code-walkthrough" data-config="{&quot;language&quot;: &quot;perl&quot;, &quot;title&quot;: &quot;Test Suite for a Configuration Module&quot;, &quot;code&quot;: &quot;use strict;\nuse warnings;\nuse Test2::V0;\nuse lib &#39;./lib&#39;;\nuse App::Config;\n\nsubtest &#39;load valid config&#39; => sub {\n    my $cfg = App::Config->new(path => &#39;t/fixtures/good.json&#39;);\n    ok($cfg, &#39;constructor returns object&#39;);\n    isa_ok($cfg, &#39;App::Config&#39;);\n    is($cfg->host, &#39;localhost&#39;, &#39;default host&#39;);\n    is($cfg->port, 8080, &#39;default port&#39;);\n};\n\nsubtest &#39;missing file&#39; => sub {\n    my $died = dies {\n        App::Config->new(path => &#39;/nonexistent&#39;);\n    };\n    like($died, qr/Cannot open/, &#39;dies with file error&#39;);\n};\n\nsubtest &#39;merge with overrides&#39; => sub {\n    my $cfg = App::Config->new(path => &#39;t/fixtures/good.json&#39;);\n    $cfg->merge({ port => 9090, debug => 1 });\n    is($cfg->port, 9090, &#39;port overridden&#39;);\n    is($cfg->host, &#39;localhost&#39;, &#39;host unchanged&#39;);\n    is($cfg->as_hash, hash {\n        field host  => &#39;localhost&#39;;\n        field port  => 9090;\n        field debug => 1;\n        etc();\n    }, &#39;merged config structure&#39;);\n};\n\ndone_testing();\n&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 3, &quot;text&quot;: &quot;Test2::V0 imports the modern testing API including is(), ok(), like(), dies(), hash {}, and more.&quot;}, {&quot;line&quot;: 7, &quot;text&quot;: &quot;Each subtest groups related assertions. If any assertion inside fails, the whole subtest fails.&quot;}, {&quot;line&quot;: 9, &quot;text&quot;: &quot;ok() checks the constructor returned a defined value. isa_ok() verifies the object&#39;s class.&quot;}, {&quot;line&quot;: 16, &quot;text&quot;: &quot;dies {} captures a fatal error and returns the message. Returns undef if no error occurred.&quot;}, {&quot;line&quot;: 19, &quot;text&quot;: &quot;like() with a regex validates error text without depending on exact wording.&quot;}, {&quot;line&quot;: 27, &quot;text&quot;: &quot;hash {} with field assertions checks specific keys. etc() allows extra keys. Use end() to reject unexpected keys.&quot;}]}"><noscript><p><strong>Test Suite for a Configuration Module</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="exception-testing">Exception Testing<a class="headerlink" href="#exception-testing" title="Permanent link">&para;</a></h2>
+<p><a href="https://metacpan.org/pod/Test::Exception"><strong><code>Test::Exception</code></strong></a> provides functions for testing that code throws or does not throw:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test::Exception</span><span class="p">;</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">dies_ok</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="n">divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="s">&#39;division by zero dies&#39;</span><span class="p">;</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="n">lives_ok</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">divide</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="s">&#39;valid division lives&#39;</span><span class="p">;</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">throws_ok</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="sx">qr/division by zero/</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;correct error message&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Tests that...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dies_ok { }</code></td>
+<td>Code dies</td>
+</tr>
+<tr>
+<td><code>lives_ok { }</code></td>
+<td>Code does not die</td>
+</tr>
+<tr>
+<td><code>throws_ok { } qr//</code></td>
+<td>Code dies with matching message</td>
+</tr>
+<tr>
+<td><code>throws_ok { } 'Class'</code></td>
+<td>Code dies with object of given class</td>
+</tr>
+</tbody>
+</table>
+<p>With Test2::V0, use <code>dies</code> and <code>lives</code> instead:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test2::V0</span><span class="p">;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">my</span><span class="w"> </span><span class="nv">$err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dies</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">like</span><span class="p">(</span><span class="nv">$err</span><span class="p">,</span><span class="w"> </span><span class="sx">qr/division by zero/</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;correct error&#39;</span><span class="p">);</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="n">ok</span><span class="p">(</span><span class="n">lives</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">divide</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s">&#39;valid division succeeds&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<hr />
+<h2 id="mocking">Mocking<a class="headerlink" href="#mocking" title="Permanent link">&para;</a></h2>
+<h3 id="testmockmodule">Test::MockModule<a class="headerlink" href="#testmockmodule" title="Permanent link">&para;</a></h3>
+<p><a href="https://metacpan.org/pod/Test::MockModule"><strong><code>Test::MockModule</code></strong></a> replaces subroutines within a module for the duration of a test. Originals are restored when the mock object goes out of scope:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test::MockModule</span><span class="p">;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">my</span><span class="w"> </span><span class="nv">$mock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">Test::MockModule</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span><span class="s">&#39;WebClient&#39;</span><span class="p">);</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nv">$mock</span><span class="o">-&gt;</span><span class="n">mock</span><span class="p">(</span><span class="s">&#39;fetch&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;{&quot;ok&quot;:true}&#39;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">});</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="k">my</span><span class="w"> </span><span class="nv">$result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">WebClient</span><span class="o">-&gt;</span><span class="n">fetch</span><span class="p">(</span><span class="s">&#39;https://api.example.com/status&#39;</span><span class="p">);</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="n">is</span><span class="p">(</span><span class="nv">$result</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">status</span><span class="p">},</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mocked status code&#39;</span><span class="p">);</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="c1"># Original fetch restored when $mock goes out of scope</span>
+</span></code></pre></div>
+<h3 id="testmockobject">Test::MockObject<a class="headerlink" href="#testmockobject" title="Permanent link">&para;</a></h3>
+<p><a href="https://metacpan.org/pod/Test::MockObject"><strong><code>Test::MockObject</code></strong></a> creates fake objects from scratch:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">my</span><span class="w"> </span><span class="nv">$fake_db</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">Test::MockObject</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">();</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nv">$fake_db</span><span class="o">-&gt;</span><span class="n">mock</span><span class="p">(</span><span class="s">&#39;query&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;Alice&#39;</span><span class="w"> </span><span class="p">}]</span><span class="w"> </span><span class="p">});</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">my</span><span class="w"> </span><span class="nv">$users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">UserService</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span><span class="n">db</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nv">$fake_db</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">list_users</span><span class="p">();</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="n">is</span><span class="p">(</span><span class="nb">scalar</span><span class="w"> </span><span class="nv">@$users</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;got one user from mock&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Do not over-mock</p>
+<p>Mock external boundaries (databases, network calls, filesystems) but test your own code with real objects. If you find yourself mocking internal methods, the code may need refactoring.</p>
+</div>
+<hr />
+<h2 id="test-fixtures">Test Fixtures<a class="headerlink" href="#test-fixtures" title="Permanent link">&para;</a></h2>
+<p><strong>Test fixtures</strong> are known data sets that put tests in a predictable state. Store test data in <code>t/fixtures/</code> and use helper functions for setup/teardown:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># File-based fixtures</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="k">my</span><span class="w"> </span><span class="nv">$input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read_text</span><span class="p">(</span><span class="s">&#39;t/fixtures/sample.csv&#39;</span><span class="p">);</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="n">is_deeply</span><span class="p">(</span><span class="nn">MyParser</span><span class="o">-&gt;</span><span class="n">parse</span><span class="p">(</span><span class="nv">$input</span><span class="p">),</span><span class="w"> </span><span class="n">decode_json</span><span class="p">(</span><span class="n">read_text</span><span class="p">(</span><span class="s">&#39;t/fixtures/expected.json&#39;</span><span class="p">)));</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="c1"># Setup helper for database tests</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="k">sub</span><span class="w"> </span><span class="nf">fresh_database</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="k">my</span><span class="w"> </span><span class="nv">$db</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">TestDB</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span><span class="s">&#39;:memory:&#39;</span><span class="p">);</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="nv">$db</span><span class="o">-&gt;</span><span class="n">deploy_schema</span><span class="p">();</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">    </span><span class="nv">$db</span><span class="o">-&gt;</span><span class="n">load_fixtures</span><span class="p">(</span><span class="s">&#39;t/fixtures/seed.sql&#39;</span><span class="p">);</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nv">$db</span><span class="p">;</span><span class="w">   </span><span class="c1"># cleaned up when $db goes out of scope</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="p">}</span>
+</span></code></pre></div>
+<hr />
+<h2 id="test-coverage-with-develcover">Test Coverage with Devel::Cover<a class="headerlink" href="#test-coverage-with-develcover" title="Permanent link">&para;</a></h2>
+<p><a href="https://metacpan.org/pod/Devel::Cover"><strong><code>Devel::Cover</code></strong></a> instruments your code and reports which lines, branches, conditions, and subroutines your tests exercise.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>cover<span class="w"> </span>-delete<span class="w">                                      </span><span class="c1"># clean previous data</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nv">HARNESS_PERL_SWITCHES</span><span class="o">=</span>-MDevel::Cover<span class="w"> </span>prove<span class="w"> </span>-l<span class="w"> </span>t/<span class="w">   </span><span class="c1"># run tests under coverage</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>cover<span class="w"> </span>-report<span class="w"> </span>html<span class="w">                                 </span><span class="c1"># generate HTML report</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>What it measures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Statement</td>
+<td>Was each line executed?</td>
+</tr>
+<tr>
+<td>Branch</td>
+<td>Was each side of every <code>if</code>/<code>unless</code>/<code>while</code> taken?</td>
+</tr>
+<tr>
+<td>Condition</td>
+<td>Was each sub-expression in <code>&amp;&amp;</code>/<code>||</code> tested both ways?</td>
+</tr>
+<tr>
+<td>Subroutine</td>
+<td>Was each function called at least once?</td>
+</tr>
+</tbody>
+</table>
+<p>Target 80-90% statement coverage. Focus on public API methods, error handling paths, and boundary conditions.</p>
+<div class="admonition tip">
+<p class="admonition-title">Coverage is a floor, not a ceiling</p>
+<p>High coverage does not mean your tests are good. Coverage tells you where tests are missing, not where they are sufficient.</p>
+</div>
+<hr />
+<h2 id="test-driven-development">Test-Driven Development<a class="headerlink" href="#test-driven-development" title="Permanent link">&para;</a></h2>
+<p><strong>Test-driven development (TDD)</strong> writes a failing test before the code that makes it pass:</p>
+<pre class="mermaid"><code>flowchart LR
+    A["RED\nWrite a failing test"] --&gt; B["GREEN\nWrite minimal code\nto pass the test"]
+    B --&gt; C["REFACTOR\nClean up code\nwhile tests stay green"]
+    C --&gt; A</code></pre>
+<h3 id="tdd-in-practice">TDD in Practice<a class="headerlink" href="#tdd-in-practice" title="Permanent link">&para;</a></h3>
+<p><strong>RED</strong> - Write the test first:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Test::More</span><span class="p">;</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">use</span><span class="w"> </span><span class="nn">lib</span><span class="w"> </span><span class="s">&#39;./lib&#39;</span><span class="p">;</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="k">use</span><span class="w"> </span><span class="nn">StringUtils</span><span class="w"> </span><span class="sx">qw(capitalize_words)</span><span class="p">;</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="n">is</span><span class="p">(</span><span class="n">capitalize_words</span><span class="p">(</span><span class="s">&#39;hello world&#39;</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;Hello World&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;basic&#39;</span><span class="p">);</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="n">is</span><span class="p">(</span><span class="n">capitalize_words</span><span class="p">(</span><span class="s">&#39;ALREADY UP&#39;</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;Already Up&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;handles uppercase&#39;</span><span class="p">);</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="n">is</span><span class="p">(</span><span class="n">capitalize_words</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;empty string&#39;</span><span class="p">);</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="n">done_testing</span><span class="p">();</span>
+</span></code></pre></div>
+<p>Running <code>prove -l t/string_utils.t</code> fails because <code>capitalize_words</code> does not exist.</p>
+<p><strong>GREEN</strong> - Write the minimal implementation:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">sub</span><span class="w"> </span><span class="nf">capitalize_words</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">    </span><span class="k">my</span><span class="w"> </span><span class="nv">$str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">shift</span><span class="w"> </span><span class="sr">//</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="p">;</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">join</span><span class="w"> </span><span class="s">&#39; &#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">ucfirst</span><span class="p">(</span><span class="nb">lc</span><span class="p">(</span><span class="nv">$_</span><span class="p">))</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="nb">split</span><span class="w"> </span><span class="sr">/\s+/</span><span class="p">,</span><span class="w"> </span><span class="nv">$str</span><span class="p">;</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><strong>REFACTOR</strong> - The tests pass. Review the code, clean up, move on to the next feature. This cycle guarantees test coverage for every behavior.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What does this TAP output indicate?\n\n1..5\nok 1 - connects\nok 2 - queries\nnot ok 3 - updates\nok 4 # skip database read-only\nok 5 - disconnects&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;3 tests passed, 1 failed, 1 was skipped - the suite fails&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct. Test 3 is a plain &#39;not ok&#39; with no TODO marker, so it counts as a real failure. Test 4 was skipped (counts as passed). The suite fails because of test 3.&quot;}, {&quot;text&quot;: &quot;All 5 tests passed because skipped tests always pass&quot;, &quot;feedback&quot;: &quot;Skipped tests do count as passed, but test 3 has &#39;not ok&#39; with no TODO or skip marker. That is a real failure.&quot;}, {&quot;text&quot;: &quot;4 tests passed, 1 was skipped - the suite passes&quot;, &quot;feedback&quot;: &quot;Test 3 produced &#39;not ok&#39; without a TODO directive. That is a genuine failure, not a skip. The suite fails.&quot;}, {&quot;text&quot;: &quot;The plan says 5 tests but only 4 ran, so the suite fails&quot;, &quot;feedback&quot;: &quot;All 5 tests ran. Test 4 was skipped (it still appears in the output as &#39;ok 4 # skip&#39;). The failure is due to test 3.&quot;}]}"><noscript><p><strong>What does this TAP output indicate?
+
+1..5
+ok 1 - connects
+ok 2 - queries
+not ok 3 - updates
+ok 4 # skip database read-only
+ok 5 - disconnects</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="cicd-integration">CI/CD Integration<a class="headerlink" href="#cicd-integration" title="Permanent link">&para;</a></h2>
+<p>Automated testing in CI catches regressions before they reach production.</p>
+<h3 id="github-actions-configuration">GitHub Actions Configuration<a class="headerlink" href="#github-actions-configuration" title="Permanent link">&para;</a></h3>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># .github/workflows/test.yml</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Test Suite</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="nt">on</span><span class="p">:</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="nt">jobs</span><span class="p">:</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">  </span><span class="nt">test</span><span class="p">:</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="w">    </span><span class="nt">strategy</span><span class="p">:</span>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="w">      </span><span class="nt">matrix</span><span class="p">:</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="w">        </span><span class="nt">perl-version</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;5.32&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;5.36&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;5.38&#39;</span><span class="p p-Indicator">]</span>
+</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Perl ${{ matrix.perl-version }}</span>
+</span><span id="__span-18-16"><a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+</span><span id="__span-18-17"><a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+</span><span id="__span-18-18"><a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shogo82148/actions-setup-perl@v1</span>
+</span><span id="__span-18-19"><a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+</span><span id="__span-18-20"><a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a><span class="w">          </span><span class="nt">perl-version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ matrix.perl-version }}</span>
+</span><span id="__span-18-21"><a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cpanm --installdeps --notest .</span>
+</span><span id="__span-18-22"><a id="__codelineno-18-22" name="__codelineno-18-22" href="#__codelineno-18-22"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prove -l -j4 t/</span>
+</span><span id="__span-18-23"><a id="__codelineno-18-23" name="__codelineno-18-23" href="#__codelineno-18-23"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Coverage report</span>
+</span><span id="__span-18-24"><a id="__codelineno-18-24" name="__codelineno-18-24" href="#__codelineno-18-24"></a><span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">matrix.perl-version == &#39;5.38&#39;</span>
+</span><span id="__span-18-25"><a id="__codelineno-18-25" name="__codelineno-18-25" href="#__codelineno-18-25"></a><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+</span><span id="__span-18-26"><a id="__codelineno-18-26" name="__codelineno-18-26" href="#__codelineno-18-26"></a><span class="w">          </span><span class="no">cpanm --notest Devel::Cover</span>
+</span><span id="__span-18-27"><a id="__codelineno-18-27" name="__codelineno-18-27" href="#__codelineno-18-27"></a><span class="w">          </span><span class="no">cover -test</span>
+</span><span id="__span-18-28"><a id="__codelineno-18-28" name="__codelineno-18-28" href="#__codelineno-18-28"></a><span class="w">          </span><span class="no">cover -report html</span>
+</span></code></pre></div>
+<p>The matrix strategy tests against multiple Perl versions. Coverage runs on one version to avoid redundant reports.</p>
+<div class="admonition danger">
+<p class="admonition-title">Never skip failing tests in CI</p>
+<p>If tests fail in CI, fix them. Do not add <code>|| true</code> to mask failures or mark tests as TODO to avoid investigation. Each ignored failure erodes trust in the test suite.</p>
+</div>
+<hr />
+<h2 id="exercises">Exercises<a class="headerlink" href="#exercises" title="Permanent link">&para;</a></h2>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Write Tests for a Calculator Module&quot;, &quot;difficulty&quot;: &quot;beginner&quot;, &quot;scenario&quot;: &quot;Given this Calculator module in `lib/Calculator.pm`:\n\n```perl\npackage Calculator;\nuse strict;\nuse warnings;\nuse Exporter &#39;import&#39;;\nuse Carp qw(croak);\nour @EXPORT_OK = qw(add subtract multiply divide);\nsub add      { $_[0] + $_[1] }\nsub subtract { $_[0] - $_[1] }\nsub multiply { $_[0] * $_[1] }\nsub divide {\n    croak \&quot;Division by zero\&quot; if $_[1] == 0;\n    return $_[0] / $_[1];\n}\n1;\n```\n\nWrite `t/calculator.t` that verifies the module loads with `use_ok`, tests each function with at least two cases (including zero and negative numbers), verifies `divide(1, 0)` dies with \&quot;Division by zero\&quot;, and uses `done_testing()`.\n&quot;, &quot;hints&quot;: [&quot;Start with: use Test::More; use lib &#39;./lib&#39;; use Calculator qw(add subtract multiply divide);&quot;, &quot;Test exception: eval { divide(1, 0) }; like($@, qr/Division by zero/, &#39;dies on zero&#39;);&quot;, &quot;Test zero: is(multiply(5, 0), 0, &#39;multiply by zero&#39;);&quot;], &quot;solution&quot;: &quot;```perl\n# t/calculator.t\nuse strict;\nuse warnings;\nuse Test::More;\nuse lib &#39;./lib&#39;;\nuse_ok(&#39;Calculator&#39;, qw(add subtract multiply divide));\nis(add(2, 3), 5, &#39;add positive numbers&#39;);\nis(add(-3, -7), -10, &#39;add negatives&#39;);\nis(subtract(10, 4), 6, &#39;basic subtraction&#39;);\nis(subtract(3, 8), -5, &#39;negative result&#39;);\nis(multiply(3, 7), 21, &#39;basic multiplication&#39;);\nis(multiply(5, 0), 0, &#39;multiply by zero&#39;);\nis(divide(10, 2), 5, &#39;basic division&#39;);\neval { divide(1, 0) };\nlike($@, qr/Division by zero/, &#39;dies on division by zero&#39;);\ndone_testing();\n```\n\nRun with `prove -lv t/calculator.t`. All 9 tests should pass.&quot;}"><noscript><p><strong>Write Tests for a Calculator Module</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;TDD a String Utility Module&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;Use TDD to build a `StringAnalyzer` module. Write all tests first in `t/string_analyzer.t`, then create `lib/StringAnalyzer.pm` to make them pass.\n\nFunctions to implement:\n1. `word_count($str)` - number of words (split on whitespace)\n2. `char_frequency($str)` - hashref of `{ char => count }` (case-insensitive, letters only)\n3. `palindrome($str)` - true if the string is a palindrome (case-insensitive, ignoring non-alphanumeric)\n4. `truncate_at_word($str, $max)` - truncate at nearest word boundary, append \&quot;...\&quot; if truncated\n\nWrite at least 12 assertions covering normal cases, empty strings, `palindrome` with punctuation (\&quot;A man, a plan, a canal: Panama\&quot;), and `truncate_at_word` when no truncation is needed.\n&quot;, &quot;hints&quot;: [&quot;Start: use Test2::V0; use lib &#39;./lib&#39;; use StringAnalyzer qw(word_count char_frequency palindrome truncate_at_word);&quot;, &quot;char_frequency: my %freq; $freq{$_}++ for grep { /[a-z]/ } split //, lc($str); return \\%freq;&quot;, &quot;palindrome: (my $clean = lc $str) =~ s/[^a-z0-9]//g; return $clean eq reverse $clean;&quot;], &quot;solution&quot;: &quot;```perl\n# t/string_analyzer.t\nuse strict;\nuse warnings;\nuse Test2::V0;\nuse lib &#39;./lib&#39;;\nuse StringAnalyzer qw(word_count char_frequency palindrome truncate_at_word);\n\nsubtest &#39;word_count&#39; => sub {\n    is(word_count(&#39;hello world&#39;), 2, &#39;two words&#39;);\n    is(word_count(&#39;&#39;), 0, &#39;empty string&#39;);\n    is(word_count(&#39;  spaces  &#39;), 1, &#39;extra whitespace&#39;);\n};\nsubtest &#39;char_frequency&#39; => sub {\n    is(char_frequency(&#39;aab&#39;), { a => 2, b => 1 }, &#39;basic&#39;);\n    is(char_frequency(&#39;Hello&#39;), { h => 1, e => 1, l => 2, o => 1 }, &#39;case insensitive&#39;);\n    is(char_frequency(&#39;&#39;), {}, &#39;empty&#39;);\n};\nsubtest &#39;palindrome&#39; => sub {\n    ok(palindrome(&#39;racecar&#39;), &#39;simple&#39;);\n    ok(palindrome(&#39;A man, a plan, a canal: Panama&#39;), &#39;with punctuation&#39;);\n    ok(!palindrome(&#39;hello&#39;), &#39;not a palindrome&#39;);\n    ok(palindrome(&#39;&#39;), &#39;empty&#39;);\n};\nsubtest &#39;truncate_at_word&#39; => sub {\n    is(truncate_at_word(&#39;hello world foo&#39;, 11), &#39;hello world&#39;, &#39;exact&#39;);\n    is(truncate_at_word(&#39;hello world foo&#39;, 13), &#39;hello world...&#39;, &#39;mid-word&#39;);\n    is(truncate_at_word(&#39;short&#39;, 100), &#39;short&#39;, &#39;no truncation&#39;);\n};\ndone_testing();\n```\n\n```perl\n# lib/StringAnalyzer.pm\npackage StringAnalyzer;\nuse strict;\nuse warnings;\nuse Exporter &#39;import&#39;;\nour @EXPORT_OK = qw(word_count char_frequency palindrome truncate_at_word);\n\nsub word_count     { scalar grep { length } split /\\s+/, (shift // &#39;&#39;) }\nsub char_frequency {\n    my %f; $f{$_}++ for grep { /[a-z]/ } split //, lc(shift // &#39;&#39;); \\%f;\n}\nsub palindrome {\n    (my $c = lc(shift // &#39;&#39;)) =~ s/[^a-z0-9]//g; $c eq reverse $c;\n}\nsub truncate_at_word {\n    my ($s, $max) = @_; $s //= &#39;&#39;;\n    return $s if length($s) <= $max;\n    my $cut = rindex(substr($s, 0, $max), &#39; &#39;);\n    ($cut > 0 ? substr($s, 0, $cut) : substr($s, 0, $max)) . &#39;...&#39;;\n}\n1;\n```\n\nWrite the tests first, watch them fail, then implement each function.&quot;}"><noscript><p><strong>TDD a String Utility Module</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command / Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Run all tests</td>
+<td><code>prove -l t/</code></td>
+</tr>
+<tr>
+<td>Verbose single test</td>
+<td><code>prove -lv t/specific.t</code></td>
+</tr>
+<tr>
+<td>Parallel tests</td>
+<td><code>prove -l -j4 t/</code></td>
+</tr>
+<tr>
+<td>Compare values</td>
+<td><code>is($got, $expected, $name)</code></td>
+</tr>
+<tr>
+<td>Compare structures</td>
+<td><code>is_deeply(\%got, \%expected, $name)</code></td>
+</tr>
+<tr>
+<td>Regex match</td>
+<td><code>like($got, qr/pattern/, $name)</code></td>
+</tr>
+<tr>
+<td>Test exception</td>
+<td><code>eval { code() }; like($@, qr/error/)</code></td>
+</tr>
+<tr>
+<td>Skip / TODO</td>
+<td><code>skip 'reason', $count</code> / <code>local $TODO = 'reason'</code></td>
+</tr>
+<tr>
+<td>Coverage</td>
+<td><code>cover -test &amp;&amp; cover -report html</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://perldoc.perl.org/Test::More">Test::More</a> - standard testing module documentation</li>
+<li><a href="https://metacpan.org/pod/Test2::Suite">Test2::Suite</a> - modern testing framework</li>
+<li><a href="https://perldoc.perl.org/prove">prove</a> - test harness command reference</li>
+<li><a href="https://testanything.org/">TAP specification</a> - Test Anything Protocol standard</li>
+<li><a href="https://metacpan.org/pod/Test::Exception">Test::Exception</a> - exception testing functions</li>
+<li><a href="https://metacpan.org/pod/Test::MockModule">Test::MockModule</a> - mock module subroutines</li>
+<li><a href="https://metacpan.org/pod/Devel::Cover">Devel::Cover</a> - code coverage analysis</li>
+<li><a href="https://www.oreilly.com/library/view/perl-testing-a/0596100922/">Perl Testing: A Developer's Notebook</a> - practical guide to testing in Perl</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../error-handling-debugging/">Error Handling and Debugging</a> | <strong>Next:</strong> <a href="../text-processing-oneliners/">Text Processing and One-Liners</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+Testing" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

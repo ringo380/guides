@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .diamond { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .diamond { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .heading { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- Heading -->
+  <text x="320" y="24" text-anchor="middle" class="heading">Test Operator Categories</text>
+
+  <!-- Central "Which test?" box (accent) -->
+  <rect x="245" y="45" width="150" height="36" class="box-accent"/>
+  <text x="320" y="68" text-anchor="middle" class="title">Which test?</text>
+
+  <!-- Connector lines from center to each category -->
+  <!-- Left-most: File tests -->
+  <polyline points="245,63 80,63 80,110" class="connector"/>
+  <!-- Center-left: String tests -->
+  <polyline points="270,81 200,110" class="connector"/>
+  <!-- Center-right: Numeric tests -->
+  <polyline points="370,81 440,110" class="connector"/>
+  <!-- Right-most: Pattern / regex -->
+  <polyline points="395,63 560,63 560,110" class="connector"/>
+
+  <!-- Category 1: File tests -->
+  <rect x="15" y="110" width="130" height="36" class="box"/>
+  <text x="80" y="133" text-anchor="middle" class="title">File tests</text>
+  <rect x="15" y="156" width="130" height="30" class="box"/>
+  <text x="80" y="176" text-anchor="middle" class="code">-f -d -e -r -w -x</text>
+
+  <!-- Category 2: String tests -->
+  <rect x="160" y="110" width="130" height="36" class="box"/>
+  <text x="225" y="133" text-anchor="middle" class="title">String tests</text>
+  <rect x="160" y="156" width="130" height="30" class="box"/>
+  <text x="225" y="176" text-anchor="middle" class="code">-z -n = !=</text>
+
+  <!-- Category 3: Numeric tests -->
+  <rect x="350" y="110" width="145" height="36" class="box"/>
+  <text x="422" y="133" text-anchor="middle" class="title">Numeric tests</text>
+  <rect x="350" y="156" width="145" height="30" class="box"/>
+  <text x="422" y="176" text-anchor="middle" class="code">-eq -ne -lt -gt</text>
+
+  <!-- Category 4: Pattern / regex -->
+  <rect x="505" y="110" width="120" height="36" class="box"/>
+  <text x="565" y="133" text-anchor="middle" class="title">Pattern / regex</text>
+  <rect x="505" y="156" width="120" height="30" class="box"/>
+  <text x="565" y="176" text-anchor="middle" class="code">Use [[ ]]</text>
+
+  <!-- Connecting lines from category boxes to operator boxes -->
+  <line x1="80" y1="146" x2="80" y2="156" class="connector" style="marker-end: none;"/>
+  <line x1="225" y1="146" x2="225" y2="156" class="connector" style="marker-end: none;"/>
+  <line x1="422" y1="146" x2="422" y2="156" class="connector" style="marker-end: none;"/>
+  <line x1="565" y1="146" x2="565" y2="156" class="connector" style="marker-end: none;"/>
+</svg>

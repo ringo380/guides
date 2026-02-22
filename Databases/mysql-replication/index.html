@@ -1,0 +1,4805 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Databases/mysql-replication/">
+      
+      
+        <link rel="prev" href="../mysql-performance/">
+      
+      
+        <link rel="next" href="../postgresql-fundamentals/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>MySQL Replication & HA - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="MySQL Replication & HA - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Databases/mysql-replication.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Databases/mysql-replication/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="MySQL Replication & HA - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Databases/mysql-replication.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mysql-replication-high-availability" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MySQL Replication & HA
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Dev%20Zero/Perl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#binary-log-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Log Replication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Binary Log Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-log-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Log Formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-the-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring the Source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-the-replica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring the Replica
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gtid-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GTID Replication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GTID Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-gtids-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why GTIDs Matter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-gtid-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling GTID Replication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-a-gtid-replica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring a GTID Replica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspecting-gtid-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting GTID State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#semi-synchronous-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Semi-Synchronous Replication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Semi-Synchronous Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-durability-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Durability Guarantee
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-performance-trade-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Performance Trade-off
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#group-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Group Replication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Group Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-primary-vs-multi-primary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-Primary vs Multi-Primary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#innodb-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InnoDB Cluster
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="InnoDB Cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-cluster-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking Cluster Health
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proxysql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProxySQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ProxySQL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection Routing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#readwrite-splitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read/Write Splitting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failover-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failover Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Failover Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-failover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Failover
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-failover-with-innodb-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Failover with InnoDB Cluster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-failover-with-orchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Failover with Orchestrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#split-brain-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Split-Brain Prevention
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-replication-lag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring Replication Lag
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring Replication Lag">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seconds_behind_master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seconds_Behind_Master
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heartbeat-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Heartbeat Tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pt-heartbeat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pt-heartbeat
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-a-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a Topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Dev%20Zero/Perl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#binary-log-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Log Replication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Binary Log Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#binary-log-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Binary Log Formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-the-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring the Source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-the-replica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring the Replica
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gtid-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GTID Replication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GTID Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-gtids-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why GTIDs Matter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-gtid-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling GTID Replication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-a-gtid-replica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring a GTID Replica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspecting-gtid-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting GTID State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#semi-synchronous-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Semi-Synchronous Replication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Semi-Synchronous Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-durability-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Durability Guarantee
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-performance-trade-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Performance Trade-off
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#group-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Group Replication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Group Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#single-primary-vs-multi-primary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-Primary vs Multi-Primary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#innodb-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InnoDB Cluster
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="InnoDB Cluster">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-cluster-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking Cluster Health
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proxysql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProxySQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ProxySQL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection Routing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#readwrite-splitting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read/Write Splitting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failover-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failover Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Failover Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-failover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Failover
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-failover-with-innodb-cluster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Failover with InnoDB Cluster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-failover-with-orchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Failover with Orchestrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#split-brain-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Split-Brain Prevention
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-replication-lag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring Replication Lag
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring Replication Lag">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seconds_behind_master" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seconds_Behind_Master
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heartbeat-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Heartbeat Tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pt-heartbeat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pt-heartbeat
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-a-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a Topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Databases/mysql-replication.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="mysql-replication-high-availability">MySQL Replication &amp; High Availability<a class="headerlink" href="#mysql-replication-high-availability" title="Permanent link">&para;</a></h1>
+<p>A single MySQL server is a single point of failure. Every production database needs a plan for scaling reads, surviving hardware failures, and minimizing downtime during maintenance. MySQL provides several replication mechanisms - from basic binary log replication to fully automated clustering - and the right choice depends on your availability requirements, data consistency needs, and operational complexity budget.</p>
+<p>This guide covers the replication landscape from the ground up: how binary log replication works, modern GTID-based topologies, semi-synchronous durability guarantees, Group Replication for automatic failover, and the tooling that ties it all together.</p>
+<hr />
+<h2 id="binary-log-replication">Binary Log Replication<a class="headerlink" href="#binary-log-replication" title="Permanent link">&para;</a></h2>
+<p><strong>Binary log replication</strong> is the foundation of all MySQL replication. Every other replication method builds on this mechanism. The concept is straightforward: the source server writes every data-modifying event to a binary log, and one or more replica servers read those events and replay them locally.</p>
+<h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
+<p>The replication process involves three threads:</p>
+<ol>
+<li><strong>Binlog dump thread</strong> (on the source) - reads the binary log and sends events to the replica</li>
+<li><strong>I/O receiver thread</strong> (on the replica) - connects to the source, receives events, and writes them to the <strong>relay log</strong></li>
+<li><strong>SQL applier thread</strong> (on the replica) - reads events from the relay log and executes them against the local database</li>
+</ol>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Source["Source Server"]
+        direction TB
+        C["Client Writes"]
+        BL["Binary Log"]
+        BD["Binlog Dump Thread"]
+    end
+
+    subgraph Replica["Replica Server"]
+        direction TB
+        IO["I/O Receiver Thread"]
+        RL["Relay Log"]
+        SQL["SQL Applier Thread"]
+        D["Local Data"]
+    end
+
+    C --&gt; BL
+    BL --&gt; BD
+    BD --&gt;|"Network"| IO
+    IO --&gt; RL
+    RL --&gt; SQL
+    SQL --&gt; D</code></pre>
+<p>The relay log acts as a buffer. If the SQL applier thread falls behind, the I/O thread can continue receiving events without blocking the source. This separation means a slow replica does not slow down the source server.</p>
+<h3 id="binary-log-formats">Binary Log Formats<a class="headerlink" href="#binary-log-formats" title="Permanent link">&para;</a></h3>
+<p>MySQL supports three <strong>binlog formats</strong>, controlled by the <code>binlog_format</code> variable:</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>How It Logs</th>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>STATEMENT</code></td>
+<td>The SQL statement itself</td>
+<td>Small log size, human-readable</td>
+<td>Non-deterministic functions (<code>NOW()</code>, <code>UUID()</code>) can produce different results on replicas</td>
+</tr>
+<tr>
+<td><code>ROW</code></td>
+<td>The before/after image of each modified row</td>
+<td>Deterministic, safe for all queries</td>
+<td>Larger log size, especially for bulk updates</td>
+</tr>
+<tr>
+<td><code>MIXED</code></td>
+<td>Statement-based by default, switches to row-based when needed</td>
+<td>Balances size and safety</td>
+<td>Harder to predict which format is used</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Use ROW format</p>
+<p><code>ROW</code> is the default since MySQL 5.7.7 and the recommended format for all new deployments. The deterministic behavior eliminates an entire class of replication bugs. The increased log size is a worthwhile trade-off for reliability.</p>
+</div>
+<h3 id="configuring-the-source">Configuring the Source<a class="headerlink" href="#configuring-the-source" title="Permanent link">&para;</a></h3>
+<p>On the source server, enable the binary log and assign a unique server ID in <code>my.cnf</code>:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">[mysqld]</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="na">server-id</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="na">log-bin</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="s">mysql-bin</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="na">binlog-format</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">ROW</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="na">sync-binlog</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span></code></pre></div>
+<p>Setting <code>sync_binlog = 1</code> forces the binary log to disk on every commit. This prevents data loss if the source crashes, at the cost of additional disk I/O.</p>
+<p>Create a replication user with the required privilege:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="s1">&#39;repl&#39;</span><span class="o">@</span><span class="s1">&#39;10.0.0.%&#39;</span><span class="w"> </span><span class="n">IDENTIFIED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="s1">&#39;strong_password_here&#39;</span><span class="p">;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">GRANT</span><span class="w"> </span><span class="n">REPLICATION</span><span class="w"> </span><span class="n">SLAVE</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="o">*</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">&#39;repl&#39;</span><span class="o">@</span><span class="s1">&#39;10.0.0.%&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<h3 id="configuring-the-replica">Configuring the Replica<a class="headerlink" href="#configuring-the-replica" title="Permanent link">&para;</a></h3>
+<p>On the replica, set a unique server ID and configure the connection to the source:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">[mysqld]</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">server-id</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s">2</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">relay-log</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s">relay-bin</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="na">read-only</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s">ON</span>
+</span></code></pre></div>
+<p>Then point the replica at the source using the binary log file and position:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">CHANGE</span><span class="w"> </span><span class="n">REPLICATION</span><span class="w"> </span><span class="k">SOURCE</span><span class="w"> </span><span class="k">TO</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="n">SOURCE_HOST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;10.0.0.1&#39;</span><span class="p">,</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="n">SOURCE_USER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;repl&#39;</span><span class="p">,</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="n">SOURCE_PASSWORD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;strong_password_here&#39;</span><span class="p">,</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="n">SOURCE_LOG_FILE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;mysql-bin.000001&#39;</span><span class="p">,</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="n">SOURCE_LOG_POS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">154</span><span class="p">;</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">START</span><span class="w"> </span><span class="n">REPLICA</span><span class="p">;</span>
+</span></code></pre></div>
+<p>The <code>SOURCE_LOG_FILE</code> and <code>SOURCE_LOG_POS</code> values come from <code>SHOW MASTER STATUS</code> on the source (or from a backup's metadata). Getting these wrong means the replica starts reading from the wrong position - it will either skip transactions or try to replay events that have already been applied.</p>
+<div class="admonition warning">
+<p class="admonition-title">File-and-position pitfalls</p>
+<p>Binary log file names and positions are fragile. They change after log rotation, are specific to a single source, and make it difficult to re-point a replica to a new source after failover. GTID replication (covered next) eliminates these problems.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;In MySQL binary log replication, what is the role of the relay log on the replica?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;It stores the binary log events received from the source before the SQL applier thread executes them&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! The relay log acts as a buffer between the I/O receiver thread and the SQL applier thread. The I/O thread writes events from the source&#39;s binary log into the relay log, and the SQL applier thread reads from the relay log to execute them locally. This decoupling means a slow applier does not block event reception.&quot;}, {&quot;text&quot;: &quot;It is a backup copy of the source&#39;s binary log for disaster recovery&quot;, &quot;feedback&quot;: &quot;The relay log is not a backup mechanism. It is a local staging area for replication events that the replica has received but not yet applied. It is automatically purged after events are applied.&quot;}, {&quot;text&quot;: &quot;It records all read queries on the replica for auditing purposes&quot;, &quot;feedback&quot;: &quot;The relay log only contains write events from the source&#39;s binary log. Read queries are not logged in the relay log or the binary log.&quot;}, {&quot;text&quot;: &quot;It prevents the replica from accepting direct writes&quot;, &quot;feedback&quot;: &quot;Read-only mode (read_only=ON) prevents direct writes to the replica. The relay log is purely a replication data channel, not an access control mechanism.&quot;}]}"><noscript><p><strong>In MySQL binary log replication, what is the role of the relay log on the replica?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="gtid-replication">GTID Replication<a class="headerlink" href="#gtid-replication" title="Permanent link">&para;</a></h2>
+<p><strong>Global Transaction Identifiers</strong> (GTIDs) replace file-and-position tracking with a globally unique identifier for every transaction. Each GTID has the format <code>server_uuid:transaction_id</code> - for example, <code>3E11FA47-71CA-11E1-9E33-C80AA9429562:42</code>.</p>
+<p>The <code>server_uuid</code> is automatically generated when MySQL initializes and stored in <code>auto.cnf</code>. The <code>transaction_id</code> is a monotonically increasing integer per server. Together, they guarantee that every transaction across the entire replication topology has a unique identity.</p>
+<h3 id="why-gtids-matter">Why GTIDs Matter<a class="headerlink" href="#why-gtids-matter" title="Permanent link">&para;</a></h3>
+<p>With file-and-position replication, each replica tracks where it is reading from a specific source's binary log. If that source fails and you need to point the replica at a different server, you have to manually calculate the equivalent position in the new server's binary log. This is error-prone and often requires tools like <a href="https://dev.mysql.com/doc/refman/8.0/en/mysqlbinlog.html"><strong><code>mysqlbinlog</code></strong></a> to correlate positions.</p>
+<p>With GTIDs, every server knows exactly which transactions it has executed (tracked in <code>gtid_executed</code>). When you point a replica at a new source, it simply says "I've executed these GTIDs, send me everything I'm missing." The source computes the difference and starts streaming.</p>
+<h3 id="enabling-gtid-replication">Enabling GTID Replication<a class="headerlink" href="#enabling-gtid-replication" title="Permanent link">&para;</a></h3>
+<p>On both source and replica, add to <code>my.cnf</code>:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">[mysqld]</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="na">gtid-mode</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="s">ON</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="na">enforce-gtid-consistency</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">ON</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="na">log-bin</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="s">mysql-bin</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="na">log-replica-updates</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s">ON</span>
+</span></code></pre></div>
+<p><code>enforce_gtid_consistency</code> blocks statements that cannot be safely represented as a single GTID (such as <code>CREATE TABLE ... SELECT</code> or transactions mixing InnoDB and non-transactional engines). This restriction is the trade-off for GTID's reliability.</p>
+<p><code>log_replica_updates</code> makes replicas write received events to their own binary log, which is required for chained replication (replica of a replica) and for any replica to serve as a failover candidate.</p>
+<h3 id="configuring-a-gtid-replica">Configuring a GTID Replica<a class="headerlink" href="#configuring-a-gtid-replica" title="Permanent link">&para;</a></h3>
+<p>With GTIDs, the <code>CHANGE REPLICATION SOURCE</code> command is simpler because you do not need file names or positions:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">CHANGE</span><span class="w"> </span><span class="n">REPLICATION</span><span class="w"> </span><span class="k">SOURCE</span><span class="w"> </span><span class="k">TO</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">SOURCE_HOST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;10.0.0.1&#39;</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">SOURCE_USER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;repl&#39;</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">SOURCE_PASSWORD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;strong_password_here&#39;</span><span class="p">,</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="n">SOURCE_AUTO_POSITION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="k">START</span><span class="w"> </span><span class="n">REPLICA</span><span class="p">;</span>
+</span></code></pre></div>
+<p><code>SOURCE_AUTO_POSITION = 1</code> tells the replica to use GTID-based auto-positioning. The replica sends its <code>gtid_executed</code> set to the source, and the source determines what to send.</p>
+<div class="interactive-code-walkthrough" data-config="{&quot;title&quot;: &quot;GTID Replication Configuration&quot;, &quot;description&quot;: &quot;A line-by-line breakdown of the source and replica configuration required for GTID-based replication.&quot;, &quot;code&quot;: &quot;[mysqld]\ngtid-mode                = ON\nenforce-gtid-consistency = ON\nlog-bin                  = mysql-bin\nlog-replica-updates      = ON\n\nCHANGE REPLICATION SOURCE TO\n    SOURCE_HOST = &#39;10.0.0.1&#39;,\n    SOURCE_USER = &#39;repl&#39;,\n    SOURCE_PASSWORD = &#39;strong_password_here&#39;,\n    SOURCE_AUTO_POSITION = 1;\n\nSTART REPLICA;\n&quot;, &quot;language&quot;: &quot;ini&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 1, &quot;text&quot;: &quot;The [mysqld] section header - all GTID settings go under this section in my.cnf on both the source and every replica.&quot;}, {&quot;line&quot;: 2, &quot;text&quot;: &quot;Enables GTID mode. Each transaction is assigned a globally unique identifier in the format server_uuid:transaction_id. All servers in the topology must have this set to ON.&quot;}, {&quot;line&quot;: 3, &quot;text&quot;: &quot;Blocks statements that cannot be represented as a single GTID, such as CREATE TABLE ... SELECT or transactions that mix InnoDB with non-transactional engines like MyISAM. This restriction is mandatory for GTID consistency.&quot;}, {&quot;line&quot;: 4, &quot;text&quot;: &quot;Enables the binary log with the file prefix mysql-bin. GTID replication still uses binary logs to transport events - the GTID is metadata attached to each event.&quot;}, {&quot;line&quot;: 5, &quot;text&quot;: &quot;Makes replicas write received events to their own binary log. Required for chained replication (replica of a replica) and for any replica to serve as a failover candidate, since a promoted replica needs its own binary log to serve as a source.&quot;}, {&quot;line&quot;: 7, &quot;text&quot;: &quot;This SQL command runs on the replica to configure the connection to the source server. With GTIDs, you no longer need SOURCE_LOG_FILE or SOURCE_LOG_POS.&quot;}, {&quot;line&quot;: 8, &quot;text&quot;: &quot;The IP address or hostname of the source server. The replica&#39;s I/O thread connects to this host to receive binary log events.&quot;}, {&quot;line&quot;: 9, &quot;text&quot;: &quot;The MySQL user account created on the source with REPLICATION SLAVE privilege. This user only needs replication permissions - no access to application data.&quot;}, {&quot;line&quot;: 10, &quot;text&quot;: &quot;The password for the replication user. In production, use encrypted replication channels (CHANGE REPLICATION SOURCE TO ... SOURCE_SSL = 1) to protect credentials in transit.&quot;}, {&quot;line&quot;: 11, &quot;text&quot;: &quot;The key GTID setting. Tells the replica to send its gtid_executed set to the source and let the source compute which transactions to send. This eliminates manual binary log position tracking and makes failover straightforward.&quot;}, {&quot;line&quot;: 13, &quot;text&quot;: &quot;Starts the replica&#39;s I/O and SQL threads. The I/O thread connects to the source, receives missing transactions, and writes them to the relay log. The SQL thread reads the relay log and applies events locally.&quot;}]}"><noscript><p><strong>GTID Replication Configuration</strong> (requires JavaScript)</p></noscript></div>
+<h3 id="inspecting-gtid-state">Inspecting GTID State<a class="headerlink" href="#inspecting-gtid-state" title="Permanent link">&para;</a></h3>
+<p>Check which transactions have been executed:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">@@</span><span class="n">gtid_executed</span><span class="p">;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1">-- 3E11FA47-71CA-11E1-9E33-C80AA9429562:1-42</span>
+</span></code></pre></div>
+<p>Check which transactions have been received but not yet applied:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">RECEIVED_TRANSACTION_SET</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">FROM</span><span class="w"> </span><span class="n">performance_schema</span><span class="p">.</span><span class="n">replication_connection_status</span><span class="p">;</span>
+</span></code></pre></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is the primary advantage of GTID replication over traditional file-and-position replication?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;GTIDs make replication faster by compressing binary log events&quot;, &quot;feedback&quot;: &quot;GTIDs do not affect the speed or compression of binary log events. They change the tracking mechanism, not the transport mechanism.&quot;}, {&quot;text&quot;: &quot;GTIDs allow a replica to automatically determine which transactions it needs from any source, simplifying failover&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Each GTID is globally unique (server_uuid:transaction_id). A replica tracks its gtid_executed set and can request missing transactions from any server that has them. This makes re-pointing replicas after failover straightforward - no need to manually calculate binary log positions.&quot;}, {&quot;text&quot;: &quot;GTIDs eliminate the need for binary logs entirely&quot;, &quot;feedback&quot;: &quot;GTIDs still use binary logs to transport events. The GTID is metadata attached to each binary log event. You must have log-bin enabled for GTID replication.&quot;}, {&quot;text&quot;: &quot;GTIDs guarantee zero replication lag&quot;, &quot;feedback&quot;: &quot;GTIDs do not affect replication lag. Lag depends on network speed, replica hardware, and query complexity. GTIDs improve topology management and failover, not performance.&quot;}]}"><noscript><p><strong>What is the primary advantage of GTID replication over traditional file-and-position replication?</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;A replica&#39;s gtid_executed variable shows 3E11FA47-71CA-11E1-9E33-C80AA9429562:1-42. What does the &#39;1-42&#39; portion represent?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Transaction IDs 1 through 42 from the server with UUID 3E11FA47-71CA-11E1-9E33-C80AA9429562 have been executed on this replica&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! A GTID set uses range notation. The format is server_uuid:transaction_range, where 1-42 means all transactions with IDs 1 through 42 originating from that server have been applied. A replica can have GTID ranges from multiple source UUIDs if it has been part of a topology with several sources over time.&quot;}, {&quot;text&quot;: &quot;The replica has 42 seconds of replication lag&quot;, &quot;feedback&quot;: &quot;The GTID set has nothing to do with time or lag. The numbers are transaction sequence IDs. Each transaction committed on a server increments the transaction_id counter by 1.&quot;}, {&quot;text&quot;: &quot;Binary log files 1 through 42 have been read from the source&quot;, &quot;feedback&quot;: &quot;GTID ranges are transaction counts, not binary log file numbers. A single binary log file can contain thousands of GTIDs, and GTID tracking is completely independent of binary log file numbering.&quot;}, {&quot;text&quot;: &quot;The replica has received but not yet applied 42 transactions&quot;, &quot;feedback&quot;: &quot;The gtid_executed set specifically tracks transactions that have been applied (executed), not pending ones. Transactions received but not yet applied are tracked in the RECEIVED_TRANSACTION_SET column in performance_schema.replication_connection_status.&quot;}]}"><noscript><p><strong>A replica's gtid_executed variable shows 3E11FA47-71CA-11E1-9E33-C80AA9429562:1-42. What does the '1-42' portion represent?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="semi-synchronous-replication">Semi-Synchronous Replication<a class="headerlink" href="#semi-synchronous-replication" title="Permanent link">&para;</a></h2>
+<p>Standard MySQL replication is <strong>asynchronous</strong> - the source commits a transaction and returns success to the client without waiting for any replica to acknowledge receipt. If the source crashes immediately after committing, committed transactions may be lost because no replica received them.</p>
+<p><strong>Semi-synchronous replication</strong> addresses this gap. With semi-sync enabled, the source waits after each commit until at least one replica acknowledges that it has received and written the event to its relay log. Only then does the source return success to the client.</p>
+<h3 id="the-durability-guarantee">The Durability Guarantee<a class="headerlink" href="#the-durability-guarantee" title="Permanent link">&para;</a></h3>
+<p>Semi-sync does not guarantee that replicas have applied the transaction - only that they have received and persisted it in the relay log. This is enough to guarantee that the transaction survives a source crash, because at least one replica has the data and can be promoted.</p>
+<h3 id="the-performance-trade-off">The Performance Trade-off<a class="headerlink" href="#the-performance-trade-off" title="Permanent link">&para;</a></h3>
+<p>Every transaction now includes a network round trip to at least one replica. On a local network, this adds sub-millisecond latency. Across data centers, it can add tens of milliseconds per commit. For write-heavy workloads, this overhead can be significant.</p>
+<p>If no replica acknowledges within <code>rpl_semi_sync_source_timeout</code> milliseconds (default: 10000), the source falls back to asynchronous replication. This prevents a replica failure from hanging the source indefinitely.</p>
+<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
+<p>Install and enable the semi-sync plugins on the source:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">INSTALL</span><span class="w"> </span><span class="n">PLUGIN</span><span class="w"> </span><span class="n">rpl_semi_sync_source</span><span class="w"> </span><span class="n">SONAME</span><span class="w"> </span><span class="s1">&#39;semisync_source.so&#39;</span><span class="p">;</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">rpl_semi_sync_source_enabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">rpl_semi_sync_source_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5000</span><span class="p">;</span><span class="w">  </span><span class="c1">-- 5 seconds before fallback</span>
+</span></code></pre></div>
+<p>On each replica:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">INSTALL</span><span class="w"> </span><span class="n">PLUGIN</span><span class="w"> </span><span class="n">rpl_semi_sync_replica</span><span class="w"> </span><span class="n">SONAME</span><span class="w"> </span><span class="s1">&#39;semisync_replica.so&#39;</span><span class="p">;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">rpl_semi_sync_replica_enabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Make these persistent by adding to <code>my.cnf</code>:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Source</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">[mysqld]</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="na">rpl_semi_sync_source_enabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="na">rpl_semi_sync_source_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">5000</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="c1"># Replica</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="k">[mysqld]</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="na">rpl_semi_sync_replica_enabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span></code></pre></div>
+<p>Monitor semi-sync status:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">SHOW</span><span class="w"> </span><span class="n">STATUS</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;Rpl_semi_sync%&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Key variables to watch:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Rpl_semi_sync_source_status</code></td>
+<td><code>ON</code> if semi-sync is active, <code>OFF</code> if fallen back to async</td>
+</tr>
+<tr>
+<td><code>Rpl_semi_sync_source_no_tx</code></td>
+<td>Transactions committed without semi-sync acknowledgment</td>
+</tr>
+<tr>
+<td><code>Rpl_semi_sync_source_yes_tx</code></td>
+<td>Transactions committed with semi-sync acknowledgment</td>
+</tr>
+<tr>
+<td><code>Rpl_semi_sync_source_avg_wait_time</code></td>
+<td>Average time waiting for replica acknowledgment</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">MySQL 8.0.26+ naming</p>
+<p>MySQL 8.0.26 renamed the semi-sync plugin from <code>rpl_semi_sync_master</code>/<code>rpl_semi_sync_slave</code> to <code>rpl_semi_sync_source</code>/<code>rpl_semi_sync_replica</code>. The old names still work as aliases but are deprecated.</p>
+</div>
+<hr />
+<h2 id="group-replication">Group Replication<a class="headerlink" href="#group-replication" title="Permanent link">&para;</a></h2>
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/group-replication.html"><strong>MySQL Group Replication</strong></a> goes beyond traditional source-replica topologies. It provides a fault-tolerant replication mechanism where a group of servers coordinate through a <strong>consensus protocol</strong> (based on Paxos). If a server fails, the remaining members automatically reconfigure the group - no external failover tool needed.</p>
+<h3 id="how-it-works_1">How It Works<a class="headerlink" href="#how-it-works_1" title="Permanent link">&para;</a></h3>
+<p>Every server in a Group Replication cluster is a full member of the group. When a member commits a transaction, the transaction is broadcast to all members through the group communication system. The group uses a consensus protocol to agree on the ordering of transactions. Only after a majority of members acknowledge the transaction is it considered committed.</p>
+<p>This majority-based consensus means a group of <code>N</code> members can tolerate up to <code>(N-1)/2</code> failures. A 3-member group tolerates 1 failure; a 5-member group tolerates 2.</p>
+<h3 id="single-primary-vs-multi-primary">Single-Primary vs Multi-Primary<a class="headerlink" href="#single-primary-vs-multi-primary" title="Permanent link">&para;</a></h3>
+<p>Group Replication supports two modes:</p>
+<p><strong>Single-primary mode</strong> (default and recommended): One member is elected as the primary and accepts writes. All other members are read-only secondaries. If the primary fails, the group automatically elects a new primary from the remaining members.</p>
+<p><strong>Multi-primary mode</strong>: All members accept writes simultaneously. The group uses certification-based conflict detection to identify conflicting transactions. If two members modify the same row concurrently, one transaction is rolled back. This mode is useful for write-heavy workloads distributed across multiple locations, but conflict handling adds complexity.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Single-Primary</th>
+<th>Multi-Primary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Write endpoint</td>
+<td>One server</td>
+<td>Any server</td>
+</tr>
+<tr>
+<td>Conflict handling</td>
+<td>Not needed</td>
+<td>Certification-based rollback</td>
+</tr>
+<tr>
+<td>Complexity</td>
+<td>Lower</td>
+<td>Higher</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Most workloads</td>
+<td>Geographically distributed writes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="basic-configuration">Basic Configuration<a class="headerlink" href="#basic-configuration" title="Permanent link">&para;</a></h3>
+<p>Each member needs Group Replication configured in <code>my.cnf</code>:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">[mysqld]</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="na">server-id</span><span class="w">                          </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="na">gtid-mode</span><span class="w">                          </span><span class="o">=</span><span class="w"> </span><span class="s">ON</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="na">enforce-gtid-consistency</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="s">ON</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="na">log-bin</span><span class="w">                            </span><span class="o">=</span><span class="w"> </span><span class="s">mysql-bin</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="na">log-replica-updates</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="s">ON</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="na">binlog-checksum</span><span class="w">                    </span><span class="o">=</span><span class="w"> </span><span class="s">NONE</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="na">relay-log-info-repository</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s">TABLE</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="na">transaction-write-set-extraction</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">XXHASH64</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="c1"># Group Replication settings</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="na">plugin-load-add</span><span class="w">                    </span><span class="o">=</span><span class="w"> </span><span class="s">group_replication.so</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="na">group_replication_group_name</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee&quot;</span>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="na">group_replication_start_on_boot</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">OFF</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="na">group_replication_local_address</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;10.0.0.1:33061&quot;</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="na">group_replication_group_seeds</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;10.0.0.1:33061,10.0.0.2:33061,10.0.0.3:33061&quot;</span>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="na">group_replication_single_primary_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">ON</span>
+</span></code></pre></div>
+<p>The <code>group_replication_group_name</code> is a UUID that identifies the group. All members must use the same value. Generate one with <code>SELECT UUID()</code>.</p>
+<p>Bootstrap the group on the first member:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">group_replication_bootstrap_group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">ON</span><span class="p">;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">START</span><span class="w"> </span><span class="n">GROUP_REPLICATION</span><span class="p">;</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">SET</span><span class="w"> </span><span class="k">GLOBAL</span><span class="w"> </span><span class="n">group_replication_bootstrap_group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">OFF</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Then join additional members:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">START</span><span class="w"> </span><span class="n">GROUP_REPLICATION</span><span class="p">;</span>
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">Never bootstrap twice</p>
+<p>Only bootstrap the group once, on the first member. Bootstrapping a second time creates a split-brain situation - two separate groups with the same name, each believing it is authoritative.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;In a 5-member MySQL Group Replication cluster, how many member failures can the cluster tolerate while still accepting writes?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;1 failure&quot;, &quot;feedback&quot;: &quot;A 5-member group can tolerate more than 1 failure. The formula is (N-1)/2, so (5-1)/2 = 2.&quot;}, {&quot;text&quot;: &quot;2 failures&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Group Replication uses majority-based consensus. A group of N members needs a majority (more than N/2) to form a quorum. With 5 members, the majority is 3, so the group can lose 2 members and still have a quorum of 3 to accept writes.&quot;}, {&quot;text&quot;: &quot;3 failures&quot;, &quot;feedback&quot;: &quot;With only 2 surviving members out of 5, the group cannot form a majority (needs 3). The cluster would become read-only.&quot;}, {&quot;text&quot;: &quot;4 failures&quot;, &quot;feedback&quot;: &quot;A single remaining member cannot form a majority. The cluster would be completely non-functional.&quot;}]}"><noscript><p><strong>In a 5-member MySQL Group Replication cluster, how many member failures can the cluster tolerate while still accepting writes?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="innodb-cluster">InnoDB Cluster<a class="headerlink" href="#innodb-cluster" title="Permanent link">&para;</a></h2>
+<p><strong>InnoDB Cluster</strong> is MySQL's integrated high-availability solution. It combines three components into a managed stack:</p>
+<ol>
+<li><strong>Group Replication</strong> - provides the underlying data replication and automatic failover</li>
+<li><a href="https://dev.mysql.com/doc/mysql-shell/8.0/en/"><strong>MySQL Shell</strong></a> - provides the administration interface for creating and managing the cluster</li>
+<li><a href="https://dev.mysql.com/doc/mysql-router/8.0/en/"><strong>MySQL Router</strong></a> - provides transparent connection routing so applications do not need to know which server is the primary</li>
+</ol>
+<pre class="mermaid"><code>flowchart TB
+    subgraph App["Application Layer"]
+        A1["App Server 1"]
+        A2["App Server 2"]
+    end
+
+    subgraph Router["MySQL Router"]
+        RW["Read-Write Port 6446"]
+        RO["Read-Only Port 6447"]
+    end
+
+    subgraph Cluster["InnoDB Cluster (Group Replication)"]
+        P["Primary (R/W)"]
+        S1["Secondary (R/O)"]
+        S2["Secondary (R/O)"]
+        P &lt;--&gt; S1
+        P &lt;--&gt; S2
+        S1 &lt;--&gt; S2
+    end
+
+    A1 --&gt; RW
+    A1 --&gt; RO
+    A2 --&gt; RW
+    A2 --&gt; RO
+    RW --&gt; P
+    RO --&gt; S1
+    RO --&gt; S2</code></pre>
+<h3 id="setup-workflow">Setup Workflow<a class="headerlink" href="#setup-workflow" title="Permanent link">&para;</a></h3>
+<p>The typical setup uses MySQL Shell's AdminAPI:</p>
+<p><strong>Step 1</strong>: Prepare each server instance:</p>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1">// In MySQL Shell (mysqlsh)</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nx">dba</span><span class="p">.</span><span class="nx">configureInstance</span><span class="p">(</span><span class="s1">&#39;root@10.0.0.1:3306&#39;</span><span class="p">);</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nx">dba</span><span class="p">.</span><span class="nx">configureInstance</span><span class="p">(</span><span class="s1">&#39;root@10.0.0.2:3306&#39;</span><span class="p">);</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nx">dba</span><span class="p">.</span><span class="nx">configureInstance</span><span class="p">(</span><span class="s1">&#39;root@10.0.0.3:3306&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<p>This checks and applies the configuration requirements (GTID mode, binary logging, etc.).</p>
+<p><strong>Step 2</strong>: Create the cluster on the first instance:</p>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nx">shell</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">&#39;root@10.0.0.1:3306&#39;</span><span class="p">);</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="kd">var</span><span class="w"> </span><span class="nx">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">dba</span><span class="p">.</span><span class="nx">createCluster</span><span class="p">(</span><span class="s1">&#39;production&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>Step 3</strong>: Add the remaining instances:</p>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nx">cluster</span><span class="p">.</span><span class="nx">addInstance</span><span class="p">(</span><span class="s1">&#39;root@10.0.0.2:3306&#39;</span><span class="p">);</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nx">cluster</span><span class="p">.</span><span class="nx">addInstance</span><span class="p">(</span><span class="s1">&#39;root@10.0.0.3:3306&#39;</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>Step 4</strong>: Check cluster status:</p>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nx">cluster</span><span class="p">.</span><span class="nx">status</span><span class="p">();</span>
+</span></code></pre></div>
+<p><strong>Step 5</strong>: Bootstrap MySQL Router on each application server:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>mysqlrouter<span class="w"> </span>--bootstrap<span class="w"> </span>root@10.0.0.1:3306<span class="w"> </span>--directory<span class="w"> </span>/opt/mysqlrouter
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>/opt/mysqlrouter/start.sh
+</span></code></pre></div>
+<p>MySQL Router automatically discovers the cluster topology and routes read-write connections to the primary and read-only connections to the secondaries. When the primary fails and Group Replication elects a new one, Router detects the change and reroutes traffic - no application changes needed.</p>
+<h3 id="checking-cluster-health">Checking Cluster Health<a class="headerlink" href="#checking-cluster-health" title="Permanent link">&para;</a></h3>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1">// In MySQL Shell</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nx">shell</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">&#39;root@10.0.0.1:3306&#39;</span><span class="p">);</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="kd">var</span><span class="w"> </span><span class="nx">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">dba</span><span class="p">.</span><span class="nx">getCluster</span><span class="p">();</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="nx">cluster</span><span class="p">.</span><span class="nx">status</span><span class="p">();</span>
+</span></code></pre></div>
+<p>The output shows the status of each member, its role (PRIMARY or SECONDARY), and any replication issues.</p>
+<hr />
+<h2 id="proxysql">ProxySQL<a class="headerlink" href="#proxysql" title="Permanent link">&para;</a></h2>
+<p><a href="https://proxysql.com/"><strong>ProxySQL</strong></a> is a high-performance proxy that sits between your application and MySQL. It provides connection pooling, read/write splitting, query routing, and query caching without modifying application code.</p>
+<h3 id="connection-routing">Connection Routing<a class="headerlink" href="#connection-routing" title="Permanent link">&para;</a></h3>
+<p>ProxySQL maintains two <strong>hostgroups</strong>: one for writes (the primary) and one for reads (the replicas). Applications connect to ProxySQL on a single port, and ProxySQL routes queries to the appropriate hostgroup based on configurable rules.</p>
+<h3 id="basic-setup">Basic Setup<a class="headerlink" href="#basic-setup" title="Permanent link">&para;</a></h3>
+<p>ProxySQL uses its own admin interface (default port 6032) for configuration. All configuration is stored in a SQLite database and applied at runtime.</p>
+<p>Add your MySQL servers:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1">-- Connect to ProxySQL admin interface</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="c1">-- mysql -u admin -padmin -h 127.0.0.1 -P 6032</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1">-- Hostgroup 0 = writes (primary), Hostgroup 1 = reads (replicas)</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">mysql_servers</span><span class="w"> </span><span class="p">(</span><span class="n">hostgroup_id</span><span class="p">,</span><span class="w"> </span><span class="n">hostname</span><span class="p">,</span><span class="w"> </span><span class="n">port</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">    </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;10.0.0.1&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">3306</span><span class="p">),</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">    </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;10.0.0.2&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">3306</span><span class="p">),</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="w">    </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;10.0.0.3&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">3306</span><span class="p">);</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="k">LOAD</span><span class="w"> </span><span class="n">MYSQL</span><span class="w"> </span><span class="n">SERVERS</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">RUNTIME</span><span class="p">;</span>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="n">SAVE</span><span class="w"> </span><span class="n">MYSQL</span><span class="w"> </span><span class="n">SERVERS</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">DISK</span><span class="p">;</span>
+</span></code></pre></div>
+<h3 id="readwrite-splitting">Read/Write Splitting<a class="headerlink" href="#readwrite-splitting" title="Permanent link">&para;</a></h3>
+<p>Configure query rules to route <code>SELECT</code> queries to the read hostgroup:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1">-- Route all SELECTs to hostgroup 1 (replicas)</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">mysql_query_rules</span><span class="w"> </span><span class="p">(</span><span class="n">rule_id</span><span class="p">,</span><span class="w"> </span><span class="n">active</span><span class="p">,</span><span class="w"> </span><span class="n">match_pattern</span><span class="p">,</span><span class="w"> </span><span class="n">destination_hostgroup</span><span class="p">)</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="w">    </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;^SELECT.*&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="c1">-- Route SELECT ... FOR UPDATE to hostgroup 0 (primary) since it acquires locks</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">mysql_query_rules</span><span class="w"> </span><span class="p">(</span><span class="n">rule_id</span><span class="p">,</span><span class="w"> </span><span class="n">active</span><span class="p">,</span><span class="w"> </span><span class="n">match_pattern</span><span class="p">,</span><span class="w"> </span><span class="n">destination_hostgroup</span><span class="p">)</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">    </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;^SELECT.*FOR UPDATE&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="k">LOAD</span><span class="w"> </span><span class="n">MYSQL</span><span class="w"> </span><span class="n">QUERY</span><span class="w"> </span><span class="n">RULES</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">RUNTIME</span><span class="p">;</span>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="n">SAVE</span><span class="w"> </span><span class="n">MYSQL</span><span class="w"> </span><span class="n">QUERY</span><span class="w"> </span><span class="n">RULES</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">DISK</span><span class="p">;</span>
+</span></code></pre></div>
+<p>Rules are evaluated in <code>rule_id</code> order. More specific rules should have lower <code>rule_id</code> values if you want them evaluated first, or use the <code>flagIN</code>/<code>flagOUT</code> chaining mechanism for complex routing logic.</p>
+<h3 id="user-configuration">User Configuration<a class="headerlink" href="#user-configuration" title="Permanent link">&para;</a></h3>
+<p>Add MySQL users that ProxySQL will use:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">mysql_users</span><span class="w"> </span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">default_hostgroup</span><span class="p">)</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">    </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;app_user&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;app_password&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="k">LOAD</span><span class="w"> </span><span class="n">MYSQL</span><span class="w"> </span><span class="n">USERS</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">RUNTIME</span><span class="p">;</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="n">SAVE</span><span class="w"> </span><span class="n">MYSQL</span><span class="w"> </span><span class="n">USERS</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">DISK</span><span class="p">;</span>
+</span></code></pre></div>
+<p>The <code>default_hostgroup</code> is used when no query rule matches (typically set to the write hostgroup so unclassified queries go to the primary).</p>
+<div class="admonition tip">
+<p class="admonition-title">ProxySQL vs MySQL Router</p>
+<p>MySQL Router is the simpler choice when using InnoDB Cluster - it integrates tightly and requires minimal configuration. ProxySQL is more powerful for custom routing, query caching, connection multiplexing, and mixed environments where you need fine-grained control over how traffic reaches your databases.</p>
+</div>
+<hr />
+<h2 id="failover-patterns">Failover Patterns<a class="headerlink" href="#failover-patterns" title="Permanent link">&para;</a></h2>
+<p>When a source server fails, you need a plan to promote a replica. The complexity of this process depends on your replication topology and tooling.</p>
+<h3 id="manual-failover">Manual Failover<a class="headerlink" href="#manual-failover" title="Permanent link">&para;</a></h3>
+<p>With basic binary log replication, failover is a manual process:</p>
+<ol>
+<li>Identify the most up-to-date replica (the one with the highest executed GTID set, or the most recent relay log position)</li>
+<li>Ensure the replica has applied all events in its relay log</li>
+<li>Promote the replica: <code>STOP REPLICA; RESET REPLICA ALL;</code></li>
+<li>Disable read-only mode: <code>SET GLOBAL read_only = OFF;</code></li>
+<li>Re-point remaining replicas to the new source</li>
+<li>Update application connection strings or DNS records</li>
+</ol>
+<p>With GTID replication, step 5 is straightforward - each replica uses <code>SOURCE_AUTO_POSITION = 1</code> and automatically catches up from the new source. Without GTIDs, you must calculate the correct binary log position on the new source for each remaining replica.</p>
+<h3 id="automatic-failover-with-innodb-cluster">Automatic Failover with InnoDB Cluster<a class="headerlink" href="#automatic-failover-with-innodb-cluster" title="Permanent link">&para;</a></h3>
+<p>InnoDB Cluster handles failover automatically. When the primary fails:</p>
+<ol>
+<li>Group Replication detects the failure (typically within seconds)</li>
+<li>The remaining members elect a new primary based on a configurable weight</li>
+<li>MySQL Router detects the topology change and reroutes write traffic</li>
+<li>Applications continue without intervention</li>
+</ol>
+<h3 id="automatic-failover-with-orchestrator">Automatic Failover with Orchestrator<a class="headerlink" href="#automatic-failover-with-orchestrator" title="Permanent link">&para;</a></h3>
+<p><a href="https://github.com/openark/orchestrator"><strong>Orchestrator</strong></a> is an external topology manager for MySQL replication. It continuously monitors the replication topology, detects failures, and can perform automated failover. Orchestrator is widely used in environments that run traditional (non-Group Replication) topologies and need automated recovery.</p>
+<p>Orchestrator works by:</p>
+<ul>
+<li>Periodically polling each MySQL instance for its replication status</li>
+<li>Maintaining a topology map in its own backend database</li>
+<li>Running configurable recovery hooks (promotion scripts, DNS updates, VIP failover) when a failure is detected</li>
+</ul>
+<h3 id="split-brain-prevention">Split-Brain Prevention<a class="headerlink" href="#split-brain-prevention" title="Permanent link">&para;</a></h3>
+<p><strong>Split-brain</strong> occurs when two servers both believe they are the primary and accept writes simultaneously. This causes divergent data that is difficult or impossible to reconcile.</p>
+<p>Prevention strategies:</p>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>How It Works</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quorum-based consensus</td>
+<td>Group Replication requires a majority of members to agree before accepting writes. A partitioned minority cannot form quorum and stops accepting writes.</td>
+</tr>
+<tr>
+<td>Fencing</td>
+<td>Before promoting a new primary, ensure the old primary is truly down (STONITH - "Shoot The Other Node In The Head"). This can mean powering off the old server via IPMI/iLO or revoking its network access.</td>
+</tr>
+<tr>
+<td>Lease-based leadership</td>
+<td>The primary holds a time-limited lease (in a consensus store like etcd). If it cannot renew the lease, it stops accepting writes. Only a server holding a valid lease can serve as primary.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="monitoring-replication-lag">Monitoring Replication Lag<a class="headerlink" href="#monitoring-replication-lag" title="Permanent link">&para;</a></h2>
+<p>Replication lag - the delay between a transaction committing on the source and being applied on the replica - is the most important replication health metric. A lagging replica serves stale data, which can cause application bugs that are difficult to diagnose.</p>
+<h3 id="seconds_behind_master">Seconds_Behind_Master<a class="headerlink" href="#seconds_behind_master" title="Permanent link">&para;</a></h3>
+<p>The built-in metric from <code>SHOW REPLICA STATUS</code>:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="k">SHOW</span><span class="w"> </span><span class="n">REPLICA</span><span class="w"> </span><span class="n">STATUS</span><span class="err">\</span><span class="k">G</span>
+</span></code></pre></div>
+<p>Look for the <code>Seconds_Behind_Source</code> field (historically <code>Seconds_Behind_Master</code>). This value represents the difference between the replica's clock and the timestamp of the event it is currently applying.</p>
+<p>The problem: this metric is unreliable. It resets to <code>0</code> when the SQL thread is idle (even if the I/O thread is behind), jumps erratically during large transactions, and does not account for clock drift between servers.</p>
+<h3 id="heartbeat-tables">Heartbeat Tables<a class="headerlink" href="#heartbeat-tables" title="Permanent link">&para;</a></h3>
+<p>A more reliable approach: write a timestamp to a table on the source at regular intervals and measure the difference on the replica.</p>
+<p>Create the heartbeat table:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">replication_heartbeat</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="w">    </span><span class="n">id</span><span class="w">        </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="w">    </span><span class="n">ts</span><span class="w">        </span><span class="k">TIMESTAMP</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="w">    </span><span class="n">server_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="p">);</span>
+</span></code></pre></div>
+<p>On the source, update the timestamp periodically (via a cron job or daemon):</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="k">REPLACE</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">replication_heartbeat</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">ts</span><span class="p">,</span><span class="w"> </span><span class="n">server_id</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">NOW</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span><span class="w"> </span><span class="o">@@</span><span class="n">server_id</span><span class="p">);</span>
+</span></code></pre></div>
+<p>On the replica, measure the lag:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">TIMESTAMPDIFF</span><span class="p">(</span><span class="n">MICROSECOND</span><span class="p">,</span><span class="w"> </span><span class="n">ts</span><span class="p">,</span><span class="w"> </span><span class="n">NOW</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000000</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">lag_seconds</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="k">FROM</span><span class="w"> </span><span class="n">replication_heartbeat</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span></code></pre></div>
+<h3 id="pt-heartbeat">pt-heartbeat<a class="headerlink" href="#pt-heartbeat" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.percona.com/percona-toolkit/pt-heartbeat.html"><strong><code>pt-heartbeat</code></strong></a> from Percona Toolkit automates the heartbeat approach. It is the industry standard for measuring replication lag:</p>
+<p>Start the daemon on the source:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>pt-heartbeat<span class="w"> </span>--update<span class="w"> </span>--database<span class="w"> </span>percona<span class="w"> </span>--create-table<span class="w"> </span>--daemonize
+</span></code></pre></div>
+<p>Monitor lag from the replica:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>pt-heartbeat<span class="w"> </span>--monitor<span class="w"> </span>--database<span class="w"> </span>percona<span class="w"> </span>--master-server-id<span class="w"> </span><span class="m">1</span>
+</span></code></pre></div>
+<p>Or get a single reading:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>pt-heartbeat<span class="w"> </span>--check<span class="w"> </span>--database<span class="w"> </span>percona<span class="w"> </span>--master-server-id<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="c1"># Output: 0.02 (seconds of lag)</span>
+</span></code></pre></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Checking Replication Status and Lag&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;mysql -e \&quot;SHOW REPLICA STATUS\\G\&quot; | grep -E &#39;Replica_IO_Running|Replica_SQL_Running|Seconds_Behind&#39;&quot;, &quot;output&quot;: &quot;Replica_IO_Running: Yes\nReplica_SQL_Running: Yes\nSeconds_Behind_Source: 0\n&quot;, &quot;narration&quot;: &quot;Start by checking the basic replication status. Both the I/O and SQL threads should be running. Seconds_Behind_Source of 0 looks good, but this metric can be misleading.&quot;}, {&quot;command&quot;: &quot;mysql -e \&quot;SELECT @@gtid_executed\\G\&quot;&quot;, &quot;output&quot;: &quot;@@gtid_executed: 3E11FA47-71CA-11E1-9E33-C80AA9429562:1-15847\n&quot;, &quot;narration&quot;: &quot;Check the GTID executed set. This tells you exactly which transactions this server has applied. Compare this with the source to identify gaps.&quot;}, {&quot;command&quot;: &quot;mysql -e \&quot;SELECT * FROM performance_schema.replication_applier_status_by_worker\\G\&quot; | head -20&quot;, &quot;output&quot;: &quot;CHANNEL_NAME:\nWORKER_ID: 0\nTHREAD_ID: 48\nSERVICE_STATE: ON\nLAST_ERROR_NUMBER: 0\nLAST_ERROR_MESSAGE:\nLAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00.000000\nLAST_APPLIED_TRANSACTION: 3E11FA47-71CA-11E1-9E33-C80AA9429562:15847\nAPPLYING_TRANSACTION:\nLAST_APPLIED_TRANSACTION_END_APPLY_TIMESTAMP: 2025-03-15 14:22:01.332847\n&quot;, &quot;narration&quot;: &quot;The Performance Schema tables give detailed applier status. LAST_APPLIED_TRANSACTION shows the most recently applied GTID, and the timestamp tells you exactly when it was applied.&quot;}, {&quot;command&quot;: &quot;pt-heartbeat --check --database percona --master-server-id 1&quot;, &quot;output&quot;: &quot;0.02&quot;, &quot;narration&quot;: &quot;pt-heartbeat gives you the actual lag in seconds by comparing heartbeat timestamps. This is far more reliable than Seconds_Behind_Source. A value of 0.02 means the replica is only 20 milliseconds behind.&quot;}, {&quot;command&quot;: &quot;mysql -e \&quot;SELECT ts, TIMESTAMPDIFF(MICROSECOND, ts, NOW(6))/1000000 AS lag_seconds FROM percona.heartbeat\\G\&quot;&quot;, &quot;output&quot;: &quot;ts: 2025-03-15 14:22:01.445123\nlag_seconds: 0.0200\n&quot;, &quot;narration&quot;: &quot;You can also query the heartbeat table directly. This shows the last heartbeat timestamp written by the source and the computed lag. Consistent sub-second lag means replication is healthy.&quot;}, {&quot;command&quot;: &quot;mysql -e \&quot;SHOW STATUS LIKE &#39;Rpl_semi_sync%&#39;\&quot; | grep -E &#39;status|yes_tx|no_tx&#39;&quot;, &quot;output&quot;: &quot;Rpl_semi_sync_source_status\tON\nRpl_semi_sync_source_no_tx\t0\nRpl_semi_sync_source_yes_tx\t15847\n&quot;, &quot;narration&quot;: &quot;On the source, check semi-sync status. All 15847 transactions were acknowledged by at least one replica (yes_tx), and none were committed without acknowledgment (no_tx). Semi-sync is active and healthy.&quot;}]}"><noscript><p><strong>Checking Replication Status and Lag</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="choosing-a-topology">Choosing a Topology<a class="headerlink" href="#choosing-a-topology" title="Permanent link">&para;</a></h2>
+<p>The right replication topology depends on your requirements:</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Recommended Topology</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read scaling for a single application</td>
+<td>Source with 1-3 async replicas</td>
+</tr>
+<tr>
+<td>Zero committed-transaction loss</td>
+<td>Semi-synchronous replication</td>
+</tr>
+<tr>
+<td>Automatic failover without external tools</td>
+<td>Group Replication or InnoDB Cluster</td>
+</tr>
+<tr>
+<td>Application-transparent routing</td>
+<td>InnoDB Cluster (Router) or ProxySQL</td>
+</tr>
+<tr>
+<td>Fine-grained query routing and caching</td>
+<td>ProxySQL</td>
+</tr>
+<tr>
+<td>Multi-data-center writes</td>
+<td>Group Replication in multi-primary mode (with careful conflict handling)</td>
+</tr>
+<tr>
+<td>Maximum simplicity</td>
+<td>InnoDB Cluster (manages Group Replication, Router, and administration in one stack)</td>
+</tr>
+</tbody>
+</table>
+<p>For most production deployments, start with InnoDB Cluster if you are running MySQL 8.0+. It provides automatic failover, transparent routing, and a management interface out of the box. Add ProxySQL if you need advanced query routing, connection multiplexing, or query caching on top.</p>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Design a Replication Topology&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;You are architecting the database layer for an e-commerce platform with these requirements:\n\n- The application performs 80% reads and 20% writes\n- You need to survive the failure of any single database server without manual intervention\n- There is a reporting system that runs long analytical queries, and it must not impact production read latency\n- The application uses MySQL 8.0\n- You have 5 servers available\n\nDesign a replication topology that meets these requirements. For each server, specify:\n\n1. Its role (primary, secondary, dedicated reporting replica, etc.)\n2. The replication method connecting it (Group Replication, async, semi-sync)\n3. How applications connect (directly, through Router, through ProxySQL)\n4. What happens when the primary server fails\n5. How you isolate the reporting workload from production reads\n&quot;, &quot;hints&quot;: [&quot;Consider InnoDB Cluster for the core group - how many members do you need for automatic failover?&quot;, &quot;A dedicated reporting replica can use asynchronous replication from one of the cluster members&quot;, &quot;Think about which connection router serves which traffic type&quot;, &quot;Group Replication needs an odd number of members for clean majority quorum&quot;], &quot;solution&quot;: &quot;**Topology:**\n\n- **Servers 1-3**: InnoDB Cluster (3-node Group Replication, single-primary mode)\n  - Server 1: Primary (read-write)\n  - Servers 2-3: Secondaries (read-only)\n  - MySQL Router on each app server routes writes to port 6446 (primary) and reads to port 6447 (secondaries)\n\n- **Server 4**: Dedicated reporting replica\n  - Connected via asynchronous replication from the InnoDB Cluster primary\n  - Not part of the Group Replication group (does not participate in consensus)\n  - Reporting applications connect directly to this server\n  - Can lag behind production without impacting the cluster\n\n- **Server 5**: ProxySQL (or a second Router instance for redundancy)\n  - Routes application traffic to the InnoDB Cluster\n  - Provides connection pooling and optional query caching\n  - Can direct reporting queries to Server 4 using query rules\n\n**Failover behavior:**\nWhen Server 1 (primary) fails, Group Replication automatically elects Server 2 or 3 as the new primary. MySQL Router detects the change and reroutes write traffic. The reporting replica needs to be re-pointed to the new primary (or use GTID auto-positioning to connect to any cluster member).\n\n**Why this works:**\n- The 3-node cluster tolerates 1 failure with automatic recovery\n- Read scaling is handled by the secondaries through Router\n- Reporting isolation is achieved by a separate async replica outside the cluster\n- ProxySQL adds connection pooling and fine-grained routing control\n\n```\nInnoDB Cluster (Group Replication)\n┌──────────────────────────────────────────────────┐\n│  Server 1 (Primary) ←→ Server 2 (Secondary)     │\n│         ↕                     ↕                  │\n│              Server 3 (Secondary)                │\n└──────────────────────────────────────────────────┘\n     │                    │\n     │ async repl         │ MySQL Router\n     ↓                    ↓\nServer 4              App Servers\n(Reporting)           (via Router/ProxySQL on Server 5)\n```&quot;}"><noscript><p><strong>Design a Replication Topology</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/replication.html">MySQL Replication Documentation</a> - Official reference covering all replication modes, configuration, and troubleshooting</li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/group-replication.html">MySQL Group Replication</a> - Detailed documentation on consensus protocol, conflict detection, and operational procedures</li>
+<li><a href="https://dev.mysql.com/doc/mysql-shell/8.0/en/mysql-innodb-cluster.html">MySQL InnoDB Cluster</a> - MySQL Shell AdminAPI reference for cluster setup and management</li>
+<li><a href="https://proxysql.com/documentation/">ProxySQL Documentation</a> - Configuration reference for query rules, hostgroups, and connection pooling</li>
+<li><a href="https://docs.percona.com/percona-toolkit/pt-heartbeat.html">Percona Toolkit: pt-heartbeat</a> - Accurate replication lag measurement tool documentation</li>
+<li><a href="https://github.com/openark/orchestrator">Orchestrator</a> - Topology management and automated failover for MySQL replication</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../mysql-performance/">MySQL Performance &amp; Optimization</a> | <strong>Next:</strong> <a href="../postgresql-fundamentals/">PostgreSQL Fundamentals</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+MySQL%20Replication%20%26%20HA" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

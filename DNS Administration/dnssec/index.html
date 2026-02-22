@@ -1,0 +1,4510 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/DNS%20Administration/dnssec/">
+      
+      
+        <link rel="prev" href="../powerdns/">
+      
+      
+        <link rel="next" href="../dns-architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>DNSSEC - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="DNSSEC - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/DNS%20Administration/dnssec.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/DNS%20Administration/dnssec/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="DNSSEC - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/DNS%20Administration/dnssec.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dnssec" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DNSSEC
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Dev%20Zero/Perl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-dnssec-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why DNSSEC Exists
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why DNSSEC Exists">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-kaminsky-attack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Kaminsky Attack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-dnssec-does-and-doesnt-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What DNSSEC Does (and Doesn't Do)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dnssec-trust-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The DNSSEC Trust Chain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The DNSSEC Trust Chain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#root-zone-signing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root Zone Signing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-the-chain-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the Chain Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dnssec-record-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNSSEC Record Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DNSSEC Record Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dnskey" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNSKEY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rrsig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RRSIG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nsec-and-nsec3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NSEC and NSEC3
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-management-ksk-and-zsk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Management: KSK and ZSK
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Management: KSK and ZSK">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-two-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Two Keys?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Recommendations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rollover-procedures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollover Procedures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signing-with-bind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signing with BIND
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signing with BIND">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automated-signing-with-dnssec-policy-bind-916" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Signing with dnssec-policy (BIND 9.16+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-signing-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Signing (Legacy)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signing-with-nsd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signing with NSD
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signing-with-powerdns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signing with PowerDNS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validating-dnssec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validating DNSSEC
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validating DNSSEC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dig-dnssec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dig +dnssec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        delv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dig-cd-checking-disabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dig +cd (Checking Disabled)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#online-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Online Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-dnssec-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common DNSSEC Failures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common DNSSEC Failures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expired-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expired Signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dsdnskey-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DS/DNSKEY Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clock-skew" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clock Skew
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-downgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Downgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Dev%20Zero/Perl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-dnssec-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why DNSSEC Exists
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why DNSSEC Exists">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-kaminsky-attack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Kaminsky Attack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-dnssec-does-and-doesnt-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What DNSSEC Does (and Doesn't Do)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dnssec-trust-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The DNSSEC Trust Chain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The DNSSEC Trust Chain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#root-zone-signing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root Zone Signing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-the-chain-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the Chain Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dnssec-record-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNSSEC Record Types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DNSSEC Record Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dnskey" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNSKEY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rrsig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RRSIG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nsec-and-nsec3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NSEC and NSEC3
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-management-ksk-and-zsk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Management: KSK and ZSK
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Management: KSK and ZSK">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-two-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Two Keys?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-recommendations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Recommendations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rollover-procedures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollover Procedures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signing-with-bind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signing with BIND
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signing with BIND">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automated-signing-with-dnssec-policy-bind-916" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Signing with dnssec-policy (BIND 9.16+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-signing-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Signing (Legacy)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signing-with-nsd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signing with NSD
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signing-with-powerdns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signing with PowerDNS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validating-dnssec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validating DNSSEC
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validating DNSSEC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dig-dnssec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dig +dnssec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        delv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dig-cd-checking-disabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dig +cd (Checking Disabled)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#online-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Online Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-dnssec-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common DNSSEC Failures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common DNSSEC Failures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expired-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expired Signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dsdnskey-mismatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DS/DNSKEY Mismatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clock-skew" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clock Skew
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-downgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Downgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/DNS Administration/dnssec.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="dnssec">DNSSEC<a class="headerlink" href="#dnssec" title="Permanent link">&para;</a></h1>
+<p>This guide covers DNSSEC - the system that adds cryptographic authentication to DNS. You'll learn why it was created, how the trust chain works from the root zone down to individual records, how to sign zones with BIND, NSD, and PowerDNS, and how to debug validation failures.</p>
+<hr />
+<h2 id="why-dnssec-exists">Why DNSSEC Exists<a class="headerlink" href="#why-dnssec-exists" title="Permanent link">&para;</a></h2>
+<p>DNS was designed in 1983 with no authentication whatsoever. When a resolver receives a DNS response, it has no way to verify that the answer actually came from the authoritative server and wasn't modified in transit. This is a problem because DNS is infrastructure - every HTTPS connection, email delivery, and API call starts with a DNS query. If an attacker can forge DNS responses, they can redirect traffic anywhere.</p>
+<h3 id="the-kaminsky-attack">The Kaminsky Attack<a class="headerlink" href="#the-kaminsky-attack" title="Permanent link">&para;</a></h3>
+<p>DNS cache poisoning attacks had been known for years, but in 2008, security researcher Dan Kaminsky discovered a technique that made them devastatingly practical. The attack exploited the way resolvers handle referrals to flood a resolver with forged responses, each trying a different transaction ID. Because the transaction ID was only 16 bits (65,536 possibilities), a high-speed attacker could guess the right ID within seconds and inject a poisoned cache entry.</p>
+<p>Kaminsky recognized the severity and did something unusual - instead of publishing immediately, he coordinated a massive multi-vendor patching effort through the Department of Homeland Security's US-CERT. DNS software vendors quietly developed and deployed source port randomization patches (adding ~16 bits of entropy) before the vulnerability was publicly disclosed. Kaminsky presented the full details at Black Hat 2008, famously wearing rollerskates on stage.</p>
+<p>The Kaminsky attack was mitigated but not eliminated by source port randomization. DNSSEC is the real fix - it makes forged responses cryptographically detectable, regardless of how clever the spoofing technique is.</p>
+<h3 id="what-dnssec-does-and-doesnt-do">What DNSSEC Does (and Doesn't Do)<a class="headerlink" href="#what-dnssec-does-and-doesnt-do" title="Permanent link">&para;</a></h3>
+<p><strong>DNSSEC provides:</strong>
+- <strong>Authentication</strong> - proof that the response came from the zone owner
+- <strong>Integrity</strong> - proof that the response wasn't modified in transit
+- <strong>Authenticated denial of existence</strong> - proof that a name genuinely doesn't exist (not a forged NXDOMAIN)</p>
+<p><strong>DNSSEC does NOT provide:</strong>
+- <strong>Confidentiality</strong> - DNS queries and responses are still plaintext (that's what DoH/DoT are for)
+- <strong>Protection against a compromised authoritative server</strong> - if the attacker controls the zone data and signing keys, DNSSEC signs the attacker's data
+- <strong>DDoS protection</strong> - DNSSEC responses are larger than unsigned ones, potentially worsening amplification</p>
+<hr />
+<h2 id="the-dnssec-trust-chain">The DNSSEC Trust Chain<a class="headerlink" href="#the-dnssec-trust-chain" title="Permanent link">&para;</a></h2>
+<p>DNSSEC works by creating a chain of cryptographic trust from the root zone down to the record you're querying. Each link in the chain is verified by the one above it.</p>
+<h3 id="root-zone-signing">Root Zone Signing<a class="headerlink" href="#root-zone-signing" title="Permanent link">&para;</a></h3>
+<p>The root zone was fully signed with DNSSEC on <strong>July 15, 2010</strong>. The signing ceremony was (and continues to be) one of the most carefully controlled processes in internet governance.</p>
+<p>The ICANN <strong>root KSK ceremony</strong> requires approximately 12-14 people from around the world to physically assemble at one of two secure facilities (in Culver City, California or El Segundo, Virginia). Trusted Community Representatives unlock safe deposit boxes containing smart cards. Multiple HSMs (Hardware Security Modules) are involved. The ceremony follows a rigid script, is livestreamed, and typically takes 3-8 hours. A complete audit trail is published. The entire point is that no single person or organization can sign the root zone alone.</p>
+<h3 id="how-the-chain-works">How the Chain Works<a class="headerlink" href="#how-the-chain-works" title="Permanent link">&para;</a></h3>
+<p>Every signed zone has:
+1. A <strong>DNSKEY</strong> record containing the zone's public key(s)
+2. <strong>RRSIG</strong> records - cryptographic signatures over each record set
+3. A <strong>DS (Delegation Signer)</strong> record in the <em>parent</em> zone that hashes the child's key</p>
+<p>The chain works like this:</p>
+<pre class="mermaid"><code>graph TD
+    TA["Trust Anchor&lt;br/&gt;(built into resolver)"]
+    TA --&gt;|"verifies"| RootKey
+
+    subgraph root ["Root Zone (.)"]
+        RootKey["DNSKEY (KSK + ZSK)"]
+        RootKey --&gt;|"signs"| RootDS["DS for .com"]
+        RootKey --&gt;|"signs"| RootRRSIG["RRSIG over all root records"]
+    end
+
+    RootDS --&gt;|"hash matches"| ComKey
+
+    subgraph dotcom [".com Zone"]
+        ComKey["DNSKEY (KSK + ZSK)"]
+        ComKey --&gt;|"signs"| ComDS["DS for example.com"]
+        ComKey --&gt;|"signs"| ComRRSIG["RRSIG over all .com records"]
+    end
+
+    ComDS --&gt;|"hash matches"| ExKey
+
+    subgraph example ["example.com Zone"]
+        ExKey["DNSKEY (KSK + ZSK)"]
+        ExKey --&gt;|"signs"| ExRRSIG["RRSIG over A record"]
+        ExRRSIG --&gt;|"validates"| Answer
+    end
+
+    Answer["www.example.com A 93.184.216.34"]</code></pre>
+<p>A validating resolver starts at the root (whose key it already knows - the "trust anchor") and follows the chain down. At each level:</p>
+<ol>
+<li>Fetch the DNSKEY for the zone</li>
+<li>Verify it matches the DS record in the parent zone</li>
+<li>Use the DNSKEY to verify the RRSIG signatures on the records</li>
+<li>If any step fails, return SERVFAIL instead of the (potentially forged) answer</li>
+</ol>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;How does a DNSSEC validator verify that a response is authentic?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;It checks the response against a local database of known-good records&quot;, &quot;feedback&quot;: &quot;DNSSEC doesn&#39;t use a local database. It follows a chain of cryptographic signatures back to a trusted root key.&quot;}, {&quot;text&quot;: &quot;It follows a chain of signatures from the root trust anchor down to the record&#39;s zone&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! The validator starts with a trusted root key (trust anchor) and follows the DS/DNSKEY chain: root signs .com&#39;s DS record, .com&#39;s key signs example.com&#39;s DS record, and example.com&#39;s key signs the actual records. Each link is cryptographically verified.&quot;}, {&quot;text&quot;: &quot;It contacts the authoritative server over an encrypted TLS connection&quot;, &quot;feedback&quot;: &quot;DNSSEC uses cryptographic signatures, not encrypted connections. The responses travel in plain text but are signed. DNS-over-TLS provides transport encryption, which is a different security layer.&quot;}, {&quot;text&quot;: &quot;It compares responses from multiple DNS servers and uses majority consensus&quot;, &quot;feedback&quot;: &quot;DNSSEC doesn&#39;t use consensus. It uses public-key cryptography to verify that signatures on records are valid, following the chain of trust from the root.&quot;}]}"><noscript><p><strong>How does a DNSSEC validator verify that a response is authentic?</strong> (requires JavaScript)</p></noscript></div>
+<p>The DS record is the critical link between zones. Without it, a resolver has no way to verify that a child zone's DNSKEY is legitimate. When you register DNSSEC with your registrar, you're providing the DS record (a hash of your KSK) to be placed in the parent zone. This creates a verifiable path from the parent's signature down to your zone's keys.</p>
+<pre class="mermaid"><code>flowchart TD
+    Root["Root Zone '.'"] --&gt;|"DS record for .com"| TLD["TLD '.com'"]
+    TLD --&gt;|"DS record for example.com"| Domain["Zone 'example.com'"]
+    Domain --&gt;|"DNSKEY signs"| RR["RRSIG on A record"]
+
+    Root --&gt;|"DNSKEY self-signed&lt;br/&gt;by trust anchor"| RootKey["Root KSK"]
+    TLD --&gt;|"DNSKEY signed by&lt;br/&gt;parent DS"| TLDKey[".com KSK"]
+    Domain --&gt;|"DNSKEY signed by&lt;br/&gt;parent DS"| DomKey["example.com KSK"]</code></pre>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What role does the DS (Delegation Signer) record play in the DNSSEC chain of trust?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;It encrypts the communication between the parent and child zone name servers&quot;, &quot;feedback&quot;: &quot;DNSSEC does not encrypt DNS traffic. The DS record is a cryptographic hash that links a parent zone to its child&#39;s signing key, enabling signature verification across the delegation boundary.&quot;}, {&quot;text&quot;: &quot;It contains a hash of the child zone&#39;s KSK, published in the parent zone, allowing a resolver to verify the child&#39;s DNSKEY is legitimate&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! The DS record is published in the parent zone (e.g., .com) and contains a hash of the child zone&#39;s KSK. When a resolver follows the chain from root to .com to example.com, it uses the DS record in .com to confirm that example.com&#39;s DNSKEY is the authentic key, not one injected by an attacker.&quot;}, {&quot;text&quot;: &quot;It stores a backup copy of the child zone&#39;s private signing key in the parent zone&quot;, &quot;feedback&quot;: &quot;Private keys are never shared or stored in DNS records. The DS record contains only a hash of the child&#39;s public KSK - not the key itself, and certainly not the private key.&quot;}, {&quot;text&quot;: &quot;It delegates DNSSEC signing authority from the root zone directly to the domain&#39;s zone&quot;, &quot;feedback&quot;: &quot;The chain of trust is not a direct link from root to domain. Each zone&#39;s DS record connects only to its immediate child. The root signs .com&#39;s DS, .com signs example.com&#39;s DS - each delegation is a separate link in the chain.&quot;}]}"><noscript><p><strong>What role does the DS (Delegation Signer) record play in the DNSSEC chain of trust?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="dnssec-record-types">DNSSEC Record Types<a class="headerlink" href="#dnssec-record-types" title="Permanent link">&para;</a></h2>
+<h3 id="dnskey">DNSKEY<a class="headerlink" href="#dnskey" title="Permanent link">&para;</a></h3>
+<p>The <strong>DNSKEY</strong> record publishes a zone's public key. A zone typically has two keys:</p>
+<p><strong>KSK (Key Signing Key)</strong> - flag value 257. Signs only the DNSKEY record set. The KSK's hash is published as a DS record in the parent zone. KSKs are changed infrequently (every 1-2 years).</p>
+<p><strong>ZSK (Zone Signing Key)</strong> - flag value 256. Signs all other record sets in the zone. ZSKs are changed more frequently (every 1-3 months) because they're used heavily and a compromise would be more impactful.</p>
+<p>Some implementations use a single <strong>CSK (Combined Signing Key)</strong> - flag value 257 - that does both jobs. PowerDNS defaults to this approach.</p>
+<h3 id="rrsig">RRSIG<a class="headerlink" href="#rrsig" title="Permanent link">&para;</a></h3>
+<p>An <strong>RRSIG</strong> record is a cryptographic signature over a specific record set (all records of the same name and type). For every A record, MX record, etc., there's a corresponding RRSIG.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>dig<span class="w"> </span>+dnssec<span class="w"> </span>example.com<span class="w"> </span>A
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>;; ANSWER SECTION:
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>example.com.    86400   IN  A       93.184.216.34
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>example.com.    86400   IN  RRSIG   A 13 2 86400 20250215000000 20250201000000 31406 example.com. abc123...
+</span></code></pre></div>
+<p>The RRSIG fields include the algorithm (13 = ECDSAP256SHA256), the number of labels (2), the original TTL, signature expiration and inception timestamps, the key tag (identifying which DNSKEY made the signature), and the signature itself.</p>
+<p><strong>RRSIG signatures have expiration dates.</strong> If signatures expire and aren't refreshed, DNSSEC validation fails and the domain stops resolving for validating resolvers. This is the most common DNSSEC operational failure. In October 2023, Cloudflare experienced a 3-hour outage for some domains due to expired DNSSEC signatures that went undetected.</p>
+<h3 id="ds">DS<a class="headerlink" href="#ds" title="Permanent link">&para;</a></h3>
+<p>A <strong>DS (Delegation Signer)</strong> record in the parent zone links to the child zone's DNSKEY. It's a hash of the child's KSK. You submit the DS record to your registrar, who publishes it in the parent zone (e.g., <code>.com</code>).</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>dig<span class="w"> </span>DS<span class="w"> </span>example.com<span class="w"> </span>+short
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>31406 13 2 abc123def456789...
+</span></code></pre></div>
+<p>The fields are: key tag, algorithm, digest type (2 = SHA-256), and the digest.</p>
+<h3 id="nsec-and-nsec3">NSEC and NSEC3<a class="headerlink" href="#nsec-and-nsec3" title="Permanent link">&para;</a></h3>
+<p>How do you prove that a name <em>doesn't</em> exist? You can't sign a record that doesn't exist. DNSSEC solves this with <strong>NSEC (Next Secure)</strong> records.</p>
+<p>An <strong>NSEC</strong> record says "the next name that exists after this one is X." By chaining all existing names together, a resolver can verify that a queried name falls in a gap and genuinely doesn't exist.</p>
+<pre class="mermaid"><code>graph LR
+    A["alpha.example.com&lt;br/&gt;NSEC → beta"]
+    B["beta.example.com&lt;br/&gt;NSEC → delta"]
+    D["delta.example.com&lt;br/&gt;NSEC → mail"]
+    M["mail.example.com&lt;br/&gt;NSEC → www"]
+    W["www.example.com&lt;br/&gt;NSEC → alpha"]
+
+    A --&gt; B --&gt; D --&gt; M --&gt; W --&gt; A
+
+    Q{{"Query: charlie.example.com"}}
+    Q -.-&gt;|"falls between&lt;br/&gt;beta and delta"| GAP["NSEC proves: no name&lt;br/&gt;exists between beta and delta&lt;br/&gt;→ NXDOMAIN is authentic"]</code></pre>
+<p>The problem with NSEC is <strong>zone walking</strong>. An attacker can follow the NSEC chain to enumerate every name in a zone:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Start with a query for a name that doesn&#39;t exist</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>dig<span class="w"> </span>@ns1.example.com<span class="w"> </span>nonexistent.example.com
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># The NSEC record reveals the next existing name</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># Query for a name just after that, get another NSEC, repeat...</span>
+</span></code></pre></div>
+<p><strong>NSEC3</strong> was created to prevent zone walking. Instead of listing names directly, NSEC3 uses hashed names. The chain still proves non-existence, but an attacker can't read the actual names from the hashes (though offline dictionary attacks against the hashes are possible).</p>
+<p>Most modern zones use NSEC3 for zone walking prevention.</p>
+<hr />
+<h2 id="key-management-ksk-and-zsk">Key Management: KSK and ZSK<a class="headerlink" href="#key-management-ksk-and-zsk" title="Permanent link">&para;</a></h2>
+<h3 id="why-two-keys">Why Two Keys?<a class="headerlink" href="#why-two-keys" title="Permanent link">&para;</a></h3>
+<p>Using separate KSK and ZSK keys serves a practical purpose. The DS record in the parent zone is a hash of the KSK. Changing the KSK requires updating the DS record at the registrar - a manual, error-prone process. The ZSK, on the other hand, can be changed without touching the parent zone.</p>
+<p>This separation means you can rotate ZSKs frequently (for security) without the operational burden of updating DS records each time. KSKs rotate much less often.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;Why does DNSSEC use two types of keys (ZSK and KSK) instead of just one?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;ZSK encrypts zone data; KSK encrypts the zone transfer&quot;, &quot;feedback&quot;: &quot;DNSSEC doesn&#39;t encrypt anything - it signs. Both keys create signatures. The split is about key management and rollover frequency.&quot;}, {&quot;text&quot;: &quot;The ZSK signs records and is rotated frequently; the KSK signs the ZSK and is rotated less often&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! The ZSK (Zone Signing Key) signs individual records and can be rotated without involving the parent zone. The KSK (Key Signing Key) signs the ZSK&#39;s DNSKEY record and its hash (DS record) is stored in the parent zone. Changing the KSK requires updating the parent, which is why it&#39;s rotated less often.&quot;}, {&quot;text&quot;: &quot;ZSK is for internal use; KSK is for external queries&quot;, &quot;feedback&quot;: &quot;Both keys are used in responding to external queries. The split is about operational key management: ZSK rotates locally, KSK rotation requires parent zone coordination.&quot;}, {&quot;text&quot;: &quot;Different DNS server software requires different key types&quot;, &quot;feedback&quot;: &quot;The ZSK/KSK split is part of the DNSSEC specification, not server-specific. All DNSSEC implementations use both key types for the same purpose.&quot;}]}"><noscript><p><strong>Why does DNSSEC use two types of keys (ZSK and KSK) instead of just one?</strong> (requires JavaScript)</p></noscript></div>
+<h3 id="algorithm-recommendations">Algorithm Recommendations<a class="headerlink" href="#algorithm-recommendations" title="Permanent link">&para;</a></h3>
+<p>The current recommended algorithm is <strong>ECDSAP256SHA256 (algorithm 13)</strong>. It produces much smaller signatures than RSA, reducing DNS response sizes and improving performance. Older zones may use RSA (algorithms 5, 7, 8), but new deployments should use algorithm 13.</p>
+<h3 id="rollover-procedures">Rollover Procedures<a class="headerlink" href="#rollover-procedures" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>gantt
+    title ZSK Pre-Publish Rollover
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+    section Old ZSK
+        Active (signing)          :done, ozsk1, 2025-01-01, 30d
+        Still published           :done, ozsk2, after ozsk1, 14d
+        Removed                   :milestone, after ozsk2, 0d
+    section New ZSK
+        Published (not signing)   :active, nzsk1, 2025-01-17, 14d
+        Active (signing)          :nzsk2, after nzsk1, 90d
+    section DNSKEY TTL
+        Wait for cache expiry     :crit, ttl1, 2025-01-17, 14d</code></pre>
+<pre class="mermaid"><code>gantt
+    title KSK Double-DS Rollover
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+    section Old KSK
+        Active                    :done, oksk1, 2025-01-01, 60d
+        Removed from DNSKEY       :milestone, 2025-03-02, 0d
+    section New KSK
+        Published in DNSKEY       :active, nksk1, 2025-01-15, 46d
+        Active                    :nksk2, after nksk1, 365d
+    section DS Records
+        Old DS in parent          :done, ods, 2025-01-01, 60d
+        New DS submitted          :crit, nds1, 2025-01-15, 14d
+        Both DS in parent         :nds2, 2025-01-29, 18d
+        Old DS removed            :milestone, 2025-02-16, 0d</code></pre>
+<p><strong>ZSK rollover</strong> (pre-publish method):
+1. Generate the new ZSK and publish it in DNSKEY (but don't sign with it yet)
+2. Wait for the old DNSKEY TTL to expire (so all resolvers have the new key)
+3. Start signing with the new ZSK
+4. Remove the old ZSK signatures
+5. Remove the old ZSK from DNSKEY</p>
+<p><strong>KSK rollover</strong> (double-DS method):
+1. Generate the new KSK and publish it in DNSKEY
+2. Submit the new DS record to the registrar (keep the old one too)
+3. Wait for the parent zone to publish the new DS
+4. Wait for the old DS TTL to expire
+5. Remove the old KSK from DNSKEY
+6. Remove the old DS from the parent</p>
+<p>Key rollovers are the most operationally risky part of DNSSEC. Automate them whenever possible.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What makes a KSK rollover more complex than a ZSK rollover?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;KSK rollovers require more computational power&quot;, &quot;feedback&quot;: &quot;Computational requirements aren&#39;t the issue. The complexity is about coordination with the parent zone.&quot;}, {&quot;text&quot;: &quot;The KSK&#39;s DS record must be updated in the parent zone, requiring coordination with the registrar&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! When you roll a KSK, the new key&#39;s DS (Delegation Signer) record must be published in the parent zone (e.g., .com for example.com). This requires coordination with your registrar or parent zone operator, and careful timing to avoid breaking the chain of trust during the transition.&quot;}, {&quot;text&quot;: &quot;KSK rollovers invalidate all cached records immediately&quot;, &quot;feedback&quot;: &quot;Records aren&#39;t immediately invalidated. The rollover uses a transition period where both old and new keys are published, respecting TTL-based cache expiration.&quot;}, {&quot;text&quot;: &quot;Only root server operators can perform KSK rollovers&quot;, &quot;feedback&quot;: &quot;Any zone operator can roll their KSK. The complexity is that you must coordinate with the parent zone to update the DS record. Root KSK rollovers are uniquely complex because the root has no parent.&quot;}]}"><noscript><p><strong>What makes a KSK rollover more complex than a ZSK rollover?</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-code-walkthrough" data-config="{&quot;language&quot;: &quot;text&quot;, &quot;title&quot;: &quot;ZSK Rollover Timeline (Pre-Publication Method)&quot;, &quot;code&quot;: &quot;Day 0:  Publish new ZSK in DNSKEY RRset (both old and new present)\nDay 1+: Wait for DNSKEY TTL to expire (caches pick up new key)\nDay 2:  Start signing records with new ZSK\nDay 3+: Wait for all signed record TTLs to expire\nDay 4:  Remove old ZSK from DNSKEY RRset\nDay 5:  Rollover complete - only new ZSK in use\n&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 1, &quot;text&quot;: &quot;Add the new ZSK to the published DNSKEY set. Both old and new keys are present. All signatures still use the old key.&quot;}, {&quot;line&quot;: 2, &quot;text&quot;: &quot;Wait for caches worldwide to pick up the DNSKEY RRset containing both keys. This takes at least one full TTL period.&quot;}, {&quot;line&quot;: 3, &quot;text&quot;: &quot;Now that resolvers have the new key cached, start signing records with it. Old signatures are still valid during this transition.&quot;}, {&quot;line&quot;: 4, &quot;text&quot;: &quot;Wait for all old signatures to expire from caches. During this time, resolvers may see old or new signatures, and they have both keys to verify either.&quot;}, {&quot;line&quot;: 5, &quot;text&quot;: &quot;Safe to remove the old ZSK. All caches have the new key, and all old signatures have expired.&quot;}, {&quot;line&quot;: 6, &quot;text&quot;: &quot;The rollover is complete. The critical principle: never remove a key until all signatures made with it have expired from all caches.&quot;}]}"><noscript><p><strong>ZSK Rollover Timeline (Pre-Publication Method)</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="signing-with-bind">Signing with BIND<a class="headerlink" href="#signing-with-bind" title="Permanent link">&para;</a></h2>
+<h3 id="automated-signing-with-dnssec-policy-bind-916">Automated Signing with dnssec-policy (BIND 9.16+)<a class="headerlink" href="#automated-signing-with-dnssec-policy-bind-916" title="Permanent link">&para;</a></h3>
+<p>BIND 9.16 introduced <code>dnssec-policy</code>, which fully automates DNSSEC signing, key generation, and rollover. This is the recommended approach.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>// named.conf
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>dnssec-policy &quot;standard&quot; {
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    keys {
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>        ksk key-directory lifetime P2Y algorithm ecdsap256sha256;
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        zsk key-directory lifetime P3M algorithm ecdsap256sha256;
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    };
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    nsec3param iterations 0 optout no salt-length 0;
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    // Timing parameters (automatic rollover)
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    dnskey-ttl PT1H;
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    publish-safety PT1H;
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    retire-safety PT1H;
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>    signatures-refresh P5D;
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    signatures-validity P14D;
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    signatures-validity-dnskey P14D;
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>    max-zone-ttl P1D;
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>    zone-propagation-delay PT5M;
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>    parent-ds-ttl P1D;
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>    parent-propagation-delay PT1H;
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>};
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>zone &quot;example.com&quot; {
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>    type primary;
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>    file &quot;zones/example.com.zone&quot;;
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>    dnssec-policy &quot;standard&quot;;
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>    inline-signing yes;
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>};
+</span></code></pre></div>
+<p>With this configuration, BIND:
+- Generates KSK and ZSK keys automatically
+- Signs all records in the zone
+- Re-signs before signatures expire
+- Rolls ZSKs every 3 months and KSKs every 2 years
+- Publishes new keys in advance of rollover</p>
+<p>After enabling, check the signing status:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>rndc<span class="w"> </span>signing<span class="w"> </span>-list<span class="w"> </span>example.com
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>rndc<span class="w"> </span>zonestatus<span class="w"> </span>example.com
+</span></code></pre></div>
+<p>Get the DS record to submit to your registrar:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>dig<span class="w"> </span>@localhost<span class="w"> </span>example.com<span class="w"> </span>DNSKEY<span class="w"> </span><span class="p">|</span><span class="w"> </span>dnssec-dsfromkey<span class="w"> </span>-2<span class="w"> </span>-f<span class="w"> </span>-<span class="w"> </span>example.com
+</span></code></pre></div>
+<h3 id="manual-signing-legacy">Manual Signing (Legacy)<a class="headerlink" href="#manual-signing-legacy" title="Permanent link">&para;</a></h3>
+<p>For older BIND versions or when you need explicit control:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Generate keys</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>dnssec-keygen<span class="w"> </span>-a<span class="w"> </span>ECDSAP256SHA256<span class="w"> </span>-f<span class="w"> </span>KSK<span class="w"> </span>example.com
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>dnssec-keygen<span class="w"> </span>-a<span class="w"> </span>ECDSAP256SHA256<span class="w"> </span>example.com
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="c1"># Include keys in zone file</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="nv">$INCLUDE</span><span class="w"> </span>Kexample.com.+013+31406.key
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="nv">$INCLUDE</span><span class="w"> </span>Kexample.com.+013+52918.key
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="c1"># Sign the zone</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>dnssec-signzone<span class="w"> </span>-A<span class="w"> </span>-3<span class="w"> </span><span class="k">$(</span>head<span class="w"> </span>-c<span class="w"> </span><span class="m">8</span><span class="w"> </span>/dev/urandom<span class="w"> </span><span class="p">|</span><span class="w"> </span>od<span class="w"> </span>-A<span class="w"> </span>n<span class="w"> </span>-t<span class="w"> </span>x<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="k">)</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span>-N<span class="w"> </span>INCREMENT<span class="w"> </span>-o<span class="w"> </span>example.com<span class="w"> </span>-t<span class="w"> </span>zones/example.com.zone
+</span></code></pre></div>
+<p>This generates a signed zone file (<code>example.com.zone.signed</code>) that must be referenced in <code>named.conf</code>. You need to re-sign before the signatures expire - typically via a cron job. <code>dnssec-policy</code> eliminates all of this manual work.</p>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Generating DNSSEC Keys, Signing a Zone, and Verifying&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;dnssec-keygen -a ECDSAP256SHA256 example.com&quot;, &quot;output&quot;: &quot;Generating key pair.....++++++ \nKexample.com.+013+52918&quot;, &quot;narration&quot;: &quot;Generate a Zone Signing Key (ZSK). The -a flag specifies algorithm 13 (ECDSAP256SHA256). Without -f KSK, dnssec-keygen creates a ZSK by default (flag value 256). The output shows the key filename prefix - the +013 is the algorithm number and +52918 is the key tag.&quot;}, {&quot;command&quot;: &quot;dnssec-keygen -a ECDSAP256SHA256 -f KSK example.com&quot;, &quot;output&quot;: &quot;Generating key pair..............++++++ \nKexample.com.+013+31406&quot;, &quot;narration&quot;: &quot;Generate a Key Signing Key (KSK). The -f KSK flag sets the DNSKEY flag value to 257, marking this as a KSK. The KSK signs the DNSKEY record set, and its hash becomes the DS record submitted to the parent zone.&quot;}, {&quot;command&quot;: &quot;ls Kexample.com.+013+*&quot;, &quot;output&quot;: &quot;Kexample.com.+013+31406.key      Kexample.com.+013+31406.private\nKexample.com.+013+52918.key      Kexample.com.+013+52918.private&quot;, &quot;narration&quot;: &quot;Each key produces two files: a .key file containing the public DNSKEY record (included in the zone file) and a .private file containing the private key material used for signing. Keep .private files restricted - anyone with access to them can forge signatures for your zone.&quot;}, {&quot;command&quot;: &quot;cat Kexample.com.+013+31406.key&quot;, &quot;output&quot;: &quot;; This is a key-signing key, keyid 31406, for example.com.\n; Created: 20250201120000 (Sat Feb  1 12:00:00 2025)\nexample.com. IN DNSKEY 257 3 13 oJMRESz5E4gYzS/q6XDrvU1qMPYIjCWzJaOau8XNEZeq...&quot;, &quot;narration&quot;: &quot;The .key file is a DNSKEY record ready for inclusion in the zone. Flag 257 confirms this is the KSK. The 3 is the fixed protocol field, 13 is the algorithm (ECDSAP256SHA256), and the rest is the base64-encoded public key.&quot;}, {&quot;command&quot;: &quot;dnssec-signzone -A -3 $(head -c 8 /dev/urandom | od -A n -t x | tr -d &#39; &#39;) -N INCREMENT -o example.com -t zones/example.com.zone&quot;, &quot;output&quot;: &quot;Verifying the zone using the following algorithms: ECDSAP256SHA256.\nZone fully signed:\nAlgorithm: ECDSAP256SHA256: KSKs: 1 active, 0 stand-by, 0 revoked\n                            ZSKs: 1 active, 0 stand-by, 0 revoked\nzones/example.com.zone.signed&quot;, &quot;narration&quot;: &quot;Sign the zone. The -A flag includes all DNSKEY records found in the key directory. The -3 flag enables NSEC3 with a random salt (generated by the subshell). The -N INCREMENT bumps the SOA serial. The -o flag sets the zone origin. The -t flag prints signing statistics. The output confirms both KSK and ZSK were used.&quot;}, {&quot;command&quot;: &quot;dig @localhost +dnssec example.com A&quot;, &quot;output&quot;: &quot;;; flags: qr aa rd; QUERY: 1, ANSWER: 2, AUTHORITY: 0\n;; ANSWER SECTION:\nexample.com.    86400   IN  A       93.184.216.34\nexample.com.    86400   IN  RRSIG   A 13 2 86400 20250301000000 20250201000000 52918 example.com. mHJz9k...&quot;, &quot;narration&quot;: &quot;Query the authoritative server for the signed record. The RRSIG appears alongside the A record. The key tag 52918 in the RRSIG matches the ZSK - this confirms the A record was signed by the ZSK, not the KSK. The ZSK signs data records; the KSK signs the DNSKEY set.&quot;}, {&quot;command&quot;: &quot;dnssec-dsfromkey -2 Kexample.com.+013+31406.key&quot;, &quot;output&quot;: &quot;example.com. IN DS 31406 13 2 abc123def456789012345678901234567890123456789012345678901234&quot;, &quot;narration&quot;: &quot;Generate the DS record from the KSK&#39;s public key. The -2 flag specifies SHA-256 as the digest algorithm. This DS record must be submitted to your registrar, who publishes it in the parent zone (.com). The DS links the parent&#39;s trust chain to your zone&#39;s KSK.&quot;}]}"><noscript><p><strong>Generating DNSSEC Keys, Signing a Zone, and Verifying</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="signing-with-nsd">Signing with NSD<a class="headerlink" href="#signing-with-nsd" title="Permanent link">&para;</a></h2>
+<p>NSD itself doesn't sign zones. You use external tools from the <strong>ldns</strong> library:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Generate keys</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>ldns-keygen<span class="w"> </span>-a<span class="w"> </span>ECDSAP256SHA256<span class="w"> </span>-k<span class="w"> </span>example.com<span class="w">    </span><span class="c1"># KSK</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>ldns-keygen<span class="w"> </span>-a<span class="w"> </span>ECDSAP256SHA256<span class="w"> </span>example.com<span class="w">        </span><span class="c1"># ZSK</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1"># Sign the zone</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>ldns-signzone<span class="w"> </span>-n<span class="w"> </span>-p<span class="w"> </span>-s<span class="w"> </span><span class="k">$(</span>head<span class="w"> </span>-c<span class="w"> </span><span class="m">8</span><span class="w"> </span>/dev/urandom<span class="w"> </span><span class="p">|</span><span class="w"> </span>od<span class="w"> </span>-A<span class="w"> </span>n<span class="w"> </span>-t<span class="w"> </span>x<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="k">)</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span>example.com.zone<span class="w"> </span>Kexample.com.+013+*.private
+</span></code></pre></div>
+<p>Configure NSD to serve the signed zone:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">zone</span><span class="p">:</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;example.com&quot;</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="nt">zonefile</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;example.com.zone.signed&quot;</span>
+</span></code></pre></div>
+<p>You'll need a cron job or script to re-sign periodically:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Re-sign weekly (signatures typically valid 30 days)</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="m">0</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="m">0</span><span class="w"> </span>ldns-signzone<span class="w"> </span>-n<span class="w"> </span>-p<span class="w"> </span>example.com.zone<span class="w"> </span>Kexample.com.*.private<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>nsd-control<span class="w"> </span>reload<span class="w"> </span>example.com
+</span></code></pre></div>
+<hr />
+<h2 id="signing-with-powerdns">Signing with PowerDNS<a class="headerlink" href="#signing-with-powerdns" title="Permanent link">&para;</a></h2>
+<p>PowerDNS has the simplest DNSSEC signing workflow:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Sign a zone (generates keys, signs everything)</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>pdnsutil<span class="w"> </span>secure-zone<span class="w"> </span>example.com
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># View DNSSEC status</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>pdnsutil<span class="w"> </span>show-zone<span class="w"> </span>example.com
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="c1"># Get the DS record for your registrar</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>pdnsutil<span class="w"> </span>export-zone-ds<span class="w"> </span>example.com
+</span></code></pre></div>
+<p>PowerDNS signs records on-the-fly as they're served, using keys stored in the database. There's no separate signed zone file and no need for re-signing cron jobs. When you add or modify records, they're automatically signed.</p>
+<p><strong>Rectify the zone</strong> after direct database modifications:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>pdnsutil<span class="w"> </span>rectify-zone<span class="w"> </span>example.com
+</span></code></pre></div>
+<hr />
+<h2 id="validating-dnssec">Validating DNSSEC<a class="headerlink" href="#validating-dnssec" title="Permanent link">&para;</a></h2>
+<h3 id="dig-dnssec">dig +dnssec<a class="headerlink" href="#dig-dnssec" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>dig<span class="w"> </span>+dnssec<span class="w"> </span>example.com<span class="w"> </span>A
+</span></code></pre></div>
+<p>Look for the <code>ad</code> flag in the response header:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>;; flags: qr rd ra ad; QUERY: 1, ANSWER: 2
+</span></code></pre></div>
+<p><code>ad</code> (Authenticated Data) means your resolver validated the DNSSEC signatures. If <code>ad</code> is absent, either the zone isn't signed or your resolver isn't validating.</p>
+<p>The response includes RRSIG records alongside the answer:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>;; ANSWER SECTION:
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>example.com.    86400   IN  A       93.184.216.34
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>example.com.    86400   IN  RRSIG   A 13 2 86400 ...
+</span></code></pre></div>
+<h3 id="delv">delv<a class="headerlink" href="#delv" title="Permanent link">&para;</a></h3>
+<p><code>delv</code> does its own validation, independent of your resolver:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>delv<span class="w"> </span>example.com<span class="w"> </span>A
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>; fully validated
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>example.com.    86400   IN  A   93.184.216.34
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>example.com.    86400   IN  RRSIG   A 13 2 86400 ...
+</span></code></pre></div>
+<p>"fully validated" means the entire trust chain checked out.</p>
+<h3 id="dig-cd-checking-disabled">dig +cd (Checking Disabled)<a class="headerlink" href="#dig-cd-checking-disabled" title="Permanent link">&para;</a></h3>
+<p>When you suspect DNSSEC is causing a SERVFAIL, use <code>+cd</code> to bypass validation:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>dig<span class="w"> </span>example.com<span class="w"> </span>A<span class="w">              </span><span class="c1"># SERVFAIL (DNSSEC issue)</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>dig<span class="w"> </span>+cd<span class="w"> </span>example.com<span class="w"> </span>A<span class="w">          </span><span class="c1"># returns the answer, skipping validation</span>
+</span></code></pre></div>
+<p>If <code>+cd</code> gives you an answer when the normal query returns SERVFAIL, the problem is definitely DNSSEC.</p>
+<h3 id="online-tools">Online Tools<a class="headerlink" href="#online-tools" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://dnsviz.net/"><strong>DNSViz</strong></a> - visualizes the entire DNSSEC trust chain as a graph, showing exactly where validation succeeds or fails</li>
+<li><a href="https://dnssec-debugger.verisignlabs.com/"><strong>Verisign DNSSEC Debugger</strong></a> - tests delegation and signing from root to your zone</li>
+</ul>
+<hr />
+<h2 id="common-dnssec-failures">Common DNSSEC Failures<a class="headerlink" href="#common-dnssec-failures" title="Permanent link">&para;</a></h2>
+<h3 id="expired-signatures">Expired Signatures<a class="headerlink" href="#expired-signatures" title="Permanent link">&para;</a></h3>
+<p>RRSIG records have inception and expiration timestamps. If the current time is outside that window, validation fails.</p>
+<p><strong>Diagnosis:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>dig<span class="w"> </span>+dnssec<span class="w"> </span>example.com<span class="w"> </span>A<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>RRSIG
+</span></code></pre></div>
+<p>Check the expiration timestamp. If it's in the past, signatures need to be refreshed.</p>
+<p><strong>Fix:</strong> Re-sign the zone (or fix the automated signing process). If using <code>dnssec-policy</code> in BIND, check that the signing process is running. If using PowerDNS, this shouldn't happen unless the server was down for an extended period.</p>
+<h3 id="dsdnskey-mismatch">DS/DNSKEY Mismatch<a class="headerlink" href="#dsdnskey-mismatch" title="Permanent link">&para;</a></h3>
+<p>The DS record in the parent zone doesn't match any DNSKEY in the child zone. This happens during botched key rollovers.</p>
+<p><strong>Diagnosis:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Get the DS from the parent</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>dig<span class="w"> </span>DS<span class="w"> </span>example.com<span class="w"> </span>+short
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># Get the DNSKEYs from the authoritative server</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>dig<span class="w"> </span>@ns1.example.com<span class="w"> </span>DNSKEY<span class="w"> </span>example.com
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="c1"># Compare - the DS key tag should match a DNSKEY key tag</span>
+</span></code></pre></div>
+<p><strong>Fix:</strong> Either update the DS record at the registrar to match the current DNSKEY, or add the DNSKEY that matches the existing DS record back to the zone.</p>
+<h3 id="clock-skew">Clock Skew<a class="headerlink" href="#clock-skew" title="Permanent link">&para;</a></h3>
+<p>DNSSEC signatures are time-bounded. If your server's clock is significantly wrong, valid signatures appear expired (or not yet valid).</p>
+<p><strong>Diagnosis:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>date<span class="w">              </span><span class="c1"># check current time</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>dig<span class="w"> </span>+dnssec<span class="w"> </span>example.com<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>RRSIG<span class="w">   </span><span class="c1"># check inception/expiration</span>
+</span></code></pre></div>
+<p><strong>Fix:</strong> Synchronize your clock with NTP:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>timedatectl<span class="w"> </span>set-ntp<span class="w"> </span><span class="nb">true</span>
+</span></code></pre></div>
+<h3 id="algorithm-downgrade">Algorithm Downgrade<a class="headerlink" href="#algorithm-downgrade" title="Permanent link">&para;</a></h3>
+<p>If the DS record specifies algorithm 13 but the DNSKEY uses algorithm 8 (or vice versa), validation fails.</p>
+<p><strong>Diagnosis:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>dig<span class="w"> </span>DS<span class="w"> </span>example.com<span class="w"> </span>+short<span class="w">      </span><span class="c1"># shows algorithm number</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>dig<span class="w"> </span>DNSKEY<span class="w"> </span>example.com<span class="w"> </span>+short<span class="w">  </span><span class="c1"># shows algorithm number</span>
+</span></code></pre></div>
+<p>The algorithm numbers must match between the DS and the DNSKEY it references.</p>
+<h3 id="debugging-workflow">Debugging Workflow<a class="headerlink" href="#debugging-workflow" title="Permanent link">&para;</a></h3>
+<p>When a domain returns SERVFAIL and you suspect DNSSEC:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># Step 1: Confirm it&#39;s a DNSSEC issue</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>dig<span class="w"> </span>example.com<span class="w">                    </span><span class="c1"># SERVFAIL</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>dig<span class="w"> </span>+cd<span class="w"> </span>example.com<span class="w">                </span><span class="c1"># works? Then it&#39;s DNSSEC</span>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="c1"># Step 2: Check the trust chain</span>
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>delv<span class="w"> </span>example.com<span class="w">                   </span><span class="c1"># shows where validation fails</span>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="c1"># OR</span>
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>drill<span class="w"> </span>-S<span class="w"> </span>example.com<span class="w">               </span><span class="c1"># traces the entire chain</span>
+</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>
+</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="c1"># Step 3: Check specific components</span>
+</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>dig<span class="w"> </span>+dnssec<span class="w"> </span>example.com<span class="w"> </span>DNSKEY<span class="w">     </span><span class="c1"># are DNSKEYs present?</span>
+</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a>dig<span class="w"> </span>DS<span class="w"> </span>example.com<span class="w">                 </span><span class="c1"># is the DS record correct?</span>
+</span><span id="__span-25-13"><a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a>dig<span class="w"> </span>+dnssec<span class="w"> </span>example.com<span class="w"> </span>A<span class="w">          </span><span class="c1"># are RRSIGs present and current?</span>
+</span><span id="__span-25-14"><a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a>
+</span><span id="__span-25-15"><a id="__codelineno-25-15" name="__codelineno-25-15" href="#__codelineno-25-15"></a><span class="c1"># Step 4: Use DNSViz for visual analysis</span>
+</span><span id="__span-25-16"><a id="__codelineno-25-16" name="__codelineno-25-16" href="#__codelineno-25-16"></a><span class="c1"># Visit https://dnsviz.net/ and enter the domain</span>
+</span></code></pre></div>
+<div class="interactive-command-builder" data-config="{&quot;base&quot;: &quot;dig&quot;, &quot;description&quot;: &quot;Build a DNSSEC debugging command with dig&quot;, &quot;options&quot;: [{&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;text&quot;, &quot;label&quot;: &quot;Domain&quot;, &quot;placeholder&quot;: &quot;example.com&quot;, &quot;explanation&quot;: &quot;Domain to inspect&quot;}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Record type&quot;, &quot;explanation&quot;: &quot;What to query&quot;, &quot;choices&quot;: [[&quot;DNSKEY&quot;, &quot;DNSKEY (zone&#39;s public keys)&quot;], [&quot;DS&quot;, &quot;DS (delegation signer in parent)&quot;], [&quot;RRSIG&quot;, &quot;RRSIG (record signatures)&quot;], [&quot;A +dnssec&quot;, &quot;A record with DNSSEC data&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Options&quot;, &quot;explanation&quot;: &quot;Additional query options&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;Default&quot;], [&quot;+multiline&quot;, &quot;Multiline output (readable keys)&quot;], [&quot;+cd&quot;, &quot;Checking disabled (bypass validation)&quot;]]}]}"><noscript><p><strong>Command Builder</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc4033">RFC 4033</a> - DNS Security Introduction and Requirements</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc4034">RFC 4034</a> - Resource Records for DNS Security Extensions</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc4035">RFC 4035</a> - Protocol Modifications for DNS Security Extensions</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc5155">RFC 5155</a> - DNS Security (DNSSEC) Hashed Authenticated Denial of Existence (NSEC3)</li>
+<li><a href="https://dnsviz.net/">DNSViz</a> - DNSSEC visualization and analysis</li>
+<li><a href="https://dnssec-debugger.verisignlabs.com/">Verisign DNSSEC Debugger</a> - online DNSSEC validation testing</li>
+<li><a href="https://www.iana.org/dnssec/ceremonies">ICANN Root KSK Ceremonies</a> - ceremony scripts and documentation</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../powerdns/">PowerDNS</a> | <strong>Next:</strong> <a href="../dns-architecture/">DNS Architecture and Operations</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+DNSSEC" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

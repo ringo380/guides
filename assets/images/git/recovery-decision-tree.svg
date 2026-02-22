@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 680" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .box-warn { fill: #f5f5f5; stroke: #e65100; stroke-width: 1.5; rx: 8; }
+    .diamond { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .connector-warn { stroke: #e65100; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .warn-title { font-size: 11px; font-weight: 600; fill: #e65100; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .box-warn { fill: rgba(255,255,255,0.07); stroke: #ff9800; }
+      .diamond { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .connector-warn { stroke: #ff9800; marker-end: url(#arrow-dark); }
+      .heading { fill: #4db6ac; }
+      .warn-title { fill: #ff9800; }
+    }
+  </style>
+
+  <!-- Heading -->
+  <text x="260" y="24" text-anchor="middle" class="heading">Git Recovery Decision Tree</text>
+
+  <!-- ===== LAYOUT =====
+    Main flow center: x=260
+    Secret branch: right side starting at x=530
+    Result boxes: branch right from diamonds
+    Vertical spacing: ~70-80px between decision levels
+  -->
+
+  <!-- ===== Start: "Something went wrong" (accent) ===== -->
+  <rect x="185" y="42" width="150" height="34" class="box-accent"/>
+  <text x="260" y="64" text-anchor="middle" class="title">Something went wrong</text>
+
+  <!-- ===== SECRET BRANCH (right side) ===== -->
+  <!-- Connector from start box right to secret question -->
+  <path d="M 335,59 L 400,59" class="connector-warn"/>
+
+  <!-- Secret diamond -->
+  <polygon points="480,59 540,86 480,113 420,86" class="diamond"/>
+  <text x="480" y="83" text-anchor="middle" class="label">Committed</text>
+  <text x="480" y="94" text-anchor="middle" class="label">a secret?</text>
+
+  <!-- No from secret diamond (down, dead-end label) -->
+  <text x="492" y="126" class="label">No</text>
+
+  <!-- Yes from secret diamond (right) -->
+  <line x1="540" y1="86" x2="575" y2="86" class="connector-warn"/>
+  <text x="550" y="80" class="label">Yes</text>
+
+  <!-- Step 1: Revoke the secret immediately -->
+  <rect x="577" y="68" width="190" height="36" class="box-warn"/>
+  <text x="672" y="83" text-anchor="middle" class="warn-title">1. Revoke the secret</text>
+  <text x="672" y="96" text-anchor="middle" class="label">immediately</text>
+
+  <!-- Arrow down from revoke to filter-repo -->
+  <line x1="672" y1="104" x2="672" y2="120" class="connector-warn"/>
+
+  <!-- Step 2: git filter-repo to rewrite history -->
+  <rect x="577" y="120" width="190" height="36" class="box-warn"/>
+  <text x="672" y="135" text-anchor="middle" class="warn-title">2. Rewrite history</text>
+  <text x="672" y="148" text-anchor="middle" class="code">git filter-repo</text>
+
+  <!-- ===== MAIN FLOW ===== -->
+
+  <!-- Arrow down from start box to Diamond 1 -->
+  <line x1="260" y1="76" x2="260" y2="108" class="connector"/>
+
+  <!-- ===== Diamond 1: Pushed to a shared branch? ===== -->
+  <polygon points="260,108 340,144 260,180 180,144" class="diamond"/>
+  <text x="260" y="139" text-anchor="middle" class="label">Pushed to a</text>
+  <text x="260" y="151" text-anchor="middle" class="label">shared branch?</text>
+
+  <!-- Yes branch right to git revert -->
+  <line x1="340" y1="144" x2="410" y2="144" class="connector"/>
+  <text x="365" y="138" text-anchor="middle" class="label">Yes</text>
+
+  <rect x="412" y="126" width="160" height="36" class="box-accent"/>
+  <text x="492" y="141" text-anchor="middle" class="title">Use</text>
+  <text x="492" y="154" text-anchor="middle" class="code">git revert &lt;commit&gt;</text>
+
+  <!-- Annotation under git revert -->
+  <text x="492" y="176" text-anchor="middle" class="label">Creates a new commit that</text>
+  <text x="492" y="188" text-anchor="middle" class="label">undoes the change safely</text>
+
+  <!-- No branch down from Diamond 1 -->
+  <line x1="260" y1="180" x2="260" y2="216" class="connector"/>
+  <text x="248" y="200" text-anchor="end" class="label">No</text>
+
+  <!-- ===== Diamond 2: Know the commit hash? ===== -->
+  <polygon points="260,216 345,252 260,288 175,252" class="diamond"/>
+  <text x="260" y="247" text-anchor="middle" class="label">Know the</text>
+  <text x="260" y="259" text-anchor="middle" class="label">commit hash?</text>
+
+  <!-- Yes branch right to git reset -->
+  <line x1="345" y1="252" x2="410" y2="252" class="connector"/>
+  <text x="368" y="246" text-anchor="middle" class="label">Yes</text>
+
+  <rect x="412" y="230" width="160" height="46" class="box-accent"/>
+  <text x="492" y="247" text-anchor="middle" class="title">Use</text>
+  <text x="492" y="261" text-anchor="middle" class="code">git reset &lt;hash&gt;</text>
+
+  <!-- Annotation under git reset -->
+  <text x="492" y="291" text-anchor="middle" class="code">--soft</text>
+  <text x="492" y="303" text-anchor="middle" class="label">keeps changes staged</text>
+  <text x="492" y="319" text-anchor="middle" class="code">--hard</text>
+  <text x="492" y="331" text-anchor="middle" class="label">discards all changes</text>
+
+  <!-- No branch down from Diamond 2 -->
+  <line x1="260" y1="288" x2="260" y2="324" class="connector"/>
+  <text x="248" y="308" text-anchor="end" class="label">No</text>
+
+  <!-- ===== Diamond 3: Happened recently (within 30 days)? ===== -->
+  <polygon points="260,324 355,360 260,396 165,360" class="diamond"/>
+  <text x="260" y="355" text-anchor="middle" class="label">Happened recently</text>
+  <text x="260" y="367" text-anchor="middle" class="label">(within 30 days)?</text>
+
+  <!-- ===== YES branch: reflog path (goes right then down) ===== -->
+  <line x1="355" y1="360" x2="410" y2="360" class="connector"/>
+  <text x="374" y="354" text-anchor="middle" class="label">Yes</text>
+
+  <!-- Step: Check git reflog -->
+  <rect x="412" y="344" width="160" height="34" class="box"/>
+  <text x="492" y="358" text-anchor="middle" class="label">Check</text>
+  <text x="492" y="370" text-anchor="middle" class="code">git reflog</text>
+
+  <!-- Arrow down from reflog to find commit -->
+  <line x1="492" y1="378" x2="492" y2="400" class="connector"/>
+
+  <!-- Step: Find the commit hash -->
+  <rect x="412" y="400" width="160" height="34" class="box"/>
+  <text x="492" y="422" text-anchor="middle" class="title">Find the commit hash</text>
+
+  <!-- Arrow down from find to recover -->
+  <line x1="492" y1="434" x2="492" y2="456" class="connector"/>
+
+  <!-- Step: Recover with reset or branch -->
+  <rect x="390" y="456" width="204" height="46" class="box-accent"/>
+  <text x="492" y="473" text-anchor="middle" class="code">git reset &lt;hash&gt;</text>
+  <text x="492" y="488" text-anchor="middle" class="label">or</text>
+  <text x="492" y="500" text-anchor="middle" class="code">git branch recovery &lt;hash&gt;</text>
+
+  <!-- ===== NO branch: fsck path (goes down then right) ===== -->
+  <line x1="260" y1="396" x2="260" y2="442" class="connector"/>
+  <text x="248" y="422" text-anchor="end" class="label">No</text>
+
+  <!-- Step: Run git fsck -->
+  <rect x="160" y="442" width="200" height="34" class="box"/>
+  <text x="260" y="456" text-anchor="middle" class="label">Run</text>
+  <text x="260" y="468" text-anchor="middle" class="code">git fsck --unreachable</text>
+
+  <!-- Arrow down from fsck to inspect -->
+  <line x1="260" y1="476" x2="260" y2="502" class="connector"/>
+
+  <!-- Step: Inspect dangling commits -->
+  <rect x="155" y="502" width="210" height="34" class="box"/>
+  <text x="260" y="524" text-anchor="middle" class="title">Inspect dangling commits</text>
+
+  <!-- Arrow down from inspect to recover -->
+  <line x1="260" y1="536" x2="260" y2="562" class="connector"/>
+
+  <!-- Step: Recover with git branch -->
+  <rect x="128" y="562" width="264" height="34" class="box-accent"/>
+  <text x="260" y="584" text-anchor="middle" class="code">git branch recovery &lt;hash&gt;</text>
+
+  <!-- ===== Legend ===== -->
+  <line x1="30" y1="625" x2="750" y2="625" stroke="#ccc" stroke-width="0.5" stroke-dasharray="4,3"/>
+  <rect x="30" y="638" width="14" height="14" class="box-accent"/>
+  <text x="50" y="649" class="label">Action / Result</text>
+  <polygon points="155,645 168,638 181,645 168,652" class="diamond"/>
+  <text x="188" y="649" class="label">Decision</text>
+  <rect x="260" y="638" width="14" height="14" class="box-warn"/>
+  <text x="280" y="649" class="label">Security response</text>
+</svg>

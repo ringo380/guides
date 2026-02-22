@@ -1,0 +1,4159 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/DNS%20Administration/dns-fundamentals/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../zone-files-and-records/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>DNS Fundamentals - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="DNS Fundamentals - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/DNS%20Administration/dns-fundamentals.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/DNS%20Administration/dns-fundamentals/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="DNS Fundamentals - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/DNS%20Administration/dns-fundamentals.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dns-fundamentals" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DNS Fundamentals
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Dev%20Zero/Perl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#before-dns-the-hoststxt-era" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before DNS: The HOSTS.TXT Era
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-dns-actually-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What DNS Actually Does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dns-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The DNS Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The DNS Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-root-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Root Zone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-level-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top-Level Domains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zones-vs-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zones vs Domains
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-dns-resolution-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How DNS Resolution Works
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How DNS Resolution Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-players" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Players
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-resolution-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Resolution Process
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching-and-ttls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching and TTLs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Negative Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authoritative-vs-recursive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authoritative vs Recursive
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authoritative vs Recursive">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-not-both-on-the-same-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Both on the Same IP?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-resolvers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open Resolvers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#registrars-registries-and-glue-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registrars, Registries, and Glue Records
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Registrars, Registries, and Glue Records">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-trailing-dot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Trailing Dot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glue-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glue Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS Transport
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Dev%20Zero/Perl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#before-dns-the-hoststxt-era" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before DNS: The HOSTS.TXT Era
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-dns-actually-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What DNS Actually Does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dns-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The DNS Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The DNS Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-root-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Root Zone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#top-level-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top-Level Domains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zones-vs-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zones vs Domains
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-dns-resolution-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How DNS Resolution Works
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How DNS Resolution Works">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-players" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Players
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-resolution-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Resolution Process
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching-and-ttls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching and TTLs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#negative-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Negative Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authoritative-vs-recursive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authoritative vs Recursive
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authoritative vs Recursive">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-not-both-on-the-same-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Both on the Same IP?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#open-resolvers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open Resolvers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#registrars-registries-and-glue-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registrars, Registries, and Glue Records
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Registrars, Registries, and Glue Records">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-trailing-dot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Trailing Dot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glue-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glue Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS Transport
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/DNS Administration/dns-fundamentals.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="dns-fundamentals">DNS Fundamentals<a class="headerlink" href="#dns-fundamentals" title="Permanent link">&para;</a></h1>
+<p>This guide covers what DNS actually is, how it evolved from a single text file into the largest distributed database on Earth, and how every name resolution works from root servers down to the answer your browser needs.</p>
+<hr />
+<h2 id="before-dns-the-hoststxt-era">Before DNS: The HOSTS.TXT Era<a class="headerlink" href="#before-dns-the-hoststxt-era" title="Permanent link">&para;</a></h2>
+<p>Before DNS existed, the entire internet ran on a single text file.</p>
+<p>Every machine on the ARPANET had a file called <code>HOSTS.TXT</code> that mapped hostnames to IP addresses - the same concept as <code>/etc/hosts</code> on your machine today. The Stanford Research Institute's Network Information Center (SRI-NIC) maintained the master copy. If you added a new host to the network, you called SRI-NIC on the phone (during California business hours), asked them to add your entry, and then every other site on the network would periodically FTP the updated file from SRI-NIC.</p>
+<p>By the early 1980s this system was falling apart. The ARPANET was growing exponentially, and HOSTS.TXT had fundamental problems:</p>
+<ul>
+<li><strong>No scalability</strong> - a single file can't track thousands of hosts</li>
+<li><strong>No delegation</strong> - SRI-NIC had to approve every name</li>
+<li><strong>No consistency</strong> - sites fetched updates at different times, so different machines had different views of the network</li>
+<li><strong>Name collisions</strong> - nothing prevented two sites from claiming the same hostname</li>
+</ul>
+<figure class="photo-frame photo-right" style="max-width: 250px;">
+<img src="../../assets/images/dns/paul-mockapetris.jpg" alt="Paul Mockapetris, inventor of the Domain Name System">
+<figcaption>
+Paul Mockapetris, inventor of DNS, at a conference in Barcelona.
+<span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Paul_Mockapetris.JPG">Jordiipa</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a></span>
+</figcaption>
+</figure>
+
+<p>In 1983, Paul Mockapetris at USC's Information Sciences Institute published <a href="https://datatracker.ietf.org/doc/html/rfc882">RFC 882</a> and <a href="https://datatracker.ietf.org/doc/html/rfc883">RFC 883</a>, proposing a distributed, hierarchical naming system. His first implementation was called "Jeeves." Two years later, he refined the design into <a href="https://datatracker.ietf.org/doc/html/rfc1034">RFC 1034</a> and <a href="https://datatracker.ietf.org/doc/html/rfc1035">RFC 1035</a> - the specifications that still define DNS today.</p>
+<hr />
+<h2 id="what-dns-actually-does">What DNS Actually Does<a class="headerlink" href="#what-dns-actually-does" title="Permanent link">&para;</a></h2>
+<p>DNS is a <strong>distributed hierarchical database</strong> that maps names to data. Most people think of it as "the phone book of the internet" that converts domain names to IP addresses, but that undersells it significantly.</p>
+<p>DNS handles:</p>
+<ul>
+<li><strong>Name-to-address mapping</strong> - <code>example.com</code> to <code>93.184.216.34</code> (A records)</li>
+<li><strong>Mail routing</strong> - which servers accept email for a domain (MX records)</li>
+<li><strong>Service discovery</strong> - where to find SIP, LDAP, or XMPP servers (SRV records)</li>
+<li><strong>TLS certificate validation</strong> - which certificate authorities can issue certs for a domain (CAA records)</li>
+<li><strong>Email authentication</strong> - SPF, DKIM, and DMARC policies (TXT records)</li>
+<li><strong>Delegation</strong> - which servers are authoritative for a zone (NS records)</li>
+<li><strong>Reverse lookups</strong> - IP address to hostname (PTR records)</li>
+</ul>
+<p>Every HTTPS connection, every email delivery, every API call starts with a DNS query. DNS processes an estimated 2 trillion queries per day worldwide. It's the most queried database in existence.</p>
+<hr />
+<h2 id="the-dns-hierarchy">The DNS Hierarchy<a class="headerlink" href="#the-dns-hierarchy" title="Permanent link">&para;</a></h2>
+<p>DNS organizes names into a tree structure, read from right to left. The name <code>www.example.com.</code> (note the trailing dot) breaks down like this:</p>
+<pre class="mermaid"><code>graph TD
+    root(". (root)")
+    root --&gt; com(".com")
+    root --&gt; org(".org")
+    root --&gt; uk(".uk")
+    root --&gt; arpa(".arpa")
+    com --&gt; example("example")
+    org --&gt; wikipedia("wikipedia")
+    uk --&gt; couk(".co.uk")
+    example --&gt; www("www")
+    example --&gt; mail("mail")</code></pre>
+<h3 id="the-root-zone">The Root Zone<a class="headerlink" href="#the-root-zone" title="Permanent link">&para;</a></h3>
+<p>At the top of the tree is the <strong>root zone</strong>, represented by a single dot (<code>.</code>). This is the starting point for every DNS resolution.</p>
+<p>You'll often hear that there are "13 root servers," named <code>a.root-servers.net</code> through <code>m.root-servers.net</code>. That's technically true but deeply misleading. The number 13 is a legacy constraint - early DNS responses had to fit in a single 512-byte UDP packet, and 13 sets of A and AAAA records was the maximum that would fit.</p>
+<p>In reality, those 13 identities are served by roughly <strong>1,954 instances</strong> deployed worldwide using <strong>anycast</strong> routing. Anycast means the same IP address is announced from multiple physical locations, and your query reaches whichever instance is closest in network terms. Verisign alone operates over 290 instances for <code>a.root-servers.net</code> and <code>j.root-servers.net</code>.</p>
+<p>The root servers are operated by 12 independent organizations:</p>
+<table>
+<thead>
+<tr>
+<th>Letter</th>
+<th>Operator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>Verisign</td>
+</tr>
+<tr>
+<td>B</td>
+<td>USC-ISI</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Cogent Communications</td>
+</tr>
+<tr>
+<td>D</td>
+<td>University of Maryland</td>
+</tr>
+<tr>
+<td>E</td>
+<td>NASA Ames Research Center</td>
+</tr>
+<tr>
+<td>F</td>
+<td>Internet Systems Consortium (ISC)</td>
+</tr>
+<tr>
+<td>G</td>
+<td>U.S. Department of Defense (DISA)</td>
+</tr>
+<tr>
+<td>H</td>
+<td>U.S. Army Research Lab</td>
+</tr>
+<tr>
+<td>I</td>
+<td>Netnod (Sweden)</td>
+</tr>
+<tr>
+<td>J</td>
+<td>Verisign</td>
+</tr>
+<tr>
+<td>K</td>
+<td>RIPE NCC (Netherlands)</td>
+</tr>
+<tr>
+<td>L</td>
+<td>ICANN</td>
+</tr>
+<tr>
+<td>M</td>
+<td>WIDE Project (Japan)</td>
+</tr>
+</tbody>
+</table>
+<p>NASA and the U.S. Army Research Lab each operate a root server. The geographic and organizational diversity is deliberate - no single failure, attack, or political action can take down DNS.</p>
+<h3 id="top-level-domains">Top-Level Domains<a class="headerlink" href="#top-level-domains" title="Permanent link">&para;</a></h3>
+<p>Below the root are <strong>top-level domains (TLDs)</strong>. These fall into several categories:</p>
+<p><strong>Generic TLDs (gTLDs)</strong> - <code>.com</code>, <code>.net</code>, <code>.org</code>, <code>.info</code>, and since 2012, thousands of new gTLDs like <code>.app</code>, <code>.dev</code>, and <code>.io</code>.</p>
+<p><strong>Country-code TLDs (ccTLDs)</strong> - two-letter codes assigned by <a href="https://www.iso.org/iso-3166-country-codes.html">ISO 3166</a>: <code>.uk</code>, <code>.de</code>, <code>.jp</code>, <code>.au</code>. Some ccTLDs have taken on broader use - <code>.io</code> (British Indian Ocean Territory) became popular with tech companies, and <code>.tv</code> (Tuvalu) earns that country millions in licensing revenue.</p>
+<p>Country-code TLDs occasionally outlive their countries. The <code>.su</code> TLD was assigned to the Soviet Union and is still active over 34 years after the USSR dissolved. Yugoslavia's <code>.yu</code> survived through multiple wars and name changes before finally being retired in 2010.</p>
+<p><strong>Infrastructure TLD</strong> - <code>.arpa</code> is used for reverse DNS lookups and other infrastructure purposes.</p>
+<h3 id="zones-vs-domains">Zones vs Domains<a class="headerlink" href="#zones-vs-domains" title="Permanent link">&para;</a></h3>
+<p>These terms are often confused, but the distinction matters when you're running DNS servers.</p>
+<p>A <strong>domain</strong> is a name in the hierarchy. <code>example.com</code> is a domain. <code>mail.example.com</code> is a subdomain of <code>example.com</code>.</p>
+<p>A <strong>zone</strong> is the portion of the DNS tree that a particular server is authoritative for. If <code>example.com</code> delegates <code>mail.example.com</code> to a different set of nameservers, then <code>example.com</code> and <code>mail.example.com</code> are two separate zones even though they're part of the same domain.</p>
+<p>A zone always starts at a <strong>delegation point</strong> (where NS records hand authority to specific nameservers) and extends down the tree until it hits another delegation point.</p>
+<hr />
+<h2 id="how-dns-resolution-works">How DNS Resolution Works<a class="headerlink" href="#how-dns-resolution-works" title="Permanent link">&para;</a></h2>
+<p>When you type <code>www.example.com</code> into a browser, a chain of queries and responses happens in milliseconds. Understanding this process is essential for troubleshooting DNS issues.</p>
+<h3 id="the-players">The Players<a class="headerlink" href="#the-players" title="Permanent link">&para;</a></h3>
+<p><strong>Stub resolver</strong> - the DNS client built into your operating system. When an application calls <code>getaddrinfo()</code> or similar functions, the stub resolver handles it. The stub resolver is simple - it sends a query to a configured recursive resolver and waits for the final answer. Check your configured resolver with:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Linux</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>cat<span class="w"> </span>/etc/resolv.conf
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># macOS</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>scutil<span class="w"> </span>--dns<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+</span></code></pre></div>
+<p><strong>Recursive resolver</strong> - the server that does the actual work of chasing down answers. Your ISP runs one, and public options include Google (<code>8.8.8.8</code>), Cloudflare (<code>1.1.1.1</code>), and Quad9 (<code>9.9.9.9</code>). When you point your machine at <code>8.8.8.8</code>, you're telling your stub resolver to use Google's recursive resolver.</p>
+<p><strong>Authoritative nameserver</strong> - a server that holds the actual DNS data for a zone and can answer queries about it without asking anyone else.</p>
+<h3 id="the-resolution-process">The Resolution Process<a class="headerlink" href="#the-resolution-process" title="Permanent link">&para;</a></h3>
+<p>Here's what happens when your recursive resolver needs to look up <code>www.example.com</code> and has nothing cached:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant App as Application
+    participant Stub as Stub Resolver
+    participant Rec as Recursive Resolver
+    participant Root as Root Server (.)
+    participant TLD as .com TLD Server
+    participant Auth as example.com Auth Server
+
+    App-&gt;&gt;Stub: www.example.com?
+    Stub-&gt;&gt;Rec: www.example.com? (rd flag set)
+    Rec-&gt;&gt;Root: www.example.com?
+    Root--&gt;&gt;Rec: Referral: .com NS a.gtld-servers.net
+    Rec-&gt;&gt;TLD: www.example.com?
+    TLD--&gt;&gt;Rec: Referral: example.com NS a.iana-servers.net
+    Rec-&gt;&gt;Auth: www.example.com?
+    Auth--&gt;&gt;Rec: Answer: 93.184.216.34 (aa flag set)
+    Note over Rec: Cache answer (TTL: 86400s)
+    Rec--&gt;&gt;Stub: 93.184.216.34
+    Stub--&gt;&gt;App: 93.184.216.34</code></pre>
+<p><strong>Step 1 - Query the root.</strong> The resolver picks a root server and asks: "What are the nameservers for <code>www.example.com</code>?" The root server doesn't know the final answer, but it knows who handles <code>.com</code>. It responds with a <strong>referral</strong> - the NS records and IP addresses for the <code>.com</code> TLD servers.</p>
+<p><strong>Step 2 - Query the TLD.</strong> The resolver asks a <code>.com</code> TLD server the same question. The TLD server doesn't know the final answer either, but it knows who handles <code>example.com</code>. It responds with another referral - the NS records for <code>example.com</code>'s authoritative nameservers.</p>
+<p><strong>Step 3 - Query the authoritative server.</strong> The resolver asks <code>example.com</code>'s nameserver for the A record for <code>www.example.com</code>. This server owns the data, so it responds with the answer: <code>93.184.216.34</code>.</p>
+<p><strong>Step 4 - Return and cache.</strong> The resolver sends the answer back to your stub resolver and caches it according to the response's TTL.</p>
+<p>You can watch this entire process yourself with:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>dig<span class="w"> </span>+trace<span class="w"> </span>www.example.com
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>; &lt;&lt;&gt;&gt; DiG 9.18.28 &lt;&lt;&gt;&gt; +trace www.example.com
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>;; global options: +cmd
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>.                       515195  IN      NS      a.root-servers.net.
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>.                       515195  IN      NS      b.root-servers.net.
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>;; [... other root servers ...]
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>;; Received 525 bytes from 127.0.0.1#53(127.0.0.1) in 0 ms
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>com.                    172800  IN      NS      a.gtld-servers.net.
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>com.                    172800  IN      NS      b.gtld-servers.net.
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>;; [... other .com servers ...]
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>;; Received 1170 bytes from 198.41.0.4#53(a.root-servers.net) in 24 ms
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>example.com.            172800  IN      NS      a.iana-servers.net.
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>example.com.            172800  IN      NS      b.iana-servers.net.
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>;; Received 326 bytes from 192.5.6.30#53(a.gtld-servers.net) in 12 ms
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>www.example.com.        86400   IN      A       93.184.216.34
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>;; Received 56 bytes from 199.43.135.53#53(a.iana-servers.net) in 88 ms
+</span></code></pre></div>
+<p>Each section shows a hop in the resolution chain. The IP addresses in the <code>from</code> field show you which server answered each step.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;In what order does a recursive resolver look up a domain name like www.example.com?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Ask example.com nameserver → ask .com TLD → ask root server&quot;, &quot;feedback&quot;: &quot;The resolution works top-down from the root, not bottom-up. The resolver starts at the root of the DNS hierarchy.&quot;}, {&quot;text&quot;: &quot;Ask root server → ask .com TLD server → ask example.com authoritative server&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Resolution follows the hierarchy: root servers know where .com lives, .com TLD servers know where example.com lives, and example.com&#39;s authoritative server has the actual records.&quot;}, {&quot;text&quot;: &quot;Ask the local /etc/hosts file → ask the ISP → ask Google DNS&quot;, &quot;feedback&quot;: &quot;While /etc/hosts is checked first by the OS, the DNS resolution hierarchy is root → TLD → authoritative. ISP and Google DNS are recursive resolvers, not part of the delegation chain.&quot;}, {&quot;text&quot;: &quot;Ask all DNS servers simultaneously and use the fastest response&quot;, &quot;feedback&quot;: &quot;DNS resolution is sequential and hierarchical, not parallel. Each server in the chain refers the resolver to the next level down.&quot;}]}"><noscript><p><strong>In what order does a recursive resolver look up a domain name like www.example.com?</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Tracing DNS Resolution with dig +trace&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;dig +trace www.example.com&quot;, &quot;output&quot;: &quot;; <<>> DiG 9.18.18 <<>> +trace www.example.com\n;; global options: +cmd\n.                   86400   IN  NS  a.root-servers.net.\n.                   86400   IN  NS  b.root-servers.net.\n;; Received 239 bytes from 127.0.0.53#53(127.0.0.53) in 1 ms\n\ncom.                172800  IN  NS  a.gtld-servers.net.\ncom.                172800  IN  NS  b.gtld-servers.net.\n;; Received 892 bytes from 198.41.0.4#53(a.root-servers.net) in 24 ms\n\nexample.com.        172800  IN  NS  a.iana-servers.net.\nexample.com.        172800  IN  NS  b.iana-servers.net.\n;; Received 266 bytes from 192.5.6.30#53(a.gtld-servers.net) in 32 ms\n\nwww.example.com.    86400   IN  A   93.184.216.34\n;; Received 56 bytes from 199.43.135.53#53(a.iana-servers.net) in 88 ms\n&quot;, &quot;narration&quot;: &quot;dig +trace performs iterative resolution from the root. Step 1: Root server (198.41.0.4) refers us to .com TLD servers. Step 2: .com TLD (192.5.6.30) refers us to example.com&#39;s nameservers. Step 3: Authoritative server (199.43.135.53) returns the final A record: 93.184.216.34.&quot;}]}"><noscript><p><strong>Tracing DNS Resolution with dig +trace</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Trace DNS Resolution Manually&quot;, &quot;difficulty&quot;: &quot;beginner&quot;, &quot;scenario&quot;: &quot;Use `dig` to manually trace the resolution of a domain name step by step.\nPick any real domain (e.g., your company&#39;s website or a popular site).\n\n1. Query a root server for the TLD nameservers\n2. Query the TLD nameserver for the domain&#39;s authoritative nameservers\n3. Query the authoritative nameserver for the final A record\n4. Compare the result to a simple `dig domain.com` query\n&quot;, &quot;hints&quot;: [&quot;Start with: dig NS com. @a.root-servers.net to find .com TLD servers&quot;, &quot;Then: dig NS example.com @a.gtld-servers.net to find the domain&#39;s nameservers&quot;, &quot;Finally: dig A www.example.com @a.iana-servers.net to get the IP&quot;, &quot;Use dig +trace domain.com to do all steps automatically and verify&quot;], &quot;solution&quot;: &quot;```bash\n# Step 1: Ask root server for .com TLD nameservers\ndig NS com. @a.root-servers.net +norecurse\n\n# Step 2: Ask .com TLD for example.com&#39;s nameservers\ndig NS example.com @a.gtld-servers.net +norecurse\n\n# Step 3: Ask authoritative server for the A record\ndig A www.example.com @a.iana-servers.net\n\n# Verify with automatic trace\ndig +trace www.example.com\n\n# Compare with simple query (uses your local resolver)\ndig www.example.com\n```\n\nThe manual steps mirror exactly what a recursive resolver does automatically.\nEach server only knows about its own level of the hierarchy and refers you\nto the next level down.&quot;}"><noscript><p><strong>Trace DNS Resolution Manually</strong> (requires JavaScript)</p></noscript></div>
+<h3 id="caching-and-ttls">Caching and TTLs<a class="headerlink" href="#caching-and-ttls" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph LR
+    Auth["Authoritative Server&lt;br/&gt;example.com A 93.184.216.34&lt;br/&gt;TTL: 86400"]
+
+    subgraph Resolver A
+        direction TB
+        RA_Q["Query at 09:00"] --&gt; RA_C["Cached until 09:00 +24h"]
+        RA_C --&gt; RA_E["Cache expires 09:00 next day"]
+    end
+
+    subgraph Resolver B
+        direction TB
+        RB_Q["Query at 14:00"] --&gt; RB_C["Cached until 14:00 +24h"]
+        RB_C --&gt; RB_E["Cache expires 14:00 next day"]
+    end
+
+    subgraph Resolver C
+        direction TB
+        RC_Q["Query at 22:00"] --&gt; RC_C["Cached until 22:00 +24h"]
+        RC_C --&gt; RC_E["Cache expires 22:00 next day"]
+    end
+
+    Auth -.-&gt; RA_Q
+    Auth -.-&gt; RB_Q
+    Auth -.-&gt; RC_Q</code></pre>
+<p>Each resolver's TTL countdown starts independently from when it first queried. There is no synchronization between them - this is why "DNS propagation" is a myth. It's really <strong>independent cache expiration</strong>.</p>
+<p>If your resolver had to chase every query from the root, DNS would be unbearably slow. <strong>Caching</strong> makes the system practical.</p>
+<p>Every DNS response includes a <strong>TTL (Time To Live)</strong> - a number in seconds that tells the resolver how long to cache the answer. When you query for <code>example.com</code> and get a TTL of 86400, your resolver will serve that cached answer for the next 24 hours without asking anyone.</p>
+<p>You can watch TTLs count down by querying the same name repeatedly:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>dig<span class="w"> </span>example.com<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A1<span class="w"> </span><span class="s2">&quot;ANSWER SECTION&quot;</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>;; ANSWER SECTION:
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>example.com.            86400   IN      A       93.184.216.34
+</span></code></pre></div>
+<p>Wait a few seconds and query again - the TTL will be lower. Your resolver is counting down until it expires and needs to ask again.</p>
+<p><strong>There is no "DNS propagation."</strong> This is one of the most misunderstood concepts in DNS. When you change a DNS record, there is no mechanism that pushes the change to resolvers around the world. What actually happens is <strong>cache expiration</strong> - resolvers everywhere are holding the old answer with a countdown timer. As each resolver's cache expires, it asks your authoritative server and gets the new answer.</p>
+<p>This is why lowering your TTL <em>before</em> making a change is standard practice. If your TTL is 86400 (24 hours) and you change an A record, some resolvers may serve the old answer for up to 24 hours. If you lower the TTL to 300 (5 minutes) a day before the change, all caches will expire within 5 minutes after you make the switch.</p>
+<h3 id="negative-caching">Negative Caching<a class="headerlink" href="#negative-caching" title="Permanent link">&para;</a></h3>
+<p>Resolvers also cache <strong>negative answers</strong>. When a name doesn't exist, the authoritative server returns an NXDOMAIN response. The resolver caches this too, based on the SOA record's minimum TTL field (see the <a href="../zone-files-and-records/">Zone Files and Records</a> guide). This prevents repeated queries for names that don't exist.</p>
+<p><a href="https://datatracker.ietf.org/doc/html/rfc2308">RFC 2308</a> defines negative caching behavior. It's worth knowing this exists because it explains a common gotcha: if you query a name <em>before</em> you've created the record, the NXDOMAIN gets cached, and you may have to wait for that negative cache to expire before the new record is visible.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;If a DNS record has a TTL of 3600, what does that mean?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;The record expires and is deleted after 3600 queries&quot;, &quot;feedback&quot;: &quot;TTL is time-based, not query-based. It&#39;s measured in seconds, not request count.&quot;}, {&quot;text&quot;: &quot;Resolvers can cache the record for 3600 seconds (1 hour) before re-querying&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! TTL (Time to Live) tells caching resolvers how long to store the answer. After 3600 seconds, they must query the authoritative server again. Lower TTLs mean faster propagation of changes but more DNS traffic.&quot;}, {&quot;text&quot;: &quot;The record was created 3600 seconds ago&quot;, &quot;feedback&quot;: &quot;TTL indicates how long the record can be cached, not when it was created. Each time a resolver fetches the record, the TTL countdown starts fresh.&quot;}, {&quot;text&quot;: &quot;The maximum number of hops the DNS query can traverse&quot;, &quot;feedback&quot;: &quot;That&#39;s the IP TTL concept (hop count). DNS TTL is about cache duration in seconds.&quot;}]}"><noscript><p><strong>If a DNS record has a TTL of 3600, what does that mean?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="authoritative-vs-recursive">Authoritative vs Recursive<a class="headerlink" href="#authoritative-vs-recursive" title="Permanent link">&para;</a></h2>
+<p>These are two fundamentally different roles, and understanding the distinction prevents a whole category of configuration mistakes.</p>
+<p>An <strong>authoritative server</strong> owns the data. It has the zone file (or database) for a domain and answers queries from that data. When it answers, it sets the <code>aa</code> (authoritative answer) flag in the response. If it's asked about a domain it doesn't own, it doesn't try to find the answer - it simply refuses or returns a referral.</p>
+<p>A <strong>recursive resolver</strong> owns nothing. It receives queries from clients, chases referrals from root to TLD to authoritative, caches the results, and returns the final answer. It never sets the <code>aa</code> flag (unless it happens to also be authoritative for the queried zone).</p>
+<p>You can see the difference with <code>dig</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Query an authoritative server directly - note the &quot;aa&quot; flag</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>dig<span class="w"> </span>@a.iana-servers.net<span class="w"> </span>example.com
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">;;</span><span class="w"> </span>flags:<span class="w"> </span>qr<span class="w"> </span>aa<span class="w"> </span>rd<span class="p">;</span><span class="w"> </span>QUERY:<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>ANSWER:<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># Query a recursive resolver - no &quot;aa&quot; flag</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>dig<span class="w"> </span>@8.8.8.8<span class="w"> </span>example.com
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="p">;;</span><span class="w"> </span>flags:<span class="w"> </span>qr<span class="w"> </span>rd<span class="w"> </span>ra<span class="p">;</span><span class="w"> </span>QUERY:<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>ANSWER:<span class="w"> </span><span class="m">1</span>
+</span></code></pre></div>
+<p>The <code>aa</code> flag is present in the first response and absent in the second. <code>rd</code> means "recursion desired" (the client asked for recursion), and <code>ra</code> means "recursion available" (the server supports it).</p>
+<h3 id="why-not-both-on-the-same-ip">Why Not Both on the Same IP?<a class="headerlink" href="#why-not-both-on-the-same-ip" title="Permanent link">&para;</a></h3>
+<p>Running authoritative and recursive services on the same server at the same IP address creates problems:</p>
+<ul>
+<li><strong>Security</strong> - a recursive resolver must accept queries from clients, but an authoritative server should accept queries from anyone. Combining them makes access control difficult.</li>
+<li><strong>Attack surface</strong> - recursive resolvers are targets for DNS amplification attacks. If your authoritative server is also an open resolver, attackers can use it to amplify DDoS attacks against third parties.</li>
+<li><strong>Performance</strong> - recursive resolution is CPU-intensive (chasing referrals, validating DNSSEC). Authoritative serving is I/O-bound (reading zone data). Mixing them causes unpredictable resource contention.</li>
+</ul>
+<p>Many ISPs run resolvers that also happen to be authoritative for customer reverse DNS zones. That works because access is already restricted to their customers. But if you're building your own DNS infrastructure, keep them separate.</p>
+<h3 id="open-resolvers">Open Resolvers<a class="headerlink" href="#open-resolvers" title="Permanent link">&para;</a></h3>
+<p>An <strong>open resolver</strong> is a recursive server that accepts queries from anyone on the internet. This is dangerous because DNS responses are larger than queries - an attacker can send a small query with a spoofed source IP, and the resolver sends a large response to the victim. A typical DNS amplification attack achieves 50x amplification: a 1 Mbps query stream becomes 50 Mbps hitting the target.</p>
+<p>ISPs routinely operate resolvers, but they restrict access to their own customers' IP ranges. If you run your own recursive resolver, restrict it to your network with ACLs.</p>
+<p>Some ISPs also hijack NXDOMAIN responses. Instead of telling your browser that a domain doesn't exist, they redirect you to a search/advertising page. This violates DNS standards (<a href="https://datatracker.ietf.org/doc/html/rfc4924">RFC 4924</a> Section 2.5.2.3) and breaks applications that rely on NXDOMAIN behavior. Public resolvers like <code>1.1.1.1</code> and <code>9.9.9.9</code> don't do this.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is the difference between a recursive and an iterative DNS query?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Recursive queries are faster; iterative queries are more secure&quot;, &quot;feedback&quot;: &quot;The difference isn&#39;t about speed or security, but about who does the work of following referrals.&quot;}, {&quot;text&quot;: &quot;In a recursive query, the server does the full lookup; in an iterative query, it returns a referral&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! A recursive resolver does all the work - it follows referrals from root to TLD to authoritative and returns the final answer. An iterative query just returns &#39;ask this other server instead&#39; (a referral), making the client do the follow-up.&quot;}, {&quot;text&quot;: &quot;Recursive queries use TCP; iterative queries use UDP&quot;, &quot;feedback&quot;: &quot;Both can use either UDP or TCP. The protocol choice depends on response size and reliability needs, not the query type.&quot;}, {&quot;text&quot;: &quot;Iterative queries repeat until they get an answer; recursive queries only try once&quot;, &quot;feedback&quot;: &quot;It&#39;s roughly the opposite. The recursive server follows the chain. In iterative mode, the client receives referrals and must follow them itself.&quot;}]}"><noscript><p><strong>What is the difference between a recursive and an iterative DNS query?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="registrars-registries-and-glue-records">Registrars, Registries, and Glue Records<a class="headerlink" href="#registrars-registries-and-glue-records" title="Permanent link">&para;</a></h2>
+<p>When you "buy" a domain name, you're interacting with a specific chain of organizations:</p>
+<p>A <strong>registry</strong> operates a TLD. Verisign operates the <code>.com</code> registry. The registry maintains the authoritative database of all domain names in that TLD. You never interact with the registry directly.</p>
+<p>A <strong>registrar</strong> is an organization accredited to sell domain names. GoDaddy, Namecheap, Cloudflare Registrar, and Google Domains (now Squarespace) are registrars. When you register a domain through a registrar, they submit the registration to the registry on your behalf using the Extensible Provisioning Protocol (EPP).</p>
+<p>The <strong>WHOIS</strong> system (and its modern replacement, <a href="https://about.rdap.org/"><strong>RDAP</strong></a>) lets you look up registration information for a domain:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>whois<span class="w"> </span>example.com
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>   Domain Name: EXAMPLE.COM
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>   Registry Domain ID: 2336799_DOMAIN_COM-VRSN
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>   Registrar WHOIS Server: whois.iana.org
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>   Updated Date: 2024-08-14T07:01:34Z
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>   Creation Date: 1995-08-14T04:00:00Z
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>   Registry Expiry Date: 2025-08-13T04:00:00Z
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>   Registrar: RESERVED-Internet Assigned Numbers Authority
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>   Name Server: A.IANA-SERVERS.NET
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>   Name Server: B.IANA-SERVERS.NET
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>   DNSSEC: signedDelegation
+</span></code></pre></div>
+<h3 id="the-trailing-dot">The Trailing Dot<a class="headerlink" href="#the-trailing-dot" title="Permanent link">&para;</a></h3>
+<p>Every fully qualified domain name (FQDN) ends with a dot: <code>www.example.com.</code> - that final dot represents the root zone. Most software adds it implicitly, so you never type it. But inside DNS zone files, the trailing dot is critical. Without it, the name is treated as relative and the zone's origin is appended.</p>
+<p>This creates one of the most common DNS bugs. In a zone file for <code>example.com</code>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>www     IN  CNAME   other.example.com     ; WRONG - becomes other.example.com.example.com.
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>www     IN  CNAME   other.example.com.    ; RIGHT - the dot makes it absolute
+</span></code></pre></div>
+<p>This distinction also matters in Kubernetes. A pod looking up <code>example.com</code> (without a trailing dot) may first try <code>example.com.mycluster.local</code>, <code>example.com.svc.cluster.local</code>, and other search domain suffixes before trying the actual name. Adding the trailing dot (<code>example.com.</code>) skips the search list and goes straight to the intended name.</p>
+<h3 id="glue-records">Glue Records<a class="headerlink" href="#glue-records" title="Permanent link">&para;</a></h3>
+<p>There's a chicken-and-egg problem in DNS. Suppose <code>example.com</code> uses <code>ns1.example.com</code> as its nameserver. To resolve <em>anything</em> under <code>example.com</code>, you need to reach <code>ns1.example.com</code>. But to find the IP address of <code>ns1.example.com</code>, you need to query... the nameserver for <code>example.com</code>. That's circular.</p>
+<p><strong>Glue records</strong> break this cycle. When <code>example.com</code> is registered, the parent zone (<code>.com</code>) stores not just the NS record (<code>example.com NS ns1.example.com</code>) but also an A record for the nameserver itself (<code>ns1.example.com A 198.51.100.1</code>). These A records in the parent zone are the "glue" that bootstraps the delegation.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph problem ["The Problem: Circular Dependency"]
+        P1["Resolve anything under example.com"]
+        P2["Need ns1.example.com IP"]
+        P3["Query example.com nameserver"]
+        P1 --&gt;|"requires"| P2
+        P2 --&gt;|"requires"| P3
+        P3 --&gt;|"requires"| P1
+    end
+
+    subgraph solution ["The Solution: Glue Records"]
+        S1[".com TLD Zone&lt;br/&gt;&lt;br/&gt;example.com NS ns1.example.com&lt;br/&gt;ns1.example.com A 198.51.100.1 ← glue"]
+        S2["Resolver gets NS + IP&lt;br/&gt;in the same referral"]
+        S3["Connects directly to&lt;br/&gt;198.51.100.1"]
+        S1 --&gt; S2 --&gt; S3
+    end</code></pre>
+<p>Glue is only needed when a nameserver's name is <em>within</em> the zone it serves. If <code>example.com</code> uses <code>ns1.dnsprovider.net</code> as its nameserver, no glue is needed - the resolver can find <code>ns1.dnsprovider.net</code> by following the normal delegation chain through <code>.net</code>.</p>
+<p>You can see glue records in the additional section of a DNS referral:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>dig<span class="w"> </span>+norec<span class="w"> </span>@a.gtld-servers.net<span class="w"> </span>example.com<span class="w"> </span>NS
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>;; AUTHORITY SECTION:
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>example.com.        172800  IN  NS  a.iana-servers.net.
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>example.com.        172800  IN  NS  b.iana-servers.net.
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>;; ADDITIONAL SECTION:
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>a.iana-servers.net. 172800  IN  A   199.43.135.53
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>b.iana-servers.net. 172800  IN  A   199.43.133.53
+</span></code></pre></div>
+<p>The AUTHORITY section says "these are the nameservers." The ADDITIONAL section says "and here are their IP addresses so you don't have to look them up separately." That's glue.</p>
+<hr />
+<h2 id="dns-transport">DNS Transport<a class="headerlink" href="#dns-transport" title="Permanent link">&para;</a></h2>
+<p>DNS traditionally uses <strong>UDP on port 53</strong> for queries under 512 bytes and <strong>TCP on port 53</strong> for larger responses and zone transfers. The 512-byte UDP limit was a practical constraint from the 1980s when network reliability was poor and UDP was faster.</p>
+<p>The <strong>Extension Mechanisms for DNS (<a href="https://datatracker.ietf.org/doc/html/rfc6891">EDNS0</a>)</strong> specification raised the effective UDP message size. Modern resolvers advertise a buffer size of 1232-4096 bytes, allowing larger responses (like DNSSEC-signed answers) to travel over UDP.</p>
+<p>Newer transport protocols are emerging for privacy:</p>
+<ul>
+<li><strong>DNS over TLS (DoT)</strong> - DNS queries encrypted with TLS on port 853</li>
+<li><strong>DNS over HTTPS (DoH)</strong> - DNS queries sent as HTTPS requests on port 443, making them indistinguishable from normal web traffic</li>
+<li><strong>DNS over QUIC (DoQ)</strong> - DNS queries over the QUIC protocol, offering TLS encryption with lower latency than DoT</li>
+</ul>
+<p>These encrypted transports prevent ISPs and network operators from seeing (or tampering with) your DNS queries. They don't change how DNS <em>resolution</em> works - they just encrypt the transport between your stub resolver and the recursive resolver.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What problem does DNSSEC solve?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;It encrypts DNS queries so ISPs can&#39;t see which domains you look up&quot;, &quot;feedback&quot;: &quot;DNSSEC provides authentication, not encryption. DNS queries and responses are still visible. DNS-over-HTTPS (DoH) and DNS-over-TLS (DoT) provide encryption.&quot;}, {&quot;text&quot;: &quot;It verifies that DNS responses haven&#39;t been tampered with (authenticity and integrity)&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! DNSSEC uses digital signatures to prove that a DNS response came from the legitimate authoritative server and wasn&#39;t modified in transit. It prevents cache poisoning and man-in-the-middle attacks on DNS.&quot;}, {&quot;text&quot;: &quot;It prevents DDoS attacks against DNS servers&quot;, &quot;feedback&quot;: &quot;DNSSEC doesn&#39;t prevent DDoS. In fact, DNSSEC responses are larger (due to signatures), which can actually amplify DDoS. Its purpose is response authentication.&quot;}, {&quot;text&quot;: &quot;It speeds up DNS resolution by using faster algorithms&quot;, &quot;feedback&quot;: &quot;DNSSEC actually adds overhead (larger responses, signature verification). Its purpose is security (proving response authenticity), not performance.&quot;}]}"><noscript><p><strong>What problem does DNSSEC solve?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc1034">RFC 1034</a> - Domain Names: Concepts and Facilities</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc1035">RFC 1035</a> - Domain Names: Implementation and Specification</li>
+<li><a href="https://datatracker.ietf.org/doc/rfc9499/">RFC 9499</a> - DNS Terminology (current, supersedes RFC 8499)</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc2308">RFC 2308</a> - Negative Caching of DNS Queries</li>
+<li><a href="https://www.iana.org/domains/root/servers">IANA Root Servers</a> - official root server list</li>
+<li><a href="https://root-servers.org/">root-servers.org</a> - root server instance map and statistics</li>
+<li><a href="https://www.cloudflare.com/learning/dns/what-is-dns/">Cloudflare Learning Center: What is DNS?</a> - accessible overview with diagrams</li>
+</ul>
+<hr />
+<p><strong>Next:</strong> <a href="../zone-files-and-records/">Zone Files and Records</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+DNS%20Fundamentals" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

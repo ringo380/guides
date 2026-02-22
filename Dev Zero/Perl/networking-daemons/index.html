@@ -1,0 +1,4418 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Dev%20Zero/Perl/networking-daemons/">
+      
+      
+        <link rel="prev" href="../text-processing-oneliners/">
+      
+      
+        <link rel="next" href="../web-frameworks-apis/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>Networking and Daemons - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Networking and Daemons - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Dev%20Zero/Perl/networking-daemons.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Dev%20Zero/Perl/networking-daemons/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Networking and Daemons - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Dev%20Zero/Perl/networking-daemons.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#networking-and-daemons" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Networking and Daemons
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#system-programming-with-perl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Programming with Perl
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copyright Notice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tcp-sockets-with-iosocketinet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP Sockets with IO::Socket::INET
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TCP Sockets with IO::Socket::INET">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcp-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcp-client-server-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP Client-Server Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#udp-sockets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UDP Sockets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Clients
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HTTP Clients">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#httptiny" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP::Tiny
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lwpuseragent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LWP::UserAgent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mojouseragent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mojo::UserAgent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#json-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-daemons" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writing Daemons
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Writing Daemons">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daemon-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Daemon Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pid-file-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PID File Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procdaemon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proc::Daemon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signal-handling-in-long-running-processes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal Handling in Long-Running Processes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signal Handling in Long-Running Processes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reaping-child-processes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reaping Child Processes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#process-supervision-with-systemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Process Supervision with systemd
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#event-driven-programming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event-Driven Programming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Event-Driven Programming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anyevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AnyEvent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ioasync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IO::Async
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#system-programming-with-perl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        System Programming with Perl
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copyright Notice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tcp-sockets-with-iosocketinet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP Sockets with IO::Socket::INET
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TCP Sockets with IO::Socket::INET">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcp-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tcp-client-server-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TCP Client-Server Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#udp-sockets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UDP Sockets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Clients
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HTTP Clients">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#httptiny" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP::Tiny
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lwpuseragent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LWP::UserAgent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mojouseragent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mojo::UserAgent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#json-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-daemons" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writing Daemons
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Writing Daemons">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daemon-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Daemon Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pid-file-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PID File Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procdaemon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proc::Daemon
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signal-handling-in-long-running-processes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal Handling in Long-Running Processes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signal Handling in Long-Running Processes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reaping-child-processes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reaping Child Processes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#process-supervision-with-systemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Process Supervision with systemd
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#event-driven-programming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event-Driven Programming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Event-Driven Programming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anyevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AnyEvent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ioasync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IO::Async
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Dev Zero/Perl/networking-daemons.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="networking-and-daemons">Networking and Daemons<a class="headerlink" href="#networking-and-daemons" title="Permanent link">&para;</a></h1>
+<h2 id="system-programming-with-perl">System Programming with Perl<a class="headerlink" href="#system-programming-with-perl" title="Permanent link">&para;</a></h2>
+<p><strong>Version:</strong> 1.1
+<strong>Year:</strong> 2026</p>
+<hr />
+<h2 id="copyright-notice">Copyright Notice<a class="headerlink" href="#copyright-notice" title="Permanent link">&para;</a></h2>
+<p>Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed under <a href="../../LICENSE-CONTENT">CC BY-NC-ND 4.0</a>. You may share this material for non-commercial purposes with attribution, but you may not distribute modified versions.</p>
+<hr />
+<p>Perl grew up on networked Unix systems. Sockets, forking, and signal handling map directly to system calls that Perl has wrapped since version 1. This guide covers TCP and UDP clients and servers, HTTP requests, JSON encoding, daemon processes, and event-driven frameworks for concurrent I/O.</p>
+<hr />
+<h2 id="tcp-sockets-with-iosocketinet">TCP Sockets with IO::Socket::INET<a class="headerlink" href="#tcp-sockets-with-iosocketinet" title="Permanent link">&para;</a></h2>
+<p><a href="https://perldoc.perl.org/IO::Socket::INET"><strong><code>IO::Socket::INET</code></strong></a> provides an object-oriented interface over the raw <code>socket</code>/<code>bind</code>/<code>listen</code>/<code>accept</code> system calls. It ships with core Perl.</p>
+<h3 id="tcp-server">TCP Server<a class="headerlink" href="#tcp-server" title="Permanent link">&para;</a></h3>
+<p>A basic TCP server binds to a port, listens for connections, and handles each client:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">IO::Socket::INET</span><span class="p">;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">my</span><span class="w"> </span><span class="nv">$server</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">IO::Socket::INET</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">LocalPort</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">9000</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="n">Proto</span><span class="w">     </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;tcp&#39;</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="n">Listen</span><span class="w">    </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="n">ReuseAddr</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Cannot create server: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="k">my</span><span class="w"> </span><span class="nv">$client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$server</span><span class="o">-&gt;</span><span class="nb">accept</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="k">my</span><span class="w"> </span><span class="nv">$line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sr">&lt;$client&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">        </span><span class="nb">chomp</span><span class="w"> </span><span class="nv">$line</span><span class="p">;</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">        </span><span class="k">print</span><span class="w"> </span><span class="nv">$client</span><span class="w"> </span><span class="s">&quot;Echo: $line\n&quot;</span><span class="p">;</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">    </span><span class="nb">close</span><span class="w"> </span><span class="nv">$client</span><span class="p">;</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><code>Listen</code> sets the backlog queue size. <code>ReuseAddr</code> lets you restart the server immediately without waiting for the kernel to release the port.</p>
+<div class="admonition warning">
+<p class="admonition-title">Blocking Accept</p>
+<p>This server handles one client at a time. While serving client A, client B waits in the backlog queue. For concurrent clients, you need <code>fork</code>, threads, or an event loop - covered later in this guide.</p>
+</div>
+<h3 id="tcp-client">TCP Client<a class="headerlink" href="#tcp-client" title="Permanent link">&para;</a></h3>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">IO::Socket::INET</span><span class="p">;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">my</span><span class="w"> </span><span class="nv">$sock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">IO::Socket::INET</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="n">PeerHost</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="n">PeerPort</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">9000</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="n">Proto</span><span class="w">    </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;tcp&#39;</span><span class="p">,</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Cannot connect: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="k">print</span><span class="w"> </span><span class="nv">$sock</span><span class="w"> </span><span class="s">&quot;Hello, server!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">my</span><span class="w"> </span><span class="nv">$reply</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sr">&lt;$sock&gt;</span><span class="p">;</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="k">print</span><span class="w"> </span><span class="s">&quot;Server says: $reply&quot;</span><span class="p">;</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="nb">close</span><span class="w"> </span><span class="nv">$sock</span><span class="p">;</span>
+</span></code></pre></div>
+<p>The socket object is a filehandle. You read from it with <code>&lt;$sock&gt;</code> and write with <code>print $sock</code> - the same I/O model as regular files.</p>
+<h3 id="tcp-client-server-flow">TCP Client-Server Flow<a class="headerlink" href="#tcp-client-server-flow" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant C as Client
+    participant S as Server
+    S-&gt;&gt;S: bind() + listen()
+    C-&gt;&gt;S: connect()
+    S-&gt;&gt;S: accept()
+    S--&gt;&gt;C: Connection established
+    C-&gt;&gt;S: send("Hello")
+    S-&gt;&gt;S: Process data
+    S--&gt;&gt;C: send("Echo: Hello")
+    C-&gt;&gt;S: send("quit")
+    S--&gt;&gt;C: close()
+    C-&gt;&gt;C: close()</code></pre>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;TCP Echo Server and Client&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;perl -e &#39;use IO::Socket::INET; my $s = IO::Socket::INET->new(LocalPort=>9900, Proto=>\&quot;tcp\&quot;, Listen=>5, ReuseAddr=>1) or die $!; print \&quot;Listening on 9900\\n\&quot;; my $c = $s->accept(); print $c \&quot;Welcome\\n\&quot;; while(<$c>){chomp; last if /^quit$/; print $c \&quot;Echo: $_\\n\&quot;} close $c; close $s;&#39; &amp;&quot;, &quot;output&quot;: &quot;Listening on 9900&quot;, &quot;narration&quot;: &quot;The server starts and waits for connections on port 9900. The &amp; runs it in the background so we can connect a client.&quot;}, {&quot;command&quot;: &quot;sleep 1 &amp;&amp; perl -e &#39;use IO::Socket::INET; my $s = IO::Socket::INET->new(PeerHost=>\&quot;localhost\&quot;, PeerPort=>9900, Proto=>\&quot;tcp\&quot;) or die $!; print while <$s>;&#39; <<< $&#39;hello\\nworld\\nquit&#39;&quot;, &quot;output&quot;: &quot;Welcome\nEcho: hello\nEcho: world&quot;, &quot;narration&quot;: &quot;The client connects, sends three lines, and reads responses. The server echoes each line back with a prefix. Sending quit closes the connection.&quot;}, {&quot;command&quot;: &quot;perl -e &#39;use IO::Socket::INET; my $s = IO::Socket::INET->new(PeerHost=>\&quot;localhost\&quot;, PeerPort=>80, Proto=>\&quot;tcp\&quot;, Timeout=>3) or die \&quot;$!\\n\&quot;; print \&quot;Port 80 open\\n\&quot;; close $s;&#39;&quot;, &quot;output&quot;: &quot;Port 80 open&quot;, &quot;narration&quot;: &quot;The Timeout parameter limits how long the connect call waits. If the connection cannot be established, the constructor returns undef.&quot;}]}"><noscript><p><strong>TCP Echo Server and Client</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="udp-sockets">UDP Sockets<a class="headerlink" href="#udp-sockets" title="Permanent link">&para;</a></h2>
+<p><strong>UDP</strong> is connectionless - no handshake, no guaranteed delivery, no ordering. Each <code>send</code> is an independent datagram. This makes UDP appropriate for DNS queries, logging, metrics, and real-time data where dropped packets are acceptable.</p>
+<p>A UDP server binds to a port and calls <code>recv</code> in a loop. A UDP client specifies the peer at creation time and sends immediately - no handshake:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Server</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">my</span><span class="w"> </span><span class="nv">$srv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">IO::Socket::INET</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span><span class="n">LocalPort</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">9001</span><span class="p">,</span><span class="w"> </span><span class="n">Proto</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;udp&#39;</span><span class="p">)</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Cannot bind: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nv">$srv</span><span class="o">-&gt;</span><span class="nb">recv</span><span class="p">(</span><span class="k">my</span><span class="w"> </span><span class="nv">$data</span><span class="p">,</span><span class="w"> </span><span class="mi">1024</span><span class="p">);</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nb">chomp</span><span class="w"> </span><span class="nv">$data</span><span class="p">;</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nv">$srv</span><span class="o">-&gt;</span><span class="nb">send</span><span class="p">(</span><span class="s">&quot;ACK: $data\n&quot;</span><span class="p">);</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">}</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1"># Client</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="k">my</span><span class="w"> </span><span class="nv">$cli</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">IO::Socket::INET</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="n">PeerHost</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;localhost&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">PeerPort</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">9001</span><span class="p">,</span><span class="w"> </span><span class="n">Proto</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;udp&#39;</span><span class="p">,</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Cannot create socket: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="nv">$cli</span><span class="o">-&gt;</span><span class="nb">send</span><span class="p">(</span><span class="s">&quot;ping\n&quot;</span><span class="p">);</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="nv">$cli</span><span class="o">-&gt;</span><span class="nb">recv</span><span class="p">(</span><span class="k">my</span><span class="w"> </span><span class="nv">$reply</span><span class="p">,</span><span class="w"> </span><span class="mi">1024</span><span class="p">);</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="k">print</span><span class="w"> </span><span class="s">&quot;Got: $reply&quot;</span><span class="p">;</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">When to Use UDP</p>
+<p>Choose UDP for fire-and-forget scenarios: syslog forwarding, StatsD metrics, DNS lookups, or any situation where retransmission logic lives in your application layer. For everything else, use TCP.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What happens when you call IO::Socket::INET->new(Proto => &#39;tcp&#39;, PeerHost => &#39;example.com&#39;, PeerPort => 80)?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;It creates a TCP server listening on port 80&quot;, &quot;feedback&quot;: &quot;PeerHost and PeerPort specify a remote endpoint to connect to, not a local one to listen on. A server uses LocalPort and Listen.&quot;}, {&quot;text&quot;: &quot;It creates a TCP client connection to example.com port 80&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct. PeerHost and PeerPort tell IO::Socket::INET to establish an outgoing TCP connection. The constructor performs the three-way handshake and returns a connected socket (or undef on failure).&quot;}, {&quot;text&quot;: &quot;It creates a UDP socket that sends datagrams to port 80&quot;, &quot;feedback&quot;: &quot;The Proto parameter is explicitly set to &#39;tcp&#39;, so this creates a TCP connection, not a UDP socket.&quot;}, {&quot;text&quot;: &quot;It fails because you need to specify Listen for any TCP socket&quot;, &quot;feedback&quot;: &quot;Listen is only required for server sockets. Client sockets connect to a peer - they do not need a listen backlog.&quot;}]}"><noscript><p><strong>What happens when you call IO::Socket::INET->new(Proto => 'tcp', PeerHost => 'example.com', PeerPort => 80)?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="http-clients">HTTP Clients<a class="headerlink" href="#http-clients" title="Permanent link">&para;</a></h2>
+<h3 id="httptiny">HTTP::Tiny<a class="headerlink" href="#httptiny" title="Permanent link">&para;</a></h3>
+<p><a href="https://metacpan.org/pod/HTTP::Tiny"><strong><code>HTTP::Tiny</code></strong></a> ships with Perl since version 5.14. No CPAN install needed:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">HTTP::Tiny</span><span class="p">;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">my</span><span class="w"> </span><span class="nv">$http</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">HTTP::Tiny</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span><span class="n">timeout</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">my</span><span class="w"> </span><span class="nv">$res</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">$http</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;https://httpbin.org/get&#39;</span><span class="p">);</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nv">$res</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">success</span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="nv">$res</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">content</span><span class="p">};</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="nb">warn</span><span class="w"> </span><span class="s">&quot;Failed: $res-&gt;{status} $res-&gt;{reason}\n&quot;</span><span class="p">;</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The response is a hash reference with keys <code>success</code>, <code>status</code>, <code>reason</code>, <code>content</code>, and <code>headers</code>. POST requests pass a content body and headers:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">my</span><span class="w"> </span><span class="nv">$res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$http</span><span class="o">-&gt;</span><span class="n">post</span><span class="p">(</span><span class="s">&#39;https://httpbin.org/post&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="n">content</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;{&quot;key&quot;: &quot;value&quot;}&#39;</span><span class="p">,</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="n">headers</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&#39;Content-Type&#39;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;application/json&#39;</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">});</span>
+</span></code></pre></div>
+<p><code>HTTP::Tiny</code> handles redirects, connection keep-alive, and HTTPS if <code>IO::Socket::SSL</code> is installed.</p>
+<h3 id="lwpuseragent">LWP::UserAgent<a class="headerlink" href="#lwpuseragent" title="Permanent link">&para;</a></h3>
+<p><a href="https://metacpan.org/pod/LWP::UserAgent"><strong><code>LWP::UserAgent</code></strong></a> is the full-featured HTTP client on CPAN. It supports cookies, authentication, proxies, file uploads, and content negotiation:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">LWP::UserAgent</span><span class="p">;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">my</span><span class="w"> </span><span class="nv">$ua</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">LWP::UserAgent</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span><span class="n">timeout</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">my</span><span class="w"> </span><span class="nv">$res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$ua</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;https://api.github.com/zen&#39;</span><span class="p">);</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nv">$res</span><span class="o">-&gt;</span><span class="n">is_success</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="nv">$res</span><span class="o">-&gt;</span><span class="n">decoded_content</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">;</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="nb">warn</span><span class="w"> </span><span class="s">&quot;Error: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">$res</span><span class="o">-&gt;</span><span class="n">status_line</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">;</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The response is an <a href="https://metacpan.org/pod/HTTP::Response"><strong><code>HTTP::Response</code></strong></a> object with methods like <code>is_success</code>, <code>status_line</code>, and <code>decoded_content</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>HTTP::Tiny</th>
+<th>LWP::UserAgent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core Perl</td>
+<td>Yes (5.14+)</td>
+<td>No (CPAN)</td>
+</tr>
+<tr>
+<td>HTTPS</td>
+<td>Needs IO::Socket::SSL</td>
+<td>Needs LWP::Protocol::https</td>
+</tr>
+<tr>
+<td>Cookies</td>
+<td>Manual</td>
+<td>Built-in</td>
+</tr>
+<tr>
+<td>File upload</td>
+<td>Manual</td>
+<td>Built-in</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mojouseragent">Mojo::UserAgent<a class="headerlink" href="#mojouseragent" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.mojolicious.org/Mojo/UserAgent"><strong><code>Mojo::UserAgent</code></strong></a> is part of the Mojolicious framework and supports async HTTP with <a href="https://docs.mojolicious.org/Mojo/Promise"><strong>promises</strong></a>:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Mojo::UserAgent</span><span class="p">;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">my</span><span class="w"> </span><span class="nv">$ua</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">Mojo::UserAgent</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Synchronous</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="k">my</span><span class="w"> </span><span class="nv">$res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$ua</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;https://httpbin.org/get&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">result</span><span class="p">;</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="k">print</span><span class="w"> </span><span class="nv">$res</span><span class="o">-&gt;</span><span class="nn">json</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">origin</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">;</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="c1"># Asynchronous - two requests concurrently</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="k">my</span><span class="w"> </span><span class="nv">$p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$ua</span><span class="o">-&gt;</span><span class="n">get_p</span><span class="p">(</span><span class="s">&#39;https://httpbin.org/delay/1&#39;</span><span class="p">);</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="k">my</span><span class="w"> </span><span class="nv">$p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$ua</span><span class="o">-&gt;</span><span class="n">get_p</span><span class="p">(</span><span class="s">&#39;https://httpbin.org/delay/1&#39;</span><span class="p">);</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="nn">Mojo::Promise</span><span class="o">-&gt;</span><span class="n">all</span><span class="p">(</span><span class="nv">$p1</span><span class="p">,</span><span class="w"> </span><span class="nv">$p2</span><span class="p">)</span><span class="o">-&gt;</span><span class="k">then</span><span class="p">(</span><span class="k">sub</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="s">&quot;Both requests complete\n&quot;</span><span class="p">;</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="p">})</span><span class="o">-&gt;</span><span class="n">catch</span><span class="p">(</span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">warn</span><span class="w"> </span><span class="s">&quot;Failed: @_\n&quot;</span><span class="w"> </span><span class="p">})</span><span class="o">-&gt;</span><span class="nb">wait</span><span class="p">;</span>
+</span></code></pre></div>
+<p><code>Promise-&gt;all</code> runs both requests concurrently - two 1-second requests finish in roughly 1 second instead of 2.</p>
+<div class="interactive-code-walkthrough" data-config="{&quot;language&quot;: &quot;perl&quot;, &quot;title&quot;: &quot;HTTP API Client with Error Handling&quot;, &quot;code&quot;: &quot;use strict;\nuse warnings;\nuse HTTP::Tiny;\nuse JSON::MaybeXS qw(decode_json encode_json);\nuse Try::Tiny;\n\nmy $http = HTTP::Tiny->new(\n    timeout    => 15,\n    agent      => &#39;PerlAPIClient/1.0&#39;,\n    verify_SSL => 1,\n);\n\nsub api_request {\n    my (%args) = @_;\n    my $method = uc($args{method} // &#39;GET&#39;);\n    my $url    = $args{url} or die \&quot;URL required\\n\&quot;;\n\n    my %options;\n    if ($args{body}) {\n        $options{content} = encode_json($args{body});\n        $options{headers}{&#39;Content-Type&#39;} = &#39;application/json&#39;;\n    }\n    $options{headers}{&#39;Accept&#39;} = &#39;application/json&#39;;\n\n    my $response = $http->request($method, $url, \\%options);\n\n    unless ($response->{success}) {\n        die sprintf \&quot;API error: %s %s (URL: %s)\\n\&quot;,\n            $response->{status},\n            $response->{reason},\n            $url;\n    }\n\n    return decode_json($response->{content});\n}\n\ntry {\n    my $data = api_request(\n        url    => &#39;https://jsonplaceholder.typicode.com/posts/1&#39;,\n        method => &#39;GET&#39;,\n    );\n    printf \&quot;Title: %s\\n\&quot;, $data->{title};\n\n    my $new = api_request(\n        url    => &#39;https://jsonplaceholder.typicode.com/posts&#39;,\n        method => &#39;POST&#39;,\n        body   => { title => &#39;Test&#39;, body => &#39;Content&#39;, userId => 1 },\n    );\n    printf \&quot;Created post ID: %s\\n\&quot;, $new->{id};\n}\ncatch {\n    warn \&quot;Request failed: $_\&quot;;\n    exit 1;\n};\n&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 4, &quot;text&quot;: &quot;JSON::MaybeXS picks the fastest available JSON backend (Cpanel::JSON::XS, JSON::XS, or JSON::PP). It is the recommended way to handle JSON in Perl.&quot;}, {&quot;line&quot;: 7, &quot;text&quot;: &quot;Create the HTTP::Tiny instance once and reuse it. This enables connection keep-alive across multiple requests to the same host.&quot;}, {&quot;line&quot;: 10, &quot;text&quot;: &quot;verify_SSL enables certificate validation. Without this, HTTPS connections are vulnerable to man-in-the-middle attacks.&quot;}, {&quot;line&quot;: 20, &quot;text&quot;: &quot;encode_json converts a Perl hash reference into a JSON string for the request body. Content-Type is set to tell the server what format the body uses.&quot;}, {&quot;line&quot;: 27, &quot;text&quot;: &quot;HTTP::Tiny sets success to false for connection errors and 4xx/5xx responses. The status field contains the HTTP status code (or 599 for internal errors like DNS failures).&quot;}, {&quot;line&quot;: 34, &quot;text&quot;: &quot;decode_json parses the JSON response body back into a Perl data structure. Dies if the response is not valid JSON.&quot;}, {&quot;line&quot;: 37, &quot;text&quot;: &quot;The try/catch block wraps the entire request sequence. Any die from api_request or JSON parsing is caught here and reported cleanly.&quot;}]}"><noscript><p><strong>HTTP API Client with Error Handling</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="json-handling">JSON Handling<a class="headerlink" href="#json-handling" title="Permanent link">&para;</a></h2>
+<p><a href="https://metacpan.org/pod/JSON::MaybeXS"><strong><code>JSON::MaybeXS</code></strong></a> auto-detects the fastest available JSON backend (Cpanel::JSON::XS, JSON::XS, or pure-Perl JSON::PP):</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">JSON::MaybeXS</span><span class="w"> </span><span class="sx">qw(encode_json decode_json)</span><span class="p">;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">my</span><span class="w"> </span><span class="nv">$json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">encode_json</span><span class="p">({</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;Perl&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">year</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">1987</span><span class="w"> </span><span class="p">});</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="k">my</span><span class="w"> </span><span class="nv">$data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">decode_json</span><span class="p">(</span><span class="nv">$json</span><span class="p">);</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="k">print</span><span class="w"> </span><span class="nv">$data</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">name</span><span class="p">},</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">;</span><span class="w">    </span><span class="c1"># Perl</span>
+</span></code></pre></div>
+<p>For pretty-printed output, use the OO interface with <code>pretty =&gt; 1</code> and <code>canonical =&gt; 1</code> (sorted keys).</p>
+<div class="admonition tip">
+<p class="admonition-title">JSON Boolean Values</p>
+<p>JSON's <code>true</code>/<code>false</code> map to <code>JSON::PP::Boolean</code> objects (behave like <code>1</code>/<code>0</code>). To create JSON booleans from Perl, use <code>JSON::MaybeXS::true</code>/<code>JSON::MaybeXS::false</code>, or <code>\1</code>/<code>\0</code>.</p>
+</div>
+<hr />
+<h2 id="writing-daemons">Writing Daemons<a class="headerlink" href="#writing-daemons" title="Permanent link">&para;</a></h2>
+<p>A <strong>daemon</strong> is a long-running background process with no controlling terminal. The classic Unix double-fork ensures the daemon cannot reacquire a controlling terminal:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">POSIX</span><span class="w"> </span><span class="sx">qw(setsid)</span><span class="p">;</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">sub</span><span class="w"> </span><span class="nf">daemonize</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="k">my</span><span class="w"> </span><span class="nv">$pid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">fork</span><span class="p">();</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;First fork failed: $!\n&quot;</span><span class="w"> </span><span class="k">unless</span><span class="w"> </span><span class="nb">defined</span><span class="w"> </span><span class="nv">$pid</span><span class="p">;</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">$pid</span><span class="p">;</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="n">setsid</span><span class="p">()</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;setsid failed: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="nv">$pid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">fork</span><span class="p">();</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">    </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Second fork failed: $!\n&quot;</span><span class="w"> </span><span class="k">unless</span><span class="w"> </span><span class="nb">defined</span><span class="w"> </span><span class="nv">$pid</span><span class="p">;</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">$pid</span><span class="p">;</span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">    </span><span class="nb">chdir</span><span class="w"> </span><span class="s">&#39;/&#39;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Cannot chdir to /: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">    </span><span class="nb">umask</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">    </span><span class="nb">open</span><span class="w"> </span><span class="bp">STDIN</span><span class="p">,</span><span class="w">  </span><span class="s">&#39;&lt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;/dev/null&#39;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Cannot redirect STDIN: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="w">    </span><span class="nb">open</span><span class="w"> </span><span class="bp">STDOUT</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;/dev/null&#39;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Cannot redirect STDOUT: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="w">    </span><span class="nb">open</span><span class="w"> </span><span class="bp">STDERR</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;/dev/null&#39;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Cannot redirect STDERR: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="daemon-lifecycle">Daemon Lifecycle<a class="headerlink" href="#daemon-lifecycle" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TD
+    A[Parent Process] --&gt;|fork| B[Child 1]
+    A --&gt;|exit| C[Parent exits]
+    B --&gt;|setsid| D[New session leader]
+    D --&gt;|fork| E[Child 2 - The Daemon]
+    D --&gt;|exit| F[Session leader exits]
+    E --&gt;|chdir /| G[Change working directory]
+    G --&gt;|close stdin/stdout/stderr| H[Redirect to /dev/null]
+    H --&gt;|write PID file| I[Running daemon]
+    I --&gt;|signal| J{Signal received}
+    J --&gt;|SIGTERM| K[Cleanup and exit]
+    J --&gt;|SIGHUP| L[Reload configuration]
+    J --&gt;|SIGUSR1| M[Log rotation]</code></pre>
+<h3 id="pid-file-management">PID File Management<a class="headerlink" href="#pid-file-management" title="Permanent link">&para;</a></h3>
+<p>A <strong>PID file</strong> records the daemon's process ID so management scripts can send signals to it. Lock the file with <code>flock</code> to prevent duplicate instances:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Fcntl</span><span class="w"> </span><span class="s">&#39;:flock&#39;</span><span class="p">;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="k">sub</span><span class="w"> </span><span class="nf">write_pidfile</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="k">my</span><span class="w"> </span><span class="p">(</span><span class="nv">$path</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">@_</span><span class="p">;</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="nb">open</span><span class="w"> </span><span class="k">my</span><span class="w"> </span><span class="nv">$fh</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;&gt;&#39;</span><span class="p">,</span><span class="w"> </span><span class="nv">$path</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Cannot open PID file $path: $!\n&quot;</span><span class="p">;</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="nb">flock</span><span class="p">(</span><span class="nv">$fh</span><span class="p">,</span><span class="w"> </span><span class="n">LOCK_EX</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">LOCK_NB</span><span class="p">)</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">        </span><span class="ow">or</span><span class="w"> </span><span class="nb">die</span><span class="w"> </span><span class="s">&quot;Another instance is running (PID file locked)\n&quot;</span><span class="p">;</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="nv">$fh</span><span class="w"> </span><span class="vg">$$</span><span class="p">;</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nv">$fh</span><span class="p">;</span><span class="w">    </span><span class="c1"># Keep open to hold the lock</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>By holding the filehandle open, no other process can acquire the lock until this one exits.</p>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Daemonizing a Process&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;perl -e &#39;use POSIX qw(setsid); my $pid = fork(); die \&quot;fork: $!\&quot; unless defined $pid; if ($pid) { print \&quot;Parent: child is $pid\\n\&quot;; exit 0; } setsid(); print STDERR \&quot;Child: PID $$, SID \&quot;, POSIX::getpgrp(), \&quot;\\n\&quot;; sleep 1;&#39;&quot;, &quot;output&quot;: &quot;Parent: child is 12345\nChild: PID 12345, SID 12345&quot;, &quot;narration&quot;: &quot;After fork, the child calls setsid() to become the leader of a new session. The session ID matches the child PID, confirming it has detached from the parent terminal.&quot;}, {&quot;command&quot;: &quot;perl -e &#39;use Fcntl \&quot;:flock\&quot;; open my $fh, \&quot;>\&quot;, \&quot;/tmp/test_daemon.pid\&quot; or die $!; flock($fh, LOCK_EX | LOCK_NB) or die \&quot;Already running\\n\&quot;; print $fh $$; print \&quot;Locked PID file with PID $$\\n\&quot;; close $fh; unlink \&quot;/tmp/test_daemon.pid\&quot;;&#39;&quot;, &quot;output&quot;: &quot;Locked PID file with PID 54321&quot;, &quot;narration&quot;: &quot;The PID file is locked with flock. LOCK_NB makes the lock non-blocking - a second instance fails immediately instead of waiting.&quot;}, {&quot;command&quot;: &quot;perl -e &#39;open STDIN, \&quot;<\&quot;, \&quot;/dev/null\&quot;; open STDOUT, \&quot;>\&quot;, \&quot;/dev/null\&quot;; open STDERR, \&quot;>&amp;STDOUT\&quot;; exit 0;&#39; &amp;&amp; echo &#39;Daemon exited cleanly&#39;&quot;, &quot;output&quot;: &quot;Daemon exited cleanly&quot;, &quot;narration&quot;: &quot;Redirecting standard filehandles to /dev/null is the final step. The daemon produces no terminal output. Logging goes to files or syslog.&quot;}]}"><noscript><p><strong>Daemonizing a Process</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="procdaemon">Proc::Daemon<a class="headerlink" href="#procdaemon" title="Permanent link">&para;</a></h2>
+<p>The <a href="https://metacpan.org/pod/Proc::Daemon"><strong><code>Proc::Daemon</code></strong></a> CPAN module wraps the double-fork pattern into a single method call:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Proc::Daemon</span><span class="p">;</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">my</span><span class="w"> </span><span class="nv">$daemon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">Proc::Daemon</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="n">work_dir</span><span class="w">     </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;/tmp&#39;</span><span class="p">,</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="n">pid_file</span><span class="w">     </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;/tmp/myapp.pid&#39;</span><span class="p">,</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="n">child_STDOUT</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;/var/log/myapp.log&#39;</span><span class="p">,</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="n">child_STDERR</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;/var/log/myapp.err&#39;</span><span class="p">,</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="p">);</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="k">my</span><span class="w"> </span><span class="nv">$pid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$daemon</span><span class="o">-&gt;</span><span class="n">Init</span><span class="p">();</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="nb">exit</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">$pid</span><span class="p">;</span><span class="w">    </span><span class="c1"># Parent exits</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="c1"># Daemon code runs here</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">    </span><span class="n">do_work</span><span class="p">();</span>
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="w">    </span><span class="nb">sleep</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><code>Proc::Daemon</code> handles forking, session creation, directory change, filehandle redirection, and PID file writing. <code>Init</code> returns the child PID to the parent and <code>0</code> to the daemon.</p>
+<hr />
+<h2 id="signal-handling-in-long-running-processes">Signal Handling in Long-Running Processes<a class="headerlink" href="#signal-handling-in-long-running-processes" title="Permanent link">&para;</a></h2>
+<p>Daemons need to respond to <a href="https://perldoc.perl.org/perlipc#Signals"><strong>signals</strong></a> - the Unix mechanism for inter-process communication. Perl exposes signal handlers through the <code>%SIG</code> hash:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">my</span><span class="w"> </span><span class="nv">$running</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nv">$SIG</span><span class="p">{</span><span class="n">TERM</span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">warn</span><span class="w"> </span><span class="s">&quot;SIGTERM received\n&quot;</span><span class="p">;</span><span class="w"> </span><span class="nv">$running</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nv">$SIG</span><span class="p">{</span><span class="n">HUP</span><span class="p">}</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">warn</span><span class="w"> </span><span class="s">&quot;SIGHUP received\n&quot;</span><span class="p">;</span><span class="w">  </span><span class="n">reload_config</span><span class="p">()</span><span class="w"> </span><span class="p">};</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="nv">$SIG</span><span class="p">{</span><span class="n">INT</span><span class="p">}</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">$running</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nv">$running</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="n">do_work</span><span class="p">();</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="nb">sleep</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="p">}</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="n">cleanup</span><span class="p">();</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="nb">exit</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span></code></pre></div>
+<h3 id="common-signals">Common Signals<a class="headerlink" href="#common-signals" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Typical Daemon Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SIGTERM</code></td>
+<td>Graceful shutdown</td>
+</tr>
+<tr>
+<td><code>SIGINT</code></td>
+<td>Ctrl-C (interactive)</td>
+</tr>
+<tr>
+<td><code>SIGHUP</code></td>
+<td>Reload configuration</td>
+</tr>
+<tr>
+<td><code>SIGUSR1</code></td>
+<td>Rotate logs / dump state</td>
+</tr>
+<tr>
+<td><code>SIGCHLD</code></td>
+<td>Reap child processes</td>
+</tr>
+<tr>
+<td><code>SIGPIPE</code></td>
+<td>Broken socket (ignore it)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition danger">
+<p class="admonition-title">SIGPIPE Kills Daemons</p>
+<p>Writing to a closed socket sends <code>SIGPIPE</code>, which terminates the process by default. Every network daemon should ignore it: <code>$SIG{PIPE} = 'IGNORE'</code>. Then check the return value of <code>print</code> or <code>syswrite</code> instead.</p>
+</div>
+<h3 id="reaping-child-processes">Reaping Child Processes<a class="headerlink" href="#reaping-child-processes" title="Permanent link">&para;</a></h3>
+<p>Forking servers must reap children to prevent <strong>zombie processes</strong>. Set a <code>SIGCHLD</code> handler with non-blocking <code>waitpid</code>:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">POSIX</span><span class="w"> </span><span class="s">&#39;:sys_wait_h&#39;</span><span class="p">;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nv">$SIG</span><span class="p">{</span><span class="n">CHLD</span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">((</span><span class="k">my</span><span class="w"> </span><span class="nv">$pid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">waitpid</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">WNOHANG</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="p">};</span>
+</span></code></pre></div>
+<hr />
+<h2 id="process-supervision-with-systemd">Process Supervision with systemd<a class="headerlink" href="#process-supervision-with-systemd" title="Permanent link">&para;</a></h2>
+<p>Production daemons should be managed by a process supervisor. <a href="https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html"><strong>systemd</strong></a> is the standard on modern Linux. A unit file describes how to manage your service:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">[Unit]</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="na">Description</span><span class="o">=</span><span class="s">My Perl Application</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="k">[Service]</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/perl /opt/myapp/server.pl</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="na">ExecReload</span><span class="o">=</span><span class="s">/bin/kill -HUP $MAINPID</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="na">RestartSec</span><span class="o">=</span><span class="s">5</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="na">User</span><span class="o">=</span><span class="s">myapp</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">/opt/myapp</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="na">StandardOutput</span><span class="o">=</span><span class="s">journal</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="na">StandardError</span><span class="o">=</span><span class="s">journal</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="k">[Install]</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</span></code></pre></div>
+<p>Save this as <code>/etc/systemd/system/myapp.service</code>, then manage it with <code>systemctl</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>myapp
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>myapp
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Type=simple vs. Type=forking</p>
+<p>With <code>Type=simple</code>, systemd expects your process to stay in the foreground - do <strong>not</strong> daemonize. systemd handles backgrounding. With <code>Type=forking</code>, systemd expects the process to fork and reads the PID file to track the child. <code>Type=simple</code> is preferred for new services.</p>
+</div>
+<p>When using <code>Type=simple</code>, your Perl script runs as a foreground process. Set <code>$| = 1</code> to unbuffer STDOUT so log lines appear immediately in journald:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="ch">#!/usr/bin/perl</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">use</span><span class="w"> </span><span class="nn">strict</span><span class="p">;</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="k">use</span><span class="w"> </span><span class="nn">warnings</span><span class="p">;</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="vg">$|</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="k">my</span><span class="w"> </span><span class="nv">$running</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="nv">$SIG</span><span class="p">{</span><span class="n">TERM</span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">$running</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="nv">$SIG</span><span class="p">{</span><span class="n">HUP</span><span class="p">}</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">reload_config</span><span class="p">()</span><span class="w"> </span><span class="p">};</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="nv">$SIG</span><span class="p">{</span><span class="n">PIPE</span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;IGNORE&#39;</span><span class="p">;</span>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nv">$running</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="w">    </span><span class="n">do_work</span><span class="p">();</span>
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="w">    </span><span class="nb">sleep</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="p">}</span>
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="nb">exit</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span></code></pre></div>
+<hr />
+<h2 id="event-driven-programming">Event-Driven Programming<a class="headerlink" href="#event-driven-programming" title="Permanent link">&para;</a></h2>
+<p>Blocking I/O handles one connection at a time. Event-driven I/O multiplexes many connections in a single process using <code>select</code>, <code>poll</code>, or <code>epoll</code> under the hood.</p>
+<h3 id="anyevent">AnyEvent<a class="headerlink" href="#anyevent" title="Permanent link">&para;</a></h3>
+<p><a href="https://metacpan.org/pod/AnyEvent"><strong><code>AnyEvent</code></strong></a> provides a unified API across multiple event loop backends (EV, Event, POE, or its own pure-Perl loop):</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">AnyEvent</span><span class="p">;</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">use</span><span class="w"> </span><span class="nn">AnyEvent::Socket</span><span class="p">;</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="k">use</span><span class="w"> </span><span class="nn">AnyEvent::Handle</span><span class="p">;</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="k">my</span><span class="w"> </span><span class="nv">$cv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">AnyEvent</span><span class="o">-&gt;</span><span class="n">condvar</span><span class="p">;</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="n">tcp_server</span><span class="w"> </span><span class="nb">undef</span><span class="p">,</span><span class="w"> </span><span class="mi">9000</span><span class="p">,</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">    </span><span class="k">my</span><span class="w"> </span><span class="p">(</span><span class="nv">$fh</span><span class="p">,</span><span class="w"> </span><span class="nv">$host</span><span class="p">,</span><span class="w"> </span><span class="nv">$port</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">@_</span><span class="p">;</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="w">    </span><span class="k">my</span><span class="w"> </span><span class="nv">$handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">AnyEvent::Handle</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="w">        </span><span class="n">fh</span><span class="w">       </span><span class="o">=&gt;</span><span class="w"> </span><span class="nv">$fh</span><span class="p">,</span>
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="w">        </span><span class="n">on_error</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">$_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">destroy</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="w">        </span><span class="n">on_eof</span><span class="w">   </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">$_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">destroy</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="w">    </span><span class="p">);</span>
+</span><span id="__span-16-14"><a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="w">    </span><span class="nv">$handle</span><span class="o">-&gt;</span><span class="n">on_read</span><span class="p">(</span><span class="k">sub</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-16-15"><a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="w">        </span><span class="nv">$handle</span><span class="o">-&gt;</span><span class="n">push_read</span><span class="p">(</span><span class="n">line</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-16-16"><a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a><span class="w">            </span><span class="k">my</span><span class="w"> </span><span class="p">(</span><span class="nb">undef</span><span class="p">,</span><span class="w"> </span><span class="nv">$line</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">@_</span><span class="p">;</span>
+</span><span id="__span-16-17"><a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a><span class="w">            </span><span class="nv">$handle</span><span class="o">-&gt;</span><span class="n">push_write</span><span class="p">(</span><span class="s">&quot;Echo: $line\n&quot;</span><span class="p">);</span>
+</span><span id="__span-16-18"><a id="__codelineno-16-18" name="__codelineno-16-18" href="#__codelineno-16-18"></a><span class="w">        </span><span class="p">});</span>
+</span><span id="__span-16-19"><a id="__codelineno-16-19" name="__codelineno-16-19" href="#__codelineno-16-19"></a><span class="w">    </span><span class="p">});</span>
+</span><span id="__span-16-20"><a id="__codelineno-16-20" name="__codelineno-16-20" href="#__codelineno-16-20"></a><span class="p">};</span>
+</span><span id="__span-16-21"><a id="__codelineno-16-21" name="__codelineno-16-21" href="#__codelineno-16-21"></a>
+</span><span id="__span-16-22"><a id="__codelineno-16-22" name="__codelineno-16-22" href="#__codelineno-16-22"></a><span class="nv">$cv</span><span class="o">-&gt;</span><span class="nb">recv</span><span class="p">;</span><span class="w">    </span><span class="c1"># Enter the event loop</span>
+</span></code></pre></div>
+<p>The <strong>condition variable</strong> (<code>$cv</code>) is the event loop entry point. <code>$cv-&gt;recv</code> blocks until <code>$cv-&gt;send</code> is called. Each connection gets its own <code>AnyEvent::Handle</code> for async I/O.</p>
+<h3 id="ioasync">IO::Async<a class="headerlink" href="#ioasync" title="Permanent link">&para;</a></h3>
+<p><a href="https://metacpan.org/pod/IO::Async"><strong><code>IO::Async</code></strong></a> is another event-driven framework, structured around a central loop with notifier objects. Where AnyEvent uses bare callbacks, IO::Async wraps everything in objects. It has built-in <code>Future</code> support for composing async operations.</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">IO::Async::Loop</span><span class="p">;</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="k">use</span><span class="w"> </span><span class="nn">IO::Async::Listener</span><span class="p">;</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="k">my</span><span class="w"> </span><span class="nv">$loop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">IO::Async::Loop</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">;</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="nv">$loop</span><span class="o">-&gt;</span><span class="n">add</span><span class="p">(</span><span class="nn">IO::Async::Listener</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">    </span><span class="n">on_stream</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">        </span><span class="k">my</span><span class="w"> </span><span class="p">(</span><span class="nb">undef</span><span class="p">,</span><span class="w"> </span><span class="nv">$stream</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">@_</span><span class="p">;</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">        </span><span class="nv">$stream</span><span class="o">-&gt;</span><span class="n">configure</span><span class="p">(</span><span class="n">on_read</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">sub</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">            </span><span class="k">my</span><span class="w"> </span><span class="p">(</span><span class="nv">$self</span><span class="p">,</span><span class="w"> </span><span class="nv">$buffref</span><span class="p">,</span><span class="w"> </span><span class="nv">$eof</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">@_</span><span class="p">;</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="w">            </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nv">$$buffref</span><span class="w"> </span><span class="o">=~</span><span class="w"> </span><span class="sr">s/^(.*)\n//</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">                </span><span class="nv">$self</span><span class="o">-&gt;</span><span class="nb">write</span><span class="p">(</span><span class="s">&quot;Echo: $1\n&quot;</span><span class="p">);</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="w">            </span><span class="p">}</span>
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a><span class="w">        </span><span class="p">});</span>
+</span><span id="__span-17-16"><a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a><span class="w">        </span><span class="nv">$loop</span><span class="o">-&gt;</span><span class="n">add</span><span class="p">(</span><span class="nv">$stream</span><span class="p">);</span>
+</span><span id="__span-17-17"><a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-17-18"><a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a><span class="p">));</span>
+</span><span id="__span-17-19"><a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>
+</span><span id="__span-17-20"><a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="nv">$loop</span><span class="o">-&gt;</span><span class="nb">listen</span><span class="p">(</span>
+</span><span id="__span-17-21"><a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a><span class="w">    </span><span class="n">addr</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;inet&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">socktype</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#39;stream&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">port</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">9000</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-17-22"><a id="__codelineno-17-22" name="__codelineno-17-22" href="#__codelineno-17-22"></a><span class="p">)</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">;</span>
+</span><span id="__span-17-23"><a id="__codelineno-17-23" name="__codelineno-17-23" href="#__codelineno-17-23"></a><span class="nv">$loop</span><span class="o">-&gt;</span><span class="n">run</span><span class="p">;</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>AnyEvent</th>
+<th>IO::Async</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Style</td>
+<td>Callback-based</td>
+<td>Object notifiers</td>
+</tr>
+<tr>
+<td>Timer</td>
+<td><code>AnyEvent-&gt;timer(...)</code></td>
+<td><code>$loop-&gt;delay_future(...)</code></td>
+</tr>
+<tr>
+<td>Futures</td>
+<td><code>AnyEvent::Future</code></td>
+<td>Built-in <code>Future</code></td>
+</tr>
+<tr>
+<td>Ecosystem</td>
+<td>Large (AnyEvent::*)</td>
+<td>Growing (Net::Async::*)</td>
+</tr>
+</tbody>
+</table>
+<p>Both frameworks achieve the same goal: handling thousands of concurrent connections in a single process without threads or forks. AnyEvent is callback-centric. IO::Async uses an object hierarchy. Choose whichever fits your mental model.</p>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;HTTP Status Checker Script&quot;, &quot;difficulty&quot;: &quot;beginner&quot;, &quot;scenario&quot;: &quot;Write a Perl script that checks the HTTP status of a list of URLs.\n\nRequirements:\n1. Accept URLs as command-line arguments or from STDIN (one per line)\n2. Use HTTP::Tiny to make a HEAD request to each URL\n3. Print each URL with its status code\n4. Print a summary: total checked, successful, failed\n&quot;, &quot;hints&quot;: [&quot;Use HTTP::Tiny with the head() method: my $res = $http->head($url);&quot;, &quot;Check $res->{success} for boolean pass/fail&quot;, &quot;Status 599 means a client-side error (DNS failure, timeout)&quot;, &quot;Use printf for aligned output: printf &#39;%-40s %3d %s&#39;, $url, $status, $reason&quot;], &quot;solution&quot;: &quot;```perl\nuse strict;\nuse warnings;\nuse HTTP::Tiny;\n\nmy $http = HTTP::Tiny->new(timeout => 10);\nmy @urls = @ARGV;\nunless (@urls) {\n    while (<STDIN>) { chomp; push @urls, $_ if length }\n}\ndie \&quot;Usage: $0 <url> [url ...]\\n\&quot; unless @urls;\n\nmy ($ok, $fail) = (0, 0);\nfor my $url (@urls) {\n    my $res = $http->head($url);\n    my $reason = $res->{success} ? $res->{reason} : &#39;Failed&#39;;\n    printf \&quot;%-40s %3d %s\\n\&quot;, $url, $res->{status}, $reason;\n    $res->{success} ? $ok++ : $fail++;\n}\nprintf \&quot;\\nSummary: %d checked, %d OK, %d failed\\n\&quot;,\n    scalar @urls, $ok, $fail;\n```\n\nHTTP::Tiny&#39;s head() sends a HEAD request (no body download). Status\n599 is its internal code for client-side errors (DNS failure, timeout).&quot;}"><noscript><p><strong>HTTP Status Checker Script</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Chat Server with Multiple Clients&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;Build a forking TCP chat server in Perl.\n\nRequirements:\n1. Listen on a configurable port (default 9000)\n2. Accept multiple simultaneous clients using fork\n3. Each client provides a nickname on connection\n4. Broadcast messages from each client to all others\n5. Handle client disconnection gracefully\n6. Respond to SIGTERM for clean shutdown\n\nProtocol: server sends \&quot;NICK?\&quot; on connect, client replies with a name,\nserver sends \&quot;WELCOME <nick>\&quot;, then broadcasts \&quot;<nick>: message\&quot; to all.\n\nUse IO::Select for single-process multiplexing (no forking needed).\n&quot;, &quot;hints&quot;: [&quot;Use IO::Select to multiplex across multiple client sockets in one process&quot;, &quot;IO::Select->can_read(0.1) returns sockets with data ready to read&quot;, &quot;Store clients in a hash: $clients{$socket} = {nick => $name, sock => $socket}&quot;, &quot;Broadcast by iterating all clients except the sender&quot;, &quot;Handle disconnection when <$sock> returns undef&quot;], &quot;solution&quot;: &quot;```perl\nuse strict;\nuse warnings;\nuse IO::Socket::INET;\nuse IO::Select;\n\nmy $port = $ARGV[0] // 9000;\nmy $server = IO::Socket::INET->new(\n    LocalPort => $port, Proto => &#39;tcp&#39;,\n    Listen => 10, ReuseAddr => 1,\n) or die \&quot;Cannot create server: $!\\n\&quot;;\n\nmy $select = IO::Select->new($server);\nmy %clients;\n$SIG{PIPE} = &#39;IGNORE&#39;;\n$SIG{TERM} = sub {\n    print { $clients{$_}{sock} } \&quot;QUIT\\n\&quot; for keys %clients;\n    exit 0;\n};\n\nwhile (1) {\n    for my $sock ($select->can_read(0.1)) {\n        if ($sock == $server) {\n            my $c = $server->accept();\n            $select->add($c);\n            print $c \&quot;NICK?\\n\&quot;;\n            $clients{$c} = { sock => $c, nick => undef };\n        } else {\n            my $line = <$sock>;\n            unless (defined $line) {\n                my $nick = $clients{$sock}{nick} // &#39;unknown&#39;;\n                delete $clients{$sock};\n                $select->remove($sock); close $sock;\n                broadcast(\&quot;* $nick has left\\n\&quot;, undef);\n                next;\n            }\n            chomp $line;\n            if (!defined $clients{$sock}{nick}) {\n                $clients{$sock}{nick} = $line;\n                print $sock \&quot;WELCOME $line\\n\&quot;;\n                broadcast(\&quot;* $line has joined\\n\&quot;, $sock);\n            } else {\n                broadcast(\&quot;$clients{$sock}{nick}: $line\\n\&quot;, $sock);\n            }\n        }\n    }\n}\n\nsub broadcast {\n    my ($msg, $exclude) = @_;\n    for my $k (keys %clients) {\n        next if defined $exclude &amp;&amp; $clients{$k}{sock} == $exclude;\n        next unless defined $clients{$k}{nick};\n        print { $clients{$k}{sock} } $msg;\n    }\n}\n```\n\nIO::Select multiplexes all sockets in one process. The select loop\nchecks for readable data, accepts new connections, and broadcasts\nmessages from each client to all others.&quot;}"><noscript><p><strong>Chat Server with Multiple Clients</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-command-builder" data-config="{&quot;base&quot;: &quot;perl -MIO::Socket::INET -e&quot;, &quot;description&quot;: &quot;Build a Perl socket one-liner for quick network testing&quot;, &quot;options&quot;: [{&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Socket operation&quot;, &quot;explanation&quot;: &quot;Choose a network operation to perform&quot;, &quot;choices&quot;: [[&quot;&#39;my $s = IO::Socket::INET->new(PeerHost=>\&quot;localhost\&quot;, PeerPort=>80, Proto=>\&quot;tcp\&quot;, Timeout=>3) or die \&quot;$!\\n\&quot;; print \&quot;Port 80 open\\n\&quot;; close $s;&#39;&quot;, &quot;TCP port check (connect test)&quot;], [&quot;&#39;my $s = IO::Socket::INET->new(PeerHost=>\&quot;localhost\&quot;, PeerPort=>80, Proto=>\&quot;tcp\&quot;) or die $!; print $s \&quot;GET / HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n\&quot;; print while <$s>;&#39;&quot;, &quot;Raw HTTP GET request&quot;], [&quot;&#39;my $s = IO::Socket::INET->new(LocalPort=>9999, Proto=>\&quot;tcp\&quot;, Listen=>1, ReuseAddr=>1) or die $!; print \&quot;Listening 9999\\n\&quot;; my $c=$s->accept; print while <$c>;&#39;&quot;, &quot;Simple TCP listener (receive data)&quot;], [&quot;&#39;my $s = IO::Socket::INET->new(PeerHost=>\&quot;localhost\&quot;, PeerPort=>9999, Proto=>\&quot;udp\&quot;) or die $!; $s->send(\&quot;ping\&quot;); $s->recv(my $r, 1024); print $r;&#39;&quot;, &quot;UDP send and receive&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;text&quot;, &quot;label&quot;: &quot;Target host&quot;, &quot;explanation&quot;: &quot;Hostname or IP to connect to (replaces localhost in the command)&quot;, &quot;placeholder&quot;: &quot;localhost&quot;}]}"><noscript><p><strong>Command Builder</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://perldoc.perl.org/perlipc">perlipc</a> - Perl interprocess communication: signals, pipes, sockets</li>
+<li><a href="https://perldoc.perl.org/IO::Socket::INET">IO::Socket::INET documentation</a> - TCP/UDP socket interface</li>
+<li><a href="https://metacpan.org/pod/HTTP::Tiny">HTTP::Tiny documentation</a> - lightweight HTTP client (core module)</li>
+<li><a href="https://metacpan.org/pod/LWP::UserAgent">LWP::UserAgent documentation</a> - full-featured HTTP client</li>
+<li><a href="https://docs.mojolicious.org/Mojo/UserAgent">Mojo::UserAgent documentation</a> - async HTTP with promises</li>
+<li><a href="https://metacpan.org/pod/JSON::MaybeXS">JSON::MaybeXS documentation</a> - fast, portable JSON handling</li>
+<li><a href="https://metacpan.org/pod/AnyEvent">AnyEvent documentation</a> - event-driven programming</li>
+<li><a href="https://metacpan.org/pod/IO::Async">IO::Async documentation</a> - asynchronous I/O framework</li>
+<li><a href="https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html">systemd.service man page</a> - service unit configuration</li>
+<li><a href="https://www.oreilly.com/library/view/network-programming-with/0201615711/">Network Programming with Perl (Stein)</a> - comprehensive reference</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../text-processing-oneliners/">Text Processing and One-Liners</a> | <strong>Next:</strong> <a href="../web-frameworks-apis/">Web Frameworks and APIs</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+Networking%20and%20Daemons" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

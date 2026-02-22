@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 620" font-family="'Courier New', Courier, monospace" font-size="13">
+  <style>
+    .bg { fill: #1e1e2e; }
+    .terminal-text { fill: #cdd6f4; font-size: 13px; }
+    .comment { fill: #6c7086; font-size: 13px; }
+    .section-label { fill: #fff; font-size: 12px; font-weight: bold; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .callout-bg-header { fill: #f38ba8; rx: 4; }
+    .callout-bg-flags { fill: #fab387; rx: 4; }
+    .callout-bg-question { fill: #a6e3a1; rx: 4; }
+    .callout-bg-answer { fill: #89b4fa; rx: 4; }
+    .callout-bg-stats { fill: #cba6f7; rx: 4; }
+    .callout-bg-opt { fill: #94e2d5; rx: 4; }
+    .highlight-header { fill: #f38ba8; }
+    .highlight-flags { fill: #fab387; }
+    .highlight-question { fill: #a6e3a1; }
+    .highlight-answer { fill: #89b4fa; }
+    .highlight-stats { fill: #cba6f7; }
+    .highlight-opt { fill: #94e2d5; }
+    .connector { stroke-width: 1.5; fill: none; }
+    .title-text { fill: #cdd6f4; font-size: 16px; font-weight: bold; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  </style>
+
+  <!-- Background -->
+  <rect class="bg" width="820" height="620" rx="8"/>
+
+  <!-- Title -->
+  <text x="20" y="30" class="title-text">$ dig example.com</text>
+  <line x1="20" y1="40" x2="800" y2="40" stroke="#45475a" stroke-width="1"/>
+
+  <!-- Terminal output -->
+  <!-- Header section -->
+  <text x="30" y="70" class="highlight-header">; &lt;&lt;&gt;&gt; DiG 9.18.28 &lt;&lt;&gt;&gt; example.com</text>
+  <text x="30" y="88" class="comment">;; global options: +cmd</text>
+  <text x="30" y="106" class="comment">;; Got answer:</text>
+  <text x="30" y="124" class="highlight-header">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 41923</text>
+
+  <!-- Flags -->
+  <text x="30" y="152" class="highlight-flags">;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1</text>
+
+  <!-- OPT -->
+  <text x="30" y="184" class="highlight-opt">;; OPT PSEUDOSECTION:</text>
+  <text x="30" y="202" class="highlight-opt">; EDNS: version: 0, flags:; udp: 1232</text>
+
+  <!-- Question -->
+  <text x="30" y="234" class="highlight-question">;; QUESTION SECTION:</text>
+  <text x="30" y="252" class="highlight-question">;example.com.                   IN      A</text>
+
+  <!-- Answer -->
+  <text x="30" y="284" class="highlight-answer">;; ANSWER SECTION:</text>
+  <text x="30" y="302" class="highlight-answer">example.com.            86400   IN      A       93.184.216.34</text>
+
+  <!-- Stats -->
+  <text x="30" y="338" class="highlight-stats">;; Query time: 12 msec</text>
+  <text x="30" y="356" class="highlight-stats">;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)</text>
+  <text x="30" y="374" class="highlight-stats">;; WHEN: Wed Jan 15 10:30:00 UTC 2025</text>
+  <text x="30" y="392" class="highlight-stats">;; MSG SIZE  rcvd: 56</text>
+
+  <!-- Annotation callouts on the right side -->
+  <!-- Header callout -->
+  <rect x="600" y="62" width="200" height="70" class="callout-bg-header" rx="4"/>
+  <text x="612" y="82" class="section-label">HEADER</text>
+  <text x="612" y="98" class="section-label" font-weight="normal" font-size="11">status: NOERROR = success</text>
+  <text x="612" y="112" class="section-label" font-weight="normal" font-size="11">NXDOMAIN = doesn't exist</text>
+  <text x="612" y="126" class="section-label" font-weight="normal" font-size="11">SERVFAIL = server error</text>
+  <path d="M598,97 L570,97 L570,97" class="connector" stroke="#f38ba8"/>
+
+  <!-- Flags callout -->
+  <rect x="600" y="140" width="200" height="56" class="callout-bg-flags" rx="4"/>
+  <text x="612" y="158" class="section-label">FLAGS</text>
+  <text x="612" y="172" class="section-label" font-weight="normal" font-size="11">qr=response  rd=recursion asked</text>
+  <text x="612" y="186" class="section-label" font-weight="normal" font-size="11">ra=recursion OK  aa=authoritative</text>
+  <path d="M598,168 L570,168 L570,152" class="connector" stroke="#fab387"/>
+
+  <!-- OPT callout -->
+  <rect x="600" y="204" width="200" height="40" class="callout-bg-opt" rx="4"/>
+  <text x="612" y="222" class="section-label">EDNS</text>
+  <text x="612" y="236" class="section-label" font-weight="normal" font-size="11">Extended DNS: larger UDP size</text>
+  <path d="M598,224 L570,224 L570,193" class="connector" stroke="#94e2d5"/>
+
+  <!-- Question callout -->
+  <rect x="600" y="252" width="200" height="40" class="callout-bg-question" rx="4"/>
+  <text x="612" y="270" class="section-label">QUESTION</text>
+  <text x="612" y="284" class="section-label" font-weight="normal" font-size="11">Confirms what you asked for</text>
+  <path d="M598,272 L570,272 L570,243" class="connector" stroke="#a6e3a1"/>
+
+  <!-- Answer callout -->
+  <rect x="600" y="300" width="200" height="56" class="callout-bg-answer" rx="4"/>
+  <text x="612" y="318" class="section-label">ANSWER</text>
+  <text x="612" y="332" class="section-label" font-weight="normal" font-size="11">86400 = TTL in seconds (24h)</text>
+  <text x="612" y="346" class="section-label" font-weight="normal" font-size="11">IN = Internet class  A = IPv4</text>
+  <path d="M598,323 L570,323 L570,293" class="connector" stroke="#89b4fa"/>
+
+  <!-- Stats callout -->
+  <rect x="600" y="364" width="200" height="56" class="callout-bg-stats" rx="4"/>
+  <text x="612" y="382" class="section-label">STATS</text>
+  <text x="612" y="396" class="section-label" font-weight="normal" font-size="11">Query time: &lt;100ms is normal</text>
+  <text x="612" y="410" class="section-label" font-weight="normal" font-size="11">SERVER: who answered you</text>
+  <path d="M598,388 L570,388 L570,365" class="connector" stroke="#cba6f7"/>
+
+  <!-- Legend at bottom -->
+  <line x1="20" y1="430" x2="800" y2="430" stroke="#45475a" stroke-width="1"/>
+  <text x="30" y="455" class="terminal-text" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12">Key sections of dig output. Use </text>
+  <text x="293" y="455" class="terminal-text" font-size="12">+short</text>
+  <text x="352" y="455" class="terminal-text" font-family="'Helvetica Neue', Arial, sans-serif" font-size="12"> for just the answer, or read the full output to debug DNS issues.</text>
+</svg>

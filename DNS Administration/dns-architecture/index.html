@@ -1,0 +1,4597 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/DNS%20Administration/dns-architecture/">
+      
+      
+        <link rel="prev" href="../dnssec/">
+      
+      
+        <link rel="next" href="../../Git/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>DNS Architecture and Operations - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="DNS Architecture and Operations - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/DNS%20Administration/dns-architecture.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/DNS%20Administration/dns-architecture/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="DNS Architecture and Operations - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/DNS%20Administration/dns-architecture.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dns-architecture-and-operations" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DNS Architecture and Operations
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Dev%20Zero/Perl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#primarysecondary-topologies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary/Secondary Topologies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Primary/Secondary Topologies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-primarysecondary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Primary/Secondary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hidden-primary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hidden Primary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zone-transfers-in-depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zone Transfers In Depth
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zone Transfers In Depth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#axfr-full-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AXFR (Full Transfer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ixfr-incremental-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IXFR (Incremental Transfer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NOTIFY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tsig-for-zone-transfer-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TSIG for Zone Transfer Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-zone-transfers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting Zone Transfers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#split-horizon-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Split-Horizon DNS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Split-Horizon DNS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bind-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIND Views
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#separate-servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separate Servers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-split-horizon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Split-Horizon
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anycast-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anycast DNS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Anycast DNS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notable-dns-outages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notable DNS Outages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns-and-email-getting-it-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS and Email: Getting It Right
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DNS and Email: Getting It Right">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mx-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MX Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spf-sender-policy-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPF (Sender Policy Framework)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dkim-domainkeys-identified-mail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DKIM (DomainKeys Identified Mail)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dmarc-domain-based-message-authentication-reporting-and-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMARC (Domain-based Message Authentication, Reporting and Conformance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ptr-reverse-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PTR (Reverse DNS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-email-dns-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Email DNS Audit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-and-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring and Alerting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-to-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to Monitor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dig-based-health-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dig-Based Health Checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dnstap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dnstap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ttl-lowering-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTL Lowering Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutover-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cutover Checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-io-tld-situation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The .io TLD Situation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Dev%20Zero/Perl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#primarysecondary-topologies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary/Secondary Topologies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Primary/Secondary Topologies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-primarysecondary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Primary/Secondary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hidden-primary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hidden Primary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#zone-transfers-in-depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zone Transfers In Depth
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zone Transfers In Depth">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#axfr-full-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AXFR (Full Transfer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ixfr-incremental-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IXFR (Incremental Transfer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NOTIFY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tsig-for-zone-transfer-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TSIG for Zone Transfer Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#troubleshooting-zone-transfers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting Zone Transfers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#split-horizon-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Split-Horizon DNS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Split-Horizon DNS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bind-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIND Views
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#separate-servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separate Servers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-split-horizon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Split-Horizon
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anycast-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anycast DNS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Anycast DNS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notable-dns-outages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notable DNS Outages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns-and-email-getting-it-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS and Email: Getting It Right
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DNS and Email: Getting It Right">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mx-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MX Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spf-sender-policy-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SPF (Sender Policy Framework)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dkim-domainkeys-identified-mail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DKIM (DomainKeys Identified Mail)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dmarc-domain-based-message-authentication-reporting-and-conformance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DMARC (Domain-based Message Authentication, Reporting and Conformance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ptr-reverse-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PTR (Reverse DNS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complete-email-dns-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Email DNS Audit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-and-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring and Alerting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-to-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to Monitor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dig-based-health-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dig-Based Health Checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dnstap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dnstap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migration Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ttl-lowering-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTL Lowering Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cutover-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cutover Checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-io-tld-situation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The .io TLD Situation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/DNS Administration/dns-architecture.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="dns-architecture-and-operations">DNS Architecture and Operations<a class="headerlink" href="#dns-architecture-and-operations" title="Permanent link">&para;</a></h1>
+<p>This guide covers the operational side of DNS - how to design resilient architectures, transfer zones between servers, get email DNS right, monitor your infrastructure, and migrate records without downtime.</p>
+<hr />
+<h2 id="primarysecondary-topologies">Primary/Secondary Topologies<a class="headerlink" href="#primarysecondary-topologies" title="Permanent link">&para;</a></h2>
+<p>Every production DNS deployment uses at least two authoritative servers. The question is how to organize them.</p>
+<h3 id="standard-primarysecondary">Standard Primary/Secondary<a class="headerlink" href="#standard-primarysecondary" title="Permanent link">&para;</a></h3>
+<p>The simplest topology: one primary server where you edit zone data, and one or more secondaries that receive copies via zone transfer.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>         Zone edits
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>             |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>             v
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>     +-------+-------+
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>     |    Primary     |   (ns1.example.com)
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>     |  198.51.100.1  |
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>     +-------+-------+
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>             |
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        NOTIFY + AXFR/IXFR
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>             |
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>     +-------+-------+
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>     |   Secondary    |   (ns2.example.com)
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>     |  203.0.113.2   |
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>     +-------+-------+
+</span></code></pre></div>
+<p>Both servers are listed in the NS records and serve queries equally. The primary is authoritative for edits; the secondaries are authoritative for serving.</p>
+<h3 id="hidden-primary">Hidden Primary<a class="headerlink" href="#hidden-primary" title="Permanent link">&para;</a></h3>
+<p>In a <strong>hidden primary</strong> topology, the primary server is not listed in NS records and doesn't serve public queries. Only the secondaries are public-facing.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>     +-------+-------+
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>     |  Hidden Primary |   (NOT in NS records)
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>     |  10.0.0.1       |   (internal IP only)
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>     +-------+-------+
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>         |           |
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    AXFR/IXFR   AXFR/IXFR
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>         |           |
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>   +-----+-----+ +--+--------+
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>   | Secondary  | | Secondary  |   (ns1.example.com, ns2.example.com)
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>   | 198.51.100.1| | 203.0.113.2|   (public-facing)
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>   +-----------+ +------------+
+</span></code></pre></div>
+<p>Why use a hidden primary:</p>
+<ul>
+<li><strong>Security</strong> - the server where you edit zones is not exposed to the internet. Attackers can't target it with DDoS or exploit attempts.</li>
+<li><strong>Flexibility</strong> - you can use any software or configuration on the primary (including database-backed systems like PowerDNS) and serve via lightweight secondaries (NSD).</li>
+<li><strong>Maintenance</strong> - you can take the primary offline for maintenance without affecting DNS resolution.</li>
+</ul>
+<p>The primary still needs to be reachable by the secondaries for zone transfers. Put it on a private network or restrict access by IP.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is a hidden primary DNS server?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;A primary server that uses encryption to hide its IP address&quot;, &quot;feedback&quot;: &quot;Hidden primary isn&#39;t about encryption. It&#39;s about not listing the server in public NS records while still using it as the zone data source.&quot;}, {&quot;text&quot;: &quot;A primary server that isn&#39;t listed in NS records but still provides zone transfers to secondaries&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! A hidden primary holds the master copy of zone data and pushes updates to public-facing secondaries, but isn&#39;t listed in NS records and doesn&#39;t answer public queries. This protects it from direct attacks and simplifies management.&quot;}, {&quot;text&quot;: &quot;A backup server that only activates when the primary fails&quot;, &quot;feedback&quot;: &quot;A hidden primary is always active - it&#39;s the authoritative source for zone data. It&#39;s &#39;hidden&#39; from public DNS, not inactive.&quot;}, {&quot;text&quot;: &quot;A server that only responds to queries from specific IP addresses&quot;, &quot;feedback&quot;: &quot;Access control is a separate concept. A hidden primary specifically means the server provides zone transfers but isn&#39;t listed in public NS records.&quot;}]}"><noscript><p><strong>What is a hidden primary DNS server?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="zone-transfers-in-depth">Zone Transfers In Depth<a class="headerlink" href="#zone-transfers-in-depth" title="Permanent link">&para;</a></h2>
+<h3 id="axfr-full-transfer">AXFR (Full Transfer)<a class="headerlink" href="#axfr-full-transfer" title="Permanent link">&para;</a></h3>
+<p><strong>AXFR</strong> transfers the entire zone from primary to secondary over TCP. The secondary requests a transfer, and the primary sends every record in the zone.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Test an AXFR</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>dig<span class="w"> </span>@198.51.100.1<span class="w"> </span>example.com<span class="w"> </span>AXFR
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>example.com.     3600 IN SOA  ns1.example.com. admin.example.com. 2025011501 ...
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>example.com.     3600 IN NS   ns1.example.com.
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>example.com.     3600 IN NS   ns2.example.com.
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>example.com.     3600 IN A    198.51.100.10
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>www.example.com. 3600 IN A    198.51.100.10
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>mail.example.com. 3600 IN A   198.51.100.20
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>example.com.     3600 IN SOA  ns1.example.com. admin.example.com. 2025011501 ...
+</span></code></pre></div>
+<p>The SOA record appears at both the beginning and end - this marks the boundaries of the transfer.</p>
+<h3 id="ixfr-incremental-transfer">IXFR (Incremental Transfer)<a class="headerlink" href="#ixfr-incremental-transfer" title="Permanent link">&para;</a></h3>
+<p><strong>IXFR</strong> (<a href="https://datatracker.ietf.org/doc/html/rfc1995">RFC 1995</a>) transfers only the changes since the secondary's last known serial. This is dramatically more efficient for large zones with small changes.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Request an IXFR from serial 2025011500</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>dig<span class="w"> </span>@198.51.100.1<span class="w"> </span>example.com<span class="w"> </span><span class="nv">IXFR</span><span class="o">=</span><span class="m">2025011500</span>
+</span></code></pre></div>
+<p>An IXFR response contains:
+1. The new SOA (with the current serial)
+2. The old SOA (with the serial the secondary had)
+3. Records to remove (from the old version)
+4. The new SOA again
+5. Records to add (in the new version)</p>
+<p>Not all servers support IXFR. When IXFR isn't available (or the change is too large), the server falls back to AXFR.</p>
+<h3 id="notify">NOTIFY<a class="headerlink" href="#notify" title="Permanent link">&para;</a></h3>
+<p>When you change a zone on the primary, you don't want secondaries to wait until their next SOA refresh poll. The <strong>NOTIFY</strong> mechanism (<a href="https://datatracker.ietf.org/doc/html/rfc1996">RFC 1996</a>) lets the primary immediately tell secondaries that the zone has changed.</p>
+<p>The primary sends a NOTIFY message to all configured secondaries. Each secondary responds by checking the primary's SOA serial and initiating a transfer if the serial is higher.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Admin as Admin
+    participant Primary as Primary (ns1)
+    participant Secondary as Secondary (ns2)
+
+    Admin-&gt;&gt;Primary: Edit zone, increment serial
+    Primary-&gt;&gt;Secondary: NOTIFY (UDP)
+    Secondary-&gt;&gt;Primary: SOA query (check serial)
+    Primary--&gt;&gt;Secondary: SOA reply (serial: 2025011502)
+    Note over Secondary: New serial &gt; my serial (2025011501)
+    Secondary-&gt;&gt;Primary: AXFR or IXFR request (TCP)
+    Primary--&gt;&gt;Secondary: Zone data transfer
+    Note over Secondary: Zone loaded, serving new data</code></pre>
+<h3 id="tsig-for-zone-transfer-security">TSIG for Zone Transfer Security<a class="headerlink" href="#tsig-for-zone-transfer-security" title="Permanent link">&para;</a></h3>
+<p>Zone transfers should always be authenticated with <strong>TSIG</strong> (see the <a href="../bind/">BIND</a> and <a href="../nsd-and-unbound/">NSD and Unbound</a> guides for configuration details). Without TSIG, anyone who can reach your primary can request a full dump of your zone data.</p>
+<h3 id="troubleshooting-zone-transfers">Troubleshooting Zone Transfers<a class="headerlink" href="#troubleshooting-zone-transfers" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Check if secondaries are in sync (compare serials)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>dig<span class="w"> </span>@ns1.example.com<span class="w"> </span>example.com<span class="w"> </span>SOA<span class="w"> </span>+short
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>dig<span class="w"> </span>@ns2.example.com<span class="w"> </span>example.com<span class="w"> </span>SOA<span class="w"> </span>+short
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1"># Test if the primary allows transfers</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>dig<span class="w"> </span>@198.51.100.1<span class="w"> </span>example.com<span class="w"> </span>AXFR
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1"># On the secondary, force a transfer</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="c1"># BIND:</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>rndc<span class="w"> </span>retransfer<span class="w"> </span>example.com
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="c1"># NSD:</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>nsd-control<span class="w"> </span>force_transfer<span class="w"> </span>example.com
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="c1"># Check zone transfer logs</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>named<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>transfer
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>journalctl<span class="w"> </span>-u<span class="w"> </span>nsd<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>xfr
+</span></code></pre></div>
+<p>Common zone transfer problems:</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Transfer refused"</td>
+<td>Primary's <code>allow-transfer</code> doesn't include the secondary's IP</td>
+</tr>
+<tr>
+<td>Serial numbers match but data differs</td>
+<td>Someone edited the zone without incrementing the serial</td>
+</tr>
+<tr>
+<td>NOTIFY not received</td>
+<td>Firewall blocking UDP/53 from primary to secondary</td>
+</tr>
+<tr>
+<td>TSIG verification failure</td>
+<td>Key mismatch or clock skew between servers</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="split-horizon-dns">Split-Horizon DNS<a class="headerlink" href="#split-horizon-dns" title="Permanent link">&para;</a></h2>
+<p><strong>Split-horizon</strong> (or split-brain) DNS returns different answers depending on who's asking. Internal clients get internal IP addresses; external clients get public IP addresses.</p>
+<h3 id="bind-views">BIND Views<a class="headerlink" href="#bind-views" title="Permanent link">&para;</a></h3>
+<p>BIND's <code>view</code> blocks are the most common implementation (see the <a href="../bind/">BIND</a> guide for full configuration). Each view has its own zone data and matching criteria.</p>
+<h3 id="separate-servers">Separate Servers<a class="headerlink" href="#separate-servers" title="Permanent link">&para;</a></h3>
+<p>An alternative to views is running separate DNS servers for internal and external resolution:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Internal clients  ──&gt;  Internal resolver (10.0.0.1)
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>                       ├── serves internal zones directly
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>                       └── forwards external queries to public DNS
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>External clients  ──&gt;  Public authoritative server (198.51.100.1)
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>                       └── serves only public zone data
+</span></code></pre></div>
+<p>This is simpler to reason about and avoids the complexity of view configuration. The tradeoff is managing two separate sets of zone data.</p>
+<h3 id="when-to-use-split-horizon">When to Use Split-Horizon<a class="headerlink" href="#when-to-use-split-horizon" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Internal services</strong> with private IPs that shouldn't be exposed externally</li>
+<li><strong>VPN environments</strong> where the same hostname should resolve differently inside and outside the VPN</li>
+<li><strong>Development environments</strong> where <code>api.example.com</code> should point to a staging server internally</li>
+</ul>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What problem does split-horizon DNS solve?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;It provides DNS failover between geographically distant servers&quot;, &quot;feedback&quot;: &quot;Geographic failover is handled by anycast or GeoDNS. Split-horizon serves different answers based on the client&#39;s network location.&quot;}, {&quot;text&quot;: &quot;It serves different DNS responses to internal and external clients for the same domain&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Split-horizon (or split-brain) DNS returns different records based on where the query originates. Internal clients get private IPs (192.168.x.x), external clients get public IPs. This lets you use the same hostname internally and externally with different targets.&quot;}, {&quot;text&quot;: &quot;It splits a large zone into smaller sub-zones for performance&quot;, &quot;feedback&quot;: &quot;Zone delegation splits zones into sub-zones. Split-horizon is about serving different answers to different client groups for the same records.&quot;}, {&quot;text&quot;: &quot;It separates DNSSEC-signed and unsigned responses&quot;, &quot;feedback&quot;: &quot;DNSSEC signing is all-or-nothing per zone. Split-horizon separates responses by client network (internal vs external), not by signing status.&quot;}]}"><noscript><p><strong>What problem does split-horizon DNS solve?</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Configure Split-Horizon DNS with BIND Views&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;You manage DNS for `example.com` at a company with both internal and external users.\nInternal clients (on `10.0.0.0/8`) need `app.example.com` to resolve to `10.0.1.50` (the internal application server).\nExternal clients should see `app.example.com` resolve to `203.0.113.50` (the public-facing load balancer).\n\nWrite a BIND `named.conf` configuration using `view` blocks to implement this split-horizon setup. Each view needs:\n- A `match-clients` directive scoping it to the correct network\n- A zone definition for `example.com` with the appropriate zone file reference\n- The internal view must be defined first (BIND evaluates views in order and uses the first match)\n&quot;, &quot;hints&quot;: [&quot;BIND views use the syntax: view \&quot;name\&quot; { match-clients { ...; }; zone ... };&quot;, &quot;The internal view should match-clients { 10.0.0.0/8; 127.0.0.0/8; }; to include localhost&quot;, &quot;The external view should match-clients { any; }; to catch everything else&quot;, &quot;Each view references a different zone file (e.g., zones/internal/example.com.zone vs zones/external/example.com.zone)&quot;], &quot;solution&quot;: &quot;```\n// named.conf - split-horizon configuration\n\nacl \&quot;internal-nets\&quot; {\n    10.0.0.0/8;\n    127.0.0.0/8;\n};\n\nview \&quot;internal\&quot; {\n    match-clients { \&quot;internal-nets\&quot;; };\n    recursion yes;\n\n    zone \&quot;example.com\&quot; {\n        type primary;\n        file \&quot;zones/internal/example.com.zone\&quot;;\n    };\n};\n\nview \&quot;external\&quot; {\n    match-clients { any; };\n    recursion no;\n\n    zone \&quot;example.com\&quot; {\n        type primary;\n        file \&quot;zones/external/example.com.zone\&quot;;\n    };\n};\n```\n\nInternal zone file (`zones/internal/example.com.zone`):\n```\n$TTL 3600\n@   IN  SOA ns1.example.com. admin.example.com. (\n            2025011501 3600 900 604800 86400 )\n    IN  NS  ns1.example.com.\n    IN  NS  ns2.example.com.\napp IN  A   10.0.1.50\n```\n\nExternal zone file (`zones/external/example.com.zone`):\n```\n$TTL 3600\n@   IN  SOA ns1.example.com. admin.example.com. (\n            2025011501 3600 900 604800 86400 )\n    IN  NS  ns1.example.com.\n    IN  NS  ns2.example.com.\napp IN  A   203.0.113.50\n```\n\nKey points:\n- The `internal` view is listed first because BIND evaluates views top-to-bottom and uses the first match\n- `recursion yes` is safe in the internal view (trusted clients only); `recursion no` in the external view prevents open resolver abuse\n- Each view has its own zone file with different A records for `app.example.com`\n- The ACL is defined separately for clarity and reuse across multiple zone blocks&quot;}"><noscript><p><strong>Configure Split-Horizon DNS with BIND Views</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="anycast-dns">Anycast DNS<a class="headerlink" href="#anycast-dns" title="Permanent link">&para;</a></h2>
+<p><strong>Anycast</strong> is a routing technique where the same IP address is announced from multiple physical locations via BGP. When a client queries that IP, the network routes the query to the nearest (in network terms) instance.</p>
+<p><img alt="Anycast DNS routing diagram showing three nodes in Tokyo, London, and NYC all announcing the same IP via BGP, with automatic failover when a node goes down" src="../../assets/images/dns/anycast-routing.svg" /></p>
+<p>All nodes serve identical zone data (typically synced from a hidden primary) but operate independently. If one node goes down, BGP withdraws its route advertisement and traffic automatically shifts to the next nearest node.</p>
+<p>Anycast is how the root servers operate - 13 identities served by roughly 1,954 instances worldwide. It's also how major DNS providers like Cloudflare (<code>1.1.1.1</code>) and Google (<code>8.8.8.8</code>) deliver low-latency DNS.</p>
+<p>Cloudflare's <code>1.1.1.1</code> is an interesting case. Before Cloudflare obtained the address for their public DNS resolver, <code>1.1.1.1</code> had been used as a dummy or placeholder address for years (like <code>127.0.0.1</code> but on the public internet). When Cloudflare started announcing it via anycast, the address was already receiving enormous volumes of junk traffic from misconfigured networks, testing scripts, and devices hardcoded with the address. They had to build significant filtering capacity just to handle the noise.</p>
+<h3 id="notable-dns-outages">Notable DNS Outages<a class="headerlink" href="#notable-dns-outages" title="Permanent link">&para;</a></h3>
+<p>Understanding why large-scale DNS architectures fail teaches you what to design for:</p>
+<p><strong>Facebook, October 4, 2021.</strong> Facebook's DNS servers withdrew their BGP route advertisements, making Facebook's authoritative DNS unreachable from the entire internet. The BGP withdrawal was triggered by a maintenance command that was supposed to assess backbone capacity - but a bug in the audit tool caused it to withdraw <em>all</em> routes instead. Facebook's internal DNS servers were designed to withdraw BGP routes when they detected they couldn't reach the backbone, interpreting it as a connectivity failure. This was a safety mechanism working exactly as designed - the servers concluded they were disconnected and stopped advertising themselves. The result was a 7-hour global outage affecting Facebook, Instagram, WhatsApp, and Messenger.</p>
+<p><strong>Dyn, October 21, 2016.</strong> The Mirai botnet (composed of compromised IoT devices like cameras and DVRs) launched a massive DDoS attack against Dyn, a major managed DNS provider. Since Dyn provided authoritative DNS for Twitter, Reddit, Netflix, Amazon, Spotify, and many others, the attack took all of these services offline for hours - even though the services themselves were running fine. The outage demonstrated the risk of concentrating authoritative DNS with a single provider.</p>
+<p>These incidents share a theme: DNS is so fundamental that when it breaks, everything built on top of it breaks too, often in ways that prevent you from fixing the DNS problem itself (Facebook engineers couldn't access internal tools because DNS was down).</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is anycast DNS?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;A DNS server that casts (broadcasts) its responses to all clients simultaneously&quot;, &quot;feedback&quot;: &quot;Anycast isn&#39;t broadcast. It uses routing to direct each client to the nearest server sharing the same IP address.&quot;}, {&quot;text&quot;: &quot;Multiple DNS servers share the same IP address, and routing directs clients to the nearest one&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! In anycast, identical DNS servers at different locations all announce the same IP address via BGP. Network routing automatically sends each client&#39;s query to the topologically nearest server, reducing latency and providing automatic failover if a site goes down.&quot;}, {&quot;text&quot;: &quot;A load balancer that distributes DNS queries across multiple servers&quot;, &quot;feedback&quot;: &quot;While anycast does distribute load, it works at the network routing level (BGP), not through a load balancer. Each server has the same IP address and routing handles distribution.&quot;}, {&quot;text&quot;: &quot;A protocol for synchronizing DNS zones across multiple servers&quot;, &quot;feedback&quot;: &quot;Zone synchronization uses AXFR/IXFR transfers or database replication. Anycast is about network routing - directing clients to the nearest server sharing an IP address.&quot;}]}"><noscript><p><strong>What is anycast DNS?</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Design a DNS Architecture&quot;, &quot;difficulty&quot;: &quot;advanced&quot;, &quot;scenario&quot;: &quot;A company is expanding from a single-site setup to a multi-site architecture.\nCurrent state:\n- One BIND server handling both authoritative and recursive DNS\n- 50 internal zones and 5 public zones\n- Two offices: New York (primary) and London (new)\n\nRequirements:\n- Internal zones must resolve in both offices\n- Public zones must be highly available\n- The primary zone data should be editable in only one place\n- London office should still resolve internal names if the NY-London link goes down\n\nDesign the DNS architecture: what servers, what roles, where placed?\n&quot;, &quot;hints&quot;: [&quot;Separate authoritative and recursive functions (use NSD/Unbound or dedicated BIND instances)&quot;, &quot;Consider a hidden primary for the authoritative zones&quot;, &quot;Each office needs a local recursive resolver for performance and resilience&quot;, &quot;Use zone transfers (AXFR/IXFR) to replicate to the London office&quot;], &quot;solution&quot;: &quot;**Recommended Architecture:**\n\n**New York (Primary Site):**\n- 1x Hidden primary (NSD or BIND) - authoritative master for all zones, not public-facing\n- 1x Public secondary authoritative - listed in NS records, serves public zones\n- 1x Local recursive resolver (Unbound) - for NY office clients, with stub-zones for internal\n\n**London (Secondary Site):**\n- 1x Secondary authoritative (NSD or BIND) - receives zone transfers from NY hidden primary\n- 1x Local recursive resolver (Unbound) - for London clients, with stub-zones pointing to local authoritative\n\n**External/Cloud:**\n- 1-2x Public secondary authoritative - in different networks/providers for redundancy\n\n**Key design decisions:**\n- Hidden primary: single edit point, protected from direct attacks\n- Local resolvers in each office: fast resolution, resilient to WAN failures\n- Zone transfers to London: London authoritative has full zone copies, works during WAN outage\n- Public secondaries in multiple locations: high availability for external DNS&quot;}"><noscript><p><strong>Design a DNS Architecture</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Verifying DNS Architecture with dig&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;dig @ns1.example.com example.com SOA +short&quot;, &quot;output&quot;: &quot;ns1.example.com. admin.example.com. 2025011502 3600 900 604800 86400&quot;, &quot;narration&quot;: &quot;Query the SOA record from the first nameserver. The serial number (2025011502) is the reference point - all secondaries should match this value.&quot;}, {&quot;command&quot;: &quot;dig @ns2.example.com example.com SOA +short&quot;, &quot;output&quot;: &quot;ns1.example.com. admin.example.com. 2025011502 3600 900 604800 86400&quot;, &quot;narration&quot;: &quot;Same serial on ns2, confirming zone transfers are working. If this serial were lower than ns1&#39;s, the secondary is out of sync - check NOTIFY delivery and transfer ACLs.&quot;}, {&quot;command&quot;: &quot;dig example.com NS +short&quot;, &quot;output&quot;: &quot;ns1.example.com.\nns2.example.com.\n&quot;, &quot;narration&quot;: &quot;List the published NS records. These are the servers clients will query. In a hidden primary setup, the primary&#39;s hostname should NOT appear here.&quot;}, {&quot;command&quot;: &quot;dig @8.8.8.8 example.com A +short&quot;, &quot;output&quot;: &quot;198.51.100.10&quot;, &quot;narration&quot;: &quot;Query through a public resolver (Google DNS) to confirm the record propagated beyond your authoritative servers. This is what end users see.&quot;}, {&quot;command&quot;: &quot;dig @8.8.8.8 example.com A +noall +stats | grep &#39;Query time&#39;&quot;, &quot;output&quot;: &quot;;; Query time: 12 msec&quot;, &quot;narration&quot;: &quot;First query to a caching resolver shows the full resolution time. This includes the resolver contacting your authoritative servers.&quot;}, {&quot;command&quot;: &quot;dig @8.8.8.8 example.com A +noall +stats | grep &#39;Query time&#39;&quot;, &quot;output&quot;: &quot;;; Query time: 0 msec&quot;, &quot;narration&quot;: &quot;Second identical query returns instantly from the resolver&#39;s cache. The record will stay cached until the TTL expires. This is why lowering TTLs before migrations matters.&quot;}, {&quot;command&quot;: &quot;dig @ns1.example.com example.com AXFR +short 2>&amp;1 | head -3&quot;, &quot;output&quot;: &quot;; Transfer failed.&quot;, &quot;narration&quot;: &quot;Attempting a zone transfer from an unauthorized IP correctly fails. If this succeeds from a random host, your allow-transfer ACL is too permissive - anyone could dump your entire zone.&quot;}, {&quot;command&quot;: &quot;dig +trace example.com A | grep -A1 &#39;example.com.*NS&#39;&quot;, &quot;output&quot;: &quot;example.com.    172800  IN  NS  ns1.example.com.\nexample.com.    172800  IN  NS  ns2.example.com.\n&quot;, &quot;narration&quot;: &quot;The +trace flag walks the delegation chain from the root servers down. This shows which NS records the parent zone (.com) has for your domain - these must match your actual authoritative servers.&quot;}]}"><noscript><p><strong>Verifying DNS Architecture with dig</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="dns-and-email-getting-it-right">DNS and Email: Getting It Right<a class="headerlink" href="#dns-and-email-getting-it-right" title="Permanent link">&para;</a></h2>
+<p>Email deliverability depends on getting five DNS record types correct. Missing or misconfigured email DNS is the most common reason legitimate email ends up in spam folders.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Sender as Sending MTA (mail.sender.com)
+    participant DNS as DNS
+    participant Receiver as Receiving MTA (mail.example.com)
+
+    Sender-&gt;&gt;DNS: MX lookup for example.com
+    DNS--&gt;&gt;Sender: 10 mail.example.com
+    Sender-&gt;&gt;DNS: A lookup for mail.example.com
+    DNS--&gt;&gt;Sender: 198.51.100.20
+    Sender-&gt;&gt;Receiver: SMTP connect to 198.51.100.20:25
+    Sender-&gt;&gt;Receiver: MAIL FROM: user@sender.com
+    Note over Receiver: Check SPF
+    Receiver-&gt;&gt;DNS: TXT lookup for sender.com
+    DNS--&gt;&gt;Receiver: v=spf1 ... -all
+    Note over Receiver: SPF: PASS ✓
+    Note over Receiver: Check DKIM signature
+    Receiver-&gt;&gt;DNS: TXT lookup for selector._domainkey.sender.com
+    DNS--&gt;&gt;Receiver: v=DKIM1; k=rsa; p=...
+    Note over Receiver: DKIM: PASS ✓
+    Note over Receiver: Check DMARC policy
+    Receiver-&gt;&gt;DNS: TXT lookup for _dmarc.sender.com
+    DNS--&gt;&gt;Receiver: v=DMARC1; p=reject
+    Note over Receiver: DMARC: PASS ✓
+    Note over Receiver: Check reverse DNS
+    Receiver-&gt;&gt;DNS: PTR lookup for 198.51.100.10
+    DNS--&gt;&gt;Receiver: mail.sender.com
+    Note over Receiver: FCrDNS: PASS ✓
+    Receiver--&gt;&gt;Sender: 250 OK - Message accepted</code></pre>
+<h3 id="mx-records">MX Records<a class="headerlink" href="#mx-records" title="Permanent link">&para;</a></h3>
+<p><strong>MX</strong> records tell sending mail servers where to deliver email for your domain:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>example.com.    IN  MX  10  mail1.example.com.
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>example.com.    IN  MX  20  mail2.example.com.
+</span></code></pre></div>
+<p>Lower priority numbers are tried first. Having at least two MX records with different priorities ensures email delivery if one server is down.</p>
+<h3 id="spf-sender-policy-framework">SPF (Sender Policy Framework)<a class="headerlink" href="#spf-sender-policy-framework" title="Permanent link">&para;</a></h3>
+<p><strong>SPF</strong> tells receiving servers which IP addresses are authorized to send email for your domain:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>example.com.    IN  TXT  &quot;v=spf1 ip4:198.51.100.0/24 include:_spf.google.com -all&quot;
+</span></code></pre></div>
+<p>Breaking down the syntax:</p>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v=spf1</code></td>
+<td>SPF version 1 (required)</td>
+</tr>
+<tr>
+<td><code>ip4:198.51.100.0/24</code></td>
+<td>This IP range is authorized</td>
+</tr>
+<tr>
+<td><code>include:_spf.google.com</code></td>
+<td>Also allow whatever Google's SPF record allows</td>
+</tr>
+<tr>
+<td><code>-all</code></td>
+<td>Reject everything not explicitly listed</td>
+</tr>
+</tbody>
+</table>
+<p>The trailing qualifier matters:</p>
+<table>
+<thead>
+<tr>
+<th>Qualifier</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-all</code></td>
+<td>Hard fail - reject unauthorized senders</td>
+</tr>
+<tr>
+<td><code>~all</code></td>
+<td>Soft fail - accept but mark as suspicious</td>
+</tr>
+<tr>
+<td><code>?all</code></td>
+<td>Neutral - no opinion</td>
+</tr>
+<tr>
+<td><code>+all</code></td>
+<td>Pass everything (defeats the purpose of SPF)</td>
+</tr>
+</tbody>
+</table>
+<p>Start with <code>~all</code> while testing, switch to <code>-all</code> when confident.</p>
+<p>SPF has a <strong>10 DNS lookup limit</strong>. Every <code>include:</code>, <code>a:</code>, <code>mx:</code>, and <code>redirect=</code> mechanism triggers a lookup. Exceeding the limit causes SPF to return <code>permerror</code>, and receiving servers may reject your email. Flatten nested includes if you hit this limit.</p>
+<h3 id="dkim-domainkeys-identified-mail">DKIM (DomainKeys Identified Mail)<a class="headerlink" href="#dkim-domainkeys-identified-mail" title="Permanent link">&para;</a></h3>
+<p><strong>DKIM</strong> adds a cryptographic signature to outgoing email. The receiving server looks up the public key in DNS and verifies the signature:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>selector1._domainkey.example.com. IN TXT &quot;v=DKIM1; k=rsa; p=MIGfMA0GCSq...&quot;
+</span></code></pre></div>
+<p>The <strong>selector</strong> (<code>selector1</code>) lets you rotate keys without disrupting verification. You can have multiple selectors active simultaneously - old emails still verify against the old selector while new emails use the new one.</p>
+<p>When rotating DKIM keys:
+1. Generate a new key pair with a new selector name
+2. Publish the new selector's public key in DNS
+3. Configure your mail server to sign with the new selector
+4. Keep the old selector's DNS record for at least 30 days (so emails in transit can still be verified)
+5. Remove the old selector</p>
+<h3 id="dmarc-domain-based-message-authentication-reporting-and-conformance">DMARC (Domain-based Message Authentication, Reporting and Conformance)<a class="headerlink" href="#dmarc-domain-based-message-authentication-reporting-and-conformance" title="Permanent link">&para;</a></h3>
+<p><strong>DMARC</strong> ties SPF and DKIM together and tells receiving servers what to do when authentication fails:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>_dmarc.example.com. IN TXT &quot;v=DMARC1; p=reject; sp=reject; rua=mailto:dmarc-reports@example.com; pct=100&quot;
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p=reject</code></td>
+<td>Policy: reject email that fails both SPF and DKIM</td>
+</tr>
+<tr>
+<td><code>sp=reject</code></td>
+<td>Subdomain policy: same as main domain</td>
+</tr>
+<tr>
+<td><code>rua=mailto:...</code></td>
+<td>Send aggregate reports to this address</td>
+</tr>
+<tr>
+<td><code>pct=100</code></td>
+<td>Apply the policy to 100% of failing messages</td>
+</tr>
+</tbody>
+</table>
+<p>Start with <code>p=none</code> to collect reports without affecting delivery, then move to <code>p=quarantine</code>, then <code>p=reject</code>.</p>
+<h3 id="ptr-reverse-dns">PTR (Reverse DNS)<a class="headerlink" href="#ptr-reverse-dns" title="Permanent link">&para;</a></h3>
+<p>Many mail servers verify that the sending IP has a <strong>PTR</strong> record that resolves back to a hostname, and that hostname resolves forward to the same IP (<strong>forward-confirmed reverse DNS</strong>, or FCrDNS):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>10.100.51.198.in-addr.arpa. IN PTR mail.example.com.
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>mail.example.com.            IN A   198.51.100.10
+</span></code></pre></div>
+<h3 id="complete-email-dns-audit">Complete Email DNS Audit<a class="headerlink" href="#complete-email-dns-audit" title="Permanent link">&para;</a></h3>
+<p>Run this sequence to verify all email DNS for a domain:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nv">DOMAIN</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="p">:?Usage: </span><span class="nv">$0</span><span class="p"> domain.com</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== MX Records ===&quot;</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>dig<span class="w"> </span>+short<span class="w"> </span>MX<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DOMAIN</span><span class="s2">&quot;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\n=== SPF ===&quot;</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>dig<span class="w"> </span>+short<span class="w"> </span>TXT<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DOMAIN</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>spf
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\n=== DKIM (common selectors) ===&quot;</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="k">for</span><span class="w"> </span>sel<span class="w"> </span><span class="k">in</span><span class="w"> </span>default<span class="w"> </span>selector1<span class="w"> </span>selector2<span class="w"> </span>google<span class="w"> </span>dkim<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">    </span><span class="nv">result</span><span class="o">=</span><span class="k">$(</span>dig<span class="w"> </span>+short<span class="w"> </span>TXT<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">sel</span><span class="si">}</span><span class="s2">._domainkey.</span><span class="si">${</span><span class="nv">DOMAIN</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">    </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$result</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$sel</span><span class="s2">: </span><span class="nv">$result</span><span class="s2">&quot;</span>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="k">done</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\n=== DMARC ===&quot;</span>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>dig<span class="w"> </span>+short<span class="w"> </span>TXT<span class="w"> </span><span class="s2">&quot;_dmarc.</span><span class="si">${</span><span class="nv">DOMAIN</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\n=== MX host A records ===&quot;</span>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="k">for</span><span class="w"> </span>mx<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>dig<span class="w"> </span>+short<span class="w"> </span>MX<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DOMAIN</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$mx</span><span class="s2"> -&gt; </span><span class="k">$(</span>dig<span class="w"> </span>+short<span class="w"> </span>A<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$mx</span><span class="s2">&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a><span class="k">done</span>
+</span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a>
+</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\n=== PTR for MX IPs ===&quot;</span>
+</span><span id="__span-12-25"><a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a><span class="k">for</span><span class="w"> </span>mx<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>dig<span class="w"> </span>+short<span class="w"> </span>MX<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DOMAIN</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-12-26"><a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a><span class="w">    </span><span class="nv">ip</span><span class="o">=</span><span class="k">$(</span>dig<span class="w"> </span>+short<span class="w"> </span>A<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$mx</span><span class="s2">&quot;</span><span class="k">)</span>
+</span><span id="__span-12-27"><a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a><span class="w">    </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ip</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ip</span><span class="s2"> -&gt; </span><span class="k">$(</span>dig<span class="w"> </span>+short<span class="w"> </span>-x<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ip</span><span class="s2">&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-12-28"><a id="__codelineno-12-28" name="__codelineno-12-28" href="#__codelineno-12-28"></a><span class="k">done</span>
+</span></code></pre></div>
+<div class="interactive-code-walkthrough" data-config="{&quot;language&quot;: &quot;bash&quot;, &quot;title&quot;: &quot;DNS Email Record Audit Script&quot;, &quot;code&quot;: &quot;#!/bin/bash\ndomain=\&quot;$1\&quot;\necho \&quot;=== Email DNS Audit for $domain ===\&quot;\necho \&quot;--- MX Records ---\&quot;\ndig +short MX \&quot;$domain\&quot; | sort -n\necho \&quot;--- SPF ---\&quot;\ndig +short TXT \&quot;$domain\&quot; | grep \&quot;v=spf1\&quot;\necho \&quot;--- DKIM ---\&quot;\ndig +short TXT \&quot;default._domainkey.$domain\&quot;\necho \&quot;--- DMARC ---\&quot;\ndig +short TXT \&quot;_dmarc.$domain\&quot;\n&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 3, &quot;text&quot;: &quot;Start the audit by announcing the domain. A complete email DNS audit checks MX, SPF, DKIM, and DMARC.&quot;}, {&quot;line&quot;: 5, &quot;text&quot;: &quot;MX records sorted by priority (lowest first = preferred). Verify the mail servers are correct and reachable.&quot;}, {&quot;line&quot;: 7, &quot;text&quot;: &quot;SPF is a TXT record at the domain apex. grep filters for the v=spf1 prefix. Check that all legitimate senders are included.&quot;}, {&quot;line&quot;: 9, &quot;text&quot;: &quot;DKIM public key is stored at selector._domainkey.domain. &#39;default&#39; is the most common selector - adjust for your mail provider.&quot;}, {&quot;line&quot;: 11, &quot;text&quot;: &quot;DMARC policy at _dmarc.domain. Check that p= policy is set (none/quarantine/reject) and rua= has a report address.&quot;}]}"><noscript><p><strong>DNS Email Record Audit Script</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="monitoring-and-alerting">Monitoring and Alerting<a class="headerlink" href="#monitoring-and-alerting" title="Permanent link">&para;</a></h2>
+<h3 id="what-to-monitor">What to Monitor<a class="headerlink" href="#what-to-monitor" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>How</th>
+<th>Alert When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authoritative server responding</td>
+<td><code>dig @ns1 example.com SOA</code></td>
+<td>Query fails or times out</td>
+</tr>
+<tr>
+<td>Zone serial consistency</td>
+<td>Compare SOA serial across all NS</td>
+<td>Secondaries behind primary</td>
+</tr>
+<tr>
+<td>DNSSEC signature expiry</td>
+<td><code>dig +dnssec</code> and check RRSIG dates</td>
+<td>Signatures expire within 7 days</td>
+</tr>
+<tr>
+<td>Resolution time</td>
+<td><code>dig</code> query time</td>
+<td>Consistently above 500ms</td>
+</tr>
+<tr>
+<td>Zone transfer working</td>
+<td>Compare SOA serial on secondary</td>
+<td>Secondary serial behind for &gt;2x refresh interval</td>
+</tr>
+<tr>
+<td>Certificate authority (CAA)</td>
+<td><code>dig CAA example.com</code></td>
+<td>Missing or wrong CAA records</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dig-based-health-checks">dig-Based Health Checks<a class="headerlink" href="#dig-based-health-checks" title="Permanent link">&para;</a></h3>
+<p>Simple monitoring script using <code>dig</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1"># dns-healthcheck.sh - basic DNS monitoring</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="nv">DOMAIN</span><span class="o">=</span><span class="s2">&quot;example.com&quot;</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="nv">SERVERS</span><span class="o">=</span><span class="s2">&quot;ns1.example.com ns2.example.com&quot;</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="nv">EXPECTED_SERIAL</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w">  </span><span class="c1"># auto-detect from first server</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="k">for</span><span class="w"> </span>server<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$SERVERS</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">    </span><span class="nv">result</span><span class="o">=</span><span class="k">$(</span>dig<span class="w"> </span>@<span class="s2">&quot;</span><span class="nv">$server</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DOMAIN</span><span class="s2">&quot;</span><span class="w"> </span>SOA<span class="w"> </span>+short<span class="w"> </span>+time<span class="o">=</span><span class="m">5</span><span class="w"> </span>+tries<span class="o">=</span><span class="m">2</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$result</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;CRITICAL: </span><span class="nv">$server</span><span class="s2"> not responding for </span><span class="nv">$DOMAIN</span><span class="s2">&quot;</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">        </span><span class="k">continue</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">    </span><span class="k">fi</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">    </span><span class="nv">serial</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$result</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $3}&#39;</span><span class="k">)</span>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$EXPECTED_SERIAL</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="w">        </span><span class="nv">EXPECTED_SERIAL</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$serial</span><span class="s2">&quot;</span>
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="w">    </span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$serial</span><span class="s2">&quot;</span><span class="w"> </span>!<span class="o">=</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$EXPECTED_SERIAL</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;WARNING: </span><span class="nv">$server</span><span class="s2"> serial </span><span class="nv">$serial</span><span class="s2"> != expected </span><span class="nv">$EXPECTED_SERIAL</span><span class="s2">&quot;</span>
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="w">    </span><span class="k">else</span>
+</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OK: </span><span class="nv">$server</span><span class="s2"> serial </span><span class="nv">$serial</span><span class="s2">&quot;</span>
+</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="w">    </span><span class="k">fi</span>
+</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a><span class="k">done</span>
+</span></code></pre></div>
+<h3 id="dnstap">dnstap<a class="headerlink" href="#dnstap" title="Permanent link">&para;</a></h3>
+<p><a href="https://dnstap.info/"><strong>dnstap</strong></a> is a structured logging format for DNS traffic. BIND, Unbound, and NSD all support it. Instead of parsing text logs, dnstap captures DNS queries and responses as Protocol Buffer messages, making them easy to process programmatically.</p>
+<p>Enable in Unbound:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nt">server</span><span class="p">:</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="nt">dnstap</span><span class="p">:</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">        </span><span class="nt">dnstap-enable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">        </span><span class="nt">dnstap-socket-path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/var/run/unbound/dnstap.sock&quot;</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">        </span><span class="nt">dnstap-send-identity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">        </span><span class="nt">dnstap-send-version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">        </span><span class="nt">dnstap-log-resolver-query-messages</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">        </span><span class="nt">dnstap-log-resolver-response-messages</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span></code></pre></div>
+<hr />
+<h2 id="migration-patterns">Migration Patterns<a class="headerlink" href="#migration-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="ttl-lowering-strategy">TTL Lowering Strategy<a class="headerlink" href="#ttl-lowering-strategy" title="Permanent link">&para;</a></h3>
+<p>When migrating DNS records (changing providers, moving servers, changing IPs), lower the TTL well in advance:</p>
+<p><strong>Timeline:</strong></p>
+<pre class="mermaid"><code>gantt
+    title DNS Record Migration Timeline
+    dateFormat YYYY-MM-DD
+    axisFormat %a %b %d
+    section TTL
+        Original TTL: 86400s (24h)        :done, ttl1, 2025-01-13, 1d
+        Lower TTL to 300s (5min)          :crit, ttl2, 2025-01-14, 0d
+        Low TTL active                    :active, ttl3, 2025-01-14, 2d
+        Raise TTL back to 86400s          :ttl4, 2025-01-17, 0d
+    section Cache Drain
+        Wait for old 24h caches to expire :crit, drain, 2025-01-14, 1d
+    section Record Change
+        All resolvers on 5min TTL         :milestone, 2025-01-15, 0d
+        Update DNS record                 :crit, change, 2025-01-16, 0d
+        Monitor (5min full propagation)   :monitor, 2025-01-16, 1d</code></pre>
+<p>The critical detail: you must wait for the <em>old</em> TTL to expire before making the change. If your TTL was 86400 and you lower it to 300, you need to wait 24 hours before the change so that all cached copies of the old record (with the old TTL) have expired. Only then will all resolvers be honoring the new 5-minute TTL.</p>
+<h3 id="cutover-checklist">Cutover Checklist<a class="headerlink" href="#cutover-checklist" title="Permanent link">&para;</a></h3>
+<p>Before cutting over DNS to new infrastructure:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>[ ] TTL lowered at least (old TTL) seconds before cutover
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>[ ] New servers tested with direct queries (dig @new-server domain)
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>[ ] Zone data verified on new servers (named-checkzone / nsd-checkzone)
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>[ ] DNSSEC chain valid on new servers (if applicable)
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>[ ] Reverse DNS (PTR) configured on new IP ranges
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>[ ] Email records (MX, SPF, DKIM, DMARC) updated for new IPs
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>[ ] Monitoring configured for new servers
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>[ ] Rollback plan documented (old server kept running)
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>[ ] NS records at registrar updated
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>[ ] Old servers kept running for at least 48 hours after cutover
+</span></code></pre></div>
+<h3 id="the-io-tld-situation">The .io TLD Situation<a class="headerlink" href="#the-io-tld-situation" title="Permanent link">&para;</a></h3>
+<p>A cautionary note on infrastructure dependency: the <code>.io</code> country-code TLD, popular with tech companies, may face an uncertain future. In 2024, the UK announced it would hand sovereignty of the Chagos Archipelago (British Indian Ocean Territory) to Mauritius. The <code>.io</code> TLD is assigned based on the ISO 3166-1 country code for the British Indian Ocean Territory. If the territory ceases to exist as a distinct entity, the country code could be retired - and with it, the TLD.</p>
+<p>Historical precedent exists: Yugoslavia's <code>.yu</code> was retired after the country dissolved, and the Soviet Union's <code>.su</code> technically should have been retired but persists 34 years later due to its large user base. The <code>.io</code> situation is being watched closely by the thousands of companies that built their identity on the domain.</p>
+<p>The lesson: when choosing a TLD for critical infrastructure, gTLDs like <code>.com</code> or <code>.net</code> carry less geopolitical risk than ccTLDs.</p>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc5936">RFC 5936</a> - DNS Zone Transfer Protocol (AXFR)</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc1995">RFC 1995</a> - Incremental Zone Transfer (IXFR)</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc1996">RFC 1996</a> - DNS NOTIFY Mechanism</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc7208">RFC 7208</a> - Sender Policy Framework (SPF)</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc6376">RFC 6376</a> - DomainKeys Identified Mail (DKIM)</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc7489">RFC 7489</a> - Domain-based Message Authentication (DMARC)</li>
+<li><a href="https://dnstap.info/">dnstap</a> - structured DNS logging format</li>
+<li><a href="https://www.cloudflare.com/learning/dns/">Cloudflare Learning Center: DNS</a> - accessible DNS architecture explanations</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../dnssec/">DNSSEC</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+DNS%20Architecture%20and%20Operations" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

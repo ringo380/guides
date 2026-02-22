@@ -1,0 +1,4943 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Databases/database-design/">
+      
+      
+        <link rel="prev" href="../sql-essentials/">
+      
+      
+        <link rel="next" href="../mysql-installation-and-configuration/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>Database Design & Modeling - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Database Design & Modeling - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Databases/database-design.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Databases/database-design/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Database Design & Modeling - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Databases/database-design.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#database-design-modeling" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Database Design & Modeling
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Dev%20Zero/Perl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#entity-relationship-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entity-Relationship Modeling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Entity-Relationship Modeling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entities-and-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entities and Attributes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relationships-and-cardinality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relationships and Cardinality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-an-er-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading an ER Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#normalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Normalization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Normalization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#first-normal-form-1nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First Normal Form (1NF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#second-normal-form-2nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Second Normal Form (2NF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#third-normal-form-3nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Third Normal Form (3NF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boyce-codd-normal-form-bcnf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boyce-Codd Normal Form (BCNF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#denormalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Denormalization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Denormalization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-denormalize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Denormalize
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-denormalization-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Denormalization Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index-theory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index Theory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Index Theory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#b-tree-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B-tree Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hash-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hash Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gin-and-gist-indexes-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GIN and GiST Indexes (PostgreSQL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-type-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Type Selection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Type Selection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#integers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#numeric-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Numeric Precision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timestamps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timestamps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boolean-and-enumeration-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boolean and Enumeration Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PRIMARY KEY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foreign-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FOREIGN KEY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unique-check-not-null-and-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UNIQUE, CHECK, NOT NULL, and DEFAULT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#putting-it-all-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Putting It All Together
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-decisions-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Decisions in Practice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Dev%20Zero/Perl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#entity-relationship-modeling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entity-Relationship Modeling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Entity-Relationship Modeling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#entities-and-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entities and Attributes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relationships-and-cardinality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relationships and Cardinality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-an-er-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading an ER Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#normalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Normalization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Normalization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#first-normal-form-1nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First Normal Form (1NF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#second-normal-form-2nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Second Normal Form (2NF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#third-normal-form-3nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Third Normal Form (3NF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boyce-codd-normal-form-bcnf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boyce-Codd Normal Form (BCNF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#denormalization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Denormalization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Denormalization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-denormalize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Denormalize
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-denormalization-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Denormalization Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#index-theory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index Theory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Index Theory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#b-tree-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B-tree Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hash-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hash Indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gin-and-gist-indexes-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GIN and GiST Indexes (PostgreSQL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-type-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Type Selection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Type Selection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#integers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#numeric-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Numeric Precision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timestamps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timestamps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boolean-and-enumeration-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boolean and Enumeration Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constraints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PRIMARY KEY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foreign-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FOREIGN KEY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unique-check-not-null-and-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UNIQUE, CHECK, NOT NULL, and DEFAULT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#putting-it-all-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Putting It All Together
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-decisions-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design Decisions in Practice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Databases/database-design.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="database-design-modeling">Database Design &amp; Modeling<a class="headerlink" href="#database-design-modeling" title="Permanent link">&para;</a></h1>
+<p>Good schema design is the foundation that everything else rests on - query performance, data integrity, application complexity, and operational burden. A poorly designed schema creates problems that no amount of indexing or hardware can fix. A well-designed one makes queries obvious, constraints enforceable, and future changes manageable.</p>
+<p>This guide covers the full lifecycle of turning requirements into schema: modeling entities and relationships, normalizing to eliminate redundancy, choosing when to denormalize for performance, selecting appropriate data types, enforcing integrity through constraints, and building indexes that make your queries fast.</p>
+<hr />
+<h2 id="entity-relationship-modeling">Entity-Relationship Modeling<a class="headerlink" href="#entity-relationship-modeling" title="Permanent link">&para;</a></h2>
+<p>Before writing any <code>CREATE TABLE</code> statements, you need a clear picture of what your data looks like and how the pieces connect. <strong>Entity-Relationship (ER) diagrams</strong> are the standard tool for this. They capture the nouns in your system (entities), the attributes those nouns have, and the connections (relationships) between them.</p>
+<h3 id="entities-and-attributes">Entities and Attributes<a class="headerlink" href="#entities-and-attributes" title="Permanent link">&para;</a></h3>
+<p>An <strong>entity</strong> is a thing your system tracks - a customer, an order, a product, an employee. Each entity has <strong>attributes</strong>: a customer has a name and email, an order has a date and total, a product has a price and description.</p>
+<p>In a relational database, each entity becomes a table. Each attribute becomes a column.</p>
+<h3 id="relationships-and-cardinality">Relationships and Cardinality<a class="headerlink" href="#relationships-and-cardinality" title="Permanent link">&para;</a></h3>
+<p>Entities connect to each other through relationships, and those relationships have <strong>cardinality</strong> - rules about how many of one entity can relate to another:</p>
+<table>
+<thead>
+<tr>
+<th>Cardinality</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One-to-one (1:1)</td>
+<td>Each row in A matches exactly one row in B</td>
+<td>User and user profile</td>
+</tr>
+<tr>
+<td>One-to-many (1:N)</td>
+<td>Each row in A matches zero or more rows in B</td>
+<td>Customer and orders</td>
+</tr>
+<tr>
+<td>Many-to-many (M:N)</td>
+<td>Rows in A can match multiple rows in B and vice versa</td>
+<td>Students and courses</td>
+</tr>
+</tbody>
+</table>
+<p>Many-to-many relationships require a <strong>junction table</strong> (also called a join table or associative table) to implement in a relational database. The junction table holds foreign keys pointing to both sides.</p>
+<h3 id="reading-an-er-diagram">Reading an ER Diagram<a class="headerlink" href="#reading-an-er-diagram" title="Permanent link">&para;</a></h3>
+<p>Here is an ER diagram for a simple e-commerce system. Each line represents a relationship, and the symbols at each end indicate cardinality:</p>
+<pre class="mermaid"><code>erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ ORDER_LINE : contains
+    PRODUCT ||--o{ ORDER_LINE : "appears in"
+    PRODUCT }o--|| CATEGORY : "belongs to"
+    CUSTOMER {
+        int customer_id PK
+        varchar name
+        varchar email
+        timestamp created_at
+    }
+    ORDER {
+        int order_id PK
+        int customer_id FK
+        date order_date
+        decimal total
+        varchar status
+    }
+    ORDER_LINE {
+        int order_id FK
+        int product_id FK
+        int quantity
+        decimal unit_price
+    }
+    PRODUCT {
+        int product_id PK
+        int category_id FK
+        varchar name
+        decimal price
+        text description
+    }
+    CATEGORY {
+        int category_id PK
+        varchar name
+    }</code></pre>
+<p>The notation works like this:</p>
+<ul>
+<li><code>||</code> means "exactly one"</li>
+<li><code>o{</code> means "zero or more"</li>
+<li><code>|{</code> means "one or more"</li>
+</ul>
+<p>So <code>CUSTOMER ||--o{ ORDER</code> reads as: each customer places zero or more orders, and each order belongs to exactly one customer.</p>
+<div class="admonition tip">
+<p class="admonition-title">Start with the diagram</p>
+<p>Sketch your ER diagram before writing SQL. It forces you to think about relationships and cardinality up front, and catches design mistakes that are painful to fix after tables are populated with data.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;In the e-commerce ER diagram above, why does ORDER_LINE exist as a separate table instead of putting product details directly in ORDER?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;It&#39;s purely optional - you could store product IDs as a comma-separated list in ORDER&quot;, &quot;feedback&quot;: &quot;Storing multiple values in a single column violates first normal form and makes querying, indexing, and enforcing referential integrity impossible. You could not JOIN to products or enforce that each product_id is valid.&quot;}, {&quot;text&quot;: &quot;ORDER_LINE is a junction table that resolves the many-to-many relationship between ORDER and PRODUCT&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! An order can contain multiple products, and a product can appear in multiple orders. That is a many-to-many relationship. ORDER_LINE (the junction table) holds a row for each product in each order, with its own attributes like quantity and unit_price.&quot;}, {&quot;text&quot;: &quot;It exists only for performance reasons - it would work fine as columns on ORDER&quot;, &quot;feedback&quot;: &quot;This is not a performance optimization. An order can contain a variable number of products. You cannot represent that with a fixed set of columns on ORDER without an arbitrary limit and massive waste of space.&quot;}, {&quot;text&quot;: &quot;ORDER_LINE is needed because SQL does not support arrays&quot;, &quot;feedback&quot;: &quot;While standard SQL lacks arrays (PostgreSQL has them as an extension), the real reason is relational modeling. Even with array support, you would lose referential integrity, querying flexibility, and the ability to store per-line attributes like quantity and unit_price.&quot;}]}"><noscript><p><strong>In the e-commerce ER diagram above, why does ORDER_LINE exist as a separate table instead of putting product details directly in ORDER?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="normalization">Normalization<a class="headerlink" href="#normalization" title="Permanent link">&para;</a></h2>
+<p><strong>Normalization</strong> is the process of organizing columns and tables to reduce data redundancy and prevent update anomalies. Each <strong>normal form</strong> builds on the previous one, imposing stricter rules about how data is structured.</p>
+<p>The goal is not normalization for its own sake. The goal is a schema where each fact is stored exactly once, so updates cannot create inconsistencies.</p>
+<h3 id="first-normal-form-1nf">First Normal Form (1NF)<a class="headerlink" href="#first-normal-form-1nf" title="Permanent link">&para;</a></h3>
+<p>A table is in <strong>first normal form</strong> if:</p>
+<ol>
+<li>Every column contains atomic (indivisible) values - no lists, sets, or nested structures</li>
+<li>Each row is unique (the table has a primary key)</li>
+</ol>
+<p><strong>Problem - a table violating 1NF:</strong></p>
+<table>
+<thead>
+<tr>
+<th>order_id</th>
+<th>customer</th>
+<th>products</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Alice</td>
+<td>Widget, Gadget, Sprocket</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bob</td>
+<td>Gadget</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>products</code> column contains a comma-separated list. You cannot query for all orders containing "Widget" without string parsing. You cannot count products per order without splitting strings. You cannot enforce that each product name is valid.</p>
+<p><strong>Fix - split into atomic values with a proper relationship:</strong></p>
+<table>
+<thead>
+<tr>
+<th>order_id</th>
+<th>customer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Alice</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bob</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>order_id</th>
+<th>product</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Widget</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Gadget</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Sprocket</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Gadget</td>
+</tr>
+</tbody>
+</table>
+<p>Now each cell holds one value, each row is unique, and you can query, index, and constrain the data properly.</p>
+<h3 id="second-normal-form-2nf">Second Normal Form (2NF)<a class="headerlink" href="#second-normal-form-2nf" title="Permanent link">&para;</a></h3>
+<p>A table is in <strong>second normal form</strong> if:</p>
+<ol>
+<li>It is in 1NF</li>
+<li>Every non-key column depends on the <strong>entire</strong> primary key, not just part of it</li>
+</ol>
+<p>2NF only matters for tables with composite primary keys. If your primary key is a single column, 1NF compliance automatically gives you 2NF.</p>
+<p><strong>Problem - a table violating 2NF:</strong></p>
+<table>
+<thead>
+<tr>
+<th>order_id</th>
+<th>product_id</th>
+<th>product_name</th>
+<th>quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>10</td>
+<td>Widget</td>
+<td>3</td>
+</tr>
+<tr>
+<td>1</td>
+<td>20</td>
+<td>Gadget</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>10</td>
+<td>Widget</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p>The primary key is (<code>order_id</code>, <code>product_id</code>). But <code>product_name</code> depends only on <code>product_id</code>, not on the full composite key. If you rename "Widget" to "Super Widget", you must update every row where <code>product_id = 10</code>. Miss one and your data is inconsistent.</p>
+<p><strong>Fix - move partial dependencies to their own table:</strong></p>
+<p><strong>order_lines:</strong></p>
+<table>
+<thead>
+<tr>
+<th>order_id</th>
+<th>product_id</th>
+<th>quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>10</td>
+<td>3</td>
+</tr>
+<tr>
+<td>1</td>
+<td>20</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>10</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>products:</strong></p>
+<table>
+<thead>
+<tr>
+<th>product_id</th>
+<th>product_name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>Widget</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Gadget</td>
+</tr>
+</tbody>
+</table>
+<p>Now <code>product_name</code> is stored once and referenced by <code>product_id</code>.</p>
+<h3 id="third-normal-form-3nf">Third Normal Form (3NF)<a class="headerlink" href="#third-normal-form-3nf" title="Permanent link">&para;</a></h3>
+<p>A table is in <strong>third normal form</strong> if:</p>
+<ol>
+<li>It is in 2NF</li>
+<li>No non-key column depends on another non-key column (no <strong>transitive dependencies</strong>)</li>
+</ol>
+<p><strong>Problem - a table violating 3NF:</strong></p>
+<table>
+<thead>
+<tr>
+<th>employee_id</th>
+<th>name</th>
+<th>department_id</th>
+<th>department_name</th>
+<th>department_location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Alice</td>
+<td>10</td>
+<td>Engineering</td>
+<td>Building A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bob</td>
+<td>10</td>
+<td>Engineering</td>
+<td>Building A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Carol</td>
+<td>20</td>
+<td>Marketing</td>
+<td>Building B</td>
+</tr>
+</tbody>
+</table>
+<p>Here, <code>department_name</code> and <code>department_location</code> depend on <code>department_id</code>, not on <code>employee_id</code>. If Engineering moves to Building C, you update multiple rows. Miss one and you have Engineering in two buildings.</p>
+<p><strong>Fix - extract the transitive dependency:</strong></p>
+<p><strong>employees:</strong></p>
+<table>
+<thead>
+<tr>
+<th>employee_id</th>
+<th>name</th>
+<th>department_id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Alice</td>
+<td>10</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bob</td>
+<td>10</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Carol</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+<p><strong>departments:</strong></p>
+<table>
+<thead>
+<tr>
+<th>department_id</th>
+<th>department_name</th>
+<th>department_location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>Engineering</td>
+<td>Building A</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Marketing</td>
+<td>Building B</td>
+</tr>
+</tbody>
+</table>
+<p>The department fact is stored once. Updates happen in one place.</p>
+<h3 id="boyce-codd-normal-form-bcnf">Boyce-Codd Normal Form (BCNF)<a class="headerlink" href="#boyce-codd-normal-form-bcnf" title="Permanent link">&para;</a></h3>
+<p><strong>Boyce-Codd Normal Form</strong> is a stricter version of 3NF. A table is in BCNF if every determinant (a column or set of columns that other columns depend on) is a candidate key.</p>
+<p>The difference from 3NF is subtle and only surfaces in tables with multiple overlapping candidate keys. Here is a classic example:</p>
+<p><strong>Problem - a table in 3NF but not BCNF:</strong></p>
+<p>Consider a university where each subject is taught by one professor, but a professor can teach only one subject. Students can enroll in multiple subjects.</p>
+<table>
+<thead>
+<tr>
+<th>student_id</th>
+<th>subject</th>
+<th>professor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Math</td>
+<td>Dr. Smith</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Physics</td>
+<td>Dr. Jones</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Math</td>
+<td>Dr. Smith</td>
+</tr>
+</tbody>
+</table>
+<p>The candidate keys are (<code>student_id</code>, <code>subject</code>) and (<code>student_id</code>, <code>professor</code>). But <code>subject</code> determines <code>professor</code> and <code>professor</code> determines <code>subject</code> - and neither is a candidate key on its own. If Dr. Smith switches from Math to Chemistry, you update multiple rows.</p>
+<p><strong>Fix - decompose so every determinant is a candidate key:</strong></p>
+<p><strong>professor_subjects:</strong></p>
+<table>
+<thead>
+<tr>
+<th>professor</th>
+<th>subject</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dr. Smith</td>
+<td>Math</td>
+</tr>
+<tr>
+<td>Dr. Jones</td>
+<td>Physics</td>
+</tr>
+</tbody>
+</table>
+<p><strong>student_enrollments:</strong></p>
+<table>
+<thead>
+<tr>
+<th>student_id</th>
+<th>professor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Dr. Smith</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Dr. Jones</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Dr. Smith</td>
+</tr>
+</tbody>
+</table>
+<p>Now the <code>professor -&gt; subject</code> dependency lives in a table where <code>professor</code> is the key.</p>
+<div class="admonition warning">
+<p class="admonition-title">Normalization is a tool, not a religion</p>
+<p>In practice, most production schemas aim for 3NF. BCNF violations are rare and usually harmless. Going beyond 3NF (there are 4NF, 5NF, and even 6NF) brings diminishing returns and increasing complexity. Know the rules so you can make informed decisions about when to follow them and when to break them.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;A table has columns (order_id, product_id, product_name, quantity) with primary key (order_id, product_id). product_name depends only on product_id. Which normal form does this table violate?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;1NF - because product_name is not atomic&quot;, &quot;feedback&quot;: &quot;product_name is a single value per row, so it is atomic. The table satisfies 1NF.&quot;}, {&quot;text&quot;: &quot;2NF - because product_name depends on only part of the composite key&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Second normal form requires that every non-key column depends on the entire primary key. Here, product_name depends only on product_id, not on the full key (order_id, product_id). This partial dependency means the table violates 2NF.&quot;}, {&quot;text&quot;: &quot;3NF - because of a transitive dependency&quot;, &quot;feedback&quot;: &quot;Transitive dependencies involve a non-key column depending on another non-key column. Here, product_name depends on product_id, which is part of the key. This is a partial dependency (a 2NF violation), not a transitive one.&quot;}, {&quot;text&quot;: &quot;BCNF - because product_id is a determinant but not a candidate key&quot;, &quot;feedback&quot;: &quot;While this is technically true, the more precise answer is that it violates 2NF. BCNF violations are about determinants that are not candidate keys in tables that otherwise satisfy 3NF. This table does not even reach 2NF.&quot;}]}"><noscript><p><strong>A table has columns (order_id, product_id, product_name, quantity) with primary key (order_id, product_id). product_name depends only on product_id. Which normal form does this table violate?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="denormalization">Denormalization<a class="headerlink" href="#denormalization" title="Permanent link">&para;</a></h2>
+<p>Fully normalized schemas store each fact once, which is excellent for writes and data integrity. But reads can suffer because answering a single question may require joining five or six tables. <strong>Denormalization</strong> is the deliberate introduction of redundancy to speed up reads.</p>
+<h3 id="when-to-denormalize">When to Denormalize<a class="headerlink" href="#when-to-denormalize" title="Permanent link">&para;</a></h3>
+<p>Denormalization makes sense when:</p>
+<ul>
+<li>A query is run frequently and the joins are measurably slow</li>
+<li>The data changes rarely but is read constantly (high read-to-write ratio)</li>
+<li>Reporting queries need pre-aggregated data to avoid scanning millions of rows</li>
+<li>You have measured the problem with <code>EXPLAIN</code> and confirmed that joins are the bottleneck</li>
+</ul>
+<p>Denormalization does not make sense when:</p>
+<ul>
+<li>You are guessing about performance before measuring</li>
+<li>Write consistency is critical and you cannot tolerate stale duplicated data</li>
+<li>The application is write-heavy</li>
+</ul>
+<h3 id="common-denormalization-strategies">Common Denormalization Strategies<a class="headerlink" href="#common-denormalization-strategies" title="Permanent link">&para;</a></h3>
+<p><strong>Pre-computed columns.</strong> Store a calculated value directly on the row instead of computing it at query time:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">-- Instead of SUM(order_lines.quantity * order_lines.unit_price) every time:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">total_amount</span><span class="w"> </span><span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span></code></pre></div>
+<p>You update <code>total_amount</code> whenever an order line changes. The trade-off is that your application code (or a trigger) must keep it in sync.</p>
+<p><strong>Duplicated columns.</strong> Copy a frequently accessed column from a related table:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">-- Instead of joining to customers for every order display:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">customer_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">);</span>
+</span></code></pre></div>
+<p>If the customer's name changes, every order must be updated. This is acceptable if name changes are rare and order listing queries are constant.</p>
+<p><strong>Summary tables.</strong> Maintain a separate table with pre-aggregated data:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">daily_sales_summary</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="n">summary_date</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="n">total_orders</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="n">total_revenue</span><span class="w"> </span><span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="n">avg_order_value</span><span class="w"> </span><span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">);</span>
+</span></code></pre></div>
+<p>Populated by a nightly batch job or maintained by triggers. Dashboard queries hit this table instead of scanning the entire orders table.</p>
+<div class="admonition danger">
+<p class="admonition-title">Denormalization creates maintenance burden</p>
+<p>Every piece of duplicated data is a consistency risk. When you denormalize, document which columns are derived, what the source of truth is, and how synchronization happens (trigger, application code, batch job). If you cannot answer those questions, do not denormalize.</p>
+</div>
+<hr />
+<h2 id="index-theory">Index Theory<a class="headerlink" href="#index-theory" title="Permanent link">&para;</a></h2>
+<p>Indexes are separate data structures that help the database find rows without scanning every page in the table. Without an index, a query against a million-row table reads every row. With the right index, it reads a handful of pages.</p>
+<h3 id="b-tree-indexes">B-tree Indexes<a class="headerlink" href="#b-tree-indexes" title="Permanent link">&para;</a></h3>
+<p>The <strong>B-tree</strong> (balanced tree) is the default index structure in virtually every relational database. It keeps data sorted in a tree structure where:</p>
+<ul>
+<li>The root node points to intermediate nodes</li>
+<li>Intermediate nodes point to leaf nodes</li>
+<li>Leaf nodes contain the indexed values and pointers to the actual table rows</li>
+<li>All leaf nodes are at the same depth, so lookup time is consistent</li>
+</ul>
+<p>B-tree indexes support:</p>
+<ul>
+<li>Exact match lookups: <code>WHERE email = 'alice@example.com'</code></li>
+<li>Range scans: <code>WHERE price BETWEEN 10 AND 50</code></li>
+<li>Prefix matching: <code>WHERE name LIKE 'Ali%'</code></li>
+<li>Sorting: <code>ORDER BY created_at DESC</code></li>
+<li>Min/max: <code>SELECT MIN(price) FROM products</code></li>
+</ul>
+<p>They do <strong>not</strong> efficiently support:</p>
+<ul>
+<li>Suffix or infix matching: <code>WHERE name LIKE '%ice'</code></li>
+<li>Functions on the indexed column: <code>WHERE YEAR(created_at) = 2025</code> (unless you create a functional index)</li>
+</ul>
+<p><strong>Composite indexes</strong> (multi-column) follow the <strong>leftmost prefix rule</strong>. An index on <code>(country, city, zipcode)</code> can satisfy queries on <code>country</code>, <code>country + city</code>, or <code>country + city + zipcode</code>, but not <code>city</code> alone or <code>zipcode</code> alone.</p>
+<h3 id="hash-indexes">Hash Indexes<a class="headerlink" href="#hash-indexes" title="Permanent link">&para;</a></h3>
+<p><strong>Hash indexes</strong> use a hash function to map values to buckets. They are fast for exact equality lookups (<code>=</code> and <code>IN</code>) but cannot help with range queries, sorting, or prefix matching.</p>
+<p>In MySQL, the MEMORY storage engine supports explicit hash indexes. InnoDB uses an internal <strong>adaptive hash index</strong> that it builds automatically on top of B-tree indexes for frequently accessed pages - you do not create it manually.</p>
+<p>In PostgreSQL, you can create hash indexes explicitly:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_sessions_token</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">sessions</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">HASH</span><span class="w"> </span><span class="p">(</span><span class="n">token</span><span class="p">);</span>
+</span></code></pre></div>
+<p>Hash indexes in PostgreSQL were not crash-safe until version 10. If you are on PostgreSQL 10+, they are a reasonable choice for columns that are only ever queried with <code>=</code>.</p>
+<h3 id="gin-and-gist-indexes-postgresql">GIN and GiST Indexes (PostgreSQL)<a class="headerlink" href="#gin-and-gist-indexes-postgresql" title="Permanent link">&para;</a></h3>
+<p><a href="https://www.postgresql.org/docs/current/indexes-types.html"><strong>PostgreSQL</strong></a> offers specialized index types for non-scalar data:</p>
+<p><strong>GIN (Generalized Inverted Index)</strong> is designed for values that contain multiple elements - arrays, JSONB documents, and full-text search vectors. A GIN index on a JSONB column lets you query for documents containing specific keys or values efficiently:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_metadata</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">GIN</span><span class="w"> </span><span class="p">(</span><span class="n">metadata</span><span class="p">);</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1">-- Now this query uses the index:</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">metadata</span><span class="w"> </span><span class="o">@&gt;</span><span class="w"> </span><span class="s1">&#39;{&quot;type&quot;: &quot;click&quot;}&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<p><strong>GiST (Generalized Search Tree)</strong> supports geometric data, ranges, and full-text search. It is the index type for PostGIS spatial queries and range type operations:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_location</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">stores</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">GIST</span><span class="w"> </span><span class="p">(</span><span class="k">location</span><span class="p">);</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">-- Spatial query using the index:</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">stores</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">location</span><span class="w"> </span><span class="o">&lt;-&gt;</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="s1">&#39;(40.7, -74.0)&#39;</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="p">;</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Index Type</th>
+<th>Best For</th>
+<th>Range Queries</th>
+<th>Equality</th>
+<th>Multi-Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B-tree</td>
+<td>Most columns</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Hash</td>
+<td>Equality-only lookups</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>GIN</td>
+<td>JSONB, arrays, full-text</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>GiST</td>
+<td>Spatial, ranges, full-text</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Creating Indexes and Reading EXPLAIN Output&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;CREATE TABLE users (\n    user_id SERIAL PRIMARY KEY,\n    email VARCHAR(255) NOT NULL,\n    name VARCHAR(255),\n    created_at TIMESTAMP DEFAULT NOW()\n);&quot;, &quot;output&quot;: &quot;CREATE TABLE\n&quot;, &quot;narration&quot;: &quot;Create a users table. The PRIMARY KEY automatically creates a B-tree index on user_id.&quot;}, {&quot;command&quot;: &quot;INSERT INTO users (email, name) SELECT\n    &#39;user&#39; || g || &#39;@example.com&#39;,\n    &#39;User &#39; || g\nFROM generate_series(1, 100000) AS g;&quot;, &quot;output&quot;: &quot;INSERT 0 100000\n&quot;, &quot;narration&quot;: &quot;Insert 100,000 rows so the query planner has meaningful data to work with. On small tables, PostgreSQL often ignores indexes in favor of sequential scans.&quot;}, {&quot;command&quot;: &quot;EXPLAIN ANALYZE SELECT * FROM users WHERE email = &#39;user50000@example.com&#39;;&quot;, &quot;output&quot;: &quot;Seq Scan on users  (cost=0.00..2137.00 rows=1 width=31) (actual time=12.841..25.693 rows=1 loops=1)\n  Filter: ((email)::text = &#39;user50000@example.com&#39;::text)\n  Rows Removed by Filter: 99999\nPlanning Time: 0.082 ms\nExecution Time: 25.721 ms\n&quot;, &quot;narration&quot;: &quot;Without an index on email, PostgreSQL does a sequential scan - it reads every row in the table and checks the filter condition. It removed 99,999 rows to find the one match. Execution took about 26 ms.&quot;}, {&quot;command&quot;: &quot;CREATE INDEX idx_users_email ON users (email);&quot;, &quot;output&quot;: &quot;CREATE INDEX\n&quot;, &quot;narration&quot;: &quot;Create a B-tree index on the email column.&quot;}, {&quot;command&quot;: &quot;EXPLAIN ANALYZE SELECT * FROM users WHERE email = &#39;user50000@example.com&#39;;&quot;, &quot;output&quot;: &quot;Index Scan using idx_users_email on users  (cost=0.42..8.44 rows=1 width=31) (actual time=0.032..0.034 rows=1 loops=1)\n  Index Cond: ((email)::text = &#39;user50000@example.com&#39;::text)\nPlanning Time: 0.108 ms\nExecution Time: 0.053 ms\n&quot;, &quot;narration&quot;: &quot;With the index, PostgreSQL uses an index scan. It traverses the B-tree to find the matching entry directly. Execution dropped from 26 ms to 0.05 ms - roughly 500 times faster. The cost estimate dropped from 2137 to 8.44.&quot;}, {&quot;command&quot;: &quot;EXPLAIN ANALYZE SELECT * FROM users WHERE email LIKE &#39;%50000%&#39;;&quot;, &quot;output&quot;: &quot;Seq Scan on users  (cost=0.00..2137.00 rows=10 width=31) (actual time=12.205..30.118 rows=1 loops=1)\n  Filter: ((email)::text ~~ &#39;%50000%&#39;::text)\n  Rows Removed by Filter: 99999\nPlanning Time: 0.095 ms\nExecution Time: 30.144 ms\n&quot;, &quot;narration&quot;: &quot;A LIKE pattern with a leading wildcard cannot use the B-tree index. The database falls back to a sequential scan because it cannot use sorted order to find values containing &#39;50000&#39; in the middle. This is a fundamental B-tree limitation.&quot;}]}"><noscript><p><strong>Creating Indexes and Reading EXPLAIN Output</strong> (requires JavaScript)</p></noscript></div>
+<div class="admonition tip">
+<p class="admonition-title">Index only what you query</p>
+<p>Every index speeds up reads but slows down writes because the database must update the index on every <code>INSERT</code>, <code>UPDATE</code>, and <code>DELETE</code>. Do not create indexes speculatively. Look at your actual query patterns, identify slow queries with <code>EXPLAIN</code>, and add indexes to address specific bottlenecks.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;You have a composite B-tree index on (country, city, zipcode). Which of these queries can use the index?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;WHERE city = &#39;Portland&#39; (skipping country)&quot;, &quot;feedback&quot;: &quot;A composite B-tree index follows the leftmost prefix rule. The index is sorted first by country, then by city within each country. Skipping country means the database cannot efficiently navigate the tree to find a specific city - it would need to scan every country section.&quot;}, {&quot;text&quot;: &quot;WHERE country = &#39;US&#39; AND city = &#39;Portland&#39;&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! This query uses the two leftmost columns of the index in order (country, then city). The B-tree index can efficiently narrow to country = &#39;US&#39; first, then find city = &#39;Portland&#39; within that section. It does not need the third column (zipcode) to be useful.&quot;}, {&quot;text&quot;: &quot;WHERE zipcode = &#39;97201&#39; (skipping country and city)&quot;, &quot;feedback&quot;: &quot;The index is sorted by country first, then city, then zipcode. Without knowing the country and city, the database cannot navigate to a specific zipcode efficiently. You would need a separate index on zipcode for this query.&quot;}, {&quot;text&quot;: &quot;WHERE city = &#39;Portland&#39; AND zipcode = &#39;97201&#39; (skipping country)&quot;, &quot;feedback&quot;: &quot;Even though you have two of the three columns, you are missing the leftmost column (country). The B-tree index cannot skip the first column in its sort order. This query would not use the composite index.&quot;}]}"><noscript><p><strong>You have a composite B-tree index on (country, city, zipcode). Which of these queries can use the index?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="data-type-selection">Data Type Selection<a class="headerlink" href="#data-type-selection" title="Permanent link">&para;</a></h2>
+<p>Choosing the right data type affects storage size, query performance, and the correctness of your application. The wrong type can waste disk space, prevent useful optimizations, or silently lose precision.</p>
+<h3 id="integers">Integers<a class="headerlink" href="#integers" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Storage</th>
+<th>Range</th>
+<th>Use When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TINYINT</code> / <code>SMALLINT</code></td>
+<td>1-2 bytes</td>
+<td>Up to 32,767 (signed)</td>
+<td>Status codes, small enumerations</td>
+</tr>
+<tr>
+<td><code>INT</code></td>
+<td>4 bytes</td>
+<td>Up to ~2.1 billion</td>
+<td>Most primary keys, counters, foreign keys</td>
+</tr>
+<tr>
+<td><code>BIGINT</code></td>
+<td>8 bytes</td>
+<td>Up to ~9.2 quintillion</td>
+<td>Tables expected to exceed 2 billion rows, timestamps as epoch milliseconds</td>
+</tr>
+</tbody>
+</table>
+<p>Use <code>INT</code> for primary keys unless you have a concrete reason for <code>BIGINT</code>. A table with a <code>BIGINT</code> primary key and three <code>BIGINT</code> foreign keys uses 16 bytes more per row than the <code>INT</code> equivalent. Over 100 million rows, that is 1.6 GB of extra storage just for those four columns - and the indexes are larger too, which means more memory pressure and slower scans.</p>
+<p>Use <code>BIGINT</code> when you know the table will grow past 2 billion rows, or when you are storing values like Unix timestamps in milliseconds or external IDs from systems that use 64-bit identifiers.</p>
+<h3 id="strings">Strings<a class="headerlink" href="#strings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Behavior</th>
+<th>Use When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CHAR(N)</code></td>
+<td>Fixed-length, padded with spaces</td>
+<td>Codes with known length (country codes, currency codes)</td>
+</tr>
+<tr>
+<td><code>VARCHAR(N)</code></td>
+<td>Variable-length, stores only what you need</td>
+<td>Most string data (names, emails, addresses)</td>
+</tr>
+<tr>
+<td><code>TEXT</code></td>
+<td>Variable-length, no practical limit</td>
+<td>Large content (descriptions, comments, articles)</td>
+</tr>
+</tbody>
+</table>
+<p>In PostgreSQL, there is no performance difference between <code>VARCHAR(N)</code> and <code>TEXT</code>. The length limit on <code>VARCHAR(N)</code> is purely a constraint - if you want to enforce a maximum length, use it. If you do not need a maximum, <code>TEXT</code> is simpler.</p>
+<p>In MySQL, <code>VARCHAR</code> columns longer than a threshold (roughly 768 bytes for InnoDB) cannot be fully included in B-tree indexes. Keep indexed <code>VARCHAR</code> columns reasonably sized.</p>
+<h3 id="numeric-precision">Numeric Precision<a class="headerlink" href="#numeric-precision" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Behavior</th>
+<th>Use When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DECIMAL(P,S)</code> / <code>NUMERIC(P,S)</code></td>
+<td>Exact arithmetic</td>
+<td>Money, financial calculations, anything where rounding errors are unacceptable</td>
+</tr>
+<tr>
+<td><code>FLOAT</code> / <code>DOUBLE</code></td>
+<td>Approximate (IEEE 754 floating point)</td>
+<td>Scientific measurements, coordinates, values where small rounding errors are acceptable</td>
+</tr>
+</tbody>
+</table>
+<p>Never store money as <code>FLOAT</code> or <code>DOUBLE</code>. The value <code>0.1</code> cannot be represented exactly in binary floating point:</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1">-- This might not return your row:</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">10</span><span class="p">;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1">-- Use DECIMAL instead:</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="n">account_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="n">balance</span><span class="w"> </span><span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="timestamps">Timestamps<a class="headerlink" href="#timestamps" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Stores</th>
+<th>Use When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TIMESTAMP</code></td>
+<td>Date and time, usually UTC-aware</td>
+<td>Event times, <code>created_at</code>, <code>updated_at</code></td>
+</tr>
+<tr>
+<td><code>DATETIME</code> (MySQL)</td>
+<td>Date and time, no timezone conversion</td>
+<td>Scheduling (you want the literal date/time stored)</td>
+</tr>
+<tr>
+<td><code>TIMESTAMPTZ</code> (PostgreSQL)</td>
+<td>Timestamp with timezone awareness</td>
+<td>Almost always - PostgreSQL converts to UTC on storage and back to the session timezone on retrieval</td>
+</tr>
+<tr>
+<td><code>DATE</code></td>
+<td>Date only</td>
+<td>Birthdays, due dates, report dates</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Always store timestamps in UTC</p>
+<p>Store all timestamps in UTC and convert to local time in the application layer. Mixing timezones in the database leads to subtle bugs that are extraordinarily painful to debug. In PostgreSQL, use <code>TIMESTAMPTZ</code>. In MySQL, set your server to <code>UTC</code> and use <code>TIMESTAMP</code>.</p>
+</div>
+<h3 id="boolean-and-enumeration-types">Boolean and Enumeration Types<a class="headerlink" href="#boolean-and-enumeration-types" title="Permanent link">&para;</a></h3>
+<p>For columns with a small fixed set of values, you have options:</p>
+<ul>
+<li><code>BOOLEAN</code> (or <code>TINYINT(1)</code> in MySQL) for true/false flags</li>
+<li><code>ENUM</code> types for small fixed sets - convenient but creates schema coupling (adding a new value requires <code>ALTER TABLE</code>)</li>
+<li>A <code>VARCHAR</code> column with a <code>CHECK</code> constraint - more flexible than <code>ENUM</code> and easier to extend</li>
+<li>A separate lookup table with a foreign key - the most normalized approach, best when the set of values may grow or has its own attributes</li>
+</ul>
+<hr />
+<h2 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h2>
+<p><strong>Constraints</strong> are rules enforced by the database engine that prevent invalid data from entering your tables. They are your last line of defense against application bugs, bad imports, and manual mistakes.</p>
+<h3 id="primary-key">PRIMARY KEY<a class="headerlink" href="#primary-key" title="Permanent link">&para;</a></h3>
+<p>Every table should have a <strong>primary key</strong> - a column or combination of columns that uniquely identifies each row. The database enforces uniqueness and creates an index automatically.</p>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="n">product_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="p">);</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1">-- Composite primary key:</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">order_lines</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="n">order_id</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="n">product_id</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="n">quantity</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">order_id</span><span class="p">,</span><span class="w"> </span><span class="n">product_id</span><span class="p">)</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="p">);</span>
+</span></code></pre></div>
+<h3 id="foreign-key">FOREIGN KEY<a class="headerlink" href="#foreign-key" title="Permanent link">&para;</a></h3>
+<p>A <strong>foreign key</strong> constraint ensures that a value in one table references a valid row in another table. It prevents orphaned records and enforces referential integrity.</p>
+<p>The <code>ON DELETE</code> and <code>ON UPDATE</code> clauses control what happens when the referenced row changes:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CASCADE</code></td>
+<td>Delete/update the child rows automatically</td>
+</tr>
+<tr>
+<td><code>SET NULL</code></td>
+<td>Set the foreign key column to <code>NULL</code></td>
+</tr>
+<tr>
+<td><code>SET DEFAULT</code></td>
+<td>Set the foreign key column to its default value</td>
+</tr>
+<tr>
+<td><code>RESTRICT</code></td>
+<td>Block the delete/update if child rows exist (checked immediately)</td>
+</tr>
+<tr>
+<td><code>NO ACTION</code></td>
+<td>Same as <code>RESTRICT</code> in most databases (checked at end of statement in PostgreSQL)</td>
+</tr>
+</tbody>
+</table>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="n">order_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="n">customer_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">customers</span><span class="p">(</span><span class="n">customer_id</span><span class="p">)</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">        </span><span class="k">ON</span><span class="w"> </span><span class="k">DELETE</span><span class="w"> </span><span class="k">RESTRICT</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">        </span><span class="k">ON</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="k">CASCADE</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="p">);</span>
+</span></code></pre></div>
+<p>This means: if you try to delete a customer who has orders, the database blocks it (<code>RESTRICT</code>). If you change a customer's ID, the change propagates to all their orders (<code>CASCADE</code>).</p>
+<h3 id="unique-check-not-null-and-default">UNIQUE, CHECK, NOT NULL, and DEFAULT<a class="headerlink" href="#unique-check-not-null-and-default" title="Permanent link">&para;</a></h3>
+<div class="language-sql highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="n">employee_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="n">email</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span><span class="p">,</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="n">department_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">departments</span><span class="p">(</span><span class="n">department_id</span><span class="p">),</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="n">salary</span><span class="w"> </span><span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">salary</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="n">hire_date</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">CURRENT_DATE</span><span class="p">,</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;active&#39;</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">        </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;inactive&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;terminated&#39;</span><span class="p">))</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="p">);</span>
+</span></code></pre></div>
+<ul>
+<li><code>NOT NULL</code> prevents missing values - use it on every column that should always have a value</li>
+<li><code>UNIQUE</code> prevents duplicates - use it for natural identifiers like email, username, or SKU</li>
+<li><code>CHECK</code> enforces arbitrary conditions - salaries must be positive, status must be one of a known set</li>
+<li><code>DEFAULT</code> provides a value when one is not specified during insert</li>
+</ul>
+<h3 id="putting-it-all-together">Putting It All Together<a class="headerlink" href="#putting-it-all-together" title="Permanent link">&para;</a></h3>
+<p>Here is a complete schema demonstrating constraints, data types, and relationships. The following ER diagram shows the structure:</p>
+<pre class="mermaid"><code>erDiagram
+    DEPARTMENT ||--o{ EMPLOYEE : employs
+    EMPLOYEE ||--o{ PROJECT_ASSIGNMENT : "assigned to"
+    PROJECT ||--o{ PROJECT_ASSIGNMENT : "staffed by"
+    DEPARTMENT {
+        int department_id PK
+        varchar name UK
+        varchar location
+    }
+    EMPLOYEE {
+        int employee_id PK
+        varchar email UK
+        varchar name
+        int department_id FK
+        decimal salary
+        date hire_date
+    }
+    PROJECT {
+        int project_id PK
+        varchar name
+        date start_date
+        date end_date
+    }
+    PROJECT_ASSIGNMENT {
+        int employee_id FK
+        int project_id FK
+        varchar role
+        date assigned_date
+    }</code></pre>
+<div class="interactive-code-walkthrough" data-config="{&quot;language&quot;: &quot;sql&quot;, &quot;title&quot;: &quot;Complete Schema with Constraints&quot;, &quot;code&quot;: &quot;CREATE TABLE departments (\n    department_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    name VARCHAR(100) NOT NULL UNIQUE,\n    location VARCHAR(255)\n);\n\nCREATE TABLE employees (\n    employee_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    email VARCHAR(255) NOT NULL UNIQUE,\n    name VARCHAR(255) NOT NULL,\n    department_id INT NOT NULL REFERENCES departments(department_id)\n        ON DELETE RESTRICT ON UPDATE CASCADE,\n    salary DECIMAL(10,2) NOT NULL CHECK (salary > 0),\n    hire_date DATE NOT NULL DEFAULT CURRENT_DATE\n);\n\nCREATE TABLE projects (\n    project_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    name VARCHAR(255) NOT NULL,\n    start_date DATE NOT NULL,\n    end_date DATE,\n    CHECK (end_date IS NULL OR end_date >= start_date)\n);\n\nCREATE TABLE project_assignments (\n    employee_id INT REFERENCES employees(employee_id)\n        ON DELETE CASCADE,\n    project_id INT REFERENCES projects(project_id)\n        ON DELETE CASCADE,\n    role VARCHAR(50) NOT NULL DEFAULT &#39;member&#39;\n        CHECK (role IN (&#39;lead&#39;, &#39;member&#39;, &#39;reviewer&#39;)),\n    assigned_date DATE NOT NULL DEFAULT CURRENT_DATE,\n    PRIMARY KEY (employee_id, project_id)\n);\n&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 2, &quot;text&quot;: &quot;GENERATED ALWAYS AS IDENTITY is the SQL standard way to create auto-incrementing primary keys. PostgreSQL supports this directly. In MySQL, you would use AUTO_INCREMENT instead.&quot;}, {&quot;line&quot;: 3, &quot;text&quot;: &quot;NOT NULL UNIQUE on name ensures every department has a name and no two departments share one. UNIQUE creates an implicit index.&quot;}, {&quot;line&quot;: 9, &quot;text&quot;: &quot;The email column is both NOT NULL (required) and UNIQUE (no duplicates). This combination is common for natural identifiers.&quot;}, {&quot;line&quot;: 11, &quot;text&quot;: &quot;Foreign key with ON DELETE RESTRICT prevents deleting a department that still has employees. ON UPDATE CASCADE propagates any department_id changes to employees.&quot;}, {&quot;line&quot;: 13, &quot;text&quot;: &quot;DECIMAL(10,2) stores exact values with up to 10 digits total and 2 decimal places. The CHECK constraint ensures salaries are positive.&quot;}, {&quot;line&quot;: 14, &quot;text&quot;: &quot;DEFAULT CURRENT_DATE means inserts that omit hire_date automatically get today&#39;s date.&quot;}, {&quot;line&quot;: 22, &quot;text&quot;: &quot;A CHECK constraint spanning multiple columns: end_date must be NULL (ongoing project) or on/after start_date. This prevents logically impossible date ranges.&quot;}, {&quot;line&quot;: 26, &quot;text&quot;: &quot;ON DELETE CASCADE on both foreign keys means that when an employee or project is deleted, their assignments are automatically removed. This makes sense here because an assignment has no meaning without both its employee and project.&quot;}, {&quot;line&quot;: 31, &quot;text&quot;: &quot;CHECK constraint limits role to a known set of values. This acts like an ENUM but is standard SQL and easier to modify.&quot;}, {&quot;line&quot;: 33, &quot;text&quot;: &quot;Composite primary key on (employee_id, project_id) ensures each employee is assigned to each project at most once and creates a covering index for lookups by employee.&quot;}]}"><noscript><p><strong>Complete Schema with Constraints</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="design-decisions-in-practice">Design Decisions in Practice<a class="headerlink" href="#design-decisions-in-practice" title="Permanent link">&para;</a></h2>
+<p>Real schema design involves trade-offs. Here is a summary of the key decisions and when each option wins:</p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Option A</th>
+<th>Option B</th>
+<th>Choose A When</th>
+<th>Choose B When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normalization level</td>
+<td>3NF (fully normalized)</td>
+<td>Denormalized with redundancy</td>
+<td>Write-heavy, data integrity critical</td>
+<td>Read-heavy dashboards, rare updates</td>
+</tr>
+<tr>
+<td>Primary key type</td>
+<td>Natural key (email, SSN)</td>
+<td>Surrogate key (auto-increment INT)</td>
+<td>Key is truly immutable and unique</td>
+<td>Natural keys can change or are large</td>
+</tr>
+<tr>
+<td><code>INT</code> vs <code>BIGINT</code></td>
+<td><code>INT</code> (4 bytes)</td>
+<td><code>BIGINT</code> (8 bytes)</td>
+<td>Table stays under 2B rows</td>
+<td>Table will exceed 2B rows</td>
+</tr>
+<tr>
+<td><code>VARCHAR(N)</code> vs <code>TEXT</code></td>
+<td><code>VARCHAR(N)</code></td>
+<td><code>TEXT</code></td>
+<td>You want a length constraint</td>
+<td>No meaningful max length</td>
+</tr>
+<tr>
+<td><code>DECIMAL</code> vs <code>FLOAT</code></td>
+<td><code>DECIMAL</code></td>
+<td><code>FLOAT</code>/<code>DOUBLE</code></td>
+<td>Money, exact arithmetic</td>
+<td>Scientific data, acceptable rounding</td>
+</tr>
+<tr>
+<td><code>ENUM</code> vs <code>CHECK</code></td>
+<td><code>ENUM</code> type</td>
+<td><code>VARCHAR</code> + <code>CHECK</code></td>
+<td>MySQL with stable small sets</td>
+<td>PostgreSQL, or sets that may grow</td>
+</tr>
+<tr>
+<td><code>CASCADE</code> vs <code>RESTRICT</code></td>
+<td><code>ON DELETE CASCADE</code></td>
+<td><code>ON DELETE RESTRICT</code></td>
+<td>Child rows meaningless without parent</td>
+<td>Child rows should block parent deletion</td>
+</tr>
+</tbody>
+</table>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Normalize a Flat Table&quot;, &quot;type&quot;: &quot;scenario&quot;, &quot;scenario&quot;: &quot;You have inherited a flat \&quot;course registration\&quot; table used by a university system. Here is the current structure:\n\n| student_id | student_name | student_email         | course_code | course_title          | professor      | professor_email        | grade | semester    |\n|------------|-------------|-----------------------|-------------|----------------------|----------------|------------------------|-------|-------------|\n| 101        | Alice Wang  | alice@university.edu  | CS101       | Intro to CS          | Dr. Smith      | smith@university.edu   | A     | Fall 2025   |\n| 101        | Alice Wang  | alice@university.edu  | MATH201     | Linear Algebra       | Dr. Jones      | jones@university.edu   | B+    | Fall 2025   |\n| 102        | Bob Chen    | bob@university.edu    | CS101       | Intro to CS          | Dr. Smith      | smith@university.edu   | B     | Fall 2025   |\n| 103        | Carol Davis | carol@university.edu  | CS101       | Intro to CS          | Dr. Smith      | smith@university.edu   | A-    | Spring 2026 |\n| 103        | Carol Davis | carol@university.edu  | MATH201     | Linear Algebra       | Dr. Jones      | jones@university.edu   | A     | Spring 2026 |\n\nThis table has redundancy problems:\n- Alice&#39;s name and email are repeated for each course she takes\n- CS101&#39;s title and professor are repeated for each student enrolled\n- Dr. Smith&#39;s email is repeated for every student in every course they teach\n&quot;, &quot;tasks&quot;: [{&quot;task&quot;: &quot;Identify which normal forms this table violates and what the specific violations are.&quot;, &quot;hint&quot;: &quot;Look at the composite primary key (student_id, course_code, semester). Which non-key columns depend on only part of this key? Which non-key columns depend on other non-key columns?&quot;, &quot;answer&quot;: &quot;The table violates 2NF because student_name and student_email depend only on student_id (not the full key), and course_title, professor, and professor_email depend only on course_code (not the full key). It also violates 3NF because professor_email depends on professor, which is not part of any key - it is a transitive dependency through a non-key column.&quot;}, {&quot;task&quot;: &quot;Decompose this into a set of normalized tables (at least 3NF). List each table with its columns and primary key.&quot;, &quot;hint&quot;: &quot;Each fact should be stored exactly once. Students, courses, professors, and enrollments should each have their own table. Think about which columns belong to which entity.&quot;, &quot;answer&quot;: &quot;Four tables: (1) students(student_id PK, student_name, student_email), (2) professors(professor_id PK, professor_name, professor_email), (3) courses(course_code PK, course_title, professor_id FK), (4) enrollments(student_id FK, course_code FK, semester, grade, PRIMARY KEY(student_id, course_code, semester)). Student data is stored once per student. Course data is stored once per course. Professor data is stored once per professor. Enrollment connects them with the grade for that specific student-course-semester combination.&quot;}, {&quot;task&quot;: &quot;Draw out the relationships between your normalized tables: what is the cardinality of each relationship?&quot;, &quot;hint&quot;: &quot;Think about how many courses a professor teaches, how many students enroll in a course, and how a student can take the same course in different semesters.&quot;, &quot;answer&quot;: &quot;Professor to Course is one-to-many (one professor teaches multiple courses, each course has one professor). Student to Enrollment is one-to-many (one student has many enrollments). Course to Enrollment is one-to-many (one course has many enrollments). The enrollments table resolves the many-to-many between students and courses, with semester as part of the key to allow retakes.&quot;}]}"><noscript><p><strong>Normalize a Flat Table</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://opentextbc.ca/dbdesign01/chapter/chapter-12-normalization/">Database Normalization Basics</a> - Open textbook chapter with detailed worked examples through 3NF</li>
+<li><a href="https://use-the-index-luke.com/">Use The Index, Luke</a> - The definitive free resource on SQL indexing and query performance, covering B-tree internals, composite indexes, and execution plans</li>
+<li><a href="https://www.postgresql.org/docs/current/indexes-types.html">PostgreSQL Index Types</a> - Official documentation on B-tree, Hash, GIN, GiST, SP-GiST, and BRIN index types</li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/data-types.html">MySQL Data Types</a> - Official MySQL reference for storage requirements and behavior of each data type</li>
+<li><a href="https://www.w3schools.com/sql/sql_constraints.asp">SQL Constraints on W3Schools</a> - Quick reference for PRIMARY KEY, FOREIGN KEY, UNIQUE, CHECK, NOT NULL, and DEFAULT</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../sql-essentials/">SQL Essentials</a> | <strong>Next:</strong> <a href="../mysql-installation-and-configuration/">MySQL Installation &amp; Configuration</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+Database%20Design%20%26%20Modeling" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

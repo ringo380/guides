@@ -1,0 +1,3972 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Dev%20Zero/Perl/perl_developer_roadmap/">
+      
+      
+        <link rel="prev" href="../web-frameworks-apis/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>Developer Roadmap - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Developer Roadmap - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Dev%20Zero/Perl/perl_developer_roadmap.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Dev%20Zero/Perl/perl_developer_roadmap/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Developer Roadmap - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Dev%20Zero/Perl/perl_developer_roadmap.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#perl-developer-career-roadmap" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Developer Roadmap
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-road-to-perl-developer-mastery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Road to Perl Developer Mastery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copyright Notice
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-road-to-perl-developer-mastery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Road to Perl Developer Mastery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copyright Notice
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Dev Zero/Perl/perl_developer_roadmap.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="perl-developer-career-roadmap">Perl Developer Career Roadmap<a class="headerlink" href="#perl-developer-career-roadmap" title="Permanent link">&para;</a></h1>
+<h2 id="the-road-to-perl-developer-mastery">The Road to Perl Developer Mastery<a class="headerlink" href="#the-road-to-perl-developer-mastery" title="Permanent link">&para;</a></h2>
+<p><strong>Version:</strong> 1.6
+<strong>Year:</strong> 2026</p>
+<hr />
+<h2 id="copyright-notice">Copyright Notice<a class="headerlink" href="#copyright-notice" title="Permanent link">&para;</a></h2>
+<p>Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed under <a href="../../LICENSE-CONTENT">CC BY-NC-ND 4.0</a>. You may share this material for non-commercial purposes with attribution, but you may not distribute modified versions.</p>
+<hr />
+<h1 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h1>
+<ol>
+<li><a href="#introduction-expectations">Introduction &amp; Expectations</a></li>
+<li><a href="#phase-1-the-basics">Phase 1: The Basics</a></li>
+<li><a href="#phase-2-beginning-perl">Phase 2: Beginning Perl</a></li>
+<li><a href="#phase-3-workflows-testing-debugging">Phase 3: Workflows, Testing &amp; Debugging</a></li>
+<li><a href="#bibliography">Bibliography</a></li>
+</ol>
+<hr />
+<h2 id="introduction-expectations">Introduction &amp; Expectations<a class="headerlink" href="#introduction-expectations" title="Permanent link">&para;</a></h2>
+<h3 id="in-it-for-the-long-haul">In it for the Long Haul<a class="headerlink" href="#in-it-for-the-long-haul" title="Permanent link">&para;</a></h3>
+<p>Feynman's "computer disease" metaphor illustrates the irresistible drive some people have to solve problems. It's a certain itch—one that refuses to be ignored—and if you've ever felt compelled to keep tinkering until something finally clicks, you may already be halfway down this road. This document exists for people like you.</p>
+<p>The journey to mastering Perl isn't just about syntax and tools—it's about cultivating a mindset of curiosity, experimentation, and resilience. Whether you're brand new to programming or transitioning from another language, this roadmap is designed to guide you not just through the how, but the why behind the skills, practices, and philosophies that define great Perl developers.</p>
+<p>If that resonates, you might be the right kind of person to become a Perl developer.</p>
+<h3 id="what-to-expect">What to Expect<a class="headerlink" href="#what-to-expect" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Work</strong>: Dedication and completion of assignments, exercises, and experiments.</li>
+<li><strong>Read</strong>: Books provide structured learning not found in blogs or forums.</li>
+<li><strong>Communicate</strong>: Engage with community projects and discussions.</li>
+</ul>
+<h3 id="what-not-to-expect">What Not to Expect<a class="headerlink" href="#what-not-to-expect" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>A Guarantee</strong>: Success is up to your effort and the industry.</li>
+<li><strong>A Complete Solution</strong>: This is a guide, not a one-stop-shop.</li>
+<li><strong>A Certification</strong>: Prove your skills through demonstration, not a certificate.</li>
+</ul>
+<hr />
+<h2 id="phase-1-the-basics">Phase 1: The Basics<a class="headerlink" href="#phase-1-the-basics" title="Permanent link">&para;</a></h2>
+<h3 id="required-learning">Required Learning<a class="headerlink" href="#required-learning" title="Permanent link">&para;</a></h3>
+<h4 id="operating-systems">Operating Systems<a class="headerlink" href="#operating-systems" title="Permanent link">&para;</a></h4>
+<p><strong>Why Unix Matters for Perl</strong></p>
+<p>A strong understanding of Unix concepts is essential for mastering Perl. Here's why:</p>
+<ul>
+<li><strong>Shared Philosophy</strong>: Perl was designed with Unix in mind—embracing small, composable utilities; pipelines; and powerful text processing. These principles align closely with the way Unix works.</li>
+<li><strong>Direct Mappings</strong>: Key system-level features in Unix—such as file descriptors, piping, and process control—are directly accessible and controllable via Perl.</li>
+<li><strong>Practical Impact</strong>: Knowing how Unix handles processes, permissions, input/output streams, and the file system empowers you to write code that is not only functional, but idiomatic, efficient, and maintainable.</li>
+</ul>
+<p>Mastering these concepts isn't just helpful—it's fundamental to becoming an effective Perl developer in any Unix-like environment.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;Why does this roadmap start with Unix fundamentals before any Perl syntax?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Perl can only run on Unix systems&quot;, &quot;feedback&quot;: &quot;Perl runs on many platforms including Windows. The Unix-first approach is about building the mental model Perl was designed around.&quot;}, {&quot;text&quot;: &quot;Understanding Unix concepts (processes, files, pipes) is essential because Perl was built to automate Unix tasks&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Perl&#39;s design is deeply rooted in Unix philosophy. File descriptors, regular expressions, process control, and pipe-based data flow are all Unix concepts that Perl wraps with powerful syntax. Without this foundation, Perl&#39;s features seem arbitrary rather than logical.&quot;}, {&quot;text&quot;: &quot;Unix is easier to learn than Perl&quot;, &quot;feedback&quot;: &quot;Difficulty isn&#39;t the reason. The roadmap starts with Unix because Perl&#39;s features make much more sense when you understand the Unix concepts they&#39;re built upon.&quot;}, {&quot;text&quot;: &quot;You need to compile Perl from source, which requires Unix knowledge&quot;, &quot;feedback&quot;: &quot;Perl comes pre-installed on most Unix systems and has binary packages for all platforms. The Unix-first approach is about conceptual foundation, not installation.&quot;}]}"><noscript><p><strong>Why does this roadmap start with Unix fundamentals before any Perl syntax?</strong> (requires JavaScript)</p></noscript></div>
+<h4 id="linux-concepts">Linux Concepts<a class="headerlink" href="#linux-concepts" title="Permanent link">&para;</a></h4>
+<p><strong>Understand the Linux Stack</strong></p>
+<p>Linux is not a complete operating system by itself—it's just the <strong>kernel</strong>, the core part responsible for hardware interaction, memory management, scheduling, and system calls. Everything that sits above the kernel and interacts with users is known as <strong>userland</strong> or <strong>user space</strong>.</p>
+<ul>
+<li>The <strong>Linux kernel</strong> handles low-level tasks such as managing CPU, RAM, I/O devices, and filesystems.</li>
+<li><strong>Userland tools</strong>, typically provided by the GNU project, include utilities like <code>ls</code>, <code>cp</code>, <code>grep</code>, <code>bash</code>, and more. These tools allow users to interact with the system via the command line or scripts.</li>
+</ul>
+<p>Understanding the boundary and cooperation between kernel and userland tools is vital for troubleshooting, scripting, and writing system-aware applications in Perl.</p>
+<h4 id="examples-of-linux-distributions">Examples of Linux Distributions<a class="headerlink" href="#examples-of-linux-distributions" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><a href="https://ubuntu.com">Ubuntu</a></strong>: A user-friendly, widely adopted Linux distribution. LTS (Long-Term Support) versions offer 5 years of guaranteed security and maintenance updates, making them ideal for both beginners and enterprise environments.</li>
+<li><strong><a href="https://rockylinux.org">Rocky Linux</a></strong>: A community enterprise OS designed to be a drop-in replacement for CentOS, maintaining bug-for-bug compatibility with RHEL.</li>
+<li><strong><a href="https://almalinux.org">AlmaLinux</a></strong>: Another CentOS alternative, AlmaLinux is governed by a community foundation and backed by major cloud vendors.</li>
+<li><strong><a href="https://www.debian.org">Debian</a></strong>: Known for its stability and commitment to free software, Debian serves as the foundation for many other distributions, including Ubuntu.</li>
+<li><strong><a href="https://getfedora.org">Fedora</a></strong>: Sponsored by Red Hat, Fedora is a cutting-edge distribution that features the latest in open-source software and innovations.</li>
+<li><strong><a href="https://www.opensuse.org">openSUSE</a></strong>: Offers two main editions—Leap (stable) and Tumbleweed (rolling release). It includes YaST, a powerful configuration tool.</li>
+<li><strong><a href="https://archlinux.org">Arch Linux</a></strong>: A minimalist, rolling-release distro aimed at advanced users who prefer full control and manual configuration. Its Arch Wiki is considered one of the most comprehensive Linux documentation sources available.</li>
+</ul>
+<h4 id="creating-a-linuxunix-learning-lab">Creating a Linux/Unix Learning Lab<a class="headerlink" href="#creating-a-linuxunix-learning-lab" title="Permanent link">&para;</a></h4>
+<p>To build hands-on experience with Linux systems, set up a virtual lab environment. You can use a variety of local virtualization tools or cloud hosting services depending on your goals and available resources:</p>
+<p>Below are some modern tools to help manage and create these environments:</p>
+<ul>
+<li><a href="https://www.virtualbox.org">VirtualBox</a>: Open-source virtualization software that runs on Windows, macOS, Linux, and Solaris, popular for setting up quick dev environments.</li>
+<li><a href="https://www.vmware.com/products/workstation-player.html">VMware Workstation Player</a>: A robust and professional-grade virtualization platform for running multiple operating systems on a single machine.</li>
+<li><a href="https://www.vagrantup.com">Vagrant</a>: A powerful tool for managing virtual machine workflows, especially in development environments, built on top of tools like VirtualBox and VMware.</li>
+<li><a href="https://multipass.run">Multipass</a>: Lightweight VM manager developed by Canonical (Ubuntu creators), great for quickly launching Ubuntu instances.</li>
+<li><a href="https://www.docker.com/products/docker-desktop">Docker Desktop</a>: Ideal for containerized environments and lightweight application virtualization.</li>
+<li><a href="https://www.proxmox.com/en/proxmox-ve">Proxmox VE</a>: A powerful open-source virtualization platform for both KVM virtual machines and LXC containers, great for lab environments.</li>
+<li><a href="https://www.qemu.org">QEMU/KVM</a>: A low-level virtualization tool offering excellent performance, commonly used in professional Linux environments.</li>
+</ul>
+<h4 id="command-line-proficiency">Command Line Proficiency<a class="headerlink" href="#command-line-proficiency" title="Permanent link">&para;</a></h4>
+<p><strong>Essential Online Resources for Command Line Mastery</strong></p>
+<p>Here are some curated resources to help build your command-line proficiency, whether you're learning shell scripting, troubleshooting complex commands, or developing efficient workflows:</p>
+<ul>
+<li><a href="https://explainshell.com">Explainshell</a>: Breaks down complex shell commands into human-readable components, great for learning command syntax.</li>
+<li><a href="https://www.commandlinefu.com">Commandlinefu</a>: A community-driven repository of useful one-liners, tricks, and command explanations.</li>
+<li><a href="https://www.learnshell.org">Learn Shell</a>: An interactive tutorial platform for beginners looking to master the basics of shell scripting.</li>
+<li><a href="https://www.shellcheck.net">ShellCheck</a>: A popular online shell script analyzer that highlights syntax issues and offers improvement suggestions.</li>
+<li><a href="https://cheat.sh">Cheat.sh</a>: Access community-maintained command-line cheat sheets from your terminal or browser.</li>
+</ul>
+<h4 id="recommended-books">Recommended Books<a class="headerlink" href="#recommended-books" title="Permanent link">&para;</a></h4>
+<ul>
+<li><em><a href="https://nostarch.com/tlcl2">The Linux Command Line, 2nd Edition</a></em> by William Shotts – A comprehensive and beginner-friendly guide to mastering the Linux terminal.</li>
+<li><em><a href="https://nostarch.com/howlinuxworks3">How Linux Works, 3rd Edition</a></em> by Brian Ward – Understand what's happening under the hood of a Linux system, from processes and permissions to networking and filesystems.</li>
+<li><em><a href="https://www.oreilly.com/library/view/linux-pocket-guide/9781491927571/">Linux Pocket Guide</a></em> by Daniel J. Barrett – A concise and portable reference, ideal for quick lookups and essential commands.</li>
+<li><em><a href="https://www.oreilly.com/library/view/learning-the-bash/0596009658/">Learning the Bash Shell, 3rd Edition</a></em> by Cameron Newham – A solid introduction to bash scripting and command-line navigation.</li>
+<li><em><a href="https://www.pearson.com/en-us/subject-catalog/p/unix-and-linux-system-administration-handbook/P200000003496">UNIX and Linux System Administration Handbook, 5th Edition</a></em> by Evi Nemeth et al. – A must-have for anyone managing or working with Linux systems at scale.</li>
+</ul>
+<h3 id="finding-the-right-editor">Finding the Right \$EDITOR<a class="headerlink" href="#finding-the-right-editor" title="Permanent link">&para;</a></h3>
+<h4 id="vim">Vim<a class="headerlink" href="#vim" title="Permanent link">&para;</a></h4>
+<p><strong>Vim</strong> is the preferred editor for most Unix environments, celebrated for its:</p>
+<ul>
+<li><strong>Ubiquity</strong>: Available on nearly every Unix-like system by default.</li>
+<li><strong>Efficiency</strong>: Enables fast navigation and editing with minimal hand movement.</li>
+<li><strong>Modal Editing</strong>: Operates in distinct modes (e.g., <em>insert</em>, <em>normal</em>, <em>visual</em>) for precise, powerful actions without leaving the keyboard.</li>
+</ul>
+<p>While Vim's learning curve is steep, it pays off. Once mastered, Vim becomes a tool that dramatically boosts speed, productivity, and editing comfort—especially for developers who live in the terminal.</p>
+<p>To help with the learning process, here are some engaging and helpful resources:</p>
+<ul>
+<li><a href="https://vim-adventures.com">Vim Adventures</a> – a game-based way to learn Vim</li>
+<li><a href="http://vimcasts.org">Vimcasts</a> – screencasts teaching practical Vim usage</li>
+<li><a href="https://github.com">Vimbook on GitHub</a></li>
+</ul>
+<p>Practice regularly, and you'll soon find Vim indispensable.</p>
+<h4 id="emacs">Emacs<a class="headerlink" href="#emacs" title="Permanent link">&para;</a></h4>
+<p><strong>Emacs</strong> is a feature-rich, highly customizable text editor with a deep history in the developer community. While it is less commonly used than Vim in Unix environments, it excels in its extensibility through Emacs Lisp, allowing users to transform it into an IDE, email client, calendar, and more. Once mastered, Emacs offers powerful workflows for programming, writing, and system administration. Notable learning resources include:</p>
+<ul>
+<li><a href="https://jesshamrick.com/2012/09/10/absolute-beginners-guide-to-emacs/">Absolute Beginner's Guide to Emacs</a></li>
+<li><a href="https://emacsrocks.com">Emacs Rocks!</a></li>
+<li><a href="https://www.masteringemacs.org">Mastering Emacs</a></li>
+</ul>
+<h3 id="additional-learning">Additional Learning<a class="headerlink" href="#additional-learning" title="Permanent link">&para;</a></h3>
+<p><strong>Process/Memory Management</strong></p>
+<p>A foundational understanding of how Unix-like systems handle processes and memory is crucial for writing efficient and reliable applications. This includes learning how the system schedules processes, handles signals, manages memory allocation, and balances system resources under load. For Perl developers especially, this knowledge helps when writing scripts that interact with the OS, spawn child processes, or manage large data sets.</p>
+<p>Key topics to explore:</p>
+<ul>
+<li><strong>Process lifecycle</strong>: from creation (<code>fork</code>) to execution (<code>exec</code>) and termination (<code>wait</code>, <code>kill</code>).</li>
+<li><strong>Scheduling and prioritization</strong>: concepts such as nice values, real-time scheduling, and load balancing.</li>
+<li><strong>Memory hierarchy</strong>: virtual memory, paging, segmentation, and memory-mapped files.</li>
+<li><strong>System monitoring</strong>: tools like <code>ps</code>, <code>top</code>, <code>htop</code>, <code>vmstat</code>, and <code>/proc</code> interfaces.</li>
+<li><strong>Swap, cache, and buffers</strong>: how the kernel manages memory pressure.</li>
+</ul>
+<p>This foundational layer empowers developers to write more performant code, optimize resource usage, and debug complex runtime behavior.</p>
+<p><strong>File Systems and Links</strong></p>
+<p>One of the core strengths of Unix-like systems lies in their powerful and flexible file system structure. Understanding how files and directories are organized, accessed, and linked is essential for anyone writing or maintaining system-level applications, particularly in Perl where working with files is a frequent task.</p>
+<p>Key areas to explore:</p>
+<ul>
+<li><strong>Filesystem Hierarchy</strong>: Learn the purpose of each top-level directory in a Unix system (e.g., <code>/bin</code>, <code>/etc</code>, <code>/home</code>, <code>/var</code>).</li>
+<li><strong>Permissions and Ownership</strong>: Understand how Unix enforces security through file permissions (<code>rwx</code>) and ownership by users and groups.</li>
+<li><strong>Hard vs Soft Links</strong>:</li>
+<li><em>Hard links</em> reference the same inode as the original file, making them indistinguishable from the original.</li>
+<li><em>Soft (symbolic) links</em> are pointers to file paths, allowing more flexibility but with limitations (e.g., they break if the target is deleted).</li>
+<li><strong>Mount Points and Devices</strong>: Discover how different filesystems and storage devices are mounted into a unified tree structure.</li>
+<li><strong>Extended Attributes and ACLs</strong>: For advanced permission scenarios, explore access control lists and file attributes beyond the standard <code>rwx</code> model.</li>
+</ul>
+<p>Being fluent in these topics enables more effective scripting, safer automation, and a deeper understanding of how Unix-based systems operate.</p>
+<p><strong>User Interaction</strong></p>
+<p>Understanding how users interact with Unix systems is crucial for developing intuitive tools and scripts. Interaction typically occurs through the shell—whether graphical or command-line—and involves interpreting environment variables, configuring startup files (like <code>.bashrc</code> or <code>.profile</code>), and handling user input in real-time. For Perl developers, this means writing programs that gracefully accept arguments, produce meaningful output, and respect user environments.</p>
+<p>Key areas include:</p>
+<ul>
+<li>Customizing user shells and dotfiles</li>
+<li>Managing terminal I/O (STDIN/STDOUT/STDERR)</li>
+<li>Building interactive CLI tools with argument parsing</li>
+</ul>
+<p><strong>Unix History</strong></p>
+<p>To fully appreciate modern computing, it's important to understand where it came from. Unix, developed in the 1970s at Bell Labs, laid the foundation for nearly every major operating system in use today, including Linux and macOS. Its influence extends to software design principles, scripting languages like Perl, and the very philosophy of modular, interoperable tools.</p>
+<p>Recommended reading:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/History_of_Unix">The History of Unix</a></li>
+<li><em><a href="https://www.oreilly.com/library/view/a-quarter-century/9780133988906/">A Quarter Century of Unix</a></em> by Peter H. Salus</li>
+<li><a href="http://catb.org/~esr/writings/taoup/html/">The Unix Philosophy</a> by Eric S. Raymond</li>
+</ul>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Build Your Phase 1 Learning Plan&quot;, &quot;difficulty&quot;: &quot;beginner&quot;, &quot;scenario&quot;: &quot;You&#39;re starting the Perl developer roadmap. Create a structured learning plan\nfor Phase 1 (Unix Foundations) that covers:\n\n1. Which Unix concepts to learn first and why\n2. Hands-on exercises for each concept\n3. How to verify your understanding before moving to Phase 2\n4. Resources you&#39;ll use (man pages, books, online tutorials)\n\nPrioritize the concepts most relevant to Perl development.\n&quot;, &quot;hints&quot;: [&quot;Start with: file system navigation, file permissions, and stdin/stdout/stderr&quot;, &quot;Then: pipes and filters (cat, grep, sed, awk) - these are the concepts Perl extends&quot;, &quot;Then: processes, signals, and job control&quot;, &quot;Verify by writing shell scripts that combine these concepts&quot;], &quot;solution&quot;: &quot;**Phase 1 Learning Plan:**\n\n**Week 1: Files and I/O**\n- File navigation (cd, ls, find, locate)\n- File permissions (chmod, chown, umask)\n- File descriptors (stdin=0, stdout=1, stderr=2)\n- Practice: Write a shell script that processes files with error handling\n\n**Week 2: Text Processing**\n- Pipes and filters (|, cat, grep, sort, uniq, wc)\n- Regular expressions with grep and sed\n- awk for column-based processing\n- Practice: Process a log file to extract statistics\n\n**Week 3: Processes and System**\n- Process lifecycle (fork, exec, wait)\n- Signals (SIGTERM, SIGKILL, SIGHUP)\n- Environment variables and the shell\n- Practice: Write a script that manages background processes\n\n**Verification:** Can you write a shell script that:\n- Reads input from a file or stdin\n- Processes text with regex\n- Handles errors (exit codes, stderr)\n- Manages processes (background, signals)\n\nIf yes, you&#39;re ready for Phase 2 (Perl fundamentals).&quot;}"><noscript><p><strong>Build Your Phase 1 Learning Plan</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="phase-2-beginning-perl">Phase 2: Beginning Perl<a class="headerlink" href="#phase-2-beginning-perl" title="Permanent link">&para;</a></h2>
+<h3 id="required-learning_1">Required Learning<a class="headerlink" href="#required-learning_1" title="Permanent link">&para;</a></h3>
+<h4 id="lamp-stack">LAMP Stack<a class="headerlink" href="#lamp-stack" title="Permanent link">&para;</a></h4>
+<p><strong>LAMP Stack and Core Web Services</strong></p>
+<p>A strong Perl developer should have a working knowledge of the services that power modern web applications. While Perl's role has evolved—often found in automation, infrastructure tooling, or legacy applications—its integration with these services remains highly relevant. Mastery of web stack components ensures you're equipped to handle both greenfield and legacy projects with confidence.</p>
+<p>Key technologies to understand:</p>
+<ul>
+<li><strong><a href="https://nginx.org">Nginx</a></strong>: A modern, high-performance web server and reverse proxy widely adopted in today's infrastructure, favored for its scalability, load balancing, and efficiency under high traffic.</li>
+<li><strong><a href="https://httpd.apache.org/">Apache</a></strong>: Still commonly used in shared hosting and legacy applications. Its extensive module ecosystem and compatibility with <code>.htaccess</code> make it a valuable technology to understand.</li>
+<li><strong><a href="https://www.litespeedtech.com/">LiteSpeed</a></strong>: A commercial alternative to Apache, often used in performance-focused hosting. Supports .htaccess and Apache configuration syntax.</li>
+<li><strong><a href="https://www.php.net/">PHP</a></strong>: Although not a Perl-centric language, understanding PHP remains important in environments where both are deployed side by side—especially in shared hosting and cPanel-based systems.</li>
+<li><strong><a href="https://mariadb.org/">MariaDB</a></strong> and <strong><a href="https://www.postgresql.org/">PostgreSQL</a></strong>: The modern standards in relational databases. MariaDB is a MySQL-compatible drop-in replacement, while PostgreSQL is increasingly preferred for new applications due to its compliance and features.</li>
+<li><strong><a href="https://www.sqlite.org/">SQLite</a></strong>: A serverless, embedded database engine ideal for development, automation tools, and standalone utilities.</li>
+<li><strong><a href="https://www.isc.org/bind/">Bind</a></strong>: The classic authoritative DNS server, still widely used for managing zones and nameservers.</li>
+<li><strong><a href="https://www.powerdns.com/">PowerDNS</a></strong>: A dynamic DNS solution with API and database integration, popular in cloud-scale and provider environments.</li>
+<li><strong><a href="https://coredns.io/">CoreDNS</a></strong>: The default DNS service in Kubernetes and cloud-native environments, vital for understanding service discovery and internal networking in containerized applications.</li>
+</ul>
+<p>Familiarity with these services will not only support your scripting and automation tasks but also help you thrive in today's hybrid infrastructure environments—from legacy systems to modern DevOps ecosystems.</p>
+<h3 id="perl-skills-milestones">Perl Skills &amp; Milestones<a class="headerlink" href="#perl-skills-milestones" title="Permanent link">&para;</a></h3>
+<h4 id="learning-the-ropes">Learning the Ropes<a class="headerlink" href="#learning-the-ropes" title="Permanent link">&para;</a></h4>
+<p><strong>Perl Syntax, Data Types, and Program Structure</strong></p>
+<p><strong>Perl Syntax, Data Types, and Program Structure</strong></p>
+<p>Developing fluency in Perl starts with a clear understanding of its foundational elements:</p>
+<ul>
+<li><strong>Data Types</strong>: Gain comfort with scalars (<code>$</code>), arrays (<code>@</code>), and hashes (<code>%</code>), and learn how their behavior changes based on context (scalar vs. list). Start with <a href="../scalars-strings-numbers/">Scalars, Strings, and Numbers</a>, then <a href="../arrays-hashes-lists/">Arrays, Hashes, and Lists</a>.</li>
+<li><strong>Control Flow</strong>: Master core control structures like <code>if</code>, <code>unless</code>, <code>while</code>, <code>for</code>, and <code>foreach</code> to direct the logic of your programs. See <a href="../control-flow/">Control Flow</a>.</li>
+<li><strong>Built-in Functions</strong>: Leverage Perl's rich library of built-in functions for data manipulation, text processing, and file I/O.</li>
+<li><strong>Code Style</strong>: Perl's expressiveness allows multiple ways to solve problems, making it essential to develop good habits around clarity, consistency, and maintainability.</li>
+</ul>
+<p>The goal is not just to write functional code, but to write code that is efficient, idiomatic, and easy to understand—hallmarks of an experienced Perl developer.</p>
+<p><strong>References and Error Handling</strong></p>
+<p>Perl's reference system is essential for working with complex data structures such as arrays of hashes, deeply nested configurations, or dynamically built data trees. You'll need to:</p>
+<ul>
+<li>Understand what a reference is and how to create one.</li>
+<li>Learn how to safely dereference scalars, arrays, and hashes.</li>
+<li>Use references effectively in subroutines to pass complex data structures by reference.</li>
+<li>Apply references when building object-oriented Perl code, where <code>$self</code> is typically a reference to a hash.</li>
+</ul>
+<p><strong>Error Handling</strong></p>
+<p>Handling errors gracefully is a hallmark of professional Perl development. While Perl allows for classic error trapping using <code>eval {}</code>, this method can lead to confusing behavior and poor readability. Instead, modern Perl favors modules like <a href="https://metacpan.org/pod/Try::Tiny"><code>Try::Tiny</code></a>, which offer cleaner syntax and better scoping.</p>
+<p>Key practices include:</p>
+<ul>
+<li>Differentiating between warnings (non-fatal) and errors (fatal).</li>
+<li>Using <code>warn</code> and <code>die</code> appropriately based on severity.</li>
+<li>Logging or reporting exceptions in ways that are actionable and user-friendly.</li>
+</ul>
+<p>Together, references and robust error handling form a critical part of writing maintainable, reusable Perl code.</p>
+<h4 id="becoming-adept">Becoming Adept<a class="headerlink" href="#becoming-adept" title="Permanent link">&para;</a></h4>
+<p><strong>Object-Oriented Perl</strong></p>
+<p>Object-oriented programming (OOP) is a key capability of Perl and is frequently used in larger codebases or frameworks. Learning OOP in Perl involves understanding how packages work, how to bless references into objects, and how to define and use methods. While Perl doesn't enforce an OOP paradigm, it offers full support for it, giving developers the flexibility to design modular, reusable, and maintainable code.</p>
+<p>Key resources:</p>
+<ul>
+<li><a href="https://www.manning.com/books/object-oriented-perl">Object-Oriented Perl by Damian Conway</a></li>
+<li><a href="https://metacpan.org/pod/Moose">Modern Perl's Moose framework</a> – a postmodern object system for Perl 5.</li>
+</ul>
+<p><strong>System Interaction (fork, exec, file I/O, permissions)</strong></p>
+<p>One of Perl's strengths lies in its tight integration with the underlying operating system. Proficiency in system-level programming is crucial for writing scripts that automate administrative tasks or interact directly with system components.</p>
+<p>Essential concepts include:</p>
+<ul>
+<li><code>fork</code>, <code>exec</code>, and <code>wait</code> for process control.</li>
+<li>Working with filehandles for reading and writing files.</li>
+<li>Interacting with file metadata (permissions, ownership, timestamps) using <code>stat</code>, <code>chmod</code>, <code>chown</code>, and <code>utime</code>.</li>
+<li>Redirecting output and managing subprocesses securely.</li>
+</ul>
+<p>Resources:</p>
+<ul>
+<li><a href="https://perldoc.perl.org/functions/open">perldoc -f open</a></li>
+<li><a href="https://perldoc.perl.org/perlipc.html">perlipc</a> for interprocess communication and process management.</li>
+</ul>
+<p><strong>Modulinos and Concurrency</strong></p>
+<p>A <em>modulino</em> is a hybrid Perl script that behaves both as a standalone script and a reusable module. It enables better code reuse and testability. This pattern is common in professional Perl development where tooling needs to be scriptable yet unit-tested.</p>
+<p>Concurrency in Perl is typically handled using <code>fork</code> for multiprocessing, or by leveraging event-based modules. While threads exist in Perl (<code>threads.pm</code>), they are often avoided due to complexity and performance concerns.</p>
+<p>Tools and resources:</p>
+<ul>
+<li><a href="https://www.perlmonks.org/?node_id=489861">Writing Modulinos with </a><a href="https://www.perlmonks.org/?node_id=489861"><code>caller</code></a></li>
+<li><a href="https://metacpan.org/pod/Parallel::ForkManager">Parallel::ForkManager</a> for simple parallel execution.</li>
+<li><a href="https://metacpan.org/pod/AnyEvent">AnyEvent</a> or <a href="https://metacpan.org/pod/IO::Async">IO::Async</a> for asynchronous programming.</li>
+</ul>
+<h4 id="joining-the-community">Joining the Community<a class="headerlink" href="#joining-the-community" title="Permanent link">&para;</a></h4>
+<p><strong>Engaging with the Perl Community</strong></p>
+<p>Getting involved with the Perl community is not only encouraged—it's essential. Community interaction can accelerate your learning, expose you to real-world problem solving, and keep you current with modern Perl practices.</p>
+<ol>
+<li><strong><a href="https://www.perlmonks.org">PerlMonks</a></strong>: A long-established and active community focused entirely on Perl. It remains relevant in 2025 as a place to get answers, learn idioms, and participate in thoughtful programming discussions. Users post questions, tutorials, and code snippets, and receive feedback from veteran developers.</li>
+<li><strong><a href="https://www.pm.org/">Perl Mongers</a></strong>: A global network of local Perl user groups that still hold in-person and virtual meetups. While not as active as in past decades, many chapters remain valuable for community support and professional networking. Check the PM.org website or join forums like <a href="https://perl.community">https://perl.community</a> for modern community hubs.</li>
+</ol>
+<p><strong>Contributing to CPAN (inspired by the CPAN PRC)</strong>: The original <a href="https://www.cpanprc.org">CPAN Pull Request Challenge</a> ended in 2018, but its legacy lives on. Today, Perl developers are encouraged to contribute to CPAN via GitHub and MetaCPAN. Identify outdated or under-maintained modules, review open issues, and submit pull requests. Tools like <a href="https://metacpan.org/">MetaCPAN</a> and GitHub's "good first issue" label make it easier than ever to find a way to contribute.</p>
+<h4 id="diving-deep">Diving Deep<a class="headerlink" href="#diving-deep" title="Permanent link">&para;</a></h4>
+<p><strong>Contribute to CPAN Modules</strong></p>
+<p>Contributing to CPAN remains one of the most impactful ways to support the Perl ecosystem in 2025. While the landscape has evolved, community-driven development and open collaboration are still central. CPAN continues to power countless applications and tools, and active maintenance is critical to its health.</p>
+<p>Modern best practices include:</p>
+<ul>
+<li>Identifying under-maintained or outdated modules via <a href="https://metacpan.org">MetaCPAN</a> and GitHub.</li>
+<li>Submitting improvements as pull requests: bug fixes, documentation enhancements, modernization (e.g., switching from <code>Test::Simple</code> to <code>Test2::Suite</code>, or refactoring legacy idioms).</li>
+<li>Respecting semantic versioning and authoring guidelines using tools like <code>Test::CheckManifest</code>, <code>Test::Pod</code>, and <code>Perl::Critic</code> before submission.</li>
+</ul>
+<p>New contributors are encouraged to look for issues labeled <strong>good first issue</strong> or <strong>help wanted</strong>, and to follow module-specific contribution guidelines.</p>
+<p><strong>Use Dist::Zilla</strong></p>
+<p><a href="https://metacpan.org/pod/Dist::Zilla">Dist::Zilla</a> continues to be a de facto standard for managing modern Perl distributions. It abstracts away much of the manual toil of packaging, releasing, and maintaining modules, making it particularly useful for complex projects or teams that rely on automation.</p>
+<p>Updated benefits as of 2025:</p>
+<ul>
+<li>Plugin ecosystem includes integrations for GitHub Actions, GitLab CI, and Docker tagging.</li>
+<li>Pre-release validation (e.g., changelog enforcement, dependency resolution) using community plugins.</li>
+<li>Seamless publishing to PAUSE and GitHub with <code>dzil release</code>, integrating test suites, version bumps, and tagging workflows.</li>
+</ul>
+<p>For developers looking to streamline and standardize their release cycle while avoiding boilerplate, Dist::Zilla remains an invaluable tool—especially when paired with a modern CI/CD pipeline.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is CPAN and why is it significant for Perl development?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;CPAN is Perl&#39;s compiler that converts scripts to machine code&quot;, &quot;feedback&quot;: &quot;Perl is interpreted, not compiled. CPAN is the Comprehensive Perl Archive Network - a repository of reusable modules.&quot;}, {&quot;text&quot;: &quot;CPAN is a massive repository of reusable Perl modules that provides pre-built solutions for most common tasks&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! CPAN (Comprehensive Perl Archive Network) has over 200,000 modules for everything from web development to bioinformatics. &#39;There&#39;s a module for that&#39; is a Perl mantra. Learning to find and use CPAN modules effectively is as important as learning the language itself.&quot;}, {&quot;text&quot;: &quot;CPAN is Perl&#39;s package manager similar to pip or npm&quot;, &quot;feedback&quot;: &quot;Close - cpan/cpanm are the package managers that install from CPAN. CPAN itself is the archive/repository of modules (like PyPI is to pip, or npm registry is to npm). The distinction matters: CPAN is the ecosystem, cpanm is the tool.&quot;}, {&quot;text&quot;: &quot;CPAN is only used for Perl&#39;s standard library&quot;, &quot;feedback&quot;: &quot;The standard library ships with Perl. CPAN is a community-maintained repository of third-party modules - far larger than the standard library.&quot;}]}"><noscript><p><strong>What is CPAN and why is it significant for Perl development?</strong> (requires JavaScript)</p></noscript></div>
+<h4 id="staying-active">Staying Active<a class="headerlink" href="#staying-active" title="Permanent link">&para;</a></h4>
+<p><strong>Bug Reporting and Community Interaction</strong></p>
+<p>Staying active in the Perl ecosystem means contributing beyond code. That includes reporting bugs, engaging in issue discussions, and collaborating respectfully with maintainers. Constructive bug reports often include reproduction steps, observed vs. expected behavior, environment details, and a proposed solution or patch. Engage through GitHub, MetaCPAN, or mailing lists like <code>perl5-porters</code> to help steer the future of modules you rely on.</p>
+<ul>
+<li><a href="https://metacpan.org/issues">MetaCPAN Issues</a></li>
+<li><a href="https://lists.perl.org/list/perl5-porters.html">Perl Porters Mailing List</a></li>
+</ul>
+<p><strong>Understanding "perldelta"</strong></p>
+<p>The <code>perldelta</code> document is released with each new version of Perl and outlines what's changed: new features, deprecations, security fixes, and known issues. It's essential reading for any developer working with modern Perl or maintaining code across versions. Familiarity with <code>perldelta</code> helps you adopt features early, avoid deprecated behaviors, and ensure compatibility.</p>
+<p>Resources:</p>
+<ul>
+<li><a href="https://metacpan.org/pod/perldelta">Latest perldelta on MetaCPAN</a></li>
+<li><a href="https://github.com/Perl/perl5">Perl's development GitHub repo</a> for upcoming changes</li>
+</ul>
+<h4 id="ask-yourself">Ask Yourself<a class="headerlink" href="#ask-yourself" title="Permanent link">&para;</a></h4>
+<p><strong>How Does Perl Relate to Unix, Bash, PHP, etc.?</strong></p>
+<p>Perl has deep historical and technical ties to Unix, Bash, and other scripting languages. Its design was heavily inspired by Unix philosophy: small, modular tools working together with powerful text processing and system integration capabilities.</p>
+<ul>
+<li>
+<p><strong>Unix</strong>: Perl was born in the Unix environment, and its syntax and idioms reflect Unix traditions—everything from regular expressions to filehandles and process management. Perl scripts are often used for Unix system administration, automation, and report generation.</p>
+</li>
+<li>
+<p><strong>Bash</strong>: Bash and Perl frequently work together. Bash is great for quick shell automation, while Perl is better suited for complex logic, structured data handling, and modular design. Many developers use Bash to orchestrate and Perl to perform the heavy lifting.</p>
+</li>
+<li>
+<p><strong>PHP</strong>: Perl and PHP have historically served similar roles in web development. While PHP dominates in modern web apps, Perl's use persists in legacy systems, backend automation, and templating. Interestingly, PHP was initially inspired by Perl and borrows from its syntax.</p>
+</li>
+<li>
+<p><strong>Python &amp; Ruby</strong> (modern context): While not listed originally, it's important to note that Perl now coexists with Python and Ruby in many development environments. All three are high-level, interpreted languages used for scripting and automation, with Perl maintaining a niche in text processing and legacy infrastructure.</p>
+</li>
+</ul>
+<p>Understanding these relationships can help you make strategic choices about when to use Perl versus other languages, and how to interface with tools written in them.</p>
+<h4 id="important-perl-modules">Important Perl Modules<a class="headerlink" href="#important-perl-modules" title="Permanent link">&para;</a></h4>
+<p>Familiarity with modern, high-utility Perl modules is critical for writing robust, maintainable code. Below are essential categories and recommended modules to learn and use in your daily development workflow:</p>
+<p><strong>Database Interaction</strong></p>
+<ul>
+<li><strong><a href="https://metacpan.org/pod/DBI">DBI</a></strong>: The standard database interface module for Perl, providing a consistent API across various database systems.</li>
+<li><strong><a href="https://metacpan.org/pod/DBD::SQLite">DBD::SQLite</a></strong>: Lightweight and serverless, ideal for local development or embedded use.</li>
+<li>Also consider: <code>DBD::Pg</code> for PostgreSQL and <code>DBD::mysql</code> for MariaDB/MySQL.</li>
+</ul>
+<p><strong>Serialization and Configuration</strong></p>
+<ul>
+<li><strong><a href="https://metacpan.org/pod/Cpanel::JSON::XS">Cpanel::JSON::XS</a></strong> or <strong><a href="https://metacpan.org/pod/JSON::MaybeXS">JSON::MaybeXS</a></strong>: Efficient, reliable JSON serialization/deserialization.</li>
+<li><strong><a href="https://metacpan.org/pod/YAML::XS">YAML::XS</a></strong>: Fast YAML support for reading configuration files.</li>
+<li><strong><a href="https://metacpan.org/pod/Config::INI">Config::INI</a></strong>: Simple parsing of INI-style config files.</li>
+</ul>
+<p><strong>Testing Frameworks</strong></p>
+<ul>
+<li><strong><a href="https://metacpan.org/pod/Test::More">Test::More</a></strong>: A core testing module in Perl, forming the foundation of most test suites.</li>
+<li><strong><a href="https://metacpan.org/pod/Test::Spec">Test::Spec</a></strong>: Enables RSpec-style testing for behavior-driven development (BDD).</li>
+<li>Also explore: <code>Test2::Suite</code> for a modern replacement and extensible test ecosystem.</li>
+</ul>
+<p><strong>Code Quality Tools</strong></p>
+<ul>
+<li><strong><a href="https://metacpan.org/pod/perltidy">perltidy</a></strong>: Formats Perl code according to customizable style rules.</li>
+<li><strong><a href="https://metacpan.org/pod/Perl::Critic">Perl::Critic</a></strong>: Analyzes Perl code for maintainability, enforcing best practices based on Damian Conway's <em>Perl Best Practices</em>.</li>
+</ul>
+<p>Mastering these modules—and understanding when to apply each—will greatly improve your productivity, confidence, and code quality.</p>
+<h3 id="additional-learning_1">Additional Learning<a class="headerlink" href="#additional-learning_1" title="Permanent link">&para;</a></h3>
+<p><strong>Interprocess Communication (IPC) Concepts</strong></p>
+<p>IPC allows different processes to communicate and synchronize their actions. This is particularly important when writing daemon services, managing background workers, or integrating different components of a system. In Perl, IPC can be achieved using built-in functions and specialized modules.</p>
+<p>Key mechanisms include:</p>
+<ul>
+<li><strong>Pipes</strong>: Used for communication between a parent and child process (<code>open</code>, <code>pipe</code>, <code>IPC::Open2</code>, <code>IPC::Open3</code>).</li>
+<li><strong>Sockets</strong>: For networked or local IPC; useful in both client-server and peer-to-peer models (<code>IO::Socket::INET</code>, <code>IO::Socket::UNIX</code>).</li>
+<li><strong>Shared memory and semaphores</strong>: Available via <code>IPC::SysV</code> or <code>IPC::Shareable</code> for more advanced use cases.</li>
+</ul>
+<p><strong>Recommended Resources</strong>:</p>
+<ul>
+<li><a href="https://perldoc.perl.org/perlipc.html">perlipc documentation</a></li>
+<li><a href="https://metacpan.org/pod/IPC::Run">IPC::Run</a> – For launching and interacting with external processes</li>
+</ul>
+<p><strong>Daemon Creation</strong></p>
+<p>Writing a daemon involves creating a background service that runs independently of user input. Common uses include job schedulers, monitoring tools, and lightweight APIs. In Perl, daemonizing a script involves steps like forking, detaching from the terminal, setting new session IDs, and handling PID files.</p>
+<p>Key considerations:</p>
+<ul>
+<li>Handling logging and signal management (<code>SIGHUP</code>, <code>SIGTERM</code>)</li>
+<li>Managing process IDs (PIDs) and preventing duplicate instances</li>
+<li>Monitoring via supervision tools like <code>systemd</code>, <code>supervisord</code>, or <code>daemontools</code></li>
+</ul>
+<p><strong>Recommended Modules</strong>:</p>
+<ul>
+<li><a href="https://metacpan.org/pod/Proc::Daemon">Proc::Daemon</a></li>
+<li><a href="https://metacpan.org/pod/Daemon::Control">Daemon::Control</a></li>
+</ul>
+<p><strong>OSI Model and Perl's Networking Capabilities</strong></p>
+<p>The OSI (Open Systems Interconnection) model defines how communication is structured in networks. Understanding this model helps developers write more effective networking code, troubleshoot connectivity issues, and build systems that communicate reliably.</p>
+<p>In Perl, you'll mostly operate at:</p>
+<ul>
+<li><strong>Layer 4 (Transport)</strong>: Working with TCP/UDP sockets</li>
+<li><strong>Layer 7 (Application)</strong>: Implementing or consuming protocols like HTTP, FTP, SMTP</li>
+</ul>
+<p>Perl modules for networking include:</p>
+<ul>
+<li><a href="https://metacpan.org/pod/IO::Socket::INET">IO::Socket::INET</a>: TCP/UDP communication</li>
+<li><a href="https://metacpan.org/pod/LWP::UserAgent">LWP::UserAgent</a>: High-level HTTP client</li>
+<li><a href="https://metacpan.org/pod/HTTP::Tiny">HTTP::Tiny</a>: Lightweight alternative to LWP</li>
+<li><a href="https://metacpan.org/pod/Net::Server">Net::Server</a>: Building robust, extensible server applications</li>
+</ul>
+<p>Mastering these areas will significantly enhance your ability to build distributed systems, background services, and web-enabled tools using Perl.</p>
+<hr />
+<h2 id="phase-3-workflows-testing-debugging">Phase 3: Workflows, Testing &amp; Debugging<a class="headerlink" href="#phase-3-workflows-testing-debugging" title="Permanent link">&para;</a></h2>
+<h3 id="required-learning_2">Required Learning<a class="headerlink" href="#required-learning_2" title="Permanent link">&para;</a></h3>
+<h4 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h4>
+<p>Effective testing is the backbone of sustainable Perl development. It ensures reliability, facilitates maintenance, and empowers developers to refactor confidently. While Perl has a long tradition of testing culture, the landscape in 2025 supports both time-tested modules and newer, more flexible frameworks.</p>
+<p><strong>Core Practices</strong>:</p>
+<ul>
+<li><strong>Unit Testing</strong>: The most fundamental type of test, verifying the behavior of individual components in isolation. This is typically done using:</li>
+<li><strong><a href="https://metacpan.org/pod/Test::More">Test::More</a></strong> – the de facto standard and part of the Perl core.</li>
+<li><strong><a href="https://metacpan.org/pod/Test::Simple">Test::Simple</a></strong> – a minimalistic base layer.</li>
+<li><strong><a href="https://metacpan.org/pod/Test2::Suite">Test2::Suite</a></strong> – a modern, extensible replacement that powers new testing ecosystems.</li>
+</ul>
+<p><strong>Advanced Testing Techniques</strong>:</p>
+<ul>
+<li>
+<p><strong>Behavior-Driven Development (BDD)</strong>: Write tests in a style that mirrors expected behavior.</p>
+</li>
+<li>
+<p><strong><a href="https://metacpan.org/pod/Test::Spec">Test::Spec</a></strong> and <strong><a href="https://metacpan.org/pod/Test::BDD::Cucumber">Test::BDD::Cucumber</a></strong> are popular options.</p>
+</li>
+<li>
+<p><strong>Mocking and Isolation</strong>:</p>
+</li>
+<li>
+<p><strong><a href="https://metacpan.org/pod/Test::MockModule">Test::MockModule</a></strong> or <strong><a href="https://metacpan.org/pod/Test::MockObject">Test::MockObject</a></strong> can simulate dependencies.</p>
+</li>
+<li>
+<p><strong>Continuous Testing Integration</strong>:</p>
+</li>
+<li>
+<p>Pair with modern CI tools like GitHub Actions, GitLab CI, or CircleCI.</p>
+</li>
+<li>Automate coverage reporting with <strong><a href="https://metacpan.org/pod/Devel::Cover">Devel::Cover</a></strong>.</li>
+</ul>
+<p><strong>Best Practices</strong>:</p>
+<ul>
+<li>Write tests before or alongside your code.</li>
+<li>Use descriptive test names and group related tests into subtests.</li>
+<li>Ensure your tests are repeatable and deterministic.</li>
+</ul>
+<p>Testing isn't just about proving correctness—it's about building trust in your code, now and in the future.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;Why does the roadmap emphasize testing (Phase 2) before advanced topics?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Testing is required by the Perl interpreter&quot;, &quot;feedback&quot;: &quot;Perl doesn&#39;t require tests. The emphasis on early testing is about developing good habits and confidence in your code.&quot;}, {&quot;text&quot;: &quot;Writing tests builds confidence to refactor and tackle complex problems&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Tests give you a safety net: you can change code and immediately know if you broke something. This is especially important before Phase 3 (complex modules, APIs, system integration) where bugs are harder to track down. The Perl community has a strong testing culture - most CPAN modules include comprehensive test suites.&quot;}, {&quot;text&quot;: &quot;You can&#39;t publish to CPAN without 100% test coverage&quot;, &quot;feedback&quot;: &quot;CPAN doesn&#39;t enforce coverage requirements, though well-tested modules are more trusted by the community. Early testing is about building good habits.&quot;}, {&quot;text&quot;: &quot;Testing is the only way to learn Perl syntax&quot;, &quot;feedback&quot;: &quot;You can learn syntax many ways. Testing is emphasized early because it builds a foundation of correctness that makes later phases safer and more productive.&quot;}]}"><noscript><p><strong>Why does the roadmap emphasize testing (Phase 2) before advanced topics?</strong> (requires JavaScript)</p></noscript></div>
+<h4 id="application-architecture">### Application Architecture<a class="headerlink" href="#application-architecture" title="Permanent link">&para;</a></h4>
+<p>A modern Perl developer must understand not just the language, but how it integrates with full-stack application architecture. Perl is frequently used for building backend services, consuming APIs, and even serving as glue code between microservices or distributed systems.</p>
+<p><strong>Services</strong>: Services refer to standalone applications or daemons that perform a specific task—like authentication, data processing, or email delivery. These are often exposed over HTTP/HTTPS and must be built to handle concurrency, error resilience, and observability (e.g., logging and metrics).</p>
+<p><strong>APIs</strong>: APIs (Application Programming Interfaces) are the primary interface by which modern services communicate. Perl can both expose APIs (e.g., via frameworks like Mojolicious or Dancer2) and consume them (via LWP::UserAgent or HTTP::Tiny). Understanding RESTful principles and HTTP status codes is key.</p>
+<p><strong>REST</strong>: Representational State Transfer (REST) is the dominant architectural style for designing networked applications. REST relies on stateless communication, meaningful resource URLs, and standard HTTP methods (GET, POST, PUT, DELETE). Modern Perl APIs often follow REST patterns and return JSON responses.</p>
+<p><strong>Recommended Tools &amp; Frameworks</strong>:</p>
+<ul>
+<li><a href="https://mojolicious.org">Mojolicious</a>: A feature-rich web framework for building RESTful services and full-stack web apps.</li>
+<li><a href="https://metacpan.org/pod/Dancer2">Dancer2</a>: A lightweight, extensible framework ideal for small- to medium-sized APIs.</li>
+<li><a href="https://metacpan.org/pod/Plack">Plack/PSGI</a>: Middleware for Perl web applications; the foundation for most modern Perl web frameworks.</li>
+</ul>
+<p>Mastering application architecture ensures that your Perl projects scale well, integrate cleanly with other systems, and follow contemporary software development practices.</p>
+<h4 id="practicing-workflows">Practicing Workflows<a class="headerlink" href="#practicing-workflows" title="Permanent link">&para;</a></h4>
+<p><strong>Contributing to CPAN (Inspired by the CPAN PRC)</strong></p>
+<p>While the original <a href="https://www.cpanprc.org">CPAN Pull Request Challenge (CPAN PRC)</a> ended in 2018, the concept of monthly contributions to open source Perl modules lives on in spirit. Practicing workflows through regular contribution helps developers gain experience with collaborative development, version control, and best practices in CPAN module structure and testing.</p>
+<p>To emulate this experience today:</p>
+<ul>
+<li>Browse <a href="https://metacpan.org">MetaCPAN</a> or GitHub for active modules that need contributions.</li>
+<li>Filter issues labeled <strong>good first issue</strong>, <strong>help wanted</strong>, or tagged with <strong>hacktoberfest</strong>, which signal beginner-friendly opportunities.</li>
+<li>Use GitHub's fork-and-branch model to propose code changes. Ensure your changes are well-documented and include tests where appropriate.</li>
+<li>Participate in community discussions by commenting on issues, responding to feedback, and reviewing others' pull requests.</li>
+<li>Integrate with continuous integration tools like GitHub Actions or Travis CI to automatically run your test suite and lint your code before submission.</li>
+<li>Familiarize yourself with the <a href="https://github.com/CPAN-PRC/resources">CPAN Pull Request Guide</a> for additional resources and etiquette.</li>
+</ul>
+<p>This modernized process helps you build fluency in CPAN tooling, Git workflows, CI/CD integration, and collaborative open-source development—all essential skills for contributing to the contemporary Perl ecosystem.</p>
+<p><strong>GitHub Collaboration</strong></p>
+<p>GitHub remains the dominant platform for hosting and contributing to Perl projects in 2025. Mastering GitHub collaboration is essential for professional Perl development. Key practices include:</p>
+<ul>
+<li>Forking repositories and creating feature branches.</li>
+<li>Writing meaningful commit messages and pull request descriptions.</li>
+<li>Participating in code reviews and addressing feedback.</li>
+<li>Using CI integrations (GitHub Actions, Travis CI) to validate code.</li>
+<li>Keeping up with upstream changes through rebase/merge workflows.</li>
+</ul>
+<p>GitHub collaboration not only builds your technical skills—it builds your reputation. Active contributors are more likely to be recognized and recruited for freelance, contract, and full-time roles.</p>
+<h4 id="using-version-control">Using Version Control<a class="headerlink" href="#using-version-control" title="Permanent link">&para;</a></h4>
+<p>Version control is an essential part of modern software development, enabling teams and individuals to track changes, collaborate asynchronously, and ensure project stability. For Perl developers, mastering Git is foundational.</p>
+<p><strong>Core Practices</strong>:</p>
+<ul>
+<li><strong>Git</strong>: Learn essential Git commands such as <code>clone</code>, <code>commit</code>, <code>push</code>, <code>pull</code>, <code>merge</code>, <code>rebase</code>, and <code>stash</code>. Understand branching models like Git Flow or trunk-based development.</li>
+<li><strong>Commit Discipline</strong>: Write clear, concise, and purposeful commit messages. Use atomic commits to keep history readable and revert-friendly.</li>
+</ul>
+<p><strong>Modern Learning Resources</strong>:</p>
+<ul>
+<li><strong><a href="https://lab.github.com/">GitHub Learning Lab</a></strong> – Offers interactive tutorials on real GitHub repositories.</li>
+<li><strong><a href="https://git-scm.com/book/en/v2">Pro Git Book</a></strong> – A comprehensive and freely available guide for all levels.</li>
+<li><strong><a href="https://guides.github.com/introduction/git-handbook/">Git Handbook</a></strong> – A high-level overview of Git and GitHub best practices.</li>
+</ul>
+<p><strong>Tooling &amp; Extensions</strong>:</p>
+<ul>
+<li>Use GitHub CLI for scriptable GitHub workflows.</li>
+<li>Explore visual Git clients like Sourcetree or GitKraken if you prefer a GUI.</li>
+<li>Integrate version control with CI/CD systems to trigger builds, tests, and deployments automatically on code changes.</li>
+</ul>
+<p>Staying fluent in Git and GitHub workflows will make you a stronger collaborator, contributor, and maintainer—skills that transcend Perl and apply across nearly every software development ecosystem.</p>
+<h3 id="debugging-methods">Debugging Methods<a class="headerlink" href="#debugging-methods" title="Permanent link">&para;</a></h3>
+<p>Effective debugging is a skill that separates productive developers from frustrated ones. Perl provides multiple layers of debugging tools, from compile-time checks to interactive debuggers.</p>
+<p><strong>Prevention first</strong>: <code>use strict</code> and <code>use warnings</code> catch the majority of bugs before your code even runs. Undeclared variables, misused data types, and common mistakes are flagged immediately. See the <a href="../perl_dev0_introduction/">Introduction</a> for why these two lines are non-negotiable.</p>
+<p><strong>Print debugging</strong>: The simplest approach - add <code>print</code> or <code>warn</code> statements to trace variable values and execution flow. <code>warn</code> writes to STDERR (so it doesn't corrupt program output) and includes the file and line number. <code>Data::Dumper</code> displays complex data structures in a readable format:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">use</span><span class="w"> </span><span class="nn">Data::Dumper</span><span class="p">;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">warn</span><span class="w"> </span><span class="n">Dumper</span><span class="p">(</span><span class="o">\</span><span class="nv">%config</span><span class="p">);</span><span class="w">  </span><span class="c1"># Prints the entire hash structure to STDERR</span>
+</span></code></pre></div>
+<p><strong>The Perl debugger</strong>: Run any script with <code>perl -d script.pl</code> to start the interactive debugger. You can set breakpoints (<code>b</code>), step through code (<code>n</code> for next, <code>s</code> for step into), inspect variables (<code>x $var</code>), and evaluate expressions. The debugger is invaluable for tracing logic errors in unfamiliar code.</p>
+<p><strong>Devel:: modules</strong>: <a href="https://metacpan.org/pod/Devel::NYTProf"><strong>Devel::NYTProf</strong></a> is a powerful profiler that identifies performance bottlenecks. <a href="https://metacpan.org/pod/Devel::Peek"><strong>Devel::Peek</strong></a> shows Perl's internal representation of variables. <a href="https://metacpan.org/pod/Devel::Cover"><strong>Devel::Cover</strong></a> measures test coverage so you know which code paths remain untested.</p>
+<p>For more on debugging strategies, see <a href="../error-handling-debugging/">Error Handling and Debugging</a>.</p>
+<h3 id="linux-package-managers">Linux Package Managers<a class="headerlink" href="#linux-package-managers" title="Permanent link">&para;</a></h3>
+<p>Perl development on Linux means working with the system's package manager to install libraries, development headers, and tools that Perl modules depend on.</p>
+<p><strong>RPM-based systems</strong> (RHEL, Rocky Linux, AlmaLinux, Fedora) use <code>yum</code> or its successor <code>dnf</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Install development tools and libraries</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>groupinstall<span class="w"> </span><span class="s2">&quot;Development Tools&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>perl<span class="w"> </span>perl-devel<span class="w"> </span>perl-CPAN<span class="w"> </span>openssl-devel
+</span></code></pre></div>
+<p><strong>Debian-based systems</strong> (Ubuntu, Debian) use <code>apt</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>update
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>perl<span class="w"> </span>perl-doc<span class="w"> </span>cpanminus<span class="w"> </span>libssl-dev
+</span></code></pre></div>
+<p><strong>Perl module installation</strong> is handled separately from the system package manager. <a href="https://metacpan.org/pod/App::cpanminus"><strong>cpanm</strong></a> (cpanminus) is the recommended tool:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>cpanm<span class="w"> </span>Mojolicious<span class="w">           </span><span class="c1"># Install from CPAN</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>cpanm<span class="w"> </span>--installdeps<span class="w"> </span>.<span class="w">       </span><span class="c1"># Install dependencies from cpanfile</span>
+</span></code></pre></div>
+<p>Use the system package manager for system libraries (like <code>libssl-dev</code>) and <code>cpanm</code> for Perl modules. Mixing the two (installing Perl modules via <code>apt</code>) can cause version conflicts.</p>
+<h3 id="application-security-awareness">Application Security Awareness<a class="headerlink" href="#application-security-awareness" title="Permanent link">&para;</a></h3>
+<p>Writing secure code is a professional responsibility. Perl applications face the same security threats as any web-facing software, plus some language-specific concerns.</p>
+<p><strong>Cross-Site Scripting (XSS)</strong>: Any user-supplied data rendered in HTML must be escaped. Perl web frameworks like Mojolicious auto-escape template variables by default, but raw output (using <code>&lt;%==</code> or <code>b()</code>) bypasses this protection. Always treat user input as untrusted.</p>
+<p><strong>SQL Injection</strong>: Never interpolate variables directly into SQL queries. Use <a href="https://metacpan.org/pod/DBI"><strong>DBI</strong></a> placeholders instead:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># DANGEROUS - SQL injection vulnerability</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">my</span><span class="w"> </span><span class="nv">$sth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$dbh</span><span class="o">-&gt;</span><span class="n">prepare</span><span class="p">(</span><span class="s">&quot;SELECT * FROM users WHERE name = &#39;$name&#39;&quot;</span><span class="p">);</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># SAFE - parameterized query</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">my</span><span class="w"> </span><span class="nv">$sth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$dbh</span><span class="o">-&gt;</span><span class="n">prepare</span><span class="p">(</span><span class="s">&quot;SELECT * FROM users WHERE name = ?&quot;</span><span class="p">);</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nv">$sth</span><span class="o">-&gt;</span><span class="n">execute</span><span class="p">(</span><span class="nv">$name</span><span class="p">);</span>
+</span></code></pre></div>
+<p><strong>Taint mode</strong>: Running Perl with the <code>-T</code> flag enables <a href="https://perldoc.perl.org/perlsec"><strong>taint checking</strong></a>, which tracks data that came from outside the program (user input, environment variables, file reads) and prevents it from being used in system calls, file operations, or database queries until it's been explicitly validated through a regex match.</p>
+<p><strong>Input validation</strong>: Validate all external data at system boundaries - command-line arguments, form submissions, API payloads, file uploads. Reject invalid input early rather than trying to sanitize it later.</p>
+<h3 id="additional-architecture-concepts">Additional Architecture Concepts<a class="headerlink" href="#additional-architecture-concepts" title="Permanent link">&para;</a></h3>
+<p>As your applications grow beyond single scripts, architectural patterns become important for maintainability and scalability.</p>
+<p><strong>SOLID principles</strong> apply to Perl code just as they do to Java or Python. The most relevant for Perl development: <strong>Single Responsibility</strong> (each module does one thing), <strong>Open/Closed</strong> (extend behavior through composition, not modification), and <strong>Dependency Inversion</strong> (depend on interfaces, not implementations).</p>
+<p><strong>Caching</strong> reduces repeated work. <a href="https://metacpan.org/pod/CHI"><strong>CHI</strong></a> provides a unified caching interface with backends for memory, file, <a href="https://redis.io/"><strong>Redis</strong></a>, and Memcached. Cache database query results, API responses, or expensive computations.</p>
+<p><strong>Message queues</strong> decouple producers from consumers in distributed systems. Perl integrates with <a href="https://www.rabbitmq.com/"><strong>RabbitMQ</strong></a> (via <code>Net::AMQP::RabbitMQ</code>), Redis pub/sub, and job queue systems like <a href="https://metacpan.org/pod/Minion"><strong>Minion</strong></a> (built into Mojolicious).</p>
+<p><strong>Full-text search</strong> engines like <a href="https://www.elastic.co/elasticsearch"><strong>Elasticsearch</strong></a> or <a href="http://sphinxsearch.com/"><strong>Sphinx</strong></a> handle search queries that SQL <code>LIKE</code> clauses cannot scale to. Perl clients exist for both, and Elasticsearch is increasingly the standard for log analysis and search features.</p>
+<hr />
+<h2 id="the-learning-journey">The Learning Journey<a class="headerlink" href="#the-learning-journey" title="Permanent link">&para;</a></h2>
+<p>The roadmap above covers a lot of ground. This diagram shows how the phases connect and where the dedicated guides in this course fit.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Phase 1: Foundations
+        A[Unix &amp; Linux Basics] --&gt; B[Command Line Proficiency]
+        B --&gt; C[Editor Mastery]
+    end
+
+    subgraph Phase 2: Perl Fundamentals
+        D[Scalars, Strings, Numbers] --&gt; E[Arrays, Hashes, Lists]
+        E --&gt; F[Control Flow]
+        F --&gt; G[Regular Expressions]
+        G --&gt; H[Subroutines &amp; References]
+        H --&gt; I[File I/O &amp; System]
+    end
+
+    subgraph Phase 3: Professional Practice
+        J[Modules &amp; CPAN] --&gt; K[Object-Oriented Perl]
+        K --&gt; L[Error Handling &amp; Debugging]
+        L --&gt; M[Testing]
+    end
+
+    subgraph Phase 4: Applied Perl
+        N[Text Processing &amp; One-Liners]
+        O[Networking &amp; Daemons]
+        P[Web Frameworks &amp; APIs]
+    end
+
+    C --&gt; D
+    I --&gt; J
+    M --&gt; N
+    M --&gt; O
+    M --&gt; P</code></pre>
+<h3 id="the-cpan-ecosystem">The CPAN Ecosystem<a class="headerlink" href="#the-cpan-ecosystem" title="Permanent link">&para;</a></h3>
+<p>CPAN is central to productive Perl development. Understanding how its components fit together saves time when you need to find, evaluate, and install modules.</p>
+<pre class="mermaid"><code>flowchart TD
+    A[Your Perl Script] --&gt;|use Module| B[Installed Modules]
+    B --&gt;|installed by| C[cpanm / cpan]
+    C --&gt;|downloads from| D[CPAN Mirror Network]
+    D --&gt;|mirrors| E[PAUSE Upload Server]
+    F[Module Author] --&gt;|uploads to| E
+    G[MetaCPAN] --&gt;|indexes| D
+    G --&gt;|shows| H[Documentation, Ratings, Dependencies]
+    C --&gt;|resolves| I[Dependency Chain]
+    I --&gt;|may require| J[System Libraries via apt/dnf]</code></pre>
+<p><a href="https://pause.perl.org/"><strong>PAUSE</strong></a> is where authors upload distributions. <a href="https://metacpan.org/"><strong>MetaCPAN</strong></a> is the search and documentation interface. <code>cpanm</code> handles downloading, dependency resolution, building, testing, and installing. When a CPAN module needs a C library (like OpenSSL), you install that through your system package manager first.</p>
+<hr />
+<h2 id="setting-up-your-perl-environment">Setting Up Your Perl Environment<a class="headerlink" href="#setting-up-your-perl-environment" title="Permanent link">&para;</a></h2>
+<p>Before starting the course exercises, verify your Perl installation and set up the essential tools.</p>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Setting Up a Perl Dev Environment&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;perl -v | head -2&quot;, &quot;output&quot;: &quot;This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-linux-gnu-thread-multi&quot;, &quot;narration&quot;: &quot;Check your Perl version. Any version 5.16 or later works for this course. Most Linux distributions include Perl by default.&quot;}, {&quot;command&quot;: &quot;which cpanm || echo &#39;not installed&#39;&quot;, &quot;output&quot;: &quot;/usr/local/bin/cpanm&quot;, &quot;narration&quot;: &quot;cpanm (App::cpanminus) is the preferred module installer. If not installed, run: curl -L https://cpanmin.us | perl - App::cpanminus&quot;}, {&quot;command&quot;: &quot;cpanm --local-lib ~/perl5 Try::Tiny&quot;, &quot;output&quot;: &quot;--> Working on Try::Tiny\nFetching http://www.cpan.org/authors/id/E/ET/ETHER/Try-Tiny-0.31.tar.gz ... OK\nConfiguring Try-Tiny-0.31 ... OK\nBuilding and testing Try-Tiny-0.31 ... OK\nSuccessfully installed Try-Tiny-0.31&quot;, &quot;narration&quot;: &quot;Install modules to a local directory with --local-lib. This avoids needing root access and keeps your system Perl clean.&quot;}, {&quot;command&quot;: &quot;perl -e &#39;use strict; use warnings; print \&quot;Ready to learn Perl!\\n\&quot;;&#39;&quot;, &quot;output&quot;: &quot;Ready to learn Perl!&quot;, &quot;narration&quot;: &quot;If this prints without errors, your environment is working. Every script in this course starts with use strict and use warnings.&quot;}]}"><noscript><p><strong>Setting Up a Perl Dev Environment</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Create Your Learning Tracker&quot;, &quot;difficulty&quot;: &quot;beginner&quot;, &quot;scenario&quot;: &quot;Build a simple Perl script that tracks your progress through this roadmap.\n\nThe script should:\n1. Define the three phases as an array of hash references\n2. Each phase has a name, status (not started/in progress/complete), and a list of topics\n3. Print a formatted summary showing each phase and its status\n4. Calculate and print overall completion percentage\n\nThis exercise combines scalars, arrays, hashes, and loops - a preview of\nthe core language concepts covered in the next few guides.\n&quot;, &quot;hints&quot;: [&quot;Create a phase: my $phase1 = { name => &#39;Foundations&#39;, status => &#39;complete&#39;, topics => [&#39;Unix&#39;, &#39;CLI&#39;, &#39;Editor&#39;] };&quot;, &quot;Store phases in an array: my @phases = ($phase1, $phase2, $phase3);&quot;, &quot;Loop with: for my $phase (@phases) { print $phase->{name}; }&quot;, &quot;Count completed phases: my $done = grep { $_->{status} eq &#39;complete&#39; } @phases;&quot;], &quot;solution&quot;: &quot;```perl\nuse strict;\nuse warnings;\n\nmy @phases = (\n    { name => &#39;Phase 1: Foundations&#39;,\n      status => &#39;complete&#39;,\n      topics => [&#39;Unix Basics&#39;, &#39;Command Line&#39;, &#39;Editor&#39;] },\n    { name => &#39;Phase 2: Perl Fundamentals&#39;,\n      status => &#39;in progress&#39;,\n      topics => [&#39;Scalars&#39;, &#39;Arrays/Hashes&#39;, &#39;Control Flow&#39;, &#39;Regex&#39;, &#39;Subroutines&#39;, &#39;File I/O&#39;] },\n    { name => &#39;Phase 3: Professional Practice&#39;,\n      status => &#39;not started&#39;,\n      topics => [&#39;Modules/CPAN&#39;, &#39;OOP&#39;, &#39;Debugging&#39;, &#39;Testing&#39;] },\n);\n\nmy $complete = 0;\nfor my $phase (@phases) {\n    my $marker = $phase->{status} eq &#39;complete&#39;    ? &#39;[x]&#39;\n               : $phase->{status} eq &#39;in progress&#39; ? &#39;[~]&#39;\n               :                                     &#39;[ ]&#39;;\n    printf \&quot;%s %s (%s)\\n\&quot;, $marker, $phase->{name}, $phase->{status};\n    for my $topic (@{ $phase->{topics} }) {\n        print \&quot;    - $topic\\n\&quot;;\n    }\n    $complete++ if $phase->{status} eq &#39;complete&#39;;\n}\n\nmy $pct = int($complete / scalar(@phases) * 100);\nprint \&quot;\\nProgress: $complete/\&quot; . scalar(@phases) . \&quot; phases ($pct%)\\n\&quot;;\n```\n\nThis script previews several concepts covered in upcoming guides:\narray references (`$phase->{topics}`), the arrow operator (`->`),\nhash access (`$phase->{name}`), and `grep` for counting.&quot;}"><noscript><p><strong>Create Your Learning Tracker</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="bibliography">Bibliography<a class="headerlink" href="#bibliography" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Barrett, D. J. <em>Linux Pocket Guide</em></li>
+<li>Conway, D. <em>Object Oriented Perl</em></li>
+<li>Feynman, R. P. <em>Surely You're Joking Mr. Feynman!</em></li>
+<li>Langworth, I. &amp; chromatic. <em>Perl Testing: A Developer's Notebook</em></li>
+</ul>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://perldoc.perl.org/">Perl Official Documentation</a> - comprehensive Perl language reference</li>
+<li><a href="https://www.cpan.org/">CPAN</a> - Comprehensive Perl Archive Network</li>
+<li><a href="https://www.perl.org/">Perl.org</a> - official Perl community site</li>
+<li><a href="https://metacpan.org/">MetaCPAN</a> - modern CPAN search and documentation</li>
+<li><a href="https://www.perlmonks.org/">PerlMonks</a> - community discussion and Q&amp;A</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../web-frameworks-apis/">Web Frameworks and APIs</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+Developer%20Roadmap" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

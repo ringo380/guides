@@ -1,0 +1,4261 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Linux%20Essentials/networking/">
+      
+      
+        <link rel="prev" href="../disk-and-filesystem/">
+      
+      
+        <link rel="next" href="../system-information/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>Networking - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Networking - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Linux%20Essentials/networking.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Linux%20Essentials/networking/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Networking - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Linux%20Essentials/networking.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#networking" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Networking
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Dev%20Zero/Perl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#connectivity-and-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connectivity and Diagnostics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectivity and Diagnostics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traceroute-and-tracepath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        traceroute and tracepath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mtr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mtr
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Transfer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Transfer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#curl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        curl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        wget
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote Access
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remote Access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ssh
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rsync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rsync
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Inspection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Network Inspection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ss
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ip
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#netstat-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        netstat (Legacy)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS Tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DNS Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nslookup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nslookup
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#miscellaneous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Miscellaneous
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Miscellaneous">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hostname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hostname
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nc-netcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nc (netcat)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Dev%20Zero/Perl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#connectivity-and-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connectivity and Diagnostics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectivity and Diagnostics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traceroute-and-tracepath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        traceroute and tracepath
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mtr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mtr
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Transfer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Transfer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#curl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        curl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        wget
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote Access
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remote Access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ssh
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scp
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rsync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rsync
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Inspection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Network Inspection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ss
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ip
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#netstat-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        netstat (Legacy)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dns-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS Tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DNS Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nslookup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nslookup
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#miscellaneous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Miscellaneous
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Miscellaneous">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hostname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hostname
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nc-netcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nc (netcat)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Linux Essentials/networking.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="networking">Networking<a class="headerlink" href="#networking" title="Permanent link">&para;</a></h1>
+<p>This guide covers the essential networking tools for diagnostics, data transfer, remote access, and network inspection from the command line.</p>
+<hr />
+<h2 id="connectivity-and-diagnostics">Connectivity and Diagnostics<a class="headerlink" href="#connectivity-and-diagnostics" title="Permanent link">&para;</a></h2>
+<h3 id="ping">ping<a class="headerlink" href="#ping" title="Permanent link">&para;</a></h3>
+<p><strong><code>ping</code></strong> sends ICMP echo requests to test whether a host is reachable and measure round-trip time.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ping<span class="w"> </span>google.com<span class="w">               </span><span class="c1"># ping until you Ctrl-C</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">5</span><span class="w"> </span>google.com<span class="w">          </span><span class="c1"># send 5 packets and stop</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>ping<span class="w"> </span>-i<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span>google.com<span class="w">        </span><span class="c1"># ping every 0.5 seconds (default is 1)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>ping<span class="w"> </span>-W<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">192</span>.168.1.1<span class="w">         </span><span class="c1"># 2-second timeout per packet</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>sudo<span class="w"> </span>ping<span class="w"> </span>-f<span class="w"> </span>google.com<span class="w">       </span><span class="c1"># flood ping (requires root, sends as fast as possible)</span>
+</span></code></pre></div>
+<p>Reading the output:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>64 bytes from 142.250.80.46: icmp_seq=1 ttl=118 time=12.3 ms
+</span></code></pre></div>
+<ul>
+<li><strong>bytes</strong> - packet size</li>
+<li><strong>icmp_seq</strong> - sequence number (watch for gaps indicating packet loss)</li>
+<li><strong>ttl</strong> - time to live (decremented by each router hop)</li>
+<li><strong>time</strong> - round-trip latency</li>
+</ul>
+<p>The summary at the end shows packet loss percentage and min/avg/max/stddev latency.</p>
+<div class="admonition tip">
+<p class="admonition-title">TTL starting values hint at the remote OS</p>
+<p>A TTL of <strong>64</strong> usually means Linux or macOS, <strong>128</strong> means Windows, and <strong>255</strong> means a network device (router/switch). Each hop decrements TTL by 1, so a received TTL of 118 likely means a Windows host 10 hops away (128 - 10 = 118). This is a quick heuristic, not a guarantee.</p>
+</div>
+<p>Common <strong>TTL</strong> starting values can hint at the remote OS: <strong>64</strong> usually means Linux or macOS, <strong>128</strong> means Windows, and <strong>255</strong> means a network device (router, switch). Each router hop decrements TTL by 1, so a TTL of 118 likely means a Windows host 10 hops away (128 - 118 = 10). The <strong>stddev</strong> (standard deviation) in the summary indicates latency consistency - a low stddev means a stable connection, while a high stddev suggests network congestion or routing instability.</p>
+<h3 id="traceroute-and-tracepath">traceroute and tracepath<a class="headerlink" href="#traceroute-and-tracepath" title="Permanent link">&para;</a></h3>
+<p><strong><code>traceroute</code></strong> shows the path packets take to reach a host, listing each router hop:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>traceroute<span class="w"> </span>google.com
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>traceroute<span class="w"> </span>-n<span class="w"> </span>google.com<span class="w">      </span><span class="c1"># don&#39;t resolve hostnames (faster)</span>
+</span></code></pre></div>
+<p>Each line shows a hop number, the router address, and three round-trip times. Stars (<code>* * *</code>) mean the router didn't respond (common with routers that block ICMP).</p>
+<p><strong><code>tracepath</code></strong> is similar but doesn't require root and can discover MTU:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>tracepath<span class="w"> </span>google.com
+</span></code></pre></div>
+<p><strong>How traceroute works:</strong> it sends packets with incrementally increasing <strong>TTL</strong> (Time To Live) values. The first packet has TTL=1. The first router decrements it to 0, discards the packet, and sends back an ICMP "Time Exceeded" message - revealing its address. The next packet has TTL=2, making it one hop further before the same thing happens. This continues until the packet reaches the destination. Each hop shows three round-trip times because traceroute sends three probes per TTL value.</p>
+<div class="admonition warning">
+<p class="admonition-title">Stars in traceroute don't always mean a problem</p>
+<p>Many routers are configured to <strong>not respond</strong> to ICMP or UDP probes, so <code>* * *</code> at a hop just means the router is silent - not that packets are being dropped. Only worry if <em>all subsequent hops</em> also show stars (indicating a true block) or if latency jumps sharply and stays high past a specific hop.</p>
+</div>
+<p><strong>Reading the output:</strong> stars (<code>* * *</code>) at a hop don't necessarily mean a problem - many routers are configured to not respond to these probes. A sudden jump in latency at a specific hop suggests congestion at that point. If latency increases at one hop but <em>stays high</em> for all subsequent hops, the bottleneck is at that hop. If latency spikes at one hop but returns to normal at the next, the router is just slow at responding to ICMP (not a real bottleneck).</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;In traceroute output, what does the TTL (Time to Live) field actually count?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Seconds until the packet expires&quot;, &quot;feedback&quot;: &quot;Despite the name &#39;Time to Live&#39;, TTL counts hops (routers), not seconds. Each router decrements the TTL by 1.&quot;}, {&quot;text&quot;: &quot;The number of router hops remaining before the packet is discarded&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Each router decrements the TTL by 1. When it reaches 0, the router drops the packet and sends an ICMP Time Exceeded message back. traceroute exploits this by sending packets with incrementing TTLs to discover each hop.&quot;}, {&quot;text&quot;: &quot;The maximum bandwidth available on the route&quot;, &quot;feedback&quot;: &quot;TTL has nothing to do with bandwidth. It counts how many more routers the packet can traverse before being dropped.&quot;}, {&quot;text&quot;: &quot;The number of times the packet has been retransmitted&quot;, &quot;feedback&quot;: &quot;TTL doesn&#39;t track retransmissions. It&#39;s decremented by each router, and the packet is dropped when it reaches 0.&quot;}]}"><noscript><p><strong>In traceroute output, what does the TTL (Time to Live) field actually count?</strong> (requires JavaScript)</p></noscript></div>
+<h3 id="mtr">mtr<a class="headerlink" href="#mtr" title="Permanent link">&para;</a></h3>
+<p><a href="https://www.bitwizard.nl/mtr/"><strong><code>mtr</code></strong></a> combines <code>ping</code> and <code>traceroute</code> into a continuous display:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>mtr<span class="w"> </span>google.com<span class="w">                </span><span class="c1"># live updating view</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>mtr<span class="w"> </span>-n<span class="w"> </span>google.com<span class="w">             </span><span class="c1"># don&#39;t resolve hostnames</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>mtr<span class="w"> </span>-r<span class="w"> </span>-c<span class="w"> </span><span class="m">100</span><span class="w"> </span>google.com<span class="w">     </span><span class="c1"># report mode: send 100 packets and print summary</span>
+</span></code></pre></div>
+<p><code>mtr</code> is excellent for diagnosing intermittent packet loss at specific hops.</p>
+<hr />
+<h2 id="data-transfer">Data Transfer<a class="headerlink" href="#data-transfer" title="Permanent link">&para;</a></h2>
+<h3 id="curl">curl<a class="headerlink" href="#curl" title="Permanent link">&para;</a></h3>
+<p><a href="https://curl.se/docs/"><strong><code>curl</code></strong></a> transfers data to or from a server. It supports HTTP, HTTPS, FTP, and many other protocols.</p>
+<p><strong>Basic requests:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>https://example.com<span class="w">                    </span><span class="c1"># GET request, output to terminal</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>curl<span class="w"> </span>-o<span class="w"> </span>file.html<span class="w"> </span>https://example.com<span class="w">       </span><span class="c1"># save to file</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>curl<span class="w"> </span>-O<span class="w"> </span>https://example.com/file.tar.gz<span class="w">     </span><span class="c1"># save with original filename</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://api.example.com/data<span class="w">        </span><span class="c1"># silent mode (no progress bar)</span>
+</span></code></pre></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is the difference between curl -O and curl -o filename?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;-O is for HTTP; -o is for FTP&quot;, &quot;feedback&quot;: &quot;Both flags work with any protocol curl supports. The difference is about how the output filename is determined.&quot;}, {&quot;text&quot;: &quot;-O saves with the remote filename; -o lets you specify a local filename&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! -O (uppercase) uses the filename from the URL (e.g., /file.tar.gz saves as file.tar.gz). -o (lowercase) lets you choose any local filename. Use -o when the URL doesn&#39;t have a meaningful filename.&quot;}, {&quot;text&quot;: &quot;-O overwrites existing files; -o appends to them&quot;, &quot;feedback&quot;: &quot;Both flags will overwrite by default. The difference is whether the filename comes from the URL or from your argument.&quot;}, {&quot;text&quot;: &quot;-o outputs to stdout; -O outputs to a file&quot;, &quot;feedback&quot;: &quot;Without either flag, curl outputs to stdout. Both -O and -o save to files - the difference is how the filename is chosen.&quot;}]}"><noscript><p><strong>What is the difference between curl -O and curl -o filename?</strong> (requires JavaScript)</p></noscript></div>
+<p><strong>HTTP methods and headers:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api.example.com/users<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;Ryan&quot;, &quot;email&quot;: &quot;ryan@example.com&quot;}&#39;</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>https://api.example.com/users/1<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;Updated&quot;}&#39;</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>https://api.example.com/users/1
+</span></code></pre></div>
+<p><strong>Authentication:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>curl<span class="w"> </span>-u<span class="w"> </span>username:password<span class="w"> </span>https://api.example.com<span class="w">     </span><span class="c1"># basic auth</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer TOKEN&quot;</span><span class="w"> </span>https://api.example.com<span class="w">   </span><span class="c1"># bearer token</span>
+</span></code></pre></div>
+<p><strong>Following redirects:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>curl<span class="w"> </span>-L<span class="w"> </span>https://example.com<span class="w">      </span><span class="c1"># follow HTTP redirects</span>
+</span></code></pre></div>
+<p><strong>Verbose and debugging:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>https://example.com<span class="w">      </span><span class="c1"># verbose output (headers, TLS details)</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>curl<span class="w"> </span>-I<span class="w"> </span>https://example.com<span class="w">      </span><span class="c1"># HEAD request (headers only)</span>
+</span></code></pre></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;curl Verbose Request/Response&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;curl -v https://httpbin.org/get 2>&amp;1 | head -20&quot;, &quot;output&quot;: &quot;*   Trying 54.243.24.41:443...\n* Connected to httpbin.org (54.243.24.41) port 443\n* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384\n> GET /get HTTP/1.1\n> Host: httpbin.org\n> User-Agent: curl/8.4.0\n> Accept: */*\n>\n< HTTP/1.1 200 OK\n< Content-Type: application/json\n< Content-Length: 256\n&quot;, &quot;narration&quot;: &quot;-v shows the full conversation. Lines with > are what curl sent (request). Lines with < are what the server returned (response headers). * lines are connection info.&quot;}, {&quot;command&quot;: &quot;curl -s -o /dev/null -w &#39;%{http_code}&#39; https://httpbin.org/status/404&quot;, &quot;output&quot;: &quot;404&quot;, &quot;narration&quot;: &quot;-s is silent (no progress), -o /dev/null discards the body, -w prints just the status code. Great for checking if a URL is up without the noise.&quot;}, {&quot;command&quot;: &quot;curl -s https://httpbin.org/headers -H &#39;X-Custom: hello&#39; | head -5&quot;, &quot;output&quot;: &quot;{\n  \&quot;headers\&quot;: {\n    \&quot;Host\&quot;: \&quot;httpbin.org\&quot;,\n    \&quot;X-Custom\&quot;: \&quot;hello\&quot;,\n    \&quot;User-Agent\&quot;: \&quot;curl/8.4.0\&quot;\n&quot;, &quot;narration&quot;: &quot;-H adds custom headers. httpbin.org/headers echoes back what it received, so you can verify your headers are sent correctly.&quot;}]}"><noscript><p><strong>curl Verbose Request/Response</strong> (requires JavaScript)</p></noscript></div>
+<div class="admonition tip">
+<p class="admonition-title">curl -w for custom output formats</p>
+<p>The <strong><code>-w</code></strong> (write-out) flag lets you extract specific response data: <code>curl -s -o /dev/null -w '%{http_code}'</code> gets just the status code, <code>%{time_total}</code> gives request duration, and <code>%{size_download}</code> gives response size. Combine with <code>-s -o /dev/null</code> to suppress all other output.</p>
+</div>
+<p><strong>HTTP method semantics</strong> in brief: <strong>GET</strong> reads a resource without changing anything, <strong>POST</strong> creates a new resource or triggers an action, <strong>PUT</strong> replaces an entire resource with the provided data, <strong>PATCH</strong> updates specific fields of a resource, and <strong>DELETE</strong> removes a resource. When debugging failed requests, start with <code>curl -v</code> to see the full request and response headers - the status code and response body usually tell you what went wrong. Common issues: <code>401</code> means your authentication is wrong, <code>403</code> means the server understood your credentials but you lack permission, <code>404</code> means the URL is wrong, and <code>422</code> means the request body doesn't match what the API expects.</p>
+<p><strong>Downloading files:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>curl<span class="w"> </span>-O<span class="w"> </span>-L<span class="w"> </span>https://example.com/archive.tar.gz<span class="w">        </span><span class="c1"># follow redirects and save</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>curl<span class="w"> </span>-C<span class="w"> </span>-<span class="w"> </span>-O<span class="w"> </span>https://example.com/large.iso<span class="w">            </span><span class="c1"># resume interrupted download</span>
+</span></code></pre></div>
+<div class="interactive-command-builder" data-config="{&quot;base&quot;: &quot;curl&quot;, &quot;description&quot;: &quot;Build a curl command for HTTP requests&quot;, &quot;options&quot;: [{&quot;flag&quot;: &quot;-X&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;HTTP method&quot;, &quot;explanation&quot;: &quot;The HTTP request method to use&quot;, &quot;choices&quot;: [[&quot;GET&quot;, &quot;GET (default)&quot;], [&quot;POST&quot;, &quot;POST&quot;], [&quot;PUT&quot;, &quot;PUT&quot;], [&quot;DELETE&quot;, &quot;DELETE&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Headers&quot;, &quot;explanation&quot;: &quot;Common request headers to include&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;None&quot;], [&quot;-H &#39;Content-Type: application/json&#39;&quot;, &quot;JSON content type&quot;], [&quot;-H &#39;Authorization: Bearer TOKEN&#39;&quot;, &quot;Bearer auth&quot;], [&quot;-H &#39;Accept: application/json&#39;&quot;, &quot;Accept JSON&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Data/body&quot;, &quot;explanation&quot;: &quot;Request body for POST/PUT requests&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;No body&quot;], [&quot;-d &#39;{\&quot;key\&quot;: \&quot;value\&quot;}&#39;&quot;, &quot;JSON body&quot;], [&quot;-d @data.json&quot;, &quot;Body from file&quot;], [&quot;--data-urlencode &#39;key=value&#39;&quot;, &quot;Form data&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Output options&quot;, &quot;explanation&quot;: &quot;How to handle the response&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;Print to stdout&quot;], [&quot;-o output.json&quot;, &quot;Save to file&quot;], [&quot;-v&quot;, &quot;Verbose (show headers)&quot;], [&quot;-s -w &#39;\\n%{http_code}\\n&#39;&quot;, &quot;Silent + status code&quot;]]}]}"><noscript><p><strong>Command Builder</strong> (requires JavaScript)</p></noscript></div>
+<h3 id="wget">wget<a class="headerlink" href="#wget" title="Permanent link">&para;</a></h3>
+<p><a href="https://www.gnu.org/software/wget/manual/"><strong><code>wget</code></strong></a> is designed for downloading files, including recursive downloads.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>wget<span class="w"> </span>https://example.com/file.tar.gz<span class="w">           </span><span class="c1"># download a file</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>wget<span class="w"> </span>-q<span class="w"> </span>https://example.com/file.tar.gz<span class="w">        </span><span class="c1"># quiet mode</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>wget<span class="w"> </span>-c<span class="w"> </span>https://example.com/large.iso<span class="w">          </span><span class="c1"># resume interrupted download</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>wget<span class="w"> </span>-O<span class="w"> </span>output.txt<span class="w"> </span>https://example.com/data<span class="w">    </span><span class="c1"># save with specific name</span>
+</span></code></pre></div>
+<p><strong>Recursive downloads:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>wget<span class="w"> </span>-r<span class="w"> </span>-l<span class="w"> </span><span class="m">2</span><span class="w"> </span>https://example.com<span class="w">               </span><span class="c1"># recursive, 2 levels deep</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>wget<span class="w"> </span>-m<span class="w"> </span>https://example.com<span class="w">                     </span><span class="c1"># mirror a site</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>wget<span class="w"> </span>-r<span class="w"> </span>--no-parent<span class="w"> </span>https://example.com/docs/<span class="w">   </span><span class="c1"># don&#39;t go above starting directory</span>
+</span></code></pre></div>
+<p><strong>Use <code>curl</code> or <code>wget</code>?</strong> <code>curl</code> is better for API interaction and scripting with HTTP methods. <code>wget</code> is better for downloading files, especially recursive downloads and mirroring.</p>
+<hr />
+<h2 id="remote-access">Remote Access<a class="headerlink" href="#remote-access" title="Permanent link">&para;</a></h2>
+<h3 id="ssh">ssh<a class="headerlink" href="#ssh" title="Permanent link">&para;</a></h3>
+<p><a href="https://www.openssh.com/manual.html"><strong><code>ssh</code></strong></a> (Secure Shell) provides encrypted remote access to other machines.</p>
+<p><strong>Basic connection:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>ssh<span class="w"> </span>user@hostname
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>ssh<span class="w"> </span>user@192.168.1.100
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">2222</span><span class="w"> </span>user@hostname<span class="w">      </span><span class="c1"># non-standard port</span>
+</span></code></pre></div>
+<p><strong>Key-based authentication:</strong></p>
+<p>Password authentication is fine for personal use, but key-based auth is more secure and allows passwordless login.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Generate a key pair (if you don&#39;t have one)</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-C<span class="w"> </span><span class="s2">&quot;ryan@workstation&quot;</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># Copy your public key to the server</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>ssh-copy-id<span class="w"> </span>user@hostname
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="c1"># Now connect without a password</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>ssh<span class="w"> </span>user@hostname
+</span></code></pre></div>
+<p><strong>SSH config file (<code>~/.ssh/config</code>):</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Host web
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>    HostName 192.168.1.100
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>    User deploy
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>    Port 2222
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>    IdentityFile ~/.ssh/deploy_key
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>Host db
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>    HostName 10.0.0.50
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>    User admin
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>    ProxyJump web
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>Host *.internal
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>    User ryan
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>    IdentityFile ~/.ssh/internal_key
+</span></code></pre></div>
+<p>With this config, <code>ssh web</code> connects to 192.168.1.100 as user "deploy" on port 2222.</p>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Create an SSH Config for Multiple Hosts&quot;, &quot;difficulty&quot;: &quot;beginner&quot;, &quot;scenario&quot;: &quot;You regularly SSH into three servers with different settings:\n\n- **prod**: user `deploy`, host `192.168.1.100`, port 22, identity file `~/.ssh/prod_key`\n- **staging**: user `deploy`, host `192.168.1.101`, port 2222\n- **dev**: user `yourname`, host `dev.example.com`, port 22, forward your SSH agent\n\nCreate an `~/.ssh/config` file so you can connect with just `ssh prod`, `ssh staging`, or `ssh dev`.\n&quot;, &quot;hints&quot;: [&quot;Each host block starts with Host followed by the alias you want to use&quot;, &quot;Use HostName for the actual address, User for the username, Port for non-standard ports&quot;, &quot;IdentityFile specifies which key to use, ForwardAgent yes enables agent forwarding&quot;, &quot;You can use Host * for settings that apply to all connections&quot;], &quot;solution&quot;: &quot;```\nHost prod\n    HostName 192.168.1.100\n    User deploy\n    IdentityFile ~/.ssh/prod_key\n\nHost staging\n    HostName 192.168.1.101\n    User deploy\n    Port 2222\n\nHost dev\n    HostName dev.example.com\n    User yourname\n    ForwardAgent yes\n\nHost *\n    ServerAliveInterval 60\n    ServerAliveCountMax 3\n```\n\nThe `Host *` block applies to all connections - here it sends keepalive packets\nevery 60 seconds to prevent idle disconnections. Now `ssh prod` replaces\n`ssh -i ~/.ssh/prod_key deploy@192.168.1.100`.&quot;}"><noscript><p><strong>Create an SSH Config for Multiple Hosts</strong> (requires JavaScript)</p></noscript></div>
+<p><strong>Port forwarding:</strong></p>
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/ssh-port-forwarding.svg" alt="SSH local port forwarding diagram showing localhost:3307 tunneled through SSH to remote server localhost:3306 MySQL">
+</div>
+
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Local: forward localhost:3307 to port 3306 on remote_host&#39;s end</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>ssh<span class="w"> </span>-L<span class="w"> </span><span class="m">3307</span>:localhost:3306<span class="w"> </span>user@remote_host
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># Remote: make your localhost:8080 accessible on remote_host:9090</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>ssh<span class="w"> </span>-R<span class="w"> </span><span class="m">9090</span>:localhost:8080<span class="w"> </span>user@remote_host
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="c1"># Dynamic: create a SOCKS proxy on localhost:1080</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>ssh<span class="w"> </span>-D<span class="w"> </span><span class="m">1080</span><span class="w"> </span>user@remote_host
+</span></code></pre></div>
+<p><strong>Jump hosts:</strong></p>
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/ssh-jump-host.svg" alt="SSH jump host topology showing your machine connecting through a bastion host to reach an internal server behind a firewall">
+</div>
+
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>ssh<span class="w"> </span>-J<span class="w"> </span>jumphost<span class="w"> </span>user@internal_server
+</span></code></pre></div>
+<p>This tunnels through <code>jumphost</code> to reach <code>internal_server</code>. Useful for accessing machines behind a firewall.</p>
+<p><strong>Agent forwarding:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>ssh<span class="w"> </span>-A<span class="w"> </span>user@hostname<span class="w">     </span><span class="c1"># forward your SSH agent (use your local keys on the remote)</span>
+</span></code></pre></div>
+<p>Only use agent forwarding with trusted hosts - a compromised server could use your forwarded agent.</p>
+<div class="admonition danger">
+<p class="admonition-title">Agent forwarding on untrusted hosts is a security risk</p>
+<p>When you use <strong><code>ssh -A</code></strong>, the remote server can use your local SSH keys to authenticate to <em>other</em> servers as long as your session is active. A compromised host's root user could hijack your forwarded agent socket to access any server your keys unlock. Only forward your agent to hosts you fully trust, and prefer <strong><code>ProxyJump</code></strong> (<code>ssh -J</code>) for reaching internal hosts through bastion servers instead.</p>
+</div>
+<h3 id="scp">scp<a class="headerlink" href="#scp" title="Permanent link">&para;</a></h3>
+<p><strong><code>scp</code></strong> copies files over SSH:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>scp<span class="w"> </span>file.txt<span class="w"> </span>user@host:/remote/path/<span class="w">          </span><span class="c1"># upload</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>scp<span class="w"> </span>user@host:/remote/file.txt<span class="w"> </span>./local/<span class="w">       </span><span class="c1"># download</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>scp<span class="w"> </span>-r<span class="w"> </span>directory/<span class="w"> </span>user@host:/remote/path/<span class="w">     </span><span class="c1"># recursive (directories)</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>scp<span class="w"> </span>-P<span class="w"> </span><span class="m">2222</span><span class="w"> </span>file.txt<span class="w"> </span>user@host:/path/<span class="w">         </span><span class="c1"># non-standard port</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">scp is deprecated in favor of rsync and sftp</p>
+<p>The OpenSSH project has <strong>deprecated <code>scp</code></strong> because its protocol can't handle filenames with special characters safely and has limited features. Use <strong><code>rsync</code></strong> for file synchronization (it's faster for repeated transfers) or <strong><code>sftp</code></strong> for interactive file management. Both use SSH transport and are drop-in replacements for most <code>scp</code> use cases.</p>
+</div>
+<h3 id="rsync">rsync<a class="headerlink" href="#rsync" title="Permanent link">&para;</a></h3>
+<p><a href="https://rsync.samba.org/documentation.html"><strong><code>rsync</code></strong></a> is the preferred tool for copying files - it only transfers what's changed.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>rsync<span class="w"> </span>-av<span class="w"> </span>source/<span class="w"> </span>dest/<span class="w">                                </span><span class="c1"># local sync</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>rsync<span class="w"> </span>-av<span class="w"> </span>source/<span class="w"> </span>user@host:/remote/dest/<span class="w">              </span><span class="c1"># sync to remote</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>rsync<span class="w"> </span>-av<span class="w"> </span>user@host:/remote/source/<span class="w"> </span>./local/<span class="w">           </span><span class="c1"># sync from remote</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>rsync<span class="w"> </span>-av<span class="w"> </span>--delete<span class="w"> </span>source/<span class="w"> </span>dest/<span class="w">                       </span><span class="c1"># delete files in dest not in source</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>rsync<span class="w"> </span>-av<span class="w"> </span>--dry-run<span class="w"> </span>source/<span class="w"> </span>dest/<span class="w">                      </span><span class="c1"># preview what would happen</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>rsync<span class="w"> </span>-av<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">&#39;*.log&#39;</span><span class="w"> </span>--exclude<span class="o">=</span><span class="s1">&#39;.git&#39;</span><span class="w"> </span>source/<span class="w"> </span>dest/<span class="w">   </span><span class="c1"># exclude patterns</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>rsync<span class="w"> </span>-avz<span class="w"> </span>source/<span class="w"> </span>user@host:/dest/<span class="w">                    </span><span class="c1"># compress during transfer</span>
+</span></code></pre></div>
+<p>Common flags:
+| Flag | Meaning |
+|------|---------|
+| <code>-a</code> | Archive mode (preserves permissions, timestamps, symlinks, etc.) |
+| <code>-v</code> | Verbose |
+| <code>-z</code> | Compress during transfer |
+| <code>-n</code> / <code>--dry-run</code> | Show what would be done without doing it |
+| <code>--delete</code> | Remove files in destination that aren't in source |
+| <code>--exclude</code> | Skip matching patterns |
+| <code>-P</code> | Show progress and allow resuming |</p>
+<p>Note the trailing slash on source paths. <code>source/</code> means "the contents of source." <code>source</code> (no slash) means "the directory itself."</p>
+<div class="admonition warning">
+<p class="admonition-title">rsync trailing slash on source changes behavior</p>
+<p><code>rsync source/ dest/</code> copies the <strong>contents</strong> of <code>source</code> into <code>dest</code>. <code>rsync source dest/</code> copies the <strong>directory itself</strong>, creating <code>dest/source/</code>. This single character is the most common rsync mistake and can create unexpected nested directories or put files in the wrong location.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Use rsync --dry-run before large transfers</p>
+<p>Always preview with <strong><code>rsync -avn</code></strong> (or <code>--dry-run</code>) before running destructive operations, especially with <code>--delete</code>. The dry run shows exactly which files would be transferred, deleted, or skipped - catching mistakes before they cause data loss.</p>
+</div>
+<p>The trailing slash difference is the most common rsync mistake:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># WITH trailing slash: copies CONTENTS of source into dest</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>rsync<span class="w"> </span>-av<span class="w"> </span>photos/<span class="w"> </span>/backup/photos/
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="c1"># Result: /backup/photos/img1.jpg, /backup/photos/img2.jpg</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="c1"># WITHOUT trailing slash: copies the DIRECTORY ITSELF into dest</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>rsync<span class="w"> </span>-av<span class="w"> </span>photos<span class="w"> </span>/backup/photos/
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="c1"># Result: /backup/photos/photos/img1.jpg, /backup/photos/photos/img2.jpg</span>
+</span></code></pre></div>
+<p>When in doubt, use a trailing slash on the source and make sure the destination path ends where you want the files to land.</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is the difference between rsync -a source and rsync -a source/?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;The trailing slash means recursive mode&quot;, &quot;feedback&quot;: &quot;-a already includes recursive. The trailing slash controls whether the directory itself is copied or just its contents.&quot;}, {&quot;text&quot;: &quot;Without trailing slash, rsync copies the directory itself; with trailing slash, it copies only the contents&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! rsync source dest/ creates dest/source/... (the directory itself is copied). rsync source/ dest/ copies the files inside source directly into dest/. This is one of rsync&#39;s most common gotchas.&quot;}, {&quot;text&quot;: &quot;The trailing slash enables --delete behavior&quot;, &quot;feedback&quot;: &quot;--delete must be specified explicitly. The trailing slash only controls whether the source directory itself is included in the transfer.&quot;}, {&quot;text&quot;: &quot;There is no difference - the trailing slash is ignored&quot;, &quot;feedback&quot;: &quot;The trailing slash makes a significant difference in rsync! Without it, the directory is copied inside the destination. With it, only the contents are copied.&quot;}]}"><noscript><p><strong>What is the difference between rsync -a source and rsync -a source/?</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;rsync Dry Run Preview&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;rsync -avhn source/ dest/&quot;, &quot;output&quot;: &quot;sending incremental file list\n./\nconfig.yml\ndata/report.csv\nlogs/app.log\n\nsent 245 bytes  received 55 bytes  600.00 bytes/sec\ntotal size is 15,234  speedup is 50.78 (DRY RUN)\n&quot;, &quot;narration&quot;: &quot;-n (--dry-run) shows what would be transferred without actually doing it. Always preview with -n before large rsync operations.&quot;}, {&quot;command&quot;: &quot;rsync -avh --delete -n source/ dest/&quot;, &quot;output&quot;: &quot;sending incremental file list\ndeleting old-file.txt\nconfig.yml\ndata/report.csv\n\nsent 198 bytes  received 42 bytes  480.00 bytes/sec\ntotal size is 12,100  speedup is 50.42 (DRY RUN)\n&quot;, &quot;narration&quot;: &quot;--delete removes files in dest/ that don&#39;t exist in source/. The dry run shows &#39;deleting old-file.txt&#39; - you can verify before committing.&quot;}]}"><noscript><p><strong>rsync Dry Run Preview</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-command-builder" data-config="{&quot;base&quot;: &quot;rsync&quot;, &quot;description&quot;: &quot;Build an rsync command for file synchronization&quot;, &quot;options&quot;: [{&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Mode&quot;, &quot;explanation&quot;: &quot;Archive mode preserves permissions, timestamps, symlinks, etc.&quot;, &quot;choices&quot;: [[&quot;-avh&quot;, &quot;Archive + verbose + human-readable&quot;], [&quot;-avhz&quot;, &quot;Archive + verbose + compressed&quot;], [&quot;-avh --progress&quot;, &quot;Archive + progress display&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Delete behavior&quot;, &quot;explanation&quot;: &quot;Whether to remove files in destination that don&#39;t exist in source&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;Keep extra files in destination&quot;], [&quot;--delete&quot;, &quot;Delete extra files in destination&quot;], [&quot;--delete --backup --backup-dir=backup&quot;, &quot;Delete but backup first&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Exclusions&quot;, &quot;explanation&quot;: &quot;Files or patterns to skip&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;No exclusions&quot;], [&quot;--exclude=&#39;*.log&#39;&quot;, &quot;Exclude log files&quot;], [&quot;--exclude=&#39;.git&#39;&quot;, &quot;Exclude .git directory&quot;], [&quot;--exclude-from=&#39;exclude.txt&#39;&quot;, &quot;Exclude from file&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Dry run&quot;, &quot;explanation&quot;: &quot;Preview changes without executing them&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;Execute for real&quot;], [&quot;-n&quot;, &quot;Dry run (preview only)&quot;]]}]}"><noscript><p><strong>Command Builder</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="network-inspection">Network Inspection<a class="headerlink" href="#network-inspection" title="Permanent link">&para;</a></h2>
+<h3 id="ss">ss<a class="headerlink" href="#ss" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">ss -tlnp shows what's listening on which port</p>
+<p>The combination <strong><code>ss -tlnp</code></strong> is the go-to command for answering "what's running on this port?" - <strong><code>-t</code></strong> filters to TCP, <strong><code>-l</code></strong> shows only listening sockets, <strong><code>-n</code></strong> skips slow DNS resolution, and <strong><code>-p</code></strong> reveals the process name and PID. Memorize this one.</p>
+</div>
+<p><a href="https://wiki.linuxfoundation.org/networking/iproute2"><strong><code>ss</code></strong></a> (socket statistics) shows network connections. It replaces the older <code>netstat</code> command.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>ss<span class="w"> </span>-tlnp<span class="w">               </span><span class="c1"># TCP listening sockets with process info</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>ss<span class="w"> </span>-ulnp<span class="w">               </span><span class="c1"># UDP listening sockets with process info</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>ss<span class="w"> </span>-a<span class="w">                  </span><span class="c1"># all sockets</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>ss<span class="w"> </span>-s<span class="w">                  </span><span class="c1"># summary statistics</span>
+</span></code></pre></div>
+<p>Flags:
+| Flag | Meaning |
+|------|---------|
+| <code>-t</code> | TCP |
+| <code>-u</code> | UDP |
+| <code>-l</code> | Listening only |
+| <code>-n</code> | Don't resolve names (show numbers) |
+| <code>-p</code> | Show process using the socket |
+| <code>-a</code> | All (listening and non-listening) |</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What does ss -tlnp show?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;All TCP connections including established ones&quot;, &quot;feedback&quot;: &quot;The -l flag limits output to listening sockets only. Without -l, you&#39;d see established connections too.&quot;}, {&quot;text&quot;: &quot;TCP listening sockets with numeric addresses and the process using each one&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! -t = TCP only, -l = listening sockets, -n = numeric (no DNS resolution, faster), -p = show process name/PID. This is the go-to command for &#39;what&#39;s listening on which port?&#39;&quot;}, {&quot;text&quot;: &quot;TLS-encrypted connections&quot;, &quot;feedback&quot;: &quot;The -t flag means TCP, not TLS. ss doesn&#39;t distinguish encrypted from unencrypted connections.&quot;}, {&quot;text&quot;: &quot;The TCP routing table&quot;, &quot;feedback&quot;: &quot;Routing tables are shown by ip route, not ss. ss shows socket information - connections and listening ports.&quot;}]}"><noscript><p><strong>What does ss -tlnp show?</strong> (requires JavaScript)</p></noscript></div>
+<p><strong>Filtering:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>ss<span class="w"> </span>-tn<span class="w"> </span>state<span class="w"> </span>established<span class="w">          </span><span class="c1"># only established connections</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>ss<span class="w"> </span>-tn<span class="w"> </span><span class="nv">sport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>:443<span class="w">               </span><span class="c1"># connections from local port 443</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>ss<span class="w"> </span>-tn<span class="w"> </span><span class="nv">dport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>:22<span class="w">                </span><span class="c1"># connections to remote port 22</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>ss<span class="w"> </span>-tn<span class="w"> </span>dst<span class="w"> </span><span class="m">10</span>.0.0.0/24<span class="w">            </span><span class="c1"># connections to a subnet</span>
+</span></code></pre></div>
+<p><strong>Listening vs established:</strong> a <strong>listening</strong> socket is waiting for incoming connections (a server). An <strong>established</strong> socket is an active connection between two endpoints (a client connected to a server). To answer "what's using port 8080?":</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">8080</span><span class="w">     </span><span class="c1"># find the listening process on port 8080</span>
+</span></code></pre></div>
+<p>The <code>-p</code> flag shows the process name and PID, so you can immediately identify which program is binding the port. If you need to find all connections to a remote service:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>ss<span class="w"> </span>-tn<span class="w"> </span>dst<span class="w"> </span>:443<span class="w">           </span><span class="c1"># all established connections to remote port 443</span>
+</span></code></pre></div>
+<h3 id="ip">ip<a class="headerlink" href="#ip" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://wiki.linuxfoundation.org/networking/iproute2"><strong><code>ip</code></strong></a> command manages network interfaces, addresses, and routes. It replaces the older <code>ifconfig</code> and <code>route</code> commands.</p>
+<p><strong>Addresses:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>ip<span class="w"> </span>addr<span class="w">                     </span><span class="c1"># show all interfaces and addresses</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>ip<span class="w"> </span>addr<span class="w"> </span>show<span class="w"> </span>eth0<span class="w">           </span><span class="c1"># specific interface</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>ip<span class="w"> </span>-4<span class="w"> </span>addr<span class="w">                  </span><span class="c1"># IPv4 only</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>ip<span class="w"> </span>-6<span class="w"> </span>addr<span class="w">                  </span><span class="c1"># IPv6 only</span>
+</span></code></pre></div>
+<p><strong>Link (interface) state:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>ip<span class="w"> </span>link<span class="w">                     </span><span class="c1"># show interface status</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>up<span class="w">         </span><span class="c1"># bring interface up</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>down<span class="w">       </span><span class="c1"># bring interface down</span>
+</span></code></pre></div>
+<p><strong>Routing:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>ip<span class="w"> </span>route<span class="w">                    </span><span class="c1"># show routing table</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>ip<span class="w"> </span>route<span class="w"> </span>get<span class="w"> </span><span class="m">8</span>.8.8.8<span class="w">        </span><span class="c1"># show which route a packet would take</span>
+</span></code></pre></div>
+<p>The <strong>default route</strong> (also called the default gateway) is where packets go when no more specific route matches. It's the "catch-all" path to the rest of the internet.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>ip<span class="w"> </span>route
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="c1"># default via 192.168.1.1 dev eth0 proto dhcp metric 100</span>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="c1"># 192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.50</span>
+</span></code></pre></div>
+<p>Reading this: the first line says "for anything not in the local network, send packets to 192.168.1.1 via eth0." The second line says "the 192.168.1.0/24 network is directly connected via eth0, and this machine's address on that network is 192.168.1.50."</p>
+<h3 id="netstat-legacy">netstat (Legacy)<a class="headerlink" href="#netstat-legacy" title="Permanent link">&para;</a></h3>
+<p><code>netstat</code> is largely replaced by <code>ss</code> and <code>ip</code>, but you'll still see it in older documentation:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>netstat<span class="w"> </span>-tlnp<span class="w">              </span><span class="c1"># equivalent to ss -tlnp</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>netstat<span class="w"> </span>-rn<span class="w">                </span><span class="c1"># equivalent to ip route</span>
+</span></code></pre></div>
+<hr />
+<h2 id="dns-tools">DNS Tools<a class="headerlink" href="#dns-tools" title="Permanent link">&para;</a></h2>
+<h3 id="dig">dig<a class="headerlink" href="#dig" title="Permanent link">&para;</a></h3>
+<p><a href="https://www.isc.org/bind/"><strong><code>dig</code></strong></a> queries DNS servers for records. It's the most informative DNS lookup tool.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>dig<span class="w"> </span>example.com<span class="w">                     </span><span class="c1"># default A record query</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>dig<span class="w"> </span>example.com<span class="w"> </span>MX<span class="w">                  </span><span class="c1"># query MX records</span>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>dig<span class="w"> </span>example.com<span class="w"> </span>ANY<span class="w">                 </span><span class="c1"># query all record types</span>
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>dig<span class="w"> </span>+short<span class="w"> </span>example.com<span class="w">              </span><span class="c1"># concise output (just the answer)</span>
+</span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>dig<span class="w"> </span>@8.8.8.8<span class="w"> </span>example.com<span class="w">            </span><span class="c1"># query a specific nameserver</span>
+</span><span id="__span-31-6"><a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>dig<span class="w"> </span>-x<span class="w"> </span><span class="m">142</span>.250.80.46<span class="w">                </span><span class="c1"># reverse DNS lookup</span>
+</span><span id="__span-31-7"><a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a>dig<span class="w"> </span>+trace<span class="w"> </span>example.com<span class="w">              </span><span class="c1"># show the full resolution path</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Use dig +short for concise DNS answers</p>
+<p><strong><code>dig +short</code></strong> strips away all the verbose output and returns just the answer records. It's perfect for scripting: <code>ip=$(dig +short example.com)</code> gives you the IP address directly. For debugging, use the full output - the <strong>ANSWER</strong>, <strong>AUTHORITY</strong>, and <strong>ADDITIONAL</strong> sections tell you exactly what the resolver did.</p>
+</div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Trace DNS Resolution with dig&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;Use `dig +trace` to follow the full DNS resolution path for a domain name.\nTrace the resolution of `www.example.com` and identify:\n\n1. Which root server responded\n2. Which TLD server handled `.com`\n3. Which authoritative nameserver provided the final answer\n4. The IP address returned\n&quot;, &quot;hints&quot;: [&quot;Run: dig +trace www.example.com&quot;, &quot;The output shows each delegation step: root → TLD → authoritative&quot;, &quot;Look for NS records at each level to see which servers were consulted&quot;, &quot;The final ANSWER section contains the A record with the IP address&quot;], &quot;solution&quot;: &quot;```bash\ndig +trace www.example.com\n```\n\nReading the output bottom-to-top of each section:\n1. **Root servers** (`.`): One of the root servers (like `a.root-servers.net`) refers you to the `.com` TLD servers\n2. **TLD servers** (`.com`): A `.com` server (like `a.gtld-servers.net`) refers you to example.com&#39;s nameservers\n3. **Authoritative** (`example.com`): The authoritative nameserver returns the A record\n4. **Answer**: `www.example.com. 86400 IN A 93.184.216.34`\n\nThe +trace flag makes dig perform iterative resolution itself, starting\nfrom the root, so you can see every step that your recursive resolver\nnormally handles invisibly.&quot;}"><noscript><p><strong>Trace DNS Resolution with dig</strong> (requires JavaScript)</p></noscript></div>
+<p>For deeper DNS coverage, see the <a href="../../DNS%20Administration/">DNS Administration</a> guides in this repo.</p>
+<h3 id="nslookup">nslookup<a class="headerlink" href="#nslookup" title="Permanent link">&para;</a></h3>
+<p><strong><code>nslookup</code></strong> is a simpler DNS lookup tool:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>nslookup<span class="w"> </span>example.com<span class="w">                </span><span class="c1"># basic lookup</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>nslookup<span class="w"> </span>example.com<span class="w"> </span><span class="m">8</span>.8.8.8<span class="w">        </span><span class="c1"># use specific DNS server</span>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>nslookup<span class="w"> </span>-type<span class="o">=</span>MX<span class="w"> </span>example.com<span class="w">       </span><span class="c1"># query specific record type</span>
+</span></code></pre></div>
+<p><code>dig</code> provides more detailed output and is generally preferred for troubleshooting.</p>
+<hr />
+<h2 id="miscellaneous">Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permanent link">&para;</a></h2>
+<h3 id="hostname">hostname<a class="headerlink" href="#hostname" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>hostname<span class="w">                     </span><span class="c1"># show hostname</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>hostname<span class="w"> </span>-f<span class="w">                  </span><span class="c1"># fully qualified domain name</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>hostname<span class="w"> </span>-I<span class="w">                  </span><span class="c1"># all IP addresses</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>hostnamectl<span class="w">                  </span><span class="c1"># detailed host info (systemd)</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>hostnamectl<span class="w"> </span>set-hostname<span class="w"> </span>server01<span class="w">    </span><span class="c1"># set hostname (persistent)</span>
+</span></code></pre></div>
+<h3 id="nc-netcat">nc (netcat)<a class="headerlink" href="#nc-netcat" title="Permanent link">&para;</a></h3>
+<p><a href="https://man7.org/linux/man-pages/"><strong><code>nc</code></strong></a> (netcat) is a versatile networking utility - a "Swiss army knife" for TCP/UDP connections.</p>
+<p><strong>Port testing:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>nc<span class="w"> </span>-zv<span class="w"> </span>hostname<span class="w"> </span><span class="m">80</span><span class="w">           </span><span class="c1"># check if port 80 is open</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>nc<span class="w"> </span>-zv<span class="w"> </span>hostname<span class="w"> </span><span class="m">20</span>-25<span class="w">        </span><span class="c1"># scan a port range</span>
+</span></code></pre></div>
+<p><strong>Simple client/server:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="c1"># On server (listening)</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>nc<span class="w"> </span>-l<span class="w"> </span><span class="m">9999</span>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="c1"># On client (connecting)</span>
+</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a>nc<span class="w"> </span>hostname<span class="w"> </span><span class="m">9999</span>
+</span><span id="__span-35-6"><a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a><span class="c1"># Type messages - they appear on the other side</span>
+</span></code></pre></div>
+<p><strong>File transfer:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="c1"># On receiving end</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>nc<span class="w"> </span>-l<span class="w"> </span><span class="m">9999</span><span class="w"> </span>&gt;<span class="w"> </span>received_file.txt
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="c1"># On sending end</span>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>nc<span class="w"> </span>hostname<span class="w"> </span><span class="m">9999</span><span class="w"> </span>&lt;<span class="w"> </span>file_to_send.txt
+</span></code></pre></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://curl.se/docs/">curl Documentation</a> - comprehensive guide to curl usage and options</li>
+<li><a href="https://www.openssh.com/manual.html">OpenSSH Manual Pages</a> - official SSH client and server documentation</li>
+<li><a href="https://rsync.samba.org/documentation.html">rsync Documentation</a> - file synchronization reference</li>
+<li><a href="https://www.gnu.org/software/wget/manual/">GNU Wget Manual</a> - non-interactive network downloader</li>
+<li><a href="https://wiki.linuxfoundation.org/networking/iproute2">iproute2</a> - modern Linux networking utilities (ss, ip)</li>
+<li><a href="https://www.isc.org/bind/">ISC BIND / dig</a> - DNS lookup utility documentation</li>
+<li><a href="https://www.bitwizard.nl/mtr/">mtr</a> - network diagnostic tool combining ping and traceroute</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../disk-and-filesystem/">Disk and Filesystem</a> | <strong>Next:</strong> <a href="../system-information/">System Information</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+Networking" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

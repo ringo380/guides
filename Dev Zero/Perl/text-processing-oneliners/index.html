@@ -1,0 +1,4756 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Dev%20Zero/Perl/text-processing-oneliners/">
+      
+      
+        <link rel="prev" href="../testing/">
+      
+      
+        <link rel="next" href="../networking-daemons/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>Text Processing and One-Liners - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Text Processing and One-Liners - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Dev%20Zero/Perl/text-processing-oneliners.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Dev%20Zero/Perl/text-processing-oneliners/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Text Processing and One-Liners - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Dev%20Zero/Perl/text-processing-oneliners.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#text-processing-and-one-liners" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Text Processing and One-Liners
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Linux%20Essentials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Linux%20Essentials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/text-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Linux%20Essentials/best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#perl-on-the-command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Perl on the Command Line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copyright Notice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-Line Flags
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command-Line Flags">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-e-execute-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -e: Execute Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-n-implicit-read-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -n: Implicit Read Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-p-read-loop-with-print" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -p: Read Loop with Print
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-l-automatic-line-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -l: Automatic Line Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-a-and-f-autosplit-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -a and -F: Autosplit Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-i-in-place-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -i: In-Place Editing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flag-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flag Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_-and-f-in-one-liners" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        $_ and @F in One-Liners
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="$_ and @F in One-Liners">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_-is-your-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        $_ Is Your Line
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f-is-your-row" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        @F Is Your Row
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Processing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Field Processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#selecting-and-filtering-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selecting and Filtering Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transforming-and-rearranging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transforming and Rearranging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#in-place-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In-Place Editing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="In-Place Editing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-in-place-edit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic In-Place Edit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-files-and-safe-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple Files and Safe Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#begin-and-end-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BEGIN and END Blocks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BEGIN and END Blocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#begin-setup-before-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BEGIN: Setup Before the Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-summary-after-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        END: Summary After the Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combining-begin-and-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combining BEGIN and END
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-line-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Line Processing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-parsing-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Parsing Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Log Parsing Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#counting-and-ranking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Counting and Ranking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timestamps-and-aggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timestamps and Aggregation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#csv-and-tsv-manipulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSV and TSV Manipulation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CSV and TSV Manipulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-csv-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic CSV Operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modifying-columns-and-aggregating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modifying Columns and Aggregating
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-one-liners-incrementally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building One-Liners Incrementally
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Building One-Liners Incrementally">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-finding-the-busiest-hour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Finding the Busiest Hour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-between-one-liners-and-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Converting Between One-Liners and Scripts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Converting Between One-Liners and Scripts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-liner-to-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One-Liner to Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-to-one-liner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script to One-Liner
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison-with-sed-and-awk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with sed and awk
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparison with sed and awk">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sed-vs-perl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sed vs Perl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#awk-vs-perl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        awk vs Perl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-which" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Which
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#perl-on-the-command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Perl on the Command Line
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copyright-notice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copyright Notice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-Line Flags
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command-Line Flags">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-e-execute-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -e: Execute Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-n-implicit-read-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -n: Implicit Read Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-p-read-loop-with-print" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -p: Read Loop with Print
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-l-automatic-line-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -l: Automatic Line Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-a-and-f-autosplit-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -a and -F: Autosplit Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-i-in-place-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        -i: In-Place Editing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flag-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flag Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_-and-f-in-one-liners" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        $_ and @F in One-Liners
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="$_ and @F in One-Liners">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_-is-your-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        $_ Is Your Line
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#f-is-your-row" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        @F Is Your Row
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Processing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Field Processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#selecting-and-filtering-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selecting and Filtering Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transforming-and-rearranging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transforming and Rearranging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#in-place-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In-Place Editing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="In-Place Editing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-in-place-edit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic In-Place Edit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-files-and-safe-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple Files and Safe Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#begin-and-end-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BEGIN and END Blocks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BEGIN and END Blocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#begin-setup-before-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BEGIN: Setup Before the Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-summary-after-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        END: Summary After the Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combining-begin-and-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combining BEGIN and END
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-line-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Line Processing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-parsing-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Parsing Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Log Parsing Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#counting-and-ranking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Counting and Ranking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timestamps-and-aggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timestamps and Aggregation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#csv-and-tsv-manipulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSV and TSV Manipulation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CSV and TSV Manipulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-csv-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic CSV Operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modifying-columns-and-aggregating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modifying Columns and Aggregating
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-one-liners-incrementally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building One-Liners Incrementally
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Building One-Liners Incrementally">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-finding-the-busiest-hour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Finding the Busiest Hour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#converting-between-one-liners-and-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Converting Between One-Liners and Scripts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Converting Between One-Liners and Scripts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-liner-to-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One-Liner to Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-to-one-liner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script to One-Liner
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison-with-sed-and-awk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with sed and awk
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Comparison with sed and awk">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sed-vs-perl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sed vs Perl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#awk-vs-perl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        awk vs Perl
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-which" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Which
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Dev Zero/Perl/text-processing-oneliners.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="text-processing-and-one-liners">Text Processing and One-Liners<a class="headerlink" href="#text-processing-and-one-liners" title="Permanent link">&para;</a></h1>
+<h2 id="perl-on-the-command-line">Perl on the Command Line<a class="headerlink" href="#perl-on-the-command-line" title="Permanent link">&para;</a></h2>
+<p><strong>Version:</strong> 1.1
+<strong>Year:</strong> 2026</p>
+<hr />
+<h2 id="copyright-notice">Copyright Notice<a class="headerlink" href="#copyright-notice" title="Permanent link">&para;</a></h2>
+<p>Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed under <a href="../../LICENSE-CONTENT">CC BY-NC-ND 4.0</a>. You may share this material for non-commercial purposes with attribution, but you may not distribute modified versions.</p>
+<hr />
+<p>Perl was built for text processing. Before it was a web language, before CPAN existed, Perl was a tool for extracting information from files and generating reports. That heritage lives on in the command-line flags that turn Perl into a filter, a transformer, and a replacement for entire <code>sed</code>/<code>awk</code> pipelines - all in a single line. Every one-liner maps to a real script, and every script can be compressed into a one-liner. Understanding both directions makes you faster at solving text problems.</p>
+<div class="admonition tip">
+<p class="admonition-title">See also</p>
+<p>Perl one-liners often replace <code>grep</code>, <code>sed</code>, and <code>awk</code>. For the Unix text processing tools that Perl builds on, see <a href="../../../Linux%20Essentials/text-processing/">Text Processing</a>.</p>
+</div>
+<hr />
+<h2 id="command-line-flags">Command-Line Flags<a class="headerlink" href="#command-line-flags" title="Permanent link">&para;</a></h2>
+<p>The <a href="https://perldoc.perl.org/perlrun"><strong><code>perl</code> interpreter</strong></a> accepts flags that change how it reads input and executes code. These flags are the foundation of one-liner programming.</p>
+<h3 id="-e-execute-code">-e: Execute Code<a class="headerlink" href="#-e-execute-code" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://perldoc.perl.org/perlrun#-e-commandline"><strong><code>-e</code> flag</strong></a> runs a string of Perl code directly from the command line:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>perl<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;print &quot;Hello, World!\n&quot;&#39;</span>
+</span></code></pre></div>
+<h3 id="-n-implicit-read-loop">-n: Implicit Read Loop<a class="headerlink" href="#-n-implicit-read-loop" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://perldoc.perl.org/perlrun#-n"><strong><code>-n</code> flag</strong></a> wraps your code in a <code>while (&lt;&gt;) { ... }</code> loop. Each line from STDIN or named files is read into <code>$_</code> automatically:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Print lines containing &quot;error&quot; - equivalent to grep</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print if /error/&#39;</span><span class="w"> </span>access.log
+</span></code></pre></div>
+<p>The implicit loop reads every line. Your code runs once per line. If your code does not print anything, nothing is output - you are a filter that discards by default.</p>
+<h3 id="-p-read-loop-with-print">-p: Read Loop with Print<a class="headerlink" href="#-p-read-loop-with-print" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://perldoc.perl.org/perlrun#-p"><strong><code>-p</code> flag</strong></a> works like <code>-n</code> but automatically prints <code>$_</code> after each iteration. Your code transforms lines; the flag handles the output:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Replace &quot;foo&quot; with &quot;bar&quot; on every line - equivalent to sed</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>perl<span class="w"> </span>-pe<span class="w"> </span><span class="s1">&#39;s/foo/bar/g&#39;</span><span class="w"> </span>data.txt
+</span></code></pre></div>
+<p>The difference between <code>-n</code> and <code>-p</code> is simple: <code>-n</code> requires you to print explicitly, <code>-p</code> prints for you.</p>
+<h3 id="-l-automatic-line-handling">-l: Automatic Line Handling<a class="headerlink" href="#-l-automatic-line-handling" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://perldoc.perl.org/perlrun#-l"><strong><code>-l</code> flag</strong></a> strips the trailing newline from each input line and adds a newline to each <code>print</code> output:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print length($_)&#39;</span><span class="w"> </span>file.txt<span class="w">    </span><span class="c1"># without -l: includes \n in count</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>perl<span class="w"> </span>-lne<span class="w"> </span><span class="s1">&#39;print length($_)&#39;</span><span class="w"> </span>file.txt<span class="w">   </span><span class="c1"># with -l: accurate character count</span>
+</span></code></pre></div>
+<h3 id="-a-and-f-autosplit-mode">-a and -F: Autosplit Mode<a class="headerlink" href="#-a-and-f-autosplit-mode" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://perldoc.perl.org/perlrun#-a"><strong><code>-a</code> flag</strong></a> splits each input line on whitespace into the <a href="https://perldoc.perl.org/perlvar#@F"><strong><code>@F</code> array</strong></a> (zero-indexed). The <a href="https://perldoc.perl.org/perlrun#-Fpattern"><strong><code>-F</code> flag</strong></a> changes the split delimiter:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print $F[1]&#39;</span><span class="w"> </span>data.txt<span class="w">                  </span><span class="c1"># split on whitespace</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>perl<span class="w"> </span>-F:<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print &quot;$F[0] -&gt; $F[5]&quot;&#39;</span><span class="w"> </span>/etc/passwd<span class="w">  </span><span class="c1"># split on colons</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>perl<span class="w"> </span>-F,<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print $F[2]&#39;</span><span class="w"> </span>data.csv<span class="w">                </span><span class="c1"># split on commas</span>
+</span></code></pre></div>
+<h3 id="-i-in-place-editing">-i: In-Place Editing<a class="headerlink" href="#-i-in-place-editing" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://perldoc.perl.org/perlrun#-i"><strong><code>-i</code> flag</strong></a> edits files in place. With <code>-i.bak</code>, Perl saves the original as a backup before writing the modified version:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>perl<span class="w"> </span>-i.bak<span class="w"> </span>-pe<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>config.txt<span class="w">   </span><span class="c1"># backup to config.txt.bak</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>perl<span class="w"> </span>-i<span class="w"> </span>-pe<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>config.txt<span class="w">        </span><span class="c1"># no backup (dangerous)</span>
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">Always Use a Backup Extension</p>
+<p>Running <code>-i</code> without a backup extension is irreversible. Always use <code>-i.bak</code> until you have verified the transformation is correct.</p>
+</div>
+<h3 id="flag-pipeline">Flag Pipeline<a class="headerlink" href="#flag-pipeline" title="Permanent link">&para;</a></h3>
+<p>The following diagram shows how common flags combine to process text:</p>
+<pre class="mermaid"><code>flowchart LR
+    A[Input\nSTDIN or files] --&gt; B{-l flag?}
+    B --&gt;|Yes| C[chomp each line]
+    B --&gt;|No| D[raw line with \\n]
+    C --&gt; E{-a flag?}
+    D --&gt; E
+    E --&gt;|Yes| F["split into @F\n(using -F pattern)"]
+    E --&gt;|No| G["$_ = current line"]
+    F --&gt; G
+    G --&gt; H[Your -e code runs]
+    H --&gt; I{-p flag?}
+    I --&gt;|Yes| J[print $_ automatically]
+    I --&gt;|No| K[print only if your\ncode calls print]
+    J --&gt; L{-i flag?}
+    K --&gt; L
+    L --&gt;|Yes| M[Write to file in place]
+    L --&gt;|No| N[Write to STDOUT]</code></pre>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;Command-Line Flags in Action&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;echo -e &#39;Alice 90\\nBob 85\\nCarol 95&#39; | perl -lane &#39;print $F[1]&#39;&quot;, &quot;output&quot;: &quot;90\n85\n95&quot;, &quot;narration&quot;: &quot;The -a flag splits each line on whitespace into @F. The -l flag strips the trailing newline. $F[1] is the second field (scores).&quot;}, {&quot;command&quot;: &quot;echo -e &#39;error: disk full\\ninfo: all clear\\nerror: timeout&#39; | perl -ne &#39;print if /^error/&#39;&quot;, &quot;output&quot;: &quot;error: disk full\nerror: timeout&quot;, &quot;narration&quot;: &quot;The -n flag reads each line into $_ without printing. The print statement only fires when the regex matches, making this a pattern filter.&quot;}, {&quot;command&quot;: &quot;echo -e &#39;hello world\\nfoo bar&#39; | perl -pe &#39;s/\\b(\\w)/uc($1)/ge&#39;&quot;, &quot;output&quot;: &quot;Hello World\nFoo Bar&quot;, &quot;narration&quot;: &quot;The -p flag reads each line and prints it after your code runs. The s/// with /ge capitalizes the first letter of every word.&quot;}, {&quot;command&quot;: &quot;echo -e &#39;one:two:three\\nfour:five:six&#39; | perl -F: -lane &#39;print $F[-1]&#39;&quot;, &quot;output&quot;: &quot;three\nsix&quot;, &quot;narration&quot;: &quot;The -F flag sets the split pattern to colon. Combined with -a, each line splits on colons. $F[-1] grabs the last field.&quot;}]}"><noscript><p><strong>Command-Line Flags in Action</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="_-and-f-in-one-liners">$_ and @F in One-Liners<a class="headerlink" href="#_-and-f-in-one-liners" title="Permanent link">&para;</a></h2>
+<p>Two variables dominate one-liner programming: <code>$_</code> and <code>@F</code>.</p>
+<h3 id="_-is-your-line">$_ Is Your Line<a class="headerlink" href="#_-is-your-line" title="Permanent link">&para;</a></h3>
+<p>With <code>-n</code> or <code>-p</code>, <code>$_</code> holds the current line. Perl defaults to <code>$_</code> for regex matching, <code>print</code>, <code>chomp</code>, <code>length</code>, and dozens of other functions:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># These are equivalent:</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print $_ if $_ =~ /error/&#39;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print if /error/&#39;</span>
+</span></code></pre></div>
+<h3 id="f-is-your-row">@F Is Your Row<a class="headerlink" href="#f-is-your-row" title="Permanent link">&para;</a></h3>
+<p>With <code>-a</code>, <code>@F</code> holds the fields of the current line after splitting. It uses zero-based indexing: <code>$F[0]</code> is the first field, <code>$F[-1]</code> is the last:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># /etc/passwd: user:pass:uid:gid:gecos:home:shell</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>perl<span class="w"> </span>-F:<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print &quot;$F[0] uses $F[-1]&quot;&#39;</span><span class="w"> </span>/etc/passwd
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Modify @F and reconstruct the line</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>perl<span class="w"> </span>-F:<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;$F[6] = &quot;/bin/bash&quot;; print join(&quot;:&quot;, @F)&#39;</span><span class="w"> </span>/etc/passwd
+</span></code></pre></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is the difference between perl -ne &#39;print&#39; and perl -pe &#39;&#39; when processing a file?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;They produce the same output. -n with explicit print and -p with no code both print every input line unchanged.&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct. The -n flag reads each line into $_ but does not print automatically. Adding an explicit print outputs $_. The -p flag reads each line into $_ and prints it automatically after your code runs. With no code to modify $_, both produce identical output.&quot;}, {&quot;text&quot;: &quot;-ne &#39;print&#39; prints each line twice, while -pe &#39;&#39; prints each line once.&quot;, &quot;feedback&quot;: &quot;-ne &#39;print&#39; calls print once per line - printing $_ once. There is no automatic print with -n, so each line appears exactly once.&quot;}, {&quot;text&quot;: &quot;-pe &#39;&#39; produces no output because the code block is empty.&quot;, &quot;feedback&quot;: &quot;The -p flag prints $_ automatically after your code runs, regardless of whether your code is empty. An empty code block means the line passes through untouched.&quot;}, {&quot;text&quot;: &quot;-ne &#39;print&#39; adds a newline after each line, while -pe &#39;&#39; does not.&quot;, &quot;feedback&quot;: &quot;Neither flag adds newlines on its own. The newline from the input line is already in $_ (unless you use -l). Both output the line exactly as read.&quot;}]}"><noscript><p><strong>What is the difference between perl -ne 'print' and perl -pe '' when processing a file?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="field-processing">Field Processing<a class="headerlink" href="#field-processing" title="Permanent link">&para;</a></h2>
+<p>Field processing is where Perl one-liners replace <code>awk</code>. The <code>-a</code> and <code>-F</code> flags handle splitting; your code handles selection, transformation, and output.</p>
+<h3 id="selecting-and-filtering-fields">Selecting and Filtering Fields<a class="headerlink" href="#selecting-and-filtering-fields" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Print columns 1 and 3 from whitespace-delimited data</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print &quot;$F[0] $F[2]&quot;&#39;</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Print all fields except the first</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print join(&quot; &quot;, @F[1..$#F])&#39;</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="c1"># Print lines where the third field exceeds 100</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print if $F[2] &gt; 100&#39;</span>
+</span></code></pre></div>
+<h3 id="transforming-and-rearranging">Transforming and Rearranging<a class="headerlink" href="#transforming-and-rearranging" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Multiply the second field by 1.1 (10% increase)</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;$F[1] *= 1.1; print join(&quot;\t&quot;, @F)&#39;</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Uppercase the first field, leave the rest</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;$F[0] = uc($F[0]); print join(&quot; &quot;, @F)&#39;</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># Swap first and second columns</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print &quot;$F[1] $F[0] @F[2..$#F]&quot;&#39;</span>
+</span></code></pre></div>
+<hr />
+<h2 id="in-place-editing">In-Place Editing<a class="headerlink" href="#in-place-editing" title="Permanent link">&para;</a></h2>
+<p>The <code>-i</code> flag transforms Perl from a filter into an editor. Combined with <code>-p</code>, it reads a file, applies your transformation, and writes the result back.</p>
+<h3 id="basic-in-place-edit">Basic In-Place Edit<a class="headerlink" href="#basic-in-place-edit" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Replace all instances of &quot;localhost&quot; with &quot;0.0.0.0&quot;</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>perl<span class="w"> </span>-i.bak<span class="w"> </span>-pe<span class="w"> </span><span class="s1">&#39;s/localhost/0.0.0.0/g&#39;</span><span class="w"> </span>nginx.conf
+</span></code></pre></div>
+<p>This creates <code>nginx.conf.bak</code> (the original) and writes the modified content to <code>nginx.conf</code>.</p>
+<h3 id="multiple-files-and-safe-workflow">Multiple Files and Safe Workflow<a class="headerlink" href="#multiple-files-and-safe-workflow" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Fix a typo across all config files</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>perl<span class="w"> </span>-i.bak<span class="w"> </span>-pe<span class="w"> </span><span class="s1">&#39;s/recieve/receive/g&#39;</span><span class="w"> </span>*.conf
+</span></code></pre></div>
+<p>The safe workflow: run without <code>-i</code> first to preview, then add <code>-i.bak</code> to apply, then <code>diff</code> to verify, then delete backups:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>perl<span class="w"> </span>-pe<span class="w"> </span><span class="s1">&#39;s/DEBUG/INFO/g&#39;</span><span class="w"> </span>app.conf<span class="w">          </span><span class="c1"># preview</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>perl<span class="w"> </span>-i.bak<span class="w"> </span>-pe<span class="w"> </span><span class="s1">&#39;s/DEBUG/INFO/g&#39;</span><span class="w"> </span>app.conf<span class="w">   </span><span class="c1"># apply</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>diff<span class="w"> </span>app.conf<span class="w"> </span>app.conf.bak<span class="w">                   </span><span class="c1"># verify</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>rm<span class="w"> </span>app.conf.bak<span class="w">                              </span><span class="c1"># clean up</span>
+</span></code></pre></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;In-Place Editing with Backup&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;echo -e &#39;host=localhost\\nport=3306\\nhost=localhost&#39; > /tmp/test.conf &amp;&amp; cat /tmp/test.conf&quot;, &quot;output&quot;: &quot;host=localhost\nport=3306\nhost=localhost&quot;, &quot;narration&quot;: &quot;Starting with a config file that has two lines containing &#39;localhost&#39;. The goal is to replace them in place.&quot;}, {&quot;command&quot;: &quot;perl -i.bak -pe &#39;s/localhost/127.0.0.1/g&#39; /tmp/test.conf &amp;&amp; cat /tmp/test.conf&quot;, &quot;output&quot;: &quot;host=127.0.0.1\nport=3306\nhost=127.0.0.1&quot;, &quot;narration&quot;: &quot;The -i.bak flag saved the original as test.conf.bak and wrote the modified version. Both occurrences of &#39;localhost&#39; were replaced.&quot;}, {&quot;command&quot;: &quot;cat /tmp/test.conf.bak&quot;, &quot;output&quot;: &quot;host=localhost\nport=3306\nhost=localhost&quot;, &quot;narration&quot;: &quot;The .bak file contains the untouched original. If the replacement was wrong, you can restore from this backup.&quot;}, {&quot;command&quot;: &quot;diff /tmp/test.conf /tmp/test.conf.bak&quot;, &quot;output&quot;: &quot;1,3c1,3\n< host=127.0.0.1\n< port=3306\n< host=127.0.0.1\n---\n> host=localhost\n> port=3306\n> host=localhost&quot;, &quot;narration&quot;: &quot;diff confirms exactly what changed. In a real workflow, verify the diff before deleting the backup.&quot;}]}"><noscript><p><strong>In-Place Editing with Backup</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="begin-and-end-blocks">BEGIN and END Blocks<a class="headerlink" href="#begin-and-end-blocks" title="Permanent link">&para;</a></h2>
+<p><a href="https://perldoc.perl.org/perlmod#BEGIN%2C-UNITCHECK%2C-CHECK%2C-INIT-and-END"><strong><code>BEGIN</code> and <code>END</code> blocks</strong></a> run before and after the main loop, respectively. In one-liners, they handle initialization and summary output.</p>
+<h3 id="begin-setup-before-the-loop">BEGIN: Setup Before the Loop<a class="headerlink" href="#begin-setup-before-the-loop" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Print a header before processing</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;BEGIN { print &quot;Name\tScore&quot; } print &quot;$F[0]\t$F[1]&quot;&#39;</span><span class="w"> </span>grades.txt
+</span></code></pre></div>
+<p><code>BEGIN</code> runs once, before the first line is read. Use it for headers, variable initialization, or loading modules.</p>
+<h3 id="end-summary-after-the-loop">END: Summary After the Loop<a class="headerlink" href="#end-summary-after-the-loop" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Sum the second column and print the total</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;$sum += $F[1]; END { print &quot;Total: $sum&quot; }&#39;</span><span class="w"> </span>sales.txt
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># Count matching lines</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;$count++ if /ERROR/; END { print &quot;Errors: $count\n&quot; }&#39;</span><span class="w"> </span>app.log
+</span></code></pre></div>
+<p><code>END</code> runs once, after the last line has been processed. Use it for totals, averages, and summary reports.</p>
+<h3 id="combining-begin-and-end">Combining BEGIN and END<a class="headerlink" href="#combining-begin-and-end" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Full report: header, data, footer</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;BEGIN { print &quot;USER\tSHELL&quot; } print &quot;$F[0]\t$F[-1]&quot;; END { print &quot;Total: $.&quot; }&#39;</span><span class="w"> </span>/etc/passwd
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">The $. Variable in END Blocks</p>
+<p><code>$.</code> holds the current line number. In an <code>END</code> block, it holds the line number of the last line read - effectively the total line count.</p>
+</div>
+<hr />
+<h2 id="multi-line-processing">Multi-Line Processing<a class="headerlink" href="#multi-line-processing" title="Permanent link">&para;</a></h2>
+<p>Not every problem fits the line-by-line model. The <a href="https://perldoc.perl.org/perlrun#-0"><strong><code>-0</code> flag</strong></a> changes how Perl defines a "record":</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Paragraph mode (-00): records separated by blank lines</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>perl<span class="w"> </span>-00<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print if /keyword/&#39;</span><span class="w"> </span>document.txt
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># Slurp mode (-0777): read entire file at once</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>perl<span class="w"> </span>-0777<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print scalar(() = /error/gi), &quot; errors\n&quot;&#39;</span><span class="w"> </span>app.log
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="c1"># Multi-line substitution: remove C-style comments</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>perl<span class="w"> </span>-0777<span class="w"> </span>-pe<span class="w"> </span><span class="s1">&#39;s{/\*.*?\*/}{}gs&#39;</span><span class="w"> </span>source.c
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="c1"># Custom record separator</span>
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;BEGIN { $/ = &quot;---\n&quot; } chomp; print &quot;RECORD: $_\n&quot; if length&#39;</span><span class="w"> </span>data.txt
+</span></code></pre></div>
+<p>The <code>/s</code> modifier makes <code>.</code> match newlines, so <code>.*?</code> can span line boundaries.</p>
+<hr />
+<h2 id="log-parsing-patterns">Log Parsing Patterns<a class="headerlink" href="#log-parsing-patterns" title="Permanent link">&para;</a></h2>
+<p>Log files are where Perl one-liners earn their keep. The combination of regex, field splitting, and aggregation handles most log analysis tasks without a dedicated tool.</p>
+<h3 id="counting-and-ranking">Counting and Ranking<a class="headerlink" href="#counting-and-ranking" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Count HTTP status codes</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;$c{$F[8]}++; END { print &quot;$_: $c{$_}&quot; for sort keys %c }&#39;</span><span class="w"> </span>access.log
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Top 10 IPs by request count</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;$ip{$F[0]}++; END { print &quot;$ip{$_} $_&quot; for (sort { $ip{$b} &lt;=&gt; $ip{$a} } keys %ip)[0..9] }&#39;</span><span class="w"> </span>access.log
+</span></code></pre></div>
+<h3 id="timestamps-and-aggregation">Timestamps and Aggregation<a class="headerlink" href="#timestamps-and-aggregation" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Print the first and last timestamp from a log</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="s1">  if (/\[(\d{2}\/\w+\/\d{4}:\d{2}:\d{2}:\d{2})/) { $first //= $1; $last = $1 }</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="s1">  END { print &quot;First: $first\nLast: $last\n&quot; }</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="s1">&#39;</span><span class="w"> </span>access.log
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="c1"># Filter log lines between 09:00 and 10:00</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print if m{\[.*/\d{4}:09:\d{2}:\d{2}}&#39;</span><span class="w"> </span>access.log
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="c1"># Average response time (last field, in microseconds)</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>perl<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;$sum += $F[-1]; $n++; END { printf &quot;Avg: %.2f ms (%d reqs)\n&quot;, $sum/$n/1000, $n }&#39;</span><span class="w"> </span>access.log
+</span></code></pre></div>
+<div class="interactive-code-walkthrough" data-config="{&quot;language&quot;: &quot;bash&quot;, &quot;title&quot;: &quot;Apache Log Analyzer One-Liner Chain&quot;, &quot;code&quot;: &quot;# Step 1: Extract status codes and count them\nperl -lane &#39;$s{$F[8]}++; END { print \&quot;$_: $s{$_}\&quot; for sort keys %s }&#39; access.log\n\n# Step 2: Filter to 5xx errors only\nperl -lane &#39;print if $F[8] =~ /^5/&#39; access.log\n\n# Step 3: Extract IPs causing 5xx errors and rank them\nperl -lane &#39;$ip{$F[0]}++ if $F[8] =~ /^5/; END { print \&quot;$ip{$_}\\t$_\&quot; for sort { $ip{$b} <=> $ip{$a} } keys %ip }&#39; access.log\n\n# Step 4: Full report - combine steps into a single pass\nperl -lane &#39;\n  $total++;\n  $status{$F[8]}++;\n  $err_ip{$F[0]}++ if $F[8] =~ /^5/;\n  END {\n    print \&quot;Total requests: $total\&quot;;\n    print \&quot;\\nStatus breakdown:\&quot;;\n    printf \&quot;  %s: %d (%.1f%%)\\n\&quot;, $_, $status{$_}, $status{$_}/$total*100\n      for sort keys %status;\n    if (%err_ip) {\n      print \&quot;\\nTop error sources:\&quot;;\n      my @sorted = sort { $err_ip{$b} <=> $err_ip{$a} } keys %err_ip;\n      printf \&quot;  %-15s %d errors\\n\&quot;, $_, $err_ip{$_} for @sorted[0..4];\n    }\n  }\n&#39; access.log\n&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 2, &quot;text&quot;: &quot;$F[8] is the HTTP status code in common log format. The hash %s accumulates counts. The END block prints sorted results.&quot;}, {&quot;line&quot;: 5, &quot;text&quot;: &quot;A simple filter: print the entire line only when the status code starts with 5 (server errors). No aggregation needed.&quot;}, {&quot;line&quot;: 8, &quot;text&quot;: &quot;Conditional counting: the hash only increments when the status is a 5xx error. The END block sorts by count descending.&quot;}, {&quot;line&quot;: 11, &quot;text&quot;: &quot;Single-pass analysis: all counters update on every line. This avoids reading the file three times.&quot;}, {&quot;line&quot;: 18, &quot;text&quot;: &quot;printf with %% (literal percent sign) calculates each status code as a percentage of total requests.&quot;}, {&quot;line&quot;: 23, &quot;text&quot;: &quot;Array slice [0..4] limits output to the top 5 error sources. If fewer than 5 IPs caused errors, Perl handles the short list gracefully.&quot;}]}"><noscript><p><strong>Apache Log Analyzer One-Liner Chain</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="csv-and-tsv-manipulation">CSV and TSV Manipulation<a class="headerlink" href="#csv-and-tsv-manipulation" title="Permanent link">&para;</a></h2>
+<p>For simple CSV (no embedded commas or quotes), Perl one-liners are fast and effective. For complex CSV with quoting, use the <code>Text::CSV</code> module instead.</p>
+<h3 id="basic-csv-operations">Basic CSV Operations<a class="headerlink" href="#basic-csv-operations" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Extract the third column from a CSV</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>perl<span class="w"> </span>-F,<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print $F[2]&#39;</span><span class="w"> </span>data.csv
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># Convert CSV to TSV</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>perl<span class="w"> </span>-F,<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print join(&quot;\t&quot;, @F)&#39;</span><span class="w"> </span>data.csv
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="c1"># Convert TSV to CSV</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>perl<span class="w"> </span>-F<span class="s1">&#39;\t&#39;</span><span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print join(&quot;,&quot;, @F)&#39;</span><span class="w"> </span>data.tsv
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="c1"># Skip the header line</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>perl<span class="w"> </span>-F,<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print $F[2] if $. &gt; 1&#39;</span><span class="w"> </span>data.csv
+</span></code></pre></div>
+<h3 id="modifying-columns-and-aggregating">Modifying Columns and Aggregating<a class="headerlink" href="#modifying-columns-and-aggregating" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Add a row number as the first column</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>perl<span class="w"> </span>-F,<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print join(&quot;,&quot;, $., @F)&#39;</span><span class="w"> </span>data.csv
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># Remove the second column (index 1)</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>perl<span class="w"> </span>-F,<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;splice(@F, 1, 1); print join(&quot;,&quot;, @F)&#39;</span><span class="w"> </span>data.csv
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="c1"># Print rows where column 3 exceeds a threshold</span>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>perl<span class="w"> </span>-F,<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print if $F[2] &gt; 1000&#39;</span><span class="w"> </span>sales.csv
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="c1"># Group by column 1, sum column 2</span>
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>perl<span class="w"> </span>-F,<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;$t{$F[0]} += $F[1]; END { print &quot;$_: $t{$_}&quot; for sort keys %t }&#39;</span><span class="w"> </span>expenses.csv
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">CSV Edge Cases</p>
+<p>Simple comma splitting fails when fields contain commas, newlines, or quotes. A field like <code>"Smith, Jr."</code> splits incorrectly with <code>-F,</code>. For production CSV parsing, use <code>perl -MText::CSV -e '...'</code> or write a proper script with <a href="https://metacpan.org/pod/Text::CSV"><strong><code>Text::CSV</code></strong></a>.</p>
+</div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;In perl -F: -lane &#39;print $F[2]&#39; /etc/passwd, what does $F[2] contain for a line like root:x:0:0:root:/root:/bin/bash?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;0 - the UID field. The -F flag splits on colons, and $F[2] is the third field (zero-indexed), which is the UID.&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct. -F: sets the split delimiter to colon. The line splits into fields: $F[0]=&#39;root&#39;, $F[1]=&#39;x&#39;, $F[2]=&#39;0&#39;, $F[3]=&#39;0&#39;, $F[4]=&#39;root&#39;, $F[5]=&#39;/root&#39;, $F[6]=&#39;/bin/bash&#39;. The UID is at index 2.&quot;}, {&quot;text&quot;: &quot;x - the password placeholder. $F[2] is the second field.&quot;, &quot;feedback&quot;: &quot;@F uses zero-based indexing. $F[0] is &#39;root&#39;, $F[1] is &#39;x&#39;, and $F[2] is &#39;0&#39;. The index 2 means the third field.&quot;}, {&quot;text&quot;: &quot;root:/root:/bin/bash - everything from the third colon onward.&quot;, &quot;feedback&quot;: &quot;The -a flag splits the entire line, not just up to a limit. Every colon produces a separate field. $F[2] is a single field, not the remainder.&quot;}, {&quot;text&quot;: &quot;An error, because -F expects a regex, not a plain character.&quot;, &quot;feedback&quot;: &quot;-F accepts both plain strings and regex patterns. A single character like : is a valid delimiter. No error is produced.&quot;}]}"><noscript><p><strong>In perl -F: -lane 'print $F[2]' /etc/passwd, what does $F[2] contain for a line like root:x:0:0:root:/root:/bin/bash?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="building-one-liners-incrementally">Building One-Liners Incrementally<a class="headerlink" href="#building-one-liners-incrementally" title="Permanent link">&para;</a></h2>
+<p>Complex one-liners grow through small, testable steps: inspect the data, split fields, add the filter, aggregate results, format output.</p>
+<h3 id="example-finding-the-busiest-hour">Example: Finding the Busiest Hour<a class="headerlink" href="#example-finding-the-busiest-hour" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Step 1: See the data</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>head<span class="w"> </span>-1<span class="w"> </span>access.log
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="c1"># 192.168.1.50 - - [15/Jan/2025:09:23:45 +0000] &quot;GET /index.html HTTP/1.1&quot; 200 2326</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="c1"># Step 2: Extract the hour</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;print &quot;$1\n&quot; if /\[.*?:(\d{2}):\d{2}:\d{2}/&#39;</span><span class="w"> </span>access.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>head
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="c1"># Step 3: Aggregate by hour</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;$h{$1}++ if /\[.*?:(\d{2}):\d{2}:\d{2}/; END { print &quot;$_: $h{$_}\n&quot; for sort keys %h }&#39;</span><span class="w"> </span>access.log
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="c1"># Step 4: Sort by count (most requests first)</span>
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">&#39;$h{$1}++ if /\[.*?:(\d{2}):\d{2}:\d{2}/; END { printf &quot;%s:00 - %d requests\n&quot;, $_, $h{$_} for sort { $h{$b} &lt;=&gt; $h{$a} } keys %h }&#39;</span><span class="w"> </span>access.log
+</span></code></pre></div>
+<p>Each step is independently testable. If step 3 gives wrong numbers, you debug step 2's regex.</p>
+<hr />
+<h2 id="converting-between-one-liners-and-scripts">Converting Between One-Liners and Scripts<a class="headerlink" href="#converting-between-one-liners-and-scripts" title="Permanent link">&para;</a></h2>
+<h3 id="one-liner-to-script">One-Liner to Script<a class="headerlink" href="#one-liner-to-script" title="Permanent link">&para;</a></h3>
+<p>This one-liner counts words per line:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>perl<span class="w"> </span>-lne<span class="w"> </span><span class="s1">&#39;$w += scalar(split); END { print $w }&#39;</span>
+</span></code></pre></div>
+<p>The equivalent script:</p>
+<div class="language-perl highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="ch">#!/usr/bin/env perl</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="k">use</span><span class="w"> </span><span class="nn">strict</span><span class="p">;</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="k">use</span><span class="w"> </span><span class="nn">warnings</span><span class="p">;</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="k">my</span><span class="w"> </span><span class="nv">$w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="w">    </span><span class="nb">chomp</span><span class="p">;</span><span class="w">                        </span><span class="c1"># -l flag</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="w">    </span><span class="nv">$w</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nb">scalar</span><span class="p">(</span><span class="nb">split</span><span class="p">);</span><span class="w">          </span><span class="c1"># -a not used, but split works on $_</span>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="p">}</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="k">print</span><span class="w"> </span><span class="s">&quot;$w\n&quot;</span><span class="p">;</span><span class="w">                     </span><span class="c1"># END block</span>
+</span></code></pre></div>
+<p>The mapping:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Script equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-n</code></td>
+<td><code>while (&lt;&gt;) { ... }</code></td>
+</tr>
+<tr>
+<td><code>-p</code></td>
+<td><code>while (&lt;&gt;) { ... } continue { print }</code></td>
+</tr>
+<tr>
+<td><code>-l</code></td>
+<td><code>chomp</code> on input, <code>"\n"</code> on output</td>
+</tr>
+<tr>
+<td><code>-a</code></td>
+<td><code>@F = split</code> at the start of the loop</td>
+</tr>
+<tr>
+<td><code>-F:</code></td>
+<td><code>@F = split /:/, $_</code></td>
+</tr>
+<tr>
+<td><code>-i.bak</code></td>
+<td>Open input, rename, open output</td>
+</tr>
+<tr>
+<td><code>BEGIN {}</code></td>
+<td>Code before the loop</td>
+</tr>
+<tr>
+<td><code>END {}</code></td>
+<td>Code after the loop</td>
+</tr>
+</tbody>
+</table>
+<h3 id="script-to-one-liner">Script to One-Liner<a class="headerlink" href="#script-to-one-liner" title="Permanent link">&para;</a></h3>
+<p>Start with the loop body. Strip variable declarations. Use <code>$_</code> defaults. Collapse to one line:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="c1"># Script version: while (&lt;&gt;) { chomp; my @f = split /,/; print join(&quot;,&quot;, @f), &quot;\n&quot; if $f[2] &gt; 100 }</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="c1"># One-liner:</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>perl<span class="w"> </span>-F,<span class="w"> </span>-lane<span class="w"> </span><span class="s1">&#39;print join(&quot;,&quot;, @F) if $F[2] &gt; 100&#39;</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">When to Convert</p>
+<p>Keep it as a one-liner if it fits in a single readable line (roughly 80-120 characters). Convert to a script when it needs error handling, multiple data sources, or will be run by others.</p>
+</div>
+<hr />
+<h2 id="comparison-with-sed-and-awk">Comparison with sed and awk<a class="headerlink" href="#comparison-with-sed-and-awk" title="Permanent link">&para;</a></h2>
+<h3 id="sed-vs-perl">sed vs Perl<a class="headerlink" href="#sed-vs-perl" title="Permanent link">&para;</a></h3>
+<p><code>sed</code> excels at simple substitutions. Perl handles everything <code>sed</code> does, plus complex logic:</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>sed</th>
+<th>Perl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Substitution</td>
+<td><code>sed 's/old/new/g'</code></td>
+<td><code>perl -pe 's/old/new/g'</code></td>
+</tr>
+<tr>
+<td>Delete lines</td>
+<td><code>sed '/pattern/d'</code></td>
+<td><code>perl -ne 'print unless /pattern/'</code></td>
+</tr>
+<tr>
+<td>Line range</td>
+<td><code>sed -n '5,10p'</code></td>
+<td><code>perl -ne 'print if 5..10'</code></td>
+</tr>
+<tr>
+<td>Conditional sub</td>
+<td>Awkward</td>
+<td><code>perl -pe 's/old/new/ if /context/'</code></td>
+</tr>
+<tr>
+<td>Math on captures</td>
+<td>Not possible</td>
+<td><code>perl -pe 's/(\d+)/$1*2/ge'</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>/e</code> modifier - evaluating the replacement as code - is where Perl surpasses <code>sed</code> entirely.</p>
+<h3 id="awk-vs-perl">awk vs Perl<a class="headerlink" href="#awk-vs-perl" title="Permanent link">&para;</a></h3>
+<p><code>awk</code> is a field-oriented processor. Perl's <code>-a</code> flag provides the same model with full language access:</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>awk</th>
+<th>Perl</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Print field 2</td>
+<td><code>awk '{print $2}'</code></td>
+<td><code>perl -lane 'print $F[1]'</code></td>
+</tr>
+<tr>
+<td>Sum a column</td>
+<td><code>awk '{s+=$3} END{print s}'</code></td>
+<td><code>perl -lane '$s+=$F[2]; END{print $s}'</code></td>
+</tr>
+<tr>
+<td>Field separator</td>
+<td><code>awk -F:</code></td>
+<td><code>perl -F:</code></td>
+</tr>
+</tbody>
+</table>
+<p>The key difference: <code>awk</code> fields start at 1 (<code>$1</code> is the first field, <code>$0</code> is the entire line), while Perl's <code>@F</code> starts at 0 (<code>$F[0]</code> is the first field, <code>$_</code> is the entire line).</p>
+<h3 id="when-to-use-which">When to Use Which<a class="headerlink" href="#when-to-use-which" title="Permanent link">&para;</a></h3>
+<p>Use <code>sed</code> for simple substitutions on one file. Use <code>awk</code> for quick column extraction. Use Perl when you need conditional logic, computed replacements, multiple operations in one pass, or code that will grow into a script.</p>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Extract and Count Patterns from a Log&quot;, &quot;difficulty&quot;: &quot;beginner&quot;, &quot;scenario&quot;: &quot;You have a web server access log at `/var/log/access.log` (simulated below). Write a Perl one-liner that:\n\n1. Extracts the HTTP method (GET, POST, PUT, DELETE) from each line\n2. Counts how many times each method appears\n3. Prints the results sorted by count (highest first)\n\nSample log format:\n```\n192.168.1.10 - - [15/Jan/2025:09:23:45 +0000] \&quot;GET /index.html HTTP/1.1\&quot; 200 2326\n10.0.0.5 - - [15/Jan/2025:09:24:01 +0000] \&quot;POST /api/users HTTP/1.1\&quot; 201 128\n192.168.1.10 - - [15/Jan/2025:09:24:15 +0000] \&quot;GET /style.css HTTP/1.1\&quot; 200 1045\n10.0.0.5 - - [15/Jan/2025:09:25:00 +0000] \&quot;DELETE /api/users/7 HTTP/1.1\&quot; 204 0\n192.168.1.20 - - [15/Jan/2025:09:25:30 +0000] \&quot;GET /about.html HTTP/1.1\&quot; 200 3200\n10.0.0.5 - - [15/Jan/2025:09:26:00 +0000] \&quot;PUT /api/users/3 HTTP/1.1\&quot; 200 256\n192.168.1.10 - - [15/Jan/2025:09:26:45 +0000] \&quot;GET /contact.html HTTP/1.1\&quot; 200 1800\n```\n\nTest your one-liner with:\n```bash\necho &#39;<paste sample data>&#39; | perl <your one-liner>\n```\n\nExpected output (order by count descending):\n```\n4 GET\n1 POST\n1 PUT\n1 DELETE\n```\n&quot;, &quot;hints&quot;: [&quot;Extract the method with a regex: /\&quot;(GET|POST|PUT|DELETE)/ and use $1&quot;, &quot;Store counts in a hash: $method{$1}++&quot;, &quot;Sort by value descending: sort { $count{$b} <=> $count{$a} } keys %count&quot;, &quot;Use an END block to print the results after processing all lines&quot;], &quot;solution&quot;: &quot;```bash\nperl -ne &#39;\n  $m{$1}++ if /\&quot;(\\w+)\\s/;\n  END { printf \&quot;%d %s\\n\&quot;, $m{$_}, $_ for sort { $m{$b} <=> $m{$a} } keys %m }\n&#39; access.log\n```\n\nThe regex `/\&quot;(\\w+)\\s/` captures the first word after a double quote,\nwhich is the HTTP method. The hash `%m` accumulates counts. The END\nblock sorts by count descending and prints each method with its count.\n\nA more explicit version that only matches known methods:\n```bash\nperl -ne &#39;\n  $m{$1}++ if /\&quot;(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s/;\n  END { printf \&quot;%d %s\\n\&quot;, $m{$_}, $_ for sort { $m{$b} <=> $m{$a} } keys %m }\n&#39; access.log\n```&quot;}"><noscript><p><strong>Extract and Count Patterns from a Log</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-command-builder" data-config="{&quot;base&quot;: &quot;perl&quot;, &quot;description&quot;: &quot;Build a Perl one-liner with common flags for text processing&quot;, &quot;options&quot;: [{&quot;flag&quot;: &quot;-e&quot;, &quot;type&quot;: &quot;text&quot;, &quot;label&quot;: &quot;Code to execute&quot;, &quot;explanation&quot;: &quot;The Perl code to run. Wrap in single quotes.&quot;, &quot;placeholder&quot;: &quot;&#39;print if /pattern/&#39;&quot;}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Loop mode&quot;, &quot;explanation&quot;: &quot;How to handle input lines&quot;, &quot;choices&quot;: [[&quot;-n&quot;, &quot;Read loop without auto-print (-n)&quot;], [&quot;-p&quot;, &quot;Read loop with auto-print (-p)&quot;], [&quot;&quot;, &quot;No loop (process arguments or generate output)&quot;]]}, {&quot;flag&quot;: &quot;-l&quot;, &quot;type&quot;: &quot;toggle&quot;, &quot;label&quot;: &quot;Auto-chomp and add newlines (-l)&quot;, &quot;explanation&quot;: &quot;Strip newline from input, add newline to output. Useful with -n.&quot;}, {&quot;flag&quot;: &quot;-a&quot;, &quot;type&quot;: &quot;toggle&quot;, &quot;label&quot;: &quot;Autosplit into @F (-a)&quot;, &quot;explanation&quot;: &quot;Split each input line on whitespace into @F array.&quot;}, {&quot;flag&quot;: &quot;-F&quot;, &quot;type&quot;: &quot;text&quot;, &quot;label&quot;: &quot;Field separator&quot;, &quot;explanation&quot;: &quot;Custom split pattern for -a mode (e.g., : or , or &#39;/\\t/&#39;)&quot;, &quot;placeholder&quot;: &quot;:&quot;}, {&quot;flag&quot;: &quot;-i&quot;, &quot;type&quot;: &quot;text&quot;, &quot;label&quot;: &quot;In-place edit extension&quot;, &quot;explanation&quot;: &quot;Edit files in place. Provide backup extension (e.g., .bak) or leave empty for no backup.&quot;, &quot;placeholder&quot;: &quot;.bak&quot;}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;text&quot;, &quot;label&quot;: &quot;Input file(s)&quot;, &quot;explanation&quot;: &quot;File or files to process. Leave empty for STDIN.&quot;, &quot;placeholder&quot;: &quot;access.log&quot;}]}"><noscript><p><strong>Command Builder</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;CSV-to-JSON Converter One-Liner&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;Write a Perl one-liner (or short chain) that converts a simple CSV file into JSON format.\n\nInput (data.csv):\n```\nname,age,city\nAlice,30,Portland\nBob,25,Seattle\nCarol,35,Denver\n```\n\nExpected output:\n```json\n[\n  {\&quot;name\&quot;: \&quot;Alice\&quot;, \&quot;age\&quot;: \&quot;30\&quot;, \&quot;city\&quot;: \&quot;Portland\&quot;},\n  {\&quot;name\&quot;: \&quot;Bob\&quot;, \&quot;age\&quot;: \&quot;25\&quot;, \&quot;city\&quot;: \&quot;Seattle\&quot;},\n  {\&quot;name\&quot;: \&quot;Carol\&quot;, \&quot;age\&quot;: \&quot;35\&quot;, \&quot;city\&quot;: \&quot;Denver\&quot;}\n]\n```\n\nRequirements:\n1. The first line is the header row (field names)\n2. Each subsequent line becomes a JSON object using those field names as keys\n3. All values are strings (no numeric conversion needed)\n4. Output valid JSON with proper commas between objects (no trailing comma)\n\nYou may use multiple `-e` flags or a single `-e` with semicolons. The solution should work with any number of columns and any number of data rows.\n&quot;, &quot;hints&quot;: [&quot;Store the header fields in a BEGIN-like way: chomp and split the first line when $. == 1&quot;, &quot;Use $. (the line number variable) to detect the header: if ($. == 1) { @h = split /,/; next }&quot;, &quot;Build each JSON object: join(&#39;, &#39;, map { qq(\&quot;$h[$_]\&quot;: \&quot;$F[$_]\&quot;) } 0..$#h)&quot;, &quot;Collect all objects in an array, then print in the END block with proper formatting&quot;, &quot;Handle commas between objects: join(\&quot;,\\n\&quot;, @objects)&quot;], &quot;solution&quot;: &quot;```bash\nperl -F, -lane &#39;\n  if ($. == 1) { @h = @F; next }\n  push @rows, \&quot;  {\&quot; . join(\&quot;, \&quot;, map { \&quot;\\\&quot;$h[$_]\\\&quot;: \\\&quot;$F[$_]\\\&quot;\&quot; } 0..$#h) . \&quot;}\&quot;;\n  END {\n    print \&quot;[\\n\&quot; . join(\&quot;,\\n\&quot;, @rows) . \&quot;\\n]\&quot;;\n  }\n&#39; data.csv\n```\n\nHow it works:\n- `-F,` splits on commas, `-l` strips newlines, `-a` populates `@F`, `-n` loops\n- Line 1 (`$. == 1`): store header fields in `@h`, skip to the next line\n- Subsequent lines: `map` pairs each header with its corresponding field value,\n  wrapping both in quotes. The `join` combines them into a JSON object string.\n- `END` block: joins all objects with comma-newline separators and wraps\n  in square brackets.\n\nFor production use with quoted fields, use `Text::CSV` and `JSON::PP`\nmodules instead of manual splitting.&quot;}"><noscript><p><strong>CSV-to-JSON Converter One-Liner</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://perldoc.perl.org/perlrun">perlrun</a> - complete reference for Perl command-line flags and environment variables</li>
+<li><a href="https://perldoc.perl.org/perlvar">perlvar</a> - special variables including <code>$_</code>, <code>@F</code>, <code>$.</code>, and <code>$/</code></li>
+<li><a href="https://www.oreilly.com/library/view/perl-one-liners/9781457185830/">Perl One-Liners Cookbook</a> - Peteris Krumins' collection of practical one-liners with explanations</li>
+<li><a href="https://www.manning.com/books/minimal-perl-for-unix-and-linux-people">Minimal Perl</a> - Tim Maher's guide to Perl as a Unix command-line tool</li>
+<li><a href="https://perldoc.perl.org/perlre">perlre</a> - regex reference for the patterns used throughout one-liners</li>
+<li><a href="https://metacpan.org/pod/Text::CSV">Text::CSV documentation</a> - robust CSV parsing for when simple splitting is not enough</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../testing/">Testing</a> | <strong>Next:</strong> <a href="../networking-daemons/">Networking and Daemons</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+Text%20Processing%20and%20One-Liners" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

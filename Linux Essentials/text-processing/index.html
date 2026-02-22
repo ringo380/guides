@@ -1,0 +1,5379 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical technical guides on Linux, DNS, Git, databases, and development">
+      
+      
+        <meta name="author" content="Ryan Robson">
+      
+      
+        <link rel="canonical" href="https://ringo380.github.io/guides/Linux%20Essentials/text-processing/">
+      
+      
+        <link rel="prev" href="../streams-and-redirection/">
+      
+      
+        <link rel="next" href="../finding-files/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+    
+    
+      
+        <title>Text Processing - The Runbook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/interactive.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/lightbox.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-56L2QXTFGR"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-56L2QXTFGR",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-56L2QXTFGR",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>if("undefined"!=typeof __md_analytics){var consent=__md_get("__consent");consent&&consent.analytics&&__md_analytics()}</script>
+  
+
+    
+    
+  
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Text Processing - The Runbook" />
+<meta property="og:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="og:image" content="https://ringo380.github.io/guides/assets/images/social/Linux%20Essentials/text-processing.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://ringo380.github.io/guides/Linux%20Essentials/text-processing/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Text Processing - The Runbook" />
+<meta property="twitter:description" content="Practical technical guides on Linux, DNS, Git, databases, and development" />
+<meta property="twitter:image" content="https://ringo380.github.io/guides/assets/images/social/Linux%20Essentials/text-processing.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#text-processing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="The Runbook" class="md-header__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            The Runbook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Text Processing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Linux Essentials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../DNS%20Administration/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  DNS Administration
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Git/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Git
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Databases/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Databases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Dev%20Zero/Perl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Dev Zero
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="The Runbook" class="md-nav__button md-logo" aria-label="The Runbook" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.svg" alt="logo">
+
+    </a>
+    The Runbook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ringo380/guides" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ringo380/guides
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux Essentials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Linux Essentials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shell-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shell Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streams-and-redirection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streams and Redirection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#grep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        grep
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="grep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Lines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recursive-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recursive Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regular-expressions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regular Expressions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Regular Expressions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-regular-expressions-bre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Regular Expressions (BRE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extended-regular-expressions-ere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extended Regular Expressions (ERE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#posix-character-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POSIX Character Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backreferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backreferences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#perl-compatible-regular-expressions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Perl-Compatible Regular Expressions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="sed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#substitute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Substitute
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insert-and-append" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insert and Append
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#print" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Print
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-place-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In-Place Editing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extended-regex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extended Regex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#awk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        awk
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="awk">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-separator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Separator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#begin-and-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BEGIN and END
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-functions-and-printf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in Functions and printf
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variables-and-arithmetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables and Arithmetic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cut
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="cut">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#by-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by-character-position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By Character Position
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sort
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="sort">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uniq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        uniq
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="uniq">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tr
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="tr">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#translate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Translate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squeeze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Squeeze
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#character-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Character Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        wc
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#head-and-tail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        head and tail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="head and tail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#head" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        head
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#following-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Following Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tee
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combining-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combining Tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Combining Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-down-pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Down Pipelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../finding-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding Files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../file-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../job-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Job Control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scripting-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripting Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../disk-and-filesystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disk and Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-information/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Information
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../archiving-and-compression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archiving and Compression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../DNS%20Administration/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Administration
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DNS Administration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/zone-files-and-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zone Files and Records
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Tools and Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/bind/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIND
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/nsd-and-unbound/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NSD and Unbound
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/powerdns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PowerDNS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dnssec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNSSEC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DNS%20Administration/dns-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DNS Architecture and Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Git/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Git
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/three-trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Three Trees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/commits-and-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commits and History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/branches-and-merging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Branches and Merging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/remote-repositories/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/rewriting-history/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rewriting History
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/stashing-and-worktree/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stashing and the Worktree
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/configuring-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/object-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Object Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/refs-reflog-dag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refs, the Reflog, and the DAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/transfer-protocols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transfer Protocols
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/collaboration-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Collaboration Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/hooks-and-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hooks and Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/monorepos-and-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monorepos and Scaling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Git/troubleshooting-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting and Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Databases/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/sql-essentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Essentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Design & Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-installation-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Installation & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Performance & Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mysql-replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MySQL Replication & HA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Fundamentals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-administration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Administration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/postgresql-advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/nosql-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NoSQL Concepts & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/mongodb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MongoDB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/backup-and-recovery/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Recovery Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/database-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/scaling-and-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scaling & Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Databases/innodb-recovery-pdrt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    InnoDB Recovery with PDRT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Zero
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Dev Zero
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Dev%20Zero/Perl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Perl
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Perl
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_dev0_introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/scalars-strings-numbers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scalars, Strings, and Numbers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/arrays-hashes-lists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arrays, Hashes, and Lists
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/control-flow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/regular-expressions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/subroutines-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Subroutines and References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/file-io-and-system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    File I/O and System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/modules-and-cpan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules and CPAN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/object-oriented-perl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Object-Oriented Perl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/error-handling-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error Handling and Debugging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/text-processing-oneliners/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Text Processing and One-Liners
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/networking-daemons/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking and Daemons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/web-frameworks-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Frameworks and APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Dev%20Zero/Perl/perl_developer_roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#grep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        grep
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="grep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Lines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recursive-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recursive Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regular-expressions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regular Expressions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Regular Expressions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-regular-expressions-bre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Regular Expressions (BRE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extended-regular-expressions-ere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extended Regular Expressions (ERE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#posix-character-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POSIX Character Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backreferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backreferences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#perl-compatible-regular-expressions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Perl-Compatible Regular Expressions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="sed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#substitute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Substitute
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insert-and-append" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insert and Append
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#print" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Print
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-place-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In-Place Editing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extended-regex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extended Regex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#awk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        awk
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="awk">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#field-separator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field Separator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#begin-and-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BEGIN and END
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-functions-and-printf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in Functions and printf
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variables-and-arithmetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables and Arithmetic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cut
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="cut">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#by-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by-character-position" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        By Character Position
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sort
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="sort">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uniq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        uniq
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="uniq">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tr
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="tr">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#translate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Translate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#squeeze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Squeeze
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#character-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Character Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-examples_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        wc
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#head-and-tail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        head and tail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="head and tail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#head" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        head
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#following-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Following Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tee
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combining-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combining Tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Combining Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-down-pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Down Pipelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further Reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ringo380/guides/edit/main/Linux Essentials/text-processing.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="text-processing">Text Processing<a class="headerlink" href="#text-processing" title="Permanent link">&para;</a></h1>
+<p>Linux provides a rich set of tools for searching, transforming, and analyzing text. These commands are designed to work with streams and pipelines, making them composable building blocks for data processing.</p>
+<hr />
+<h2 id="grep">grep<a class="headerlink" href="#grep" title="Permanent link">&para;</a></h2>
+<p><a href="https://www.gnu.org/software/grep/manual/"><strong><code>grep</code></strong></a> searches for lines matching a pattern. It's one of the most frequently used commands on any Linux system.</p>
+<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>grep<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>/var/log/syslog<span class="w">           </span><span class="c1"># lines containing &quot;error&quot;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>grep<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>file1.txt<span class="w"> </span>file2.txt<span class="w">       </span><span class="c1"># search multiple files</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>grep<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>*.log<span class="w">                     </span><span class="c1"># search files matching a glob</span>
+</span></code></pre></div>
+<h3 id="common-options">Common Options<a class="headerlink" href="#common-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-i</code></td>
+<td>Case-insensitive search</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>Invert match (lines that don't contain the pattern)</td>
+</tr>
+<tr>
+<td><code>-c</code></td>
+<td>Print count of matching lines instead of the lines</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>Show line numbers</td>
+</tr>
+<tr>
+<td><code>-l</code></td>
+<td>Print only filenames containing a match</td>
+</tr>
+<tr>
+<td><code>-L</code></td>
+<td>Print only filenames NOT containing a match</td>
+</tr>
+<tr>
+<td><code>-o</code></td>
+<td>Print only the matched portion of each line</td>
+</tr>
+<tr>
+<td><code>-w</code></td>
+<td>Match whole words only</td>
+</tr>
+<tr>
+<td><code>-x</code></td>
+<td>Match whole lines only</td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>Recursive search through directories</td>
+</tr>
+<tr>
+<td><code>-F</code></td>
+<td>Treat pattern as a fixed string (no regex)</td>
+</tr>
+<tr>
+<td><code>-E</code></td>
+<td>Use extended regular expressions</td>
+</tr>
+<tr>
+<td><code>-P</code></td>
+<td>Use Perl-compatible regular expressions</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Use -F for literal string searches</p>
+<p>When searching for strings that contain regex metacharacters like <code>.</code>, <code>*</code>, <code>[</code>, or <code>?</code>, use <code>grep -F</code> to treat the pattern as a fixed string. This avoids unexpected matches and is also slightly faster since grep skips the regex engine entirely.</p>
+</div>
+<p>The most used flags in practice: <strong><code>-r</code></strong> to search an entire project tree, <strong><code>-l</code></strong> when you just need to know <em>which files</em> contain something (not the matching lines themselves), <strong><code>-o</code></strong> to extract just the matched text (useful for pulling values out of structured data), <strong><code>-c</code></strong> to count matches per file without seeing the actual lines, <strong><code>-F</code></strong> when your search string contains regex metacharacters like <code>.</code> or <code>*</code> and you want to search for them literally, and <strong><code>-P</code></strong> when you need advanced features like lookahead or non-greedy matching that basic and extended regex can't do.</p>
+<h3 id="context-lines">Context Lines<a class="headerlink" href="#context-lines" title="Permanent link">&para;</a></h3>
+<p>Show lines surrounding each match:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>log.txt<span class="w">     </span><span class="c1"># 3 lines After each match</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>grep<span class="w"> </span>-B<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>log.txt<span class="w">     </span><span class="c1"># 2 lines Before each match</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>grep<span class="w"> </span>-C<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>log.txt<span class="w">     </span><span class="c1"># 2 lines of Context (before and after)</span>
+</span></code></pre></div>
+<h3 id="recursive-search">Recursive Search<a class="headerlink" href="#recursive-search" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;TODO&quot;</span><span class="w"> </span>src/<span class="w">                    </span><span class="c1"># search all files under src/</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>grep<span class="w"> </span>-rn<span class="w"> </span><span class="s2">&quot;TODO&quot;</span><span class="w"> </span>src/<span class="w">                   </span><span class="c1"># same, with line numbers</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>grep<span class="w"> </span>-r<span class="w"> </span>--include<span class="o">=</span><span class="s2">&quot;*.py&quot;</span><span class="w"> </span><span class="s2">&quot;import&quot;</span><span class="w"> </span>.<span class="w">    </span><span class="c1"># only search .py files</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>grep<span class="w"> </span>-r<span class="w"> </span>--exclude-dir<span class="o">=</span><span class="s2">&quot;.git&quot;</span><span class="w"> </span><span class="s2">&quot;pattern&quot;</span><span class="w"> </span>.<span class="w">  </span><span class="c1"># skip .git directory</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">grep -r --include is more efficient than find | grep</p>
+<p>Use <code>grep -r --include='*.py' pattern .</code> instead of <code>find . -name '*.py' | xargs grep pattern</code>. The <code>--include</code> flag lets grep handle file filtering internally, avoiding the overhead of spawning separate processes. Add <code>--exclude-dir=.git</code> to skip version control directories.</p>
+</div>
+<h3 id="practical-examples">Practical Examples<a class="headerlink" href="#practical-examples" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Count occurrences in each file</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>grep<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="w"> </span>*.js
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Find files that contain a pattern</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>grep<span class="w"> </span>-rl<span class="w"> </span><span class="s2">&quot;deprecated&quot;</span><span class="w"> </span>src/
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Extract email addresses</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>grep<span class="w"> </span>-oE<span class="w"> </span><span class="s1">&#39;[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}&#39;</span><span class="w"> </span>contacts.txt
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># Show processes matching a name (excluding the grep itself)</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;[n]ginx&quot;</span>
+</span></code></pre></div>
+<hr />
+<h2 id="regular-expressions">Regular Expressions<a class="headerlink" href="#regular-expressions" title="Permanent link">&para;</a></h2>
+<p><strong>Regular expressions</strong> (regex) describe search patterns. grep supports three flavors.</p>
+<h3 id="basic-regular-expressions-bre">Basic Regular Expressions (BRE)<a class="headerlink" href="#basic-regular-expressions-bre" title="Permanent link">&para;</a></h3>
+<p>This is grep's default mode. Some metacharacters require backslash escaping.</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.</code></td>
+<td>Any single character</td>
+</tr>
+<tr>
+<td><code>^</code></td>
+<td>Start of line</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>End of line</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>Zero or more of the preceding element</td>
+</tr>
+<tr>
+<td><code>\+</code></td>
+<td>One or more of the preceding element</td>
+</tr>
+<tr>
+<td><code>\?</code></td>
+<td>Zero or one of the preceding element</td>
+</tr>
+<tr>
+<td><code>\{n\}</code></td>
+<td>Exactly n of the preceding element</td>
+</tr>
+<tr>
+<td><code>\{n,m\}</code></td>
+<td>Between n and m of the preceding element</td>
+</tr>
+<tr>
+<td><code>[abc]</code></td>
+<td>Any one character in the set</td>
+</tr>
+<tr>
+<td><code>[^abc]</code></td>
+<td>Any one character NOT in the set</td>
+</tr>
+<tr>
+<td><code>[a-z]</code></td>
+<td>Any character in the range</td>
+</tr>
+<tr>
+<td><code>\(group\)</code></td>
+<td>Capture group</td>
+</tr>
+<tr>
+<td><code>\1</code></td>
+<td>Backreference to first group</td>
+</tr>
+</tbody>
+</table>
+<h3 id="extended-regular-expressions-ere">Extended Regular Expressions (ERE)<a class="headerlink" href="#extended-regular-expressions-ere" title="Permanent link">&para;</a></h3>
+<p>Use <code>grep -E</code>. Metacharacters work without backslashes. (<code>egrep</code> is deprecated - use <code>grep -E</code> instead.)</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>+</code></td>
+<td>One or more</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>Zero or one</td>
+</tr>
+<tr>
+<td><code>{n,m}</code></td>
+<td>Repetition</td>
+</tr>
+<tr>
+<td><code>(group)</code></td>
+<td>Capture group</td>
+</tr>
+<tr>
+<td><code>\|</code></td>
+<td>Alternation (no backslash needed in ERE)</td>
+</tr>
+</tbody>
+</table>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># BRE</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>grep<span class="w"> </span><span class="s1">&#39;error\|warning&#39;</span><span class="w"> </span>log.txt
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># ERE (cleaner)</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>grep<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;error|warning&#39;</span><span class="w"> </span>log.txt
+</span></code></pre></div>
+<h3 id="posix-character-classes">POSIX Character Classes<a class="headerlink" href="#posix-character-classes" title="Permanent link">&para;</a></h3>
+<p>These work inside bracket expressions and are locale-aware:</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Equivalent</th>
+<th>Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[:digit:]</code></td>
+<td><code>[0-9]</code></td>
+<td>Digits</td>
+</tr>
+<tr>
+<td><code>[:alpha:]</code></td>
+<td><code>[a-zA-Z]</code></td>
+<td>Letters</td>
+</tr>
+<tr>
+<td><code>[:alnum:]</code></td>
+<td><code>[a-zA-Z0-9]</code></td>
+<td>Letters and digits</td>
+</tr>
+<tr>
+<td><code>[:upper:]</code></td>
+<td><code>[A-Z]</code></td>
+<td>Uppercase letters</td>
+</tr>
+<tr>
+<td><code>[:lower:]</code></td>
+<td><code>[a-z]</code></td>
+<td>Lowercase letters</td>
+</tr>
+<tr>
+<td><code>[:space:]</code></td>
+<td><code>[ \t\n\r\f\v]</code></td>
+<td>Whitespace</td>
+</tr>
+<tr>
+<td><code>[:blank:]</code></td>
+<td><code>[ \t]</code></td>
+<td>Space and tab</td>
+</tr>
+<tr>
+<td><code>[:punct:]</code></td>
+<td></td>
+<td>Punctuation characters</td>
+</tr>
+</tbody>
+</table>
+<p>Note the double brackets - the outer <code>[]</code> is the bracket expression, the inner <code>[:class:]</code> is the class name:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>grep<span class="w"> </span><span class="s1">&#39;[[:digit:]]\{3\}-[[:digit:]]\{4\}&#39;</span><span class="w"> </span>phones.txt<span class="w">    </span><span class="c1"># matches 555-1234</span>
+</span></code></pre></div>
+<p>POSIX character classes exist because of <strong>locale awareness</strong>. The range <code>[a-z]</code> doesn't always mean what you'd expect - in some locales (like <code>en_US.UTF-8</code>), the sort order interleaves upper and lowercase, so <code>[a-z]</code> can match uppercase letters too. <code>[:lower:]</code> always means 'lowercase letters in the current locale,' regardless of sorting rules. If you're writing scripts that will run on systems with different locale settings, POSIX classes are the safe choice. For quick interactive use where you know your locale, <code>[a-z]</code> is fine.</p>
+<h3 id="backreferences">Backreferences<a class="headerlink" href="#backreferences" title="Permanent link">&para;</a></h3>
+<p>Capture a group and match it again later:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Find repeated words (GNU grep - \b, \w, and \1 in ERE are GNU extensions)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>grep<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;\b(\w+)\s+\1\b&#39;</span><span class="w"> </span>document.txt
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Find lines where first and last word match (GNU grep - \w is a GNU extension)</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>grep<span class="w"> </span><span class="s1">&#39;^\([[:alpha:]]\+\).*\1$&#39;</span><span class="w"> </span>file.txt
+</span></code></pre></div>
+<h3 id="perl-compatible-regular-expressions">Perl-Compatible Regular Expressions<a class="headerlink" href="#perl-compatible-regular-expressions" title="Permanent link">&para;</a></h3>
+<p>Use <code>grep -P</code> for Perl-compatible regex (PCRE), which adds shorthand classes and advanced features not available in BRE or ERE:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Shorthand character classes</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>grep<span class="w"> </span>-P<span class="w"> </span><span class="s1">&#39;\d{3}-\d{4}&#39;</span><span class="w"> </span>phones.txt<span class="w">          </span><span class="c1"># \d = digit (like [0-9])</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>grep<span class="w"> </span>-P<span class="w"> </span><span class="s1">&#39;\bword\b&#39;</span><span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># \b = word boundary</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>grep<span class="w"> </span>-P<span class="w"> </span><span class="s1">&#39;\s+&#39;</span><span class="w"> </span>file.txt<span class="w">                    </span><span class="c1"># \s = whitespace</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1"># Lookahead and lookbehind</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>grep<span class="w"> </span>-P<span class="w"> </span><span class="s1">&#39;(?&lt;=price: )\d+&#39;</span><span class="w"> </span>catalog.txt<span class="w">     </span><span class="c1"># match digits preceded by &quot;price: &quot;</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>grep<span class="w"> </span>-P<span class="w"> </span><span class="s1">&#39;\d+(?= dollars)&#39;</span><span class="w"> </span>catalog.txt<span class="w">     </span><span class="c1"># match digits followed by &quot; dollars&quot;</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="c1"># Non-greedy matching</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>grep<span class="w"> </span>-oP<span class="w"> </span><span class="s1">&#39;&quot;.*?&quot;&#39;</span><span class="w"> </span>data.json<span class="w">                </span><span class="c1"># match shortest quoted strings</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">grep -P is not available everywhere</p>
+<p>The <code>-P</code> flag (Perl-compatible regex) is a GNU grep extension. macOS ships BSD grep, which lacks <code>-P</code> entirely. Install GNU grep via Homebrew (<code>brew install grep</code>, then use <code>ggrep -P</code>) or rewrite the pattern using <code>-E</code> (extended regex) when portability matters.</p>
+</div>
+<p><code>-P</code> is a GNU grep extension and may not be available on all systems (notably macOS, where you can install GNU grep via Homebrew as <code>ggrep</code>).</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What is the difference between grep and grep -E (or egrep)?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;grep -E is faster because it uses a compiled regex engine&quot;, &quot;feedback&quot;: &quot;The difference is syntax, not speed. Both use the same underlying regex engine.&quot;}, {&quot;text&quot;: &quot;grep uses Basic Regular Expressions; grep -E uses Extended Regular Expressions&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! In BRE, metacharacters like +, ?, |, (, and ) need backslash escaping. In ERE (grep -E), they&#39;re special by default. The matching power is identical.&quot;}, {&quot;text&quot;: &quot;grep -E supports multiline matching while grep doesn&#39;t&quot;, &quot;feedback&quot;: &quot;Neither grep nor grep -E does multiline matching by default. The difference is BRE vs ERE syntax for metacharacters.&quot;}, {&quot;text&quot;: &quot;grep only supports literal string matching&quot;, &quot;feedback&quot;: &quot;grep supports full regular expressions (BRE). Characters like . and * are special in BRE too.&quot;}]}"><noscript><p><strong>What is the difference between grep and grep -E (or egrep)?</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-command-builder" data-config="{&quot;base&quot;: &quot;grep&quot;, &quot;description&quot;: &quot;Build a grep command to search file contents with regex&quot;, &quot;options&quot;: [{&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Regex mode&quot;, &quot;explanation&quot;: &quot;Basic (BRE) or Extended (ERE) regular expressions&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;Basic regex (default)&quot;], [&quot;-E&quot;, &quot;Extended regex (-E)&quot;], [&quot;-P&quot;, &quot;Perl regex (-P)&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Match options&quot;, &quot;explanation&quot;: &quot;How to match the pattern&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;Default matching&quot;], [&quot;-i&quot;, &quot;Case insensitive (-i)&quot;], [&quot;-w&quot;, &quot;Whole words only (-w)&quot;], [&quot;-x&quot;, &quot;Whole lines only (-x)&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Output mode&quot;, &quot;explanation&quot;: &quot;What to show in results&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;Matching lines (default)&quot;], [&quot;-c&quot;, &quot;Count of matches (-c)&quot;], [&quot;-l&quot;, &quot;Filenames only (-l)&quot;], [&quot;-n&quot;, &quot;Line numbers (-n)&quot;], [&quot;-o&quot;, &quot;Only matching part (-o)&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Context&quot;, &quot;explanation&quot;: &quot;Show surrounding lines&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;No context&quot;], [&quot;-B 3&quot;, &quot;3 lines before (-B 3)&quot;], [&quot;-A 3&quot;, &quot;3 lines after (-A 3)&quot;], [&quot;-C 3&quot;, &quot;3 lines around (-C 3)&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Scope&quot;, &quot;explanation&quot;: &quot;Where to search&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;Single file&quot;], [&quot;-r&quot;, &quot;Recursive directory (-r)&quot;], [&quot;-r --include=&#39;*.py&#39;&quot;, &quot;Recursive, specific type (-r --include)&quot;]]}]}"><noscript><p><strong>Command Builder</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="sed">sed<a class="headerlink" href="#sed" title="Permanent link">&para;</a></h2>
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/sed-processing-model.svg" alt="sed processing model showing the read-match-apply cycle for each line of input">
+</div>
+
+<p><a href="https://www.gnu.org/software/sed/manual/"><strong><code>sed</code></strong></a> (stream editor) transforms text line by line. It reads input, applies editing commands, and writes the result.</p>
+<h3 id="substitute">Substitute<a class="headerlink" href="#substitute" title="Permanent link">&para;</a></h3>
+<p>The most common sed operation is substitution:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sed<span class="w"> </span><span class="s1">&#39;s/old/new/&#39;</span><span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># replace first occurrence on each line</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>sed<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt<span class="w">       </span><span class="c1"># replace all occurrences on each line</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>sed<span class="w"> </span><span class="s1">&#39;s/old/new/gI&#39;</span><span class="w"> </span>file.txt<span class="w">      </span><span class="c1"># case-insensitive, all occurrences (GNU sed only)</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>sed<span class="w"> </span><span class="s1">&#39;s/old/new/3&#39;</span><span class="w"> </span>file.txt<span class="w">       </span><span class="c1"># replace only the 3rd occurrence on each line</span>
+</span></code></pre></div>
+<p>The delimiter doesn't have to be <code>/</code>. Use any character to avoid escaping:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sed<span class="w"> </span><span class="s1">&#39;s|/usr/local|/opt|g&#39;</span><span class="w"> </span>config.txt
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>sed<span class="w"> </span><span class="s1">&#39;s#http://#https://#g&#39;</span><span class="w"> </span>urls.txt
+</span></code></pre></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;sed Line-by-Line Processing&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;echo -e &#39;hello world\\nhello bash\\ngoodbye world&#39; | sed &#39;s/hello/hi/&#39;&quot;, &quot;output&quot;: &quot;hi world\nhi bash\ngoodbye world\n&quot;, &quot;narration&quot;: &quot;Without the g flag, sed replaces only the first &#39;hello&#39; on each line. Since each line has at most one, all are replaced here.&quot;}, {&quot;command&quot;: &quot;echo &#39;hello hello hello&#39; | sed &#39;s/hello/hi/&#39;&quot;, &quot;output&quot;: &quot;hi hello hello&quot;, &quot;narration&quot;: &quot;Now you see it - only the first occurrence on the line is replaced. The other two &#39;hello&#39; remain.&quot;}, {&quot;command&quot;: &quot;echo &#39;hello hello hello&#39; | sed &#39;s/hello/hi/g&#39;&quot;, &quot;output&quot;: &quot;hi hi hi&quot;, &quot;narration&quot;: &quot;The g flag replaces ALL occurrences on each line. This is usually what you want.&quot;}, {&quot;command&quot;: &quot;echo -e &#39;line 1\\nline 2\\nline 3&#39; | sed &#39;2d&#39;&quot;, &quot;output&quot;: &quot;line 1\nline 3\n&quot;, &quot;narration&quot;: &quot;sed can address specific lines. &#39;2d&#39; deletes line 2. Addresses can be line numbers, patterns, or ranges.&quot;}]}"><noscript><p><strong>sed Line-by-Line Processing</strong> (requires JavaScript)</p></noscript></div>
+<h3 id="addresses">Addresses<a class="headerlink" href="#addresses" title="Permanent link">&para;</a></h3>
+<p>Sed commands can target specific lines:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>sed<span class="w"> </span><span class="s1">&#39;5s/old/new/&#39;</span><span class="w"> </span>file.txt<span class="w">           </span><span class="c1"># only line 5</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>sed<span class="w"> </span><span class="s1">&#39;1,10s/old/new/&#39;</span><span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># lines 1 through 10</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>sed<span class="w"> </span><span class="s1">&#39;/pattern/s/old/new/&#39;</span><span class="w"> </span>file.txt<span class="w">   </span><span class="c1"># lines matching pattern</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>sed<span class="w"> </span><span class="s1">&#39;1,/END/s/old/new/&#39;</span><span class="w"> </span>file.txt<span class="w">     </span><span class="c1"># line 1 through first line matching END</span>
+</span></code></pre></div>
+<h3 id="delete">Delete<a class="headerlink" href="#delete" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>sed<span class="w"> </span><span class="s1">&#39;5d&#39;</span><span class="w"> </span>file.txt<span class="w">                </span><span class="c1"># delete line 5</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>sed<span class="w"> </span><span class="s1">&#39;/^#/d&#39;</span><span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># delete comment lines</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>sed<span class="w"> </span><span class="s1">&#39;/^$/d&#39;</span><span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># delete empty lines</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>sed<span class="w"> </span><span class="s1">&#39;1,5d&#39;</span><span class="w"> </span>file.txt<span class="w">              </span><span class="c1"># delete lines 1-5</span>
+</span></code></pre></div>
+<h3 id="insert-and-append">Insert and Append<a class="headerlink" href="#insert-and-append" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>sed<span class="w"> </span><span class="s1">&#39;3i\New line before line 3&#39;</span><span class="w"> </span>file.txt<span class="w">    </span><span class="c1"># insert before line 3</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>sed<span class="w"> </span><span class="s1">&#39;3a\New line after line 3&#39;</span><span class="w"> </span>file.txt<span class="w">     </span><span class="c1"># append after line 3</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>sed<span class="w"> </span><span class="s1">&#39;/pattern/a\Added after matching line&#39;</span><span class="w"> </span>file.txt
+</span></code></pre></div>
+<h3 id="print">Print<a class="headerlink" href="#print" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;5p&#39;</span><span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># print only line 5</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;10,20p&#39;</span><span class="w"> </span>file.txt<span class="w">         </span><span class="c1"># print lines 10-20</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/start/,/end/p&#39;</span><span class="w"> </span>file.txt<span class="w"> </span><span class="c1"># print between patterns (inclusive)</span>
+</span></code></pre></div>
+<p>The <code>-n</code> flag suppresses default output, so only explicitly printed lines appear.</p>
+<div class="admonition tip">
+<p class="admonition-title">Use sed -n with p for selective printing</p>
+<p>Combining <code>-n</code> (suppress default output) with the <code>p</code> command turns sed into a powerful line extractor. <code>sed -n '10,20p'</code> prints only lines 10-20, and <code>sed -n '/start/,/end/p'</code> prints blocks between patterns. Without <code>-n</code>, you'd see every line twice - once from default output and once from <code>p</code>.</p>
+</div>
+<h3 id="in-place-editing">In-Place Editing<a class="headerlink" href="#in-place-editing" title="Permanent link">&para;</a></h3>
+<div class="admonition danger">
+<p class="admonition-title">In-place sed without backup can destroy data</p>
+<p>Running <code>sed -i</code> without a backup suffix modifies the file directly with no undo. If your substitution has a bug, the original content is gone. Always use <code>sed -i.bak</code> to create a backup, or test with <code>sed 's/old/new/g' file.txt</code> (no <code>-i</code>) first to preview the output.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">macOS sed requires -i ''</p>
+<p>GNU sed and BSD sed (macOS) handle <code>-i</code> differently. GNU sed allows <code>sed -i 's/...'</code> with no argument, but macOS sed requires an explicit backup extension: <code>sed -i '' 's/...'</code> (empty string for no backup) or <code>sed -i .bak 's/...'</code>. Scripts that must run on both need conditional handling or should use GNU sed from Homebrew.</p>
+</div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt<span class="w">           </span><span class="c1"># edit file directly (GNU sed)</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># macOS sed (requires empty string for backup)</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>sed<span class="w"> </span>-i.bak<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt<span class="w">       </span><span class="c1"># create backup before editing</span>
+</span></code></pre></div>
+<h3 id="extended-regex">Extended Regex<a class="headerlink" href="#extended-regex" title="Permanent link">&para;</a></h3>
+<p>Use <code>-E</code> for extended regex (same as <code>grep -E</code>):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>sed<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;s/[0-9]{3}-[0-9]{4}/XXX-XXXX/g&#39;</span><span class="w"> </span>data.txt
+</span></code></pre></div>
+<h3 id="multiple-commands">Multiple Commands<a class="headerlink" href="#multiple-commands" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/foo/bar/g&#39;</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/baz/qux/g&#39;</span><span class="w"> </span>file.txt
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="c1"># Or use a semicolon</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>sed<span class="w"> </span><span class="s1">&#39;s/foo/bar/g; s/baz/qux/g&#39;</span><span class="w"> </span>file.txt
+</span></code></pre></div>
+<h3 id="practical-examples_1">Practical Examples<a class="headerlink" href="#practical-examples_1" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Remove trailing whitespace</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>sed<span class="w"> </span><span class="s1">&#39;s/[[:space:]]*$//&#39;</span><span class="w"> </span>file.txt
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Add a prefix to every line</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>sed<span class="w"> </span><span class="s1">&#39;s/^/PREFIX: /&#39;</span><span class="w"> </span>file.txt
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="c1"># Extract text between markers</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/BEGIN/,/END/p&#39;</span><span class="w"> </span>file.txt
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="c1"># Replace the 2nd line</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>sed<span class="w"> </span><span class="s1">&#39;2c\This replaces the second line&#39;</span><span class="w"> </span>file.txt
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="c1"># Number all non-empty lines</span>
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>sed<span class="w"> </span><span class="s1">&#39;/./=&#39;</span><span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;N; s/\n/ /&#39;</span>
+</span></code></pre></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;What does the g flag do at the end of a sed substitution (s/old/new/g)?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;Makes the substitution case-insensitive (global matching)&quot;, &quot;feedback&quot;: &quot;Case-insensitive matching uses the I flag (s/old/new/I in GNU sed). The g flag controls how many replacements per line.&quot;}, {&quot;text&quot;: &quot;Applies the substitution to all lines in the file&quot;, &quot;feedback&quot;: &quot;sed already applies substitutions to all lines by default. The g flag controls how many replacements happen within each line.&quot;}, {&quot;text&quot;: &quot;Replaces all occurrences on each line, not just the first&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! Without g, sed only replaces the first match on each line. With g, it replaces every match. This is one of the most common sed gotchas.&quot;}, {&quot;text&quot;: &quot;Writes the result to a new file instead of stdout&quot;, &quot;feedback&quot;: &quot;Writing to files uses sed -i (in-place) or output redirection. The g flag controls per-line replacement count.&quot;}]}"><noscript><p><strong>What does the g flag do at the end of a sed substitution (s/old/new/g)?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="awk">awk<a class="headerlink" href="#awk" title="Permanent link">&para;</a></h2>
+<figure class="photo-frame photo-left" style="max-width: 250px;">
+<img src="../../assets/images/linux-essentials/brian-kernighan.jpg" alt="Brian Kernighan at Bell Labs">
+<figcaption>
+Brian Kernighan at a Bell Labs tribute to Dennis Ritchie, 2012. The "K" in awk, Kernighan co-authored "The C Programming Language" and coined the name "Unix."
+<span class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Brian_Kernighan_in_2012_at_Bell_Labs_1.jpg">Ben Lowe</a>, CC BY 2.0</span>
+</figcaption>
+</figure>
+
+<p><a href="https://www.gnu.org/software/gawk/manual/"><strong><code>awk</code></strong></a> is a pattern-scanning and text-processing language. It excels at working with structured, column-based data.</p>
+<h3 id="basic-structure">Basic Structure<a class="headerlink" href="#basic-structure" title="Permanent link">&para;</a></h3>
+<p>An awk program is a series of <strong>pattern-action</strong> pairs:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>awk<span class="w"> </span><span class="s1">&#39;pattern { action }&#39;</span><span class="w"> </span>file
+</span></code></pre></div>
+<p>If no pattern is given, the action runs on every line. If no action is given, the matching line is printed.</p>
+<h3 id="fields">Fields<a class="headerlink" href="#fields" title="Permanent link">&para;</a></h3>
+<p>Awk automatically splits each line into fields. By default, the separator is whitespace.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$0</code></td>
+<td>The entire line</td>
+</tr>
+<tr>
+<td><code>$1</code>, <code>$2</code>, ...</td>
+<td>Individual fields</td>
+</tr>
+<tr>
+<td><code>$NF</code></td>
+<td>The last field</td>
+</tr>
+<tr>
+<td><code>NF</code></td>
+<td>Number of fields on the current line</td>
+</tr>
+<tr>
+<td><code>NR</code></td>
+<td>Current line number (across all files)</td>
+</tr>
+<tr>
+<td><code>FNR</code></td>
+<td>Line number in the current file</td>
+</tr>
+</tbody>
+</table>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Print the second column</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>awk<span class="w"> </span><span class="s1">&#39;{ print $2 }&#39;</span><span class="w"> </span>data.txt
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># Print the last column</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>awk<span class="w"> </span><span class="s1">&#39;{ print $NF }&#39;</span><span class="w"> </span>data.txt
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="c1"># Print line number and first field</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>awk<span class="w"> </span><span class="s1">&#39;{ print NR, $1 }&#39;</span><span class="w"> </span>data.txt
+</span></code></pre></div>
+<div class="interactive-terminal" data-config="{&quot;title&quot;: &quot;awk Field Splitting&quot;, &quot;steps&quot;: [{&quot;command&quot;: &quot;echo &#39;John 25 Engineer&#39; | awk &#39;{print $1}&#39;&quot;, &quot;output&quot;: &quot;John&quot;, &quot;narration&quot;: &quot;awk automatically splits each line into fields by whitespace. $1 is the first field.&quot;}, {&quot;command&quot;: &quot;echo &#39;John 25 Engineer&#39; | awk &#39;{print $3, $1}&#39;&quot;, &quot;output&quot;: &quot;Engineer John&quot;, &quot;narration&quot;: &quot;You can rearrange fields. The comma inserts the output field separator (space by default).&quot;}, {&quot;command&quot;: &quot;echo &#39;John 25 Engineer&#39; | awk &#39;{print NF, $NF}&#39;&quot;, &quot;output&quot;: &quot;3 Engineer&quot;, &quot;narration&quot;: &quot;NF is the number of fields (3). $NF is the value of the last field (field 3 = Engineer).&quot;}, {&quot;command&quot;: &quot;echo &#39;192.168.1.1:8080&#39; | awk -F: &#39;{print $1, $2}&#39;&quot;, &quot;output&quot;: &quot;192.168.1.1 8080&quot;, &quot;narration&quot;: &quot;-F sets the field separator. With -F: the colon splits the IP from the port.&quot;}]}"><noscript><p><strong>awk Field Splitting</strong> (requires JavaScript)</p></noscript></div>
+<h3 id="field-separator">Field Separator<a class="headerlink" href="#field-separator" title="Permanent link">&para;</a></h3>
+<p>Use <code>-F</code> to set the field separator:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>awk<span class="w"> </span>-F:<span class="w"> </span><span class="s1">&#39;{ print $1, $7 }&#39;</span><span class="w"> </span>/etc/passwd<span class="w">          </span><span class="c1"># username and shell</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>awk<span class="w"> </span>-F,<span class="w"> </span><span class="s1">&#39;{ print $2 }&#39;</span><span class="w"> </span>data.csv<span class="w">                  </span><span class="c1"># second column of CSV</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>awk<span class="w"> </span>-F<span class="s1">&#39;\t&#39;</span><span class="w"> </span><span class="s1">&#39;{ print $3 }&#39;</span><span class="w"> </span>data.tsv<span class="w">               </span><span class="c1"># tab-separated</span>
+</span></code></pre></div>
+<h3 id="patterns">Patterns<a class="headerlink" href="#patterns" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Lines matching a regex</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>awk<span class="w"> </span><span class="s1">&#39;/error/&#39;</span><span class="w"> </span>log.txt
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># Lines where a field matches</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>awk<span class="w"> </span><span class="s1">&#39;$3 &gt; 100&#39;</span><span class="w"> </span>data.txt
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="c1"># Lines where a specific field matches a pattern</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>awk<span class="w"> </span><span class="s1">&#39;$1 ~ /^server/&#39;</span><span class="w"> </span>config.txt
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="c1"># Lines where a field does NOT match</span>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>awk<span class="w"> </span><span class="s1">&#39;$1 !~ /^#/&#39;</span><span class="w"> </span>config.txt
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="c1"># Range patterns</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>awk<span class="w"> </span><span class="s1">&#39;/START/,/END/&#39;</span><span class="w"> </span>file.txt
+</span></code></pre></div>
+<h3 id="begin-and-end">BEGIN and END<a class="headerlink" href="#begin-and-end" title="Permanent link">&para;</a></h3>
+<p><strong><code>BEGIN</code></strong> runs before processing any input. <strong><code>END</code></strong> runs after all input is processed.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>awk<span class="w"> </span><span class="s1">&#39;BEGIN { print &quot;Name\tScore&quot; } { print $1, $2 } END { print &quot;---done---&quot; }&#39;</span><span class="w"> </span>data.txt
+</span></code></pre></div>
+<div class="interactive-code-walkthrough" data-config="{&quot;language&quot;: &quot;awk&quot;, &quot;title&quot;: &quot;awk BEGIN/END Block Pattern&quot;, &quot;code&quot;: &quot;awk &#39;BEGIN { FS=\&quot;:\&quot;; total=0 }\n     { total += $3 }\n     END { print \&quot;Total:\&quot;, total; print \&quot;Lines:\&quot;, NR }&#39; data.txt\n&quot;, &quot;annotations&quot;: [{&quot;line&quot;: 1, &quot;text&quot;: &quot;BEGIN runs once before any input is read. Set the field separator to colon and initialize a counter.&quot;}, {&quot;line&quot;: 2, &quot;text&quot;: &quot;This block runs for every line of input. It adds the third field&#39;s value to the running total.&quot;}, {&quot;line&quot;: 3, &quot;text&quot;: &quot;END runs once after all input is processed. NR holds the total number of records (lines) processed.&quot;}]}"><noscript><p><strong>awk BEGIN/END Block Pattern</strong> (requires JavaScript)</p></noscript></div>
+<h3 id="built-in-functions-and-printf">Built-in Functions and printf<a class="headerlink" href="#built-in-functions-and-printf" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># String length</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>awk<span class="w"> </span><span class="s1">&#39;{ print length($0) }&#39;</span><span class="w"> </span>file.txt
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="c1"># Substring</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>awk<span class="w"> </span><span class="s1">&#39;{ print substr($1, 1, 3) }&#39;</span><span class="w"> </span>file.txt
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="c1"># Formatted output</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>awk<span class="w"> </span><span class="s1">&#39;{ printf &quot;%-20s %10.2f\n&quot;, $1, $3 }&#39;</span><span class="w"> </span>data.txt
+</span></code></pre></div>
+<h3 id="variables-and-arithmetic">Variables and Arithmetic<a class="headerlink" href="#variables-and-arithmetic" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">awk initializes unset variables to 0 or empty string</p>
+<p>Unlike most languages, awk doesn't require variable declarations or initialization. Unset numeric variables default to <code>0</code> and unset string variables default to <code>""</code>. This is why <code>awk '{ sum += $3 }'</code> works without initializing <code>sum</code> - it starts as <code>0</code> automatically.</p>
+</div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="c1"># Sum a column</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>awk<span class="w"> </span><span class="s1">&#39;{ sum += $3 } END { print sum }&#39;</span><span class="w"> </span>data.txt
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="c1"># Average</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>awk<span class="w"> </span><span class="s1">&#39;{ sum += $3; count++ } END { print sum/count }&#39;</span><span class="w"> </span>data.txt
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="c1"># Track maximum</span>
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>awk<span class="w"> </span><span class="s1">&#39;$3 &gt; max { max = $3; line = $0 } END { print line }&#39;</span><span class="w"> </span>data.txt
+</span></code></pre></div>
+<h3 id="practical-examples_2">Practical Examples<a class="headerlink" href="#practical-examples_2" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># Print lines longer than 80 characters</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>awk<span class="w"> </span><span class="s1">&#39;length &gt; 80&#39;</span><span class="w"> </span>file.txt
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="c1"># Print unique values in column 1</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>awk<span class="w"> </span><span class="s1">&#39;!seen[$1]++&#39;</span><span class="w"> </span>data.txt
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="c1"># Swap first two columns</span>
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>awk<span class="w"> </span><span class="s1">&#39;{ temp = $1; $1 = $2; $2 = temp; print }&#39;</span><span class="w"> </span>data.txt
+</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>
+</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="c1"># Sum file sizes from ls -l</span>
+</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>ls<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;NR &gt; 1 { sum += $5 } END { print sum }&#39;</span>
+</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a>
+</span><span id="__span-25-13"><a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a><span class="c1"># Process /etc/passwd: list users with bash shell</span>
+</span><span id="__span-25-14"><a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a>awk<span class="w"> </span>-F:<span class="w"> </span><span class="s1">&#39;$7 == &quot;/bin/bash&quot; { print $1 }&#39;</span><span class="w"> </span>/etc/passwd
+</span><span id="__span-25-15"><a id="__codelineno-25-15" name="__codelineno-25-15" href="#__codelineno-25-15"></a>
+</span><span id="__span-25-16"><a id="__codelineno-25-16" name="__codelineno-25-16" href="#__codelineno-25-16"></a><span class="c1"># Print every other line</span>
+</span><span id="__span-25-17"><a id="__codelineno-25-17" name="__codelineno-25-17" href="#__codelineno-25-17"></a>awk<span class="w"> </span><span class="s1">&#39;NR % 2 == 1&#39;</span><span class="w"> </span>file.txt
+</span></code></pre></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;In awk, what does $NF refer to?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;The number of fields in the current record&quot;, &quot;feedback&quot;: &quot;That&#39;s NF without the dollar sign. NF is the count; $NF is the value of the field at that position.&quot;}, {&quot;text&quot;: &quot;The last field in the current record&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! NF holds the number of fields. $NF uses that number as a field index, giving you the last field. If there are 5 fields, $NF is $5.&quot;}, {&quot;text&quot;: &quot;The next file to process&quot;, &quot;feedback&quot;: &quot;NF stands for Number of Fields, not Next File. $NF accesses the last field value.&quot;}, {&quot;text&quot;: &quot;A null field placeholder&quot;, &quot;feedback&quot;: &quot;NF means Number of Fields. $NF dereferences that count as a field position, returning the last field.&quot;}]}"><noscript><p><strong>In awk, what does $NF refer to?</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-command-builder" data-config="{&quot;base&quot;: &quot;awk&quot;, &quot;description&quot;: &quot;Build an awk expression for text extraction and transformation&quot;, &quot;options&quot;: [{&quot;flag&quot;: &quot;-F&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Field separator&quot;, &quot;explanation&quot;: &quot;Character that separates fields (default: whitespace)&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;Whitespace (default)&quot;], [&quot;&#39;:&#39;&quot;, &quot;Colon (:)&quot;], [&quot;&#39;,&#39;&quot;, &quot;Comma (,)&quot;], [&quot;&#39;\\t&#39;&quot;, &quot;Tab&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Action&quot;, &quot;explanation&quot;: &quot;What to do with each line&quot;, &quot;choices&quot;: [[&quot;&#39;{print $0}&#39;&quot;, &quot;Print whole line&quot;], [&quot;&#39;{print $1}&#39;&quot;, &quot;Print first field&quot;], [&quot;&#39;{print $NF}&#39;&quot;, &quot;Print last field&quot;], [&quot;&#39;{print $1, $NF}&#39;&quot;, &quot;Print first and last field&quot;]]}, {&quot;flag&quot;: &quot;&quot;, &quot;type&quot;: &quot;select&quot;, &quot;label&quot;: &quot;Filter&quot;, &quot;explanation&quot;: &quot;Only process lines matching a condition&quot;, &quot;choices&quot;: [[&quot;&quot;, &quot;All lines&quot;], [&quot;&#39;NR>1&#39;&quot;, &quot;Skip header row&quot;], [&quot;&#39;$3>100&#39;&quot;, &quot;Third field > 100&quot;], [&quot;&#39;/pattern/&#39;&quot;, &quot;Lines matching pattern&quot;]]}]}"><noscript><p><strong>Command Builder</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="cut">cut<a class="headerlink" href="#cut" title="Permanent link">&para;</a></h2>
+<p><a href="https://www.gnu.org/software/coreutils/manual/"><strong><code>cut</code></strong></a> extracts specific columns or character positions from each line.</p>
+<h3 id="by-field">By Field<a class="headerlink" href="#by-field" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>cut<span class="w"> </span>-f1<span class="w"> </span>data.tsv<span class="w">                </span><span class="c1"># first field (tab-delimited by default)</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>cut<span class="w"> </span>-f1,3<span class="w"> </span>data.tsv<span class="w">              </span><span class="c1"># first and third fields</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>cut<span class="w"> </span>-f2-<span class="w"> </span>data.tsv<span class="w">               </span><span class="c1"># second field through end</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>cut<span class="w"> </span>-d<span class="s1">&#39;,&#39;</span><span class="w"> </span>-f1,3<span class="w"> </span>data.csv<span class="w">        </span><span class="c1"># comma-delimited, fields 1 and 3</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>cut<span class="w"> </span>-d:<span class="w"> </span>-f1,7<span class="w"> </span>/etc/passwd<span class="w">       </span><span class="c1"># colon-delimited, fields 1 and 7</span>
+</span></code></pre></div>
+<h3 id="by-character-position">By Character Position<a class="headerlink" href="#by-character-position" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>cut<span class="w"> </span>-c1-10<span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># first 10 characters</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>cut<span class="w"> </span>-c5-<span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># from character 5 to end</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">cut cannot handle quoted CSV fields</p>
+<p><code>cut</code> splits on every occurrence of the delimiter character, even inside quoted fields. A CSV line like <code>"Smith, John",25,Engineer</code> will be split at the comma inside the quotes. For quoted CSV data, use <code>awk</code> with <code>FPAT</code> (GNU awk) or a dedicated CSV parser like <code>csvtool</code> or Python's <code>csv</code> module.</p>
+</div>
+<p><code>cut</code> is fast but limited. For complex field extraction, use <code>awk</code>.</p>
+<p><strong>When to use <code>cut</code> vs <code>awk</code>:</strong> <code>cut</code> is simpler and faster for extracting fixed-position fields from cleanly delimited data. Use <code>awk</code> when you need conditional logic, multiple delimiters, or field reordering. One gotcha: <code>cut</code> defaults to tab as its delimiter, not spaces. If your data is space-separated, you need <code>-d' '</code>, but <code>cut</code> can't handle multiple consecutive spaces as a single delimiter the way <code>awk</code> does. Also, <code>cut</code> has no way to handle quoted CSV fields - a field containing a comma inside quotes will be split incorrectly. For anything beyond simple TSV or single-character-delimited data, use <code>awk</code>.</p>
+<hr />
+<h2 id="sort">sort<a class="headerlink" href="#sort" title="Permanent link">&para;</a></h2>
+<p><a href="https://www.gnu.org/software/coreutils/manual/"><strong><code>sort</code></strong></a> orders lines of text.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>sort<span class="w"> </span>file.txt<span class="w">                </span><span class="c1"># alphabetical sort</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>sort<span class="w"> </span>-n<span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># numeric sort</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>sort<span class="w"> </span>-r<span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># reverse order</span>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>sort<span class="w"> </span>-u<span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># remove duplicate lines</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>sort<span class="w"> </span>-k2<span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># sort by second field</span>
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>sort<span class="w"> </span>-k2,2n<span class="w"> </span>file.txt<span class="w">         </span><span class="c1"># sort by second field, numerically</span>
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>sort<span class="w"> </span>-k3,3<span class="w"> </span>-k1,1<span class="w"> </span>file.txt<span class="w">   </span><span class="c1"># sort by field 3, then field 1 as tiebreaker</span>
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a>sort<span class="w"> </span>-t,<span class="w"> </span>-k2<span class="w"> </span>data.csv<span class="w">        </span><span class="c1"># comma-delimited, sort by field 2</span>
+</span><span id="__span-28-9"><a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>sort<span class="w"> </span>-s<span class="w"> </span>-k2<span class="w"> </span>file.txt<span class="w">         </span><span class="c1"># stable sort (preserves original order for equal elements)</span>
+</span><span id="__span-28-10"><a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a>sort<span class="w"> </span>-h<span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># human-numeric sort (handles 1K, 2M, 3G)</span>
+</span></code></pre></div>
+<h3 id="practical-examples_3">Practical Examples<a class="headerlink" href="#practical-examples_3" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># Sort du output by size</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>du<span class="w"> </span>-sh<span class="w"> </span>*<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-h
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="c1"># Sort /etc/passwd by UID</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>sort<span class="w"> </span>-t:<span class="w"> </span>-k3<span class="w"> </span>-n<span class="w"> </span>/etc/passwd
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="c1"># Find the 10 largest files</span>
+</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>du<span class="w"> </span>-a<span class="w"> </span>/var/log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+</span></code></pre></div>
+<p>The <strong><code>-s</code></strong> (stable sort) flag preserves the original order of lines that compare as equal. This matters when sorting by multiple keys in separate passes - without stable sort, the second sort might scramble the ordering you established in the first. For example, to sort a list of employees by department and then by name within each department, a stable sort on name followed by a stable sort on department gives you the right result.</p>
+<div class="admonition tip">
+<p class="admonition-title">sort -h for human-readable sizes</p>
+<p>Use <code>sort -h</code> to correctly sort output from <code>du -h</code> or <code>ls -lh</code>. It understands unit suffixes like K, M, and G, so <code>2M</code> sorts above <code>100K</code>. Without <code>-h</code>, numeric sort sees only the leading digit and gets the order wrong.</p>
+</div>
+<p><strong>Human-numeric sort</strong> (<code>-h</code>) understands unit suffixes, which makes it essential for sorting <code>du</code> output:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>du<span class="w"> </span>-sh<span class="w"> </span>/var/*<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-h
+</span></code></pre></div>
+<p>Without <code>-h</code>, <code>sort -n</code> would rank '2M' below '100K' because it only looks at the leading digit. With <code>-h</code>, it correctly understands that 2M is larger than 100K.</p>
+<hr />
+<h2 id="uniq">uniq<a class="headerlink" href="#uniq" title="Permanent link">&para;</a></h2>
+<p><a href="https://www.gnu.org/software/coreutils/manual/"><strong><code>uniq</code></strong></a> filters adjacent duplicate lines. Input must be sorted first (or use <code>sort -u</code> instead).</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>sort<span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w">           </span><span class="c1"># remove duplicates</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>sort<span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c<span class="w">        </span><span class="c1"># count occurrences</span>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>sort<span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-d<span class="w">        </span><span class="c1"># show only duplicated lines</span>
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>sort<span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-u<span class="w">        </span><span class="c1"># show only unique lines (no duplicates)</span>
+</span></code></pre></div>
+<h3 id="practical-examples_4">Practical Examples<a class="headerlink" href="#practical-examples_4" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="c1"># Top 10 most common lines</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>sort<span class="w"> </span>access.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="c1"># Count unique IP addresses</span>
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>awk<span class="w"> </span><span class="s1">&#39;{ print $1 }&#39;</span><span class="w"> </span>access.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">uniq only removes adjacent duplicates</p>
+<p><code>uniq</code> compares each line to the one immediately before it. If identical lines are separated by other content, they won't be detected as duplicates. Always <code>sort</code> first, or use <code>sort -u</code> to deduplicate in one step. To deduplicate while preserving original order, use <code>awk '!seen[$0]++'</code>.</p>
+</div>
+<p><strong>Why must input be sorted?</strong> <code>uniq</code> only compares each line against the one directly before it. If duplicate lines appear in different parts of the file with other lines between them, <code>uniq</code> won't detect them. Sorting brings identical lines together so <code>uniq</code> can find them. If sorting would destroy meaningful ordering, use <code>sort -u</code> (which deduplicates as it sorts) or <code>awk '!seen[$0]++'</code> (which deduplicates while preserving original order).</p>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;Why does uniq only remove consecutive duplicate lines?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;It&#39;s a bug that was never fixed for backwards compatibility&quot;, &quot;feedback&quot;: &quot;It&#39;s by design, not a bug. Processing only consecutive lines lets uniq work in a streaming pipeline without loading the entire file into memory.&quot;}, {&quot;text&quot;: &quot;It processes input line by line, only comparing adjacent lines&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! uniq is a streaming filter - it compares each line to the previous one. This is memory-efficient but means you must sort the input first if you want to remove all duplicates: sort file | uniq.&quot;}, {&quot;text&quot;: &quot;It was designed for already-sorted files only&quot;, &quot;feedback&quot;: &quot;While uniq works best on sorted input, it&#39;s designed to compare adjacent lines. This is a feature for streaming efficiency, not a limitation to sorted files.&quot;}, {&quot;text&quot;: &quot;It can remove non-consecutive duplicates with the -u flag&quot;, &quot;feedback&quot;: &quot;The -u flag shows only unique lines (appearing exactly once). It doesn&#39;t change the adjacent-comparison behavior. You still need to sort first.&quot;}]}"><noscript><p><strong>Why does uniq only remove consecutive duplicate lines?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="tr">tr<a class="headerlink" href="#tr" title="Permanent link">&para;</a></h2>
+<p><a href="https://www.gnu.org/software/coreutils/manual/"><strong><code>tr</code></strong></a> translates, squeezes, or deletes characters. It reads from STDIN only (no file arguments).</p>
+<h3 id="translate">Translate<a class="headerlink" href="#translate" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;hello&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;a-z&#39;</span><span class="w"> </span><span class="s1">&#39;A-Z&#39;</span><span class="w">          </span><span class="c1"># HELLO</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;hello&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;aeiou&#39;</span><span class="w"> </span><span class="s1">&#39;*&#39;</span><span class="w">          </span><span class="c1"># h*ll*</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>cat<span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;\t&#39;</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w">             </span><span class="c1"># tabs to spaces</span>
+</span></code></pre></div>
+<h3 id="squeeze">Squeeze<a class="headerlink" href="#squeeze" title="Permanent link">&para;</a></h3>
+<p>Replace repeated characters with a single instance:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;too    many    spaces&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w">     </span><span class="c1"># too many spaces</span>
+</span></code></pre></div>
+<h3 id="delete_1">Delete<a class="headerlink" href="#delete_1" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello, World! 123&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;[:digit:]&#39;</span><span class="w">    </span><span class="c1"># Hello, World!</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello, World! 123&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;[:punct:]&#39;</span><span class="w">    </span><span class="c1"># Hello World 123</span>
+</span></code></pre></div>
+<h3 id="character-classes">Character Classes<a class="headerlink" href="#character-classes" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>tr<span class="w"> </span><span class="s1">&#39;[:lower:]&#39;</span><span class="w"> </span><span class="s1">&#39;[:upper:]&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>file.txt<span class="w">    </span><span class="c1"># uppercase everything</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;[:space:]&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># remove all whitespace</span>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>tr<span class="w"> </span>-dc<span class="w"> </span><span class="s1">&#39;[:print:]&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># keep only printable characters</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">tr operates on characters, not strings</p>
+<p><code>tr 'hello' 'world'</code> does not replace the word "hello" with "world." It maps individual characters: h to w, e to o, l to r, l to l, o to d. For string replacement, use <code>sed 's/hello/world/g'</code>.</p>
+</div>
+<p><code>tr</code> works on a <strong>one-to-one character mapping</strong> model. Each character in SET1 maps to the character at the same position in SET2. If SET1 is longer than SET2, the last character of SET2 is repeated to fill the gap. That's why <code>tr 'aeiou' '*'</code> replaces all five vowels with <code>*</code> - the single <code>*</code> gets repeated for each remaining position.</p>
+<h3 id="practical-examples_5">Practical Examples<a class="headerlink" href="#practical-examples_5" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1"># Convert Windows line endings to Unix</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;\r&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>windows.txt<span class="w"> </span>&gt;<span class="w"> </span>unix.txt
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="c1"># Generate a random password</span>
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>tr<span class="w"> </span>-dc<span class="w"> </span><span class="s1">&#39;A-Za-z0-9&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>/dev/urandom<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-c<span class="w"> </span><span class="m">32</span><span class="p">;</span><span class="w"> </span><span class="nb">echo</span>
+</span><span id="__span-37-6"><a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a>
+</span><span id="__span-37-7"><a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="c1"># Remove all non-alphanumeric characters</span>
+</span><span id="__span-37-8"><a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a>tr<span class="w"> </span>-dc<span class="w"> </span><span class="s1">&#39;[:alnum:]\n&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>file.txt
+</span></code></pre></div>
+<div class="interactive-quiz" data-config="{&quot;question&quot;: &quot;Which of these is a valid use of tr?&quot;, &quot;type&quot;: &quot;multiple-choice&quot;, &quot;options&quot;: [{&quot;text&quot;: &quot;tr &#39;hello&#39; &#39;world&#39; file.txt&quot;, &quot;feedback&quot;: &quot;tr doesn&#39;t take filename arguments. It reads from stdin only. Use: tr &#39;hello&#39; &#39;world&#39; < file.txt&quot;}, {&quot;text&quot;: &quot;tr -d &#39;[:digit:]&#39; < file.txt&quot;, &quot;correct&quot;: true, &quot;feedback&quot;: &quot;Correct! tr reads from stdin (via redirection here) and -d deletes all characters matching the set. [:digit:] is a POSIX character class matching 0-9.&quot;}, {&quot;text&quot;: &quot;tr &#39;hello&#39; &#39;world&#39; (replaces the word hello with world)&quot;, &quot;feedback&quot;: &quot;tr translates character-by-character, not word-by-word. tr &#39;hello&#39; &#39;world&#39; maps h→w, e→o, l→r, l→l, o→d. It doesn&#39;t match the word &#39;hello&#39;.&quot;}, {&quot;text&quot;: &quot;tr -s &#39;hello&#39; (removes duplicate &#39;hello&#39; strings)&quot;, &quot;feedback&quot;: &quot;tr -s squeezes repeated individual characters, not strings. tr -s &#39;hello&#39; squeezes repeated h, e, l, or o characters.&quot;}]}"><noscript><p><strong>Which of these is a valid use of tr?</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="wc">wc<a class="headerlink" href="#wc" title="Permanent link">&para;</a></h2>
+<p><a href="https://www.gnu.org/software/coreutils/manual/"><strong><code>wc</code></strong></a> (word count) counts lines, words, and characters.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>wc<span class="w"> </span>file.txt<span class="w">           </span><span class="c1"># lines, words, characters (all three)</span>
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>wc<span class="w"> </span>-l<span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># line count only</span>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>wc<span class="w"> </span>-w<span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># word count only</span>
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>wc<span class="w"> </span>-c<span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># byte count</span>
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>wc<span class="w"> </span>-m<span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># character count (handles multibyte)</span>
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="c1"># Count files in a directory</span>
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
+</span><span id="__span-39-3"><a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>
+</span><span id="__span-39-4"><a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a><span class="c1"># Count matching lines</span>
+</span><span id="__span-39-5"><a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>grep<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>log.txt<span class="w">    </span><span class="c1"># more efficient than grep | wc -l</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">wc -m vs wc -c for multibyte encodings</p>
+<p>Use <code>wc -c</code> for byte count (file size on disk) and <code>wc -m</code> for character count (human-readable characters). They differ for UTF-8 files: a single emoji or CJK character can be 3-4 bytes but counts as 1 character.</p>
+</div>
+<p>The difference between <strong><code>-c</code></strong> (bytes) and <strong><code>-m</code></strong> (characters) matters with multibyte encodings like <strong>UTF-8</strong>. An ASCII file will show the same count for both, but a file containing non-ASCII characters (accented letters, emoji, CJK characters) will have more bytes than characters. Use <code>-c</code> when you care about file size on disk, and <code>-m</code> when you care about the number of human-readable characters.</p>
+<hr />
+<h2 id="head-and-tail">head and tail<a class="headerlink" href="#head-and-tail" title="Permanent link">&para;</a></h2>
+<h3 id="head">head<a class="headerlink" href="#head" title="Permanent link">&para;</a></h3>
+<p><a href="https://www.gnu.org/software/coreutils/manual/"><strong><code>head</code></strong></a> prints the first N lines of a file (default 10):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>head<span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># first 10 lines</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>head<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span><span class="w"> </span>file.txt<span class="w">       </span><span class="c1"># first 5 lines</span>
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>head<span class="w"> </span>-n<span class="w"> </span>-5<span class="w"> </span>file.txt<span class="w">      </span><span class="c1"># all lines EXCEPT the last 5 (GNU only)</span>
+</span><span id="__span-40-4"><a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>head<span class="w"> </span>-c<span class="w"> </span><span class="m">100</span><span class="w"> </span>file.txt<span class="w">     </span><span class="c1"># first 100 bytes</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">head -n -N syntax is GNU-specific</p>
+<p>The negative form <code>head -n -5</code> (all lines except the last 5) is a GNU coreutils extension. BSD <code>head</code> (macOS) doesn't support it. For portable scripts, use <code>awk</code> or <code>sed</code> alternatives instead.</p>
+</div>
+<h3 id="tail">tail<a class="headerlink" href="#tail" title="Permanent link">&para;</a></h3>
+<p><a href="https://www.gnu.org/software/coreutils/manual/"><strong><code>tail</code></strong></a> prints the last N lines (default 10):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>tail<span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># last 10 lines</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>tail<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span><span class="w"> </span>file.txt<span class="w">       </span><span class="c1"># last 5 lines</span>
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>tail<span class="w"> </span>-n<span class="w"> </span>+5<span class="w"> </span>file.txt<span class="w">      </span><span class="c1"># from line 5 to end</span>
+</span></code></pre></div>
+<p>The <code>+</code> prefix reverses <code>tail</code>'s logic. Instead of 'show the last N lines,' <code>tail -n +N</code> means 'start from line N.' This is useful for skipping headers: <code>tail -n +2 data.csv</code> gives you everything except the first line.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>tail<span class="w"> </span>-c<span class="w"> </span><span class="m">100</span><span class="w"> </span>file.txt<span class="w">     </span><span class="c1"># last 100 bytes</span>
+</span></code></pre></div>
+<h3 id="following-files">Following Files<a class="headerlink" href="#following-files" title="Permanent link">&para;</a></h3>
+<p><code>tail -f</code> watches a file for new content in real time:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/syslog<span class="w">                     </span><span class="c1"># follow log updates</span>
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/syslog<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w">      </span><span class="c1"># follow with filtering</span>
+</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>tail<span class="w"> </span>-F<span class="w"> </span>/var/log/syslog<span class="w">                     </span><span class="c1"># follow even if file is rotated</span>
+</span></code></pre></div>
+<p><code>-F</code> is like <code>-f</code> but handles log rotation (file is deleted and recreated).</p>
+<div class="admonition tip">
+<p class="admonition-title">tail -F survives log rotation</p>
+<p>Use <code>tail -F</code> (uppercase) instead of <code>tail -f</code> (lowercase) when following log files. Lowercase <code>-f</code> tracks the file descriptor, so when logrotate replaces the file, <code>-f</code> keeps reading the old (now renamed) file. Uppercase <code>-F</code> tracks the filename and automatically reopens it after rotation.</p>
+</div>
+<hr />
+<h2 id="tee">tee<a class="headerlink" href="#tee" title="Permanent link">&para;</a></h2>
+<p><code>tee</code> is covered in <a href="../streams-and-redirection/#tee">Streams and Redirection</a>. In brief, it reads from STDIN and writes to both STDOUT and one or more files, making it useful for saving intermediate pipeline results while still passing data to the next stage.</p>
+<hr />
+<h2 id="combining-tools">Combining Tools<a class="headerlink" href="#combining-tools" title="Permanent link">&para;</a></h2>
+<div class="diagram-container">
+<img src="../../assets/images/linux-essentials/text-tool-decision.svg" alt="Decision tree for choosing the right text processing tool: grep, sed, awk, cut, tr, or sort plus uniq">
+</div>
+
+<p>The real power of text processing tools comes from combining them in pipelines.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="c1"># Top 10 most common words in a file</span>
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>tr<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;[:space:]&#39;</span><span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;[:upper:]&#39;</span><span class="w"> </span><span class="s1">&#39;[:lower:]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>
+</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a><span class="c1"># Extract and count HTTP status codes from access logs</span>
+</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>awk<span class="w"> </span><span class="s1">&#39;{ print $9 }&#39;</span><span class="w"> </span>access.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn
+</span><span id="__span-44-6"><a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a>
+</span><span id="__span-44-7"><a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a><span class="c1"># Find all unique file extensions in a directory tree</span>
+</span><span id="__span-44-8"><a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a>find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">&#39;s/.*\.//&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-u
+</span><span id="__span-44-9"><a id="__codelineno-44-9" name="__codelineno-44-9" href="#__codelineno-44-9"></a>
+</span><span id="__span-44-10"><a id="__codelineno-44-10" name="__codelineno-44-10" href="#__codelineno-44-10"></a><span class="c1"># Compare two sorted CSV columns</span>
+</span><span id="__span-44-11"><a id="__codelineno-44-11" name="__codelineno-44-11" href="#__codelineno-44-11"></a>diff<span class="w"> </span>&lt;<span class="o">(</span>cut<span class="w"> </span>-d,<span class="w"> </span>-f1<span class="w"> </span>old.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>cut<span class="w"> </span>-d,<span class="w"> </span>-f1<span class="w"> </span>new.csv<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="o">)</span>
+</span><span id="__span-44-12"><a id="__codelineno-44-12" name="__codelineno-44-12" href="#__codelineno-44-12"></a>
+</span><span id="__span-44-13"><a id="__codelineno-44-13" name="__codelineno-44-13" href="#__codelineno-44-13"></a><span class="c1"># Sum numbers from a file, one per line</span>
+</span><span id="__span-44-14"><a id="__codelineno-44-14" name="__codelineno-44-14" href="#__codelineno-44-14"></a>paste<span class="w"> </span>-sd+<span class="w"> </span>numbers.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>bc
+</span><span id="__span-44-15"><a id="__codelineno-44-15" name="__codelineno-44-15" href="#__codelineno-44-15"></a>
+</span><span id="__span-44-16"><a id="__codelineno-44-16" name="__codelineno-44-16" href="#__codelineno-44-16"></a><span class="c1"># Convert CSV to a formatted table</span>
+</span><span id="__span-44-17"><a id="__codelineno-44-17" name="__codelineno-44-17" href="#__codelineno-44-17"></a>column<span class="w"> </span>-t<span class="w"> </span>-s,<span class="w"> </span>data.csv
+</span></code></pre></div>
+<h3 id="breaking-down-pipelines">Breaking Down Pipelines<a class="headerlink" href="#breaking-down-pipelines" title="Permanent link">&para;</a></h3>
+<p>Here's how to read these pipelines stage by stage.</p>
+<p><strong>Top 10 most common words in a file:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>tr<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;[:space:]&#39;</span><span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;[:upper:]&#39;</span><span class="w"> </span><span class="s1">&#39;[:lower:]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+</span></code></pre></div>
+<ol>
+<li><code>tr -s '[:space:]' '\n'</code> - split text into one word per line by converting all whitespace (spaces, tabs, newlines) to newlines, squeezing consecutive whitespace into one</li>
+<li><code>tr '[:upper:]' '[:lower:]'</code> - lowercase everything so 'The' and 'the' count as the same word</li>
+<li><code>sort</code> - sort alphabetically so identical words are adjacent (required for <code>uniq</code>)</li>
+<li><code>uniq -c</code> - collapse adjacent identical lines and prefix each with its count</li>
+<li><code>sort -rn</code> - sort numerically in reverse so the highest counts come first</li>
+<li><code>head -10</code> - show only the first 10 results</li>
+</ol>
+<p><strong>Extract and count HTTP status codes:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>awk<span class="w"> </span><span class="s1">&#39;{ print $9 }&#39;</span><span class="w"> </span>access.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn
+</span></code></pre></div>
+<ol>
+<li><code>awk '{ print $9 }'</code> - pull the 9th whitespace-delimited field from each line (the HTTP status code in standard access log format)</li>
+<li><code>sort</code> - sort the status codes so identical ones are adjacent</li>
+<li><code>uniq -c</code> - count consecutive identical lines</li>
+<li><code>sort -rn</code> - show most frequent codes first</li>
+</ol>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Extract and Count HTTP Status Codes&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;You have a web server access log where each line looks like this:\n\n```\n192.168.1.1 - - [10/Jan/2024:13:55:36 -0700] \&quot;GET /index.html HTTP/1.1\&quot; 200 2326\n10.0.0.5 - - [10/Jan/2024:13:55:37 -0700] \&quot;POST /api/login HTTP/1.1\&quot; 401 125\n192.168.1.1 - - [10/Jan/2024:13:55:38 -0700] \&quot;GET /style.css HTTP/1.1\&quot; 304 0\n```\n\nThe HTTP status code is the number after the closing quote (200, 401, 304, etc.).\nWrite a pipeline that extracts all status codes, counts how many times each one\nappears, and shows the results sorted by frequency (most common first).\n&quot;, &quot;hints&quot;: [&quot;Use awk to extract the status code field - it&#39;s a specific column number in the log format&quot;, &quot;In the Common Log Format, the status code is field $9 (with default whitespace splitting)&quot;, &quot;After extracting codes: sort | uniq -c | sort -rn gives you a frequency count sorted descending&quot;], &quot;solution&quot;: &quot;```bash\nawk &#39;{print $9}&#39; access.log | sort | uniq -c | sort -rn\n```\n\nThis pipeline:\n1. `awk &#39;{print $9}&#39;` - extracts field 9 (the status code)\n2. `sort` - groups identical codes together (required for uniq)\n3. `uniq -c` - counts consecutive duplicates\n4. `sort -rn` - sorts numerically in reverse (highest count first)\n\nOutput looks like:\n```\n  1547 200\n   312 304\n    89 404\n    23 500\n    12 401\n```&quot;}"><noscript><p><strong>Extract and Count HTTP Status Codes</strong> (requires JavaScript)</p></noscript></div>
+<div class="interactive-exercise" data-config="{&quot;title&quot;: &quot;Build a Word Frequency Pipeline&quot;, &quot;difficulty&quot;: &quot;intermediate&quot;, &quot;scenario&quot;: &quot;Given a text file, write a pipeline that finds the 10 most frequently used words,\nnormalized to lowercase, with one word per line.\n\nThe pipeline should handle punctuation (strip it), case differences (normalize to\nlowercase), and produce output in the format:\n```\n   45 the\n   32 and\n   28 to\n```\n&quot;, &quot;hints&quot;: [&quot;Use tr to convert to lowercase: tr &#39;[:upper:]&#39; &#39;[:lower:]&#39;&quot;, &quot;Use tr to replace non-letter characters with newlines: tr -cs &#39;[:alpha:]&#39; &#39;\\n&#39;&quot;, &quot;The -c flag complements the set (matches everything NOT in the set), -s squeezes repeats&quot;, &quot;Finish with sort | uniq -c | sort -rn | head -10&quot;], &quot;solution&quot;: &quot;```bash\ntr &#39;[:upper:]&#39; &#39;[:lower:]&#39; < file.txt | tr -cs &#39;[:alpha:]&#39; &#39;\\n&#39; | sort | uniq -c | sort -rn | head -10\n```\n\nBreaking it down:\n1. `tr &#39;[:upper:]&#39; &#39;[:lower:]&#39;` - normalize to lowercase\n2. `tr -cs &#39;[:alpha:]&#39; &#39;\\n&#39;` - replace any non-letter character with newline, squeeze consecutive newlines\n3. `sort` - alphabetize (needed for uniq)\n4. `uniq -c` - count occurrences\n5. `sort -rn` - sort by count, descending\n6. `head -10` - top 10 results&quot;}"><noscript><p><strong>Build a Word Frequency Pipeline</strong> (requires JavaScript)</p></noscript></div>
+<hr />
+<h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://www.gnu.org/software/grep/manual/">GNU Grep Manual</a> - pattern matching with regular expressions</li>
+<li><a href="https://www.gnu.org/software/sed/manual/">GNU Sed Manual</a> - stream editing reference</li>
+<li><a href="https://www.gnu.org/software/gawk/manual/">GAWK Manual</a> - the GNU awk programming language</li>
+<li><a href="https://www.gnu.org/software/coreutils/manual/">GNU Coreutils Manual</a> - documentation for sort, cut, uniq, tr, wc, head, tail, and other core utilities</li>
+<li><a href="https://man7.org/linux/man-pages/">Linux man-pages Project</a> - comprehensive manual pages for Linux commands and system calls</li>
+<li><a href="https://www.regular-expressions.info/">regular-expressions.info</a> - regex tutorial and reference across flavors</li>
+</ul>
+<hr />
+<p><strong>Previous:</strong> <a href="../streams-and-redirection/">Streams and Redirection</a> | <strong>Next:</strong> <a href="../finding-files/">Finding Files</a> | <a href="../">Back to Index</a></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 9v12H1V9zm4 12a2 2 0 0 1-2-2V9c0-.55.22-1.05.59-1.41L14.17 1l1.06 1.06c.27.27.44.64.44 1.05l-.03.32L14.69 8H21a2 2 0 0 1 2 2v2c0 .26-.05.5-.14.73l-3.02 7.05C19.54 20.5 18.83 21 18 21zm0-2h9.03L21 12v-2h-8.79l1.13-5.32L9 9.03z"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 15V3h4v12zM15 3a2 2 0 0 1 2 2v10c0 .55-.22 1.05-.59 1.41L9.83 23l-1.06-1.06c-.27-.27-.44-.64-.44-1.06l.03-.31.95-4.57H3a2 2 0 0 1-2-2v-2c0-.26.05-.5.14-.73l3.02-7.05C4.46 3.5 5.17 3 6 3zm0 2H5.97L3 12v2h8.78l-1.13 5.32L15 14.97z"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback! Help us improve by <a href="https://github.com/ringo380/guides/issues/new?template=content-improvement.yml&title=[Feedback]+Text%20Processing" target="_blank" rel="noopener">opening an issue</a>.
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+<!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
+<!-- Giscus comments - GitHub Discussions-backed -->
+
+  <h2 id="__comments">Comments</h2>
+
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="ringo380/guides"
+    data-repo-id="R_kgDOM3QMrQ"
+    data-category="General"
+    data-category-id="DIC_kwDOM3QMrc4C2qV9"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025-2026 Robworks Software LLC
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/ringo380" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://linkedin.com/in/robworks" target="_blank" rel="noopener" title="linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://bsky.app/profile/lessoncraft.bsky.social" target="_blank" rel="noopener" title="bsky.app" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M407.8 294.7c-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3M288 227.1c-26.1-50.7-97.1-145.2-163.1-191.8C61.6-9.4 37.5-1.7 21.6 5.5 3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7 3.3-.5 6.6-.9 10-1.4-3.3.5-6.6 1-10 1.4-93.9 14-177.3 48.2-67.9 169.9C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4 102.4-103.4 28.1-156-65.8-169.9-3.3-.4-6.7-.8-10-1.3 3.4.4 6.7.9 10 1.3 64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1"/></svg>
+    </a>
+  
+    
+    
+      
+    
+    
+    
+      
+      
+    
+    <a href="https://mastodon.social/@runbook" target="_blank" rel="noopener me" title="mastodon.social" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54-.6-4.6-.9-9.3-.9-13.9 85.6 20.9 158.7 9.1 178.7 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6V190.1c0-49.7-64-51.6-64 6.9v62.5H201V197c0-58.5-64-56.6-64-6.9v114.2H90.3c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://threads.net/@robworks_software" target="_blank" rel="noopener" title="threads.net" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M331.5 235.7c2.2.9 4.2 1.9 6.3 2.8 29.2 14.1 50.6 35.2 61.8 61.4 15.7 36.5 17.2 95.8-30.3 143.2-36.2 36.2-80.3 52.5-142.6 53h-.3c-70.2-.5-124.1-24.1-160.4-70.2-32.3-41-48.9-98.1-49.5-169.6v-.5c.5-71.5 17.1-128.6 49.4-169.6 36.3-46.1 90.3-69.7 160.5-70.2h.3c70.3.5 124.9 24 162.3 69.9 18.4 22.7 32 50 40.6 81.7l-40.4 10.8c-7.1-25.8-17.8-47.8-32.2-65.4-29.2-35.8-73-54.2-130.5-54.6-57 .5-100.1 18.8-128.2 54.4C72.1 146.1 58.5 194.3 58 256c.5 61.7 14.1 109.9 40.3 143.3 28 35.6 71.2 53.9 128.2 54.4 51.4-.4 85.4-12.6 113.7-40.9 32.3-32.2 31.7-71.8 21.4-95.9-6.1-14.2-17.1-26-31.9-34.9-3.7 26.9-11.8 48.3-24.7 64.8-17.1 21.8-41.4 33.6-72.7 35.3-23.6 1.3-46.3-4.4-63.9-16-20.8-13.8-33-34.8-34.3-59.3-2.5-48.3 35.7-83 95.2-86.4 21.1-1.2 40.9-.3 59.2 2.8-2.4-14.8-7.3-26.6-14.6-35.2-10-11.7-25.6-17.7-46.2-17.8h-.7c-16.6 0-39 4.6-53.3 26.3l-34.4-23.6c19.2-29.1 50.3-45.1 87.8-45.1h.8c62.6.4 99.9 39.5 103.7 107.7l-.2.2zm-156 68.8c1.3 25.1 28.4 36.8 54.6 35.3 25.6-1.4 54.6-11.4 59.5-73.2-13.2-2.9-27.8-4.4-43.4-4.4-4.8 0-9.6.1-14.4.4-42.9 2.4-57.2 23.2-56.2 41.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            
+
+
+
+  
+
+<h4>Cookie consent</h4>
+<p>We use cookies to recognize repeat visits and measure engagement with guides. With your consent, you help us improve the content.</p>
+<input class="md-toggle" type="checkbox" id="__settings" checked>
+<div class="md-consent__settings">
+  <ul class="task-list">
+    
+    
+    
+      
+        
+  
+  
+    
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="github" checked>
+      <span class="task-list-indicator"></span>
+      GitHub
+    </label>
+  </li>
+
+      
+    
+    
+      
+        
+  
+  
+    
+    
+      
+    
+  
+  <li class="task-list-item">
+    <label class="task-list-control">
+      <input type="checkbox" name="analytics" checked>
+      <span class="task-list-indicator"></span>
+      Google Analytics
+    </label>
+  </li>
+
+      
+    
+  </ul>
+</div>
+<div class="md-consent__controls">
+  
+    
+      <button class="md-button md-button--primary">Accept</button>
+    
+    
+    
+  
+    
+    
+      <button type="reset" class="md-button md-button--primary">Reject</button>
+    
+    
+  
+</div>
+          </form>
+        </aside>
+      </div>
+      <script>var consent=__md_get("__consent");if(consent)for(var input of document.forms.consent.elements)input.name&&(input.checked=consent[input.name]||!1);else"file:"!==location.protocol&&setTimeout((function(){document.querySelector("[data-md-component=consent]").hidden=!1}),250);var form=document.forms.consent;for(var action of["submit","reset"])form.addEventListener(action,(function(e){if(e.preventDefault(),"reset"===e.type)for(var n of document.forms.consent.elements)n.name&&(n.checked=!1);__md_set("__consent",Object.fromEntries(Array.from(new FormData(form).keys()).map((function(e){return[e,!0]})))),location.hash="",location.reload()}))</script>
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../assets/javascripts/interactive.js"></script>
+      
+        <script src="../../assets/javascripts/giscus-theme.js"></script>
+      
+        <script src="../../assets/javascripts/lightbox.js"></script>
+      
+        <script src="../../js/open_in_new_tab.js"></script>
+      
+    
+  </body>
+</html>

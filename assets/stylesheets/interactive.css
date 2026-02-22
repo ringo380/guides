@@ -1,0 +1,663 @@
+/* SPDX-License-Identifier: MIT */
+/* Copyright (c) 2025-2026 Robworks Software LLC */
+
+/* ============================================================
+   Interactive Textbook Components - Theme-Aware Styles
+   Uses Material CSS custom properties for light/dark mode.
+
+   Semantic color variables defined below adapt to the active
+   color scheme. Terminal colors are intentionally fixed (always
+   dark) to match real terminal aesthetics.
+   ============================================================ */
+
+/* ---- Semantic color tokens ---- */
+
+:root {
+  --rb-color-correct: #2e7d32;
+  --rb-color-correct-bg: color-mix(in srgb, #2e7d32 10%, transparent);
+  --rb-color-correct-bg-strong: color-mix(in srgb, #2e7d32 20%, transparent);
+  --rb-color-incorrect: #c62828;
+  --rb-color-incorrect-bg: color-mix(in srgb, #c62828 10%, transparent);
+  --rb-color-incorrect-bg-strong: color-mix(in srgb, #c62828 20%, transparent);
+  --rb-color-warning: #f57f17;
+  --rb-color-warning-bg: color-mix(in srgb, #f57f17 20%, transparent);
+}
+
+[data-md-color-scheme="slate"] {
+  --rb-color-correct: #66bb6a;
+  --rb-color-correct-bg: color-mix(in srgb, #66bb6a 12%, transparent);
+  --rb-color-correct-bg-strong: color-mix(in srgb, #66bb6a 20%, transparent);
+  --rb-color-incorrect: #ef5350;
+  --rb-color-incorrect-bg: color-mix(in srgb, #ef5350 12%, transparent);
+  --rb-color-incorrect-bg-strong: color-mix(in srgb, #ef5350 20%, transparent);
+  --rb-color-warning: #ffb74d;
+  --rb-color-warning-bg: color-mix(in srgb, #ffb74d 20%, transparent);
+}
+
+/* ---- Shared ---- */
+
+.interactive-quiz,
+.interactive-exercise,
+.interactive-terminal,
+.interactive-command-builder,
+.interactive-code-walkthrough {
+  margin: 1.5rem 0;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.interactive-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  background: var(--md-code-bg-color);
+}
+
+.interactive-header .icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.interactive-body {
+  padding: 1rem;
+}
+
+/* ---- Quiz ---- */
+
+.interactive-quiz .quiz-question {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--md-default-fg-color);
+}
+
+.interactive-quiz .quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.interactive-quiz .quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border: 2px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  background: transparent;
+  color: var(--md-default-fg-color);
+  font-size: 0.9rem;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+}
+
+.interactive-quiz .quiz-option:hover:not(.selected):not(.disabled) {
+  border-color: var(--md-accent-fg-color);
+  background: color-mix(in srgb, var(--md-accent-fg-color) 8%, transparent);
+}
+
+.interactive-quiz .quiz-option .option-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--md-default-fg-color--lighter);
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.interactive-quiz .quiz-option.correct {
+  border-color: var(--rb-color-correct);
+  background: var(--rb-color-correct-bg);
+}
+
+.interactive-quiz .quiz-option.correct .option-marker {
+  background: var(--rb-color-correct);
+  border-color: var(--rb-color-correct);
+  color: white;
+}
+
+.interactive-quiz .quiz-option.incorrect {
+  border-color: var(--rb-color-incorrect);
+  background: var(--rb-color-incorrect-bg);
+}
+
+.interactive-quiz .quiz-option.incorrect .option-marker {
+  background: var(--rb-color-incorrect);
+  border-color: var(--rb-color-incorrect);
+  color: white;
+}
+
+.interactive-quiz .quiz-option.disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.interactive-quiz .quiz-feedback {
+  margin-top: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.375rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  display: none;
+}
+
+.interactive-quiz .quiz-feedback.visible {
+  display: block;
+}
+
+.interactive-quiz .quiz-feedback.correct {
+  background: var(--rb-color-correct-bg);
+  color: var(--md-default-fg-color);
+  border-left: 3px solid var(--rb-color-correct);
+}
+
+.interactive-quiz .quiz-feedback.incorrect {
+  background: var(--rb-color-incorrect-bg);
+  color: var(--md-default-fg-color);
+  border-left: 3px solid var(--rb-color-incorrect);
+}
+
+.interactive-quiz .quiz-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.interactive-quiz .quiz-retry,
+.interactive-exercise .exercise-btn,
+.interactive-terminal .terminal-btn,
+.interactive-command-builder .builder-btn {
+  padding: 0.375rem 0.875rem;
+  border: 1px solid var(--md-primary-fg-color);
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--md-primary-fg-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.interactive-quiz .quiz-retry:hover,
+.interactive-exercise .exercise-btn:hover,
+.interactive-terminal .terminal-btn:hover,
+.interactive-command-builder .builder-btn:hover {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+.interactive-quiz .quiz-score {
+  font-size: 0.8rem;
+  color: var(--md-default-fg-color--light);
+  padding: 0.375rem 0;
+  line-height: 1.5;
+}
+
+/* ---- Exercise ---- */
+
+.interactive-exercise .exercise-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.interactive-exercise .exercise-difficulty {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.interactive-exercise .exercise-difficulty.beginner {
+  background: var(--rb-color-correct-bg-strong);
+  color: var(--rb-color-correct);
+}
+
+.interactive-exercise .exercise-difficulty.intermediate {
+  background: var(--rb-color-warning-bg);
+  color: var(--rb-color-warning);
+}
+
+.interactive-exercise .exercise-difficulty.advanced {
+  background: var(--rb-color-incorrect-bg-strong);
+  color: var(--rb-color-incorrect);
+}
+
+.interactive-exercise .exercise-scenario {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  color: var(--md-default-fg-color);
+}
+
+.interactive-exercise .exercise-hints {
+  margin-bottom: 1rem;
+}
+
+.interactive-exercise .exercise-hint {
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.375rem;
+  border-left: 3px solid var(--md-accent-fg-color);
+  background: color-mix(in srgb, var(--md-accent-fg-color) 8%, transparent);
+  border-radius: 0 0.25rem 0.25rem 0;
+  font-size: 0.85rem;
+  display: none;
+}
+
+.interactive-exercise .exercise-hint.visible {
+  display: block;
+}
+
+.interactive-exercise .exercise-solution {
+  margin-top: 1rem;
+  display: none;
+}
+
+.interactive-exercise .exercise-solution.visible {
+  display: block;
+}
+
+.interactive-exercise .exercise-solution-content {
+  padding: 0.75rem;
+  background: var(--md-code-bg-color);
+  border-radius: 0.375rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.interactive-exercise .exercise-solution-content pre {
+  margin: 0.5rem 0;
+}
+
+.interactive-exercise .exercise-solution-content code {
+  font-size: 0.85em;
+}
+
+.interactive-exercise .exercise-complete {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--rb-color-correct);
+  font-weight: 600;
+}
+
+.interactive-exercise .exercise-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---- Simulated Terminal ----
+   Terminal colors are intentionally fixed (always dark) to match
+   real terminal aesthetics regardless of the site theme. */
+
+.interactive-terminal {
+  border-color: #1a1a2e;
+}
+
+.interactive-terminal .interactive-header {
+  background: #1a1a2e;
+  color: #a0a0b0;
+  border-bottom-color: #2a2a3e;
+}
+
+.interactive-terminal .terminal-window {
+  background: #0d1117;
+  padding: 1rem;
+  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  min-height: 6rem;
+  color: #e6edf3;
+  overflow-x: auto;
+}
+
+.interactive-terminal .terminal-line {
+  margin-bottom: 0.25rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.interactive-terminal .terminal-prompt {
+  color: #7ee787;
+}
+
+.interactive-terminal .terminal-command {
+  color: #e6edf3;
+}
+
+.interactive-terminal .terminal-output {
+  color: #8b949e;
+}
+
+.interactive-terminal .terminal-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  background: #58a6ff;
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.interactive-terminal .terminal-narration {
+  padding: 0.625rem 1rem;
+  background: color-mix(in srgb, var(--md-accent-fg-color) 10%, var(--md-code-bg-color));
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  font-size: 0.85rem;
+  color: var(--md-default-fg-color);
+  font-family: var(--md-text-font-family);
+}
+
+.interactive-terminal .terminal-controls {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--md-code-bg-color);
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.interactive-terminal .terminal-step-indicator {
+  font-size: 0.75rem;
+  color: var(--md-default-fg-color--light);
+  padding: 0.375rem 0;
+  margin-left: auto;
+}
+
+/* ---- Command Builder ---- */
+
+.interactive-command-builder .builder-description {
+  font-size: 0.9rem;
+  color: var(--md-default-fg-color--light);
+  margin-bottom: 1rem;
+}
+
+.interactive-command-builder .builder-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.interactive-command-builder .builder-option {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+@media (max-width: 600px) {
+  .interactive-command-builder .builder-option {
+    grid-template-columns: 1fr;
+  }
+}
+
+.interactive-command-builder .builder-option label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--md-default-fg-color);
+  padding-top: 0.375rem;
+}
+
+.interactive-command-builder .builder-option input,
+.interactive-command-builder .builder-option select {
+  padding: 0.375rem 0.625rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.25rem;
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  font-family: inherit;
+  font-size: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.interactive-command-builder .builder-option input:focus,
+.interactive-command-builder .builder-option select:focus {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.interactive-command-builder .builder-option .option-explanation {
+  grid-column: 1 / -1;
+  font-size: 0.8rem;
+  color: var(--md-default-fg-color--light);
+  padding-left: 0.25rem;
+}
+
+.interactive-command-builder .builder-result {
+  position: relative;
+  background: var(--md-code-bg-color);
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--md-default-fg-color);
+  word-break: break-all;
+  margin-bottom: 0.75rem;
+}
+
+.interactive-command-builder .builder-result .base-cmd {
+  color: var(--md-primary-fg-color);
+  font-weight: 600;
+}
+
+.interactive-command-builder .builder-result .flag {
+  color: var(--md-accent-fg-color);
+}
+
+.interactive-command-builder .builder-copy {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+  background: var(--md-default-fg-color--lightest);
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: var(--md-default-fg-color);
+  font-family: inherit;
+}
+
+.interactive-command-builder .builder-copy:hover {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+.interactive-command-builder .builder-explanations {
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.interactive-command-builder .builder-explanations dt {
+  font-weight: 600;
+  color: var(--md-accent-fg-color);
+  font-family: "SFMono-Regular", "Consolas", monospace;
+  font-size: 0.85em;
+}
+
+.interactive-command-builder .builder-explanations dd {
+  margin-left: 0;
+  margin-bottom: 0.5rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.interactive-command-builder .builder-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ---- Code Walkthrough ---- */
+
+.interactive-code-walkthrough .walkthrough-code {
+  position: relative;
+  background: var(--md-code-bg-color);
+  overflow-x: auto;
+}
+
+.interactive-code-walkthrough .walkthrough-code pre {
+  margin: 0;
+  padding: 0.75rem 0;
+}
+
+.interactive-code-walkthrough .walkthrough-line {
+  display: block;
+  padding: 0 1rem 0 3.5rem;
+  position: relative;
+  line-height: 1.6;
+  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+  font-size: 0.85rem;
+  color: var(--md-default-fg-color);
+  transition: background 0.2s;
+}
+
+.interactive-code-walkthrough .walkthrough-line .line-number {
+  position: absolute;
+  left: 0;
+  width: 2.5rem;
+  text-align: right;
+  padding-right: 0.5rem;
+  color: var(--md-default-fg-color--lighter);
+  user-select: none;
+}
+
+.interactive-code-walkthrough .walkthrough-line.active {
+  background: color-mix(in srgb, var(--md-primary-fg-color) 12%, transparent);
+}
+
+.interactive-code-walkthrough .walkthrough-annotation {
+  padding: 0.625rem 1rem;
+  background: color-mix(in srgb, var(--md-primary-fg-color) 8%, var(--md-code-bg-color));
+  border-top: 2px solid var(--md-primary-fg-color);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--md-default-fg-color);
+  min-height: 2.5rem;
+}
+
+.interactive-code-walkthrough .walkthrough-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--md-code-bg-color);
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.interactive-code-walkthrough .walkthrough-step-info {
+  font-size: 0.75rem;
+  color: var(--md-default-fg-color--light);
+  margin-left: auto;
+}
+
+.interactive-code-walkthrough .walkthrough-controls button {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--md-primary-fg-color);
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--md-primary-fg-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+.interactive-code-walkthrough .walkthrough-controls button:hover:not(:disabled) {
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+.interactive-code-walkthrough .walkthrough-controls button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.interactive-code-walkthrough .walkthrough-controls .show-all-toggle {
+  border-color: var(--md-default-fg-color--lighter);
+  color: var(--md-default-fg-color--light);
+}
+
+.interactive-code-walkthrough .walkthrough-controls .show-all-toggle.active {
+  border-color: var(--md-accent-fg-color);
+  color: var(--md-accent-fg-color);
+}
+
+/* ---- Progress Bar ---- */
+
+.runbook-progress-bar {
+  position: relative;
+  height: 4px;
+  background: var(--md-default-fg-color--lightest);
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.runbook-progress-bar .progress-fill {
+  height: 100%;
+  background: var(--md-primary-fg-color);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+  width: 0;
+}
+
+.runbook-progress-bar .progress-label {
+  position: absolute;
+  right: 0;
+  top: 8px;
+  font-size: 0.7rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* Topic card progress on landing page */
+.tx-topics a .topic-progress {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.tx-topics a .topic-progress-bar {
+  height: 3px;
+  background: var(--md-default-fg-color--lightest);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.tx-topics a .topic-progress-fill {
+  height: 100%;
+  background: var(--md-primary-fg-color);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.tx-topics a .topic-progress-text {
+  font-size: 0.7rem;
+  color: var(--md-default-fg-color--lighter);
+  margin-top: 0.25rem;
+}
