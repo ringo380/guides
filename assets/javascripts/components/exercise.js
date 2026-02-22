@@ -210,6 +210,7 @@
     if (completed) completeBtn.disabled = true;
 
     completeBtn.addEventListener("click", () => {
+      markStarted();
       completed = true;
       completeBtn.textContent = "Completed";
       completeBtn.disabled = true;
