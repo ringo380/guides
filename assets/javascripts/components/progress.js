@@ -14,103 +14,8 @@
 (function () {
   "use strict";
 
-  // Known topic paths and their guide counts for landing page progress
-  const TOPICS = {
-    "Linux Essentials": {
-      prefix: "Linux Essentials/",
-      guides: [
-        "shell-basics",
-        "streams-and-redirection",
-        "text-processing",
-        "finding-files",
-        "file-permissions",
-        "job-control",
-        "scripting-fundamentals",
-        "disk-and-filesystem",
-        "networking",
-        "system-information",
-        "archiving-and-compression",
-        "best-practices",
-      ],
-    },
-    "DNS Administration": {
-      prefix: "DNS Administration/",
-      guides: [
-        "dns-fundamentals",
-        "zone-files-and-records",
-        "dns-tools",
-        "bind",
-        "nsd-and-unbound",
-        "powerdns",
-        "dnssec",
-        "dns-architecture",
-      ],
-    },
-    "Dev Zero/Perl": {
-      prefix: "Dev Zero/Perl/",
-      guides: [
-        "perl_dev0_introduction",
-        "scalars-strings-numbers",
-        "arrays-hashes-lists",
-        "control-flow",
-        "regular-expressions",
-        "subroutines-references",
-        "file-io-and-system",
-        "modules-and-cpan",
-        "object-oriented-perl",
-        "error-handling-debugging",
-        "testing",
-        "text-processing-oneliners",
-        "networking-daemons",
-        "web-frameworks-apis",
-        "perl_developer_roadmap",
-      ],
-    },
-    Databases: {
-      prefix: "Databases/",
-      guides: [
-        "database-fundamentals",
-        "sql-essentials",
-        "database-design",
-        "mysql-installation-and-configuration",
-        "mysql-administration",
-        "mysql-performance",
-        "mysql-replication",
-        "postgresql-fundamentals",
-        "postgresql-administration",
-        "postgresql-advanced",
-        "nosql-concepts",
-        "mongodb",
-        "redis",
-        "backup-and-recovery",
-        "database-security",
-        "scaling-and-architecture",
-        "innodb-recovery-pdrt",
-      ],
-    },
-    Git: {
-      prefix: "Git/",
-      guides: [
-        "introduction",
-        "three-trees",
-        "commits-and-history",
-        "branches-and-merging",
-        "remote-repositories",
-        "rewriting-history",
-        "stashing-and-worktree",
-        "configuring-git",
-        "object-model",
-        "refs-reflog-dag",
-        "transfer-protocols",
-        "collaboration-workflows",
-        "platforms",
-        "hooks-and-automation",
-        "security",
-        "monorepos-and-scaling",
-        "troubleshooting-and-recovery",
-      ],
-    },
-  };
+  // Shared topic map loaded from lib/topics.js
+  var TOPICS = window.RunbookTopics || {};
 
   function init() {
     const storage = window.RunbookStorage;
@@ -130,11 +35,17 @@
     const headings = content.querySelectorAll("h2[id]");
     if (headings.length === 0) return;
 
+    // Track when each section enters the viewport for dwell time
+    var sectionEntryTimes = {};
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          var sectionId = entry.target.id;
+
           if (entry.isIntersecting) {
-            const sectionId = entry.target.id;
+            // Record entry time for dwell tracking
+            sectionEntryTimes[sectionId] = performance.now();
             const wasAlreadyRead = storage.getSectionsRead().includes(sectionId);
             storage.markSectionRead(sectionId);
             updateProgressBar(storage, headings.length);
@@ -165,6 +76,17 @@
                   sections_total: headings.length,
                 }, { once: true });
               }
+            }
+          } else {
+            // Section left the viewport - fire dwell time if >= 3s
+            if (sectionEntryTimes[sectionId] && window.RunbookAnalytics) {
+              var dwellSeconds = (performance.now() - sectionEntryTimes[sectionId]) / 1000;
+              if (dwellSeconds >= 3) {
+                window.RunbookAnalytics.trackTimed("section_dwell_time", dwellSeconds, {
+                  section_id: sectionId,
+                });
+              }
+              delete sectionEntryTimes[sectionId];
             }
           }
         });

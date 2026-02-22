@@ -60,6 +60,20 @@
     const hints = config.hints || [];
     let hintsRevealed = 0;
     let completed = false;
+    let started = false;
+    var exerciseTimer = null;
+
+    function markStarted() {
+      if (started) return;
+      started = true;
+      if (window.RunbookAnalytics) {
+        exerciseTimer = window.RunbookAnalytics.Timer();
+        window.RunbookAnalytics.track("exercise_start", {
+          exercise_id: exerciseId,
+          difficulty: config.difficulty || "unknown",
+        }, { once: true });
+      }
+    }
 
     const storage = window.RunbookStorage;
     if (storage && storage.isExerciseComplete(exerciseId)) {
@@ -129,6 +143,7 @@
       hintBtn.textContent = `Show Hint (1/${hints.length})`;
       hintBtn.addEventListener("click", () => {
         if (hintsRevealed < hints.length) {
+          markStarted();
           hintElements[hintsRevealed].classList.add("visible");
           hintsRevealed++;
 
@@ -166,6 +181,7 @@
       solutionContainer.appendChild(solutionContent);
 
       solutionBtn.addEventListener("click", () => {
+        markStarted();
         const isVisible = solutionContainer.classList.contains("visible");
         if (isVisible) {
           solutionContainer.classList.remove("visible");
@@ -194,9 +210,17 @@
     if (completed) completeBtn.disabled = true;
 
     completeBtn.addEventListener("click", () => {
+      markStarted();
       completed = true;
       completeBtn.textContent = "Completed";
       completeBtn.disabled = true;
+
+      if (window.RunbookAnalytics && exerciseTimer) {
+        window.RunbookAnalytics.trackTimed("exercise_duration", exerciseTimer.elapsed(), {
+          exercise_id: exerciseId,
+          difficulty: config.difficulty || "unknown",
+        });
+      }
 
       if (storage) {
         storage.markExerciseComplete(exerciseId);

@@ -40,7 +40,23 @@
     return clean;
   }
 
+  /** Lightweight timer using performance.now(). */
+  class Timer {
+    constructor() {
+      this._start = performance.now();
+    }
+    /** Returns elapsed seconds since construction. */
+    elapsed() {
+      return (performance.now() - this._start) / 1000;
+    }
+  }
+
   const RunbookAnalytics = {
+    /** Create a new Timer instance. */
+    Timer() {
+      return new Timer();
+    },
+
     track(eventName, params, options) {
       if (!isAvailable()) return;
 
@@ -55,6 +71,31 @@
 
       sanitized.page_path = pagePath();
       gtag("event", eventName, sanitized);
+    },
+
+    /** Track a timed event. Ignores durations under 0.5s. */
+    trackTimed(eventName, durationSeconds, params, options) {
+      if (durationSeconds < 0.5) return;
+      const merged = Object.assign({}, params || {}, {
+        duration_seconds: Math.round(durationSeconds * 10) / 10,
+      });
+      this.track(eventName, merged, options);
+    },
+
+    /** Track a component error. Fires component_error with truncated message. */
+    trackError(context, error) {
+      var message = "";
+      if (error instanceof Error) {
+        message = error.message;
+      } else if (typeof error === "string") {
+        message = error;
+      } else {
+        message = String(error);
+      }
+      this.track("component_error", {
+        error_context: truncate(context, 100),
+        error_message: truncate(message, 100),
+      });
     },
 
     /** Returns a debounced version of track(). */

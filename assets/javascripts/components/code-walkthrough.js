@@ -29,6 +29,9 @@
     const annotations = (config.annotations || []).sort((a, b) => a.line - b.line);
     let currentStepIndex = -1;
     let showAll = false;
+    var walkthroughStarted = false;
+    var walkthroughTimer = null;
+    var lastStepEndTime = null;
 
     // Header
     const header = document.createElement("div");
@@ -109,6 +112,31 @@
       currentStepIndex = index;
 
       if (index >= 0 && index < annotations.length) {
+        // Start tracking (first navigation only)
+        if (!walkthroughStarted) {
+          walkthroughStarted = true;
+          if (window.RunbookAnalytics) {
+            walkthroughTimer = window.RunbookAnalytics.Timer();
+            window.RunbookAnalytics.track("walkthrough_start", {
+              walkthrough_title: config.title || "",
+              steps_total: annotations.length,
+            }, { once: true });
+          }
+        }
+
+        // Inter-step dwell time
+        if (window.RunbookAnalytics && lastStepEndTime !== null) {
+          var dwellSeconds = (performance.now() - lastStepEndTime) / 1000;
+          if (dwellSeconds >= 1) {
+            window.RunbookAnalytics.trackTimed("walkthrough_step_dwell", dwellSeconds, {
+              walkthrough_title: config.title || "",
+              from_step: index,
+              steps_total: annotations.length,
+            });
+          }
+        }
+        lastStepEndTime = performance.now();
+
         const ann = annotations[index];
         highlightLine(ann.line);
         annotationEl.textContent = ann.text;
@@ -128,6 +156,13 @@
             walkthrough_title: config.title || "",
             steps_total: annotations.length,
           }, { once: true });
+
+          if (walkthroughTimer) {
+            window.RunbookAnalytics.trackTimed("walkthrough_duration", walkthroughTimer.elapsed(), {
+              walkthrough_title: config.title || "",
+              steps_total: annotations.length,
+            });
+          }
         }
       }
 

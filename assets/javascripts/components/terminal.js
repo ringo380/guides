@@ -34,6 +34,9 @@
     const prompt = config.prompt || DEFAULT_PROMPT;
     let currentStep = -1;
     let isAnimating = false;
+    var terminalStarted = false;
+    var terminalTimer = null;
+    var lastStepEndTime = null;
 
     // Header
     const header = document.createElement("div");
@@ -130,6 +133,29 @@
       currentStep = stepIndex;
       updateControls();
 
+      if (!terminalStarted) {
+        terminalStarted = true;
+        if (window.RunbookAnalytics) {
+          terminalTimer = window.RunbookAnalytics.Timer();
+          window.RunbookAnalytics.track("terminal_start", {
+            terminal_title: config.title || "",
+            steps_total: steps.length,
+          }, { once: true });
+        }
+      }
+
+      // Inter-step dwell time
+      if (window.RunbookAnalytics && lastStepEndTime !== null) {
+        var dwellSeconds = (performance.now() - lastStepEndTime) / 1000;
+        if (dwellSeconds >= 1) {
+          window.RunbookAnalytics.trackTimed("terminal_step_dwell", dwellSeconds, {
+            terminal_title: config.title || "",
+            from_step: stepIndex,
+            steps_total: steps.length,
+          });
+        }
+      }
+
       renderPreviousSteps();
 
       const step = steps[stepIndex];
@@ -184,6 +210,7 @@
       }
 
       isAnimating = false;
+      lastStepEndTime = performance.now();
 
       if (window.RunbookAnalytics) {
         window.RunbookAnalytics.track("terminal_step", {
@@ -199,6 +226,13 @@
           terminal_title: config.title || "",
           steps_total: steps.length,
         }, { once: true });
+
+        if (terminalTimer) {
+          window.RunbookAnalytics.trackTimed("terminal_duration", terminalTimer.elapsed(), {
+            terminal_title: config.title || "",
+            steps_total: steps.length,
+          });
+        }
       }
 
       updateControls();

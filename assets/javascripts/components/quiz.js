@@ -34,6 +34,8 @@
     const correctIndex = options.findIndex((o) => o.correct);
     let attempts = 0;
     let answered = false;
+    let started = false;
+    var quizTimer = null;
 
     // Restore previous state
     const storage = window.RunbookStorage;
@@ -82,6 +84,17 @@
       btn.addEventListener("click", () => {
         if (answered) return;
 
+        if (!started) {
+          started = true;
+          if (window.RunbookAnalytics) {
+            quizTimer = window.RunbookAnalytics.Timer();
+            window.RunbookAnalytics.track("quiz_start", {
+              quiz_id: quizId,
+              question: config.question || "",
+            }, { once: true });
+          }
+        }
+
         attempts++;
         const isCorrect = i === correctIndex;
 
@@ -114,6 +127,13 @@
         } else {
           answered = true;
           retryBtn.style.display = "none";
+
+          if (window.RunbookAnalytics && quizTimer) {
+            window.RunbookAnalytics.trackTimed("quiz_duration", quizTimer.elapsed(), {
+              quiz_id: quizId,
+              attempts: attempts,
+            });
+          }
         }
 
         // Save to storage
