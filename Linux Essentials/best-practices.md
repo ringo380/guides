@@ -230,6 +230,51 @@ In buggy.sh line 4:
 
 Each finding includes a code (like SC2086) that you can look up at the shellcheck wiki for a detailed explanation and fix. **Editor integration** makes this even more useful - the VS Code ShellCheck extension and vim plugins like ALE or Syntastic show warnings inline as you type, catching bugs before you even save the file.
 
+```terminal
+title: Catching Bugs with ShellCheck
+steps:
+  - command: "cat buggy.sh"
+    output: |
+      files=$(ls *.txt)
+      for f in $files; do
+          if [ $f == "important" ]; then
+              echo "Found it"
+          fi
+      done
+    narration: "This script has several common problems that are easy to miss by eye. There's no shebang line, variables aren't quoted, and it uses a bashism inside a POSIX test bracket."
+  - command: "shellcheck buggy.sh"
+    output: |
+      In buggy.sh line 1:
+      files=$(ls *.txt)
+      ^-- SC2148 (error): Tips depend on target shell and target shell was not specified. Add a shebang.
+
+      In buggy.sh line 2:
+      for f in $files; do
+               ^----^ SC2086 (info): Double quote to prevent globbing and word splitting.
+
+      In buggy.sh line 3:
+          if [ $f == "important" ]; then
+               ^-- SC2086 (info): Double quote to prevent globbing and word splitting.
+               ^-- SC2039 (warning): In POSIX sh, == in place of = is undefined.
+    narration: "ShellCheck finds three distinct issues. SC2148 flags the missing shebang, SC2086 catches unquoted variables that would break on filenames with spaces, and SC2039 warns that == inside [ ] is not portable POSIX syntax."
+  - command: "cat fixed.sh"
+    output: |
+      #!/usr/bin/env bash
+      files=$(ls *.txt)
+      for f in $files; do
+          if [ "$f" = "important" ]; then
+              echo "Found it"
+          fi
+      done
+    narration: "The fixed version adds a bash shebang, quotes the variable in the test, and uses the portable = operator. These are small changes, but they prevent real breakage on filenames with spaces or on systems with a strict POSIX shell."
+  - command: "shellcheck fixed.sh"
+    output: ""
+    narration: "No output means no findings. ShellCheck exits silently when your script is clean, making it easy to use in CI pipelines where a non-zero exit code would fail the build."
+  - command: "bash fixed.sh"
+    output: "Found it"
+    narration: "The script runs successfully. This fix-verify cycle - edit, run ShellCheck, fix findings, confirm clean, then execute - is the workflow that catches bugs before they reach production."
+```
+
 ```quiz
 question: "What is ShellCheck?"
 type: multiple-choice

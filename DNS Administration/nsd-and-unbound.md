@@ -144,6 +144,30 @@ nsd-control reload
 nsd-control reconfig
 ```
 
+```terminal
+title: Validating and Reloading NSD Zones
+steps:
+  - command: "nsd-checkconf /etc/nsd/nsd.conf"
+    output: ""
+    narration: "No output means the configuration file parsed without errors. nsd-checkconf catches syntax problems, missing zone file paths, and invalid options before they can take down your server."
+  - command: "nsd-checkzone example.com /etc/nsd/zones/example.com.zone"
+    output: "zone example.com is ok"
+    narration: "nsd-checkzone validates the zone file itself - correct SOA format, valid record types, and proper FQDN syntax. Always run this after editing a zone file and before reloading."
+  - command: "nsd-control reload example.com"
+    output: "ok"
+    narration: "Reloading a single zone avoids disrupting other zones on the server. NSD re-reads the zone file from disk and starts serving the updated records immediately."
+  - command: "nsd-control status"
+    output: |
+      version: 4.9.1
+      zonesdir: /etc/nsd/zones
+      options: 1
+      zones: 3
+    narration: "The status command confirms NSD is running and shows how many zones it is serving. If the server had crashed during reload, this command would fail with a connection error."
+  - command: "dig @127.0.0.1 example.com A +short"
+    output: "93.184.216.34"
+    narration: "Querying localhost directly confirms NSD is serving the updated zone. This bypasses any caching resolver in front of NSD, so you see exactly what your authoritative server returns."
+```
+
 ### nsd-control Commands
 
 | Command | Action |
