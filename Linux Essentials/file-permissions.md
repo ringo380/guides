@@ -513,6 +513,34 @@ find / -type f -perm -4000 2>/dev/null
 find / -nouser 2>/dev/null
 ```
 
+```terminal
+title: "Security Audit: Finding Permission Issues"
+steps:
+  - command: "find /var/www -type f -perm -002 2>/dev/null"
+    output: |
+      /var/www/uploads/config.txt
+      /var/www/html/tmp/debug.log
+    narration: "World-writable files (-002) let any user on the system modify them. In a web directory, this is a serious risk - an attacker who gains low-privilege access could alter configuration or inject code."
+  - command: "ls -l /var/www/uploads/config.txt"
+    output: "-rw-rw-rw- 1 www-data www-data 1247 Jan 15 09:32 /var/www/uploads/config.txt"
+    narration: "The trailing rw- in the 'other' column confirms world-writable permissions. This file is owned by www-data, so only the web server and root need write access."
+  - command: "chmod o-w /var/www/uploads/config.txt"
+    output: ""
+    narration: "Removing the write bit for 'other' (o-w) locks the file down to owner and group only. No output means the operation succeeded."
+  - command: "find /usr -type f -perm -4000 2>/dev/null"
+    output: |
+      /usr/bin/passwd
+      /usr/bin/sudo
+      /usr/bin/chsh
+      /usr/bin/newgrp
+    narration: "Setuid files (-4000) run as their owner regardless of who executes them. These results are expected system binaries that need root privileges to function. An unfamiliar setuid binary here would be a red flag worth investigating."
+  - command: "find /home -nouser 2>/dev/null"
+    output: |
+      /home/former_employee/project_notes.txt
+      /home/former_employee/.bash_history
+    narration: "Files with no matching user in /etc/passwd are orphans, typically left behind when a user account was deleted. These should be reassigned to a valid owner or archived and removed."
+```
+
 ---
 
 ## Further Reading

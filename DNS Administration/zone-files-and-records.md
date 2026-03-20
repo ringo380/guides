@@ -132,6 +132,46 @@ example.com.        3600 IN SOA ns1.example.com. admin.example.com. (
 
 The `+multiline` flag is essential for reading SOA records - without it, all the fields run together on one line.
 
+```terminal
+title: Querying Zone Records with dig
+steps:
+  - command: "dig SOA example.com +multiline"
+    output: |
+      ; <<>> DiG 9.18.24 <<>> SOA example.com +multiline
+      ;; ANSWER SECTION:
+      example.com.        3600 IN SOA ns1.example.com. admin.example.com. (
+                              2025011501 ; serial
+                              3600       ; refresh (1 hour)
+                              900        ; retry (15 minutes)
+                              1209600    ; expire (2 weeks)
+                              300        ; minimum (5 minutes)
+                              )
+    narration: "The +multiline flag formats the SOA record with each field on its own line. The serial tells secondaries whether they need a zone transfer, and the timers control how often they check."
+  - command: "dig NS example.com +short"
+    output: |
+      ns1.example.com.
+      ns2.example.com.
+    narration: "NS records delegate the zone to these nameservers. The +short flag strips everything except the answer, which is useful for scripting or quick checks."
+  - command: "dig A www.example.com"
+    output: |
+      ; <<>> DiG 9.18.24 <<>> A www.example.com
+      ;; QUESTION SECTION:
+      ;www.example.com.       IN  A
+
+      ;; ANSWER SECTION:
+      www.example.com.    300 IN  A   93.184.216.34
+
+      ;; AUTHORITY SECTION:
+      example.com.        3600 IN NS  ns1.example.com.
+      example.com.        3600 IN NS  ns2.example.com.
+    narration: "Without +short, dig shows the full response structure. The QUESTION section echoes your query, the ANSWER section has the resolved address, and the AUTHORITY section shows which nameservers are responsible for the zone."
+  - command: "dig MX example.com +short"
+    output: |
+      10 mail1.example.com.
+      20 mail2.example.com.
+    narration: "MX records include a priority number - lower values are tried first. Here, mail1 at priority 10 is the primary mail server, and mail2 at priority 20 is the fallback."
+```
+
 ```quiz
 question: "Why is the SOA serial number typically formatted as YYYYMMDDNN?"
 type: multiple-choice
