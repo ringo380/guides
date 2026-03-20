@@ -53,11 +53,15 @@
     // Terminal window
     const terminalWindow = document.createElement("div");
     terminalWindow.className = "terminal-window";
+    terminalWindow.setAttribute("role", "log");
+    terminalWindow.setAttribute("aria-label", (config.title || "Terminal") + " output");
 
     // Narration area
     const narration = document.createElement("div");
     narration.className = "terminal-narration";
     narration.style.display = "none";
+    narration.setAttribute("aria-live", "assertive");
+    narration.setAttribute("aria-atomic", "true");
 
     // Controls
     const controls = document.createElement("div");
@@ -67,19 +71,24 @@
     prevBtn.className = "terminal-btn";
     prevBtn.type = "button";
     prevBtn.textContent = "Previous";
+    prevBtn.setAttribute("aria-label", "Previous step");
 
     const nextBtn = document.createElement("button");
     nextBtn.className = "terminal-btn";
     nextBtn.type = "button";
     nextBtn.textContent = "Next";
+    nextBtn.setAttribute("aria-label", "Next step");
 
     const replayBtn = document.createElement("button");
     replayBtn.className = "terminal-btn";
     replayBtn.type = "button";
     replayBtn.textContent = "Replay";
+    replayBtn.setAttribute("aria-label", "Replay terminal demo");
 
     const stepIndicator = document.createElement("span");
     stepIndicator.className = "terminal-step-indicator";
+    stepIndicator.setAttribute("aria-live", "polite");
+    stepIndicator.setAttribute("aria-atomic", "true");
 
     controls.appendChild(prevBtn);
     controls.appendChild(nextBtn);
@@ -88,10 +97,16 @@
 
     function updateControls() {
       prevBtn.disabled = currentStep <= 0 || isAnimating;
+      prevBtn.setAttribute("aria-disabled", String(prevBtn.disabled));
       nextBtn.disabled = currentStep >= steps.length - 1 || isAnimating;
+      nextBtn.setAttribute("aria-disabled", String(nextBtn.disabled));
       replayBtn.disabled = isAnimating;
-      stepIndicator.textContent =
-        steps.length > 0 ? `Step ${currentStep + 1} of ${steps.length}` : "";
+      replayBtn.setAttribute("aria-disabled", String(isAnimating));
+      // Only update step text when not animating to avoid duplicate aria-live announcements
+      if (!isAnimating) {
+        stepIndicator.textContent =
+          steps.length > 0 ? `Step ${currentStep + 1} of ${steps.length}` : "";
+      }
     }
 
     function renderPreviousSteps() {
@@ -263,6 +278,25 @@
         narration.style.display = "none";
         if (steps.length > 0) {
           animateStep(0, "replay");
+        }
+      }
+    });
+
+    // Keyboard navigation - listen on controls so arrow keys work when buttons are focused
+    container.setAttribute("role", "region");
+    container.setAttribute("aria-label", (config.title || "Terminal") + " interactive demo");
+
+    controls.addEventListener("keydown", (e) => {
+      if (isAnimating) return;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        if (currentStep < steps.length - 1) {
+          e.preventDefault();
+          animateStep(currentStep + 1, "next");
+        }
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        if (currentStep > 0) {
+          e.preventDefault();
+          animateStep(currentStep - 1, "prev");
         }
       }
     });
