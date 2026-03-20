@@ -200,6 +200,20 @@
   color: var(--md-primary-bg-color);
 }
 
+/* Focus-visible styles for interactive buttons (a11y) */
+.interactive-quiz .quiz-option:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
+.interactive-quiz .quiz-retry:focus-visible,
+.interactive-exercise .exercise-btn:focus-visible,
+.interactive-terminal .terminal-btn:focus-visible,
+.interactive-command-builder .builder-btn:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
 .interactive-quiz .quiz-score {
   font-size: 0.8rem;
   color: var(--md-default-fg-color--light);

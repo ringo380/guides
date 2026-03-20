@@ -55,13 +55,19 @@
     const questionEl = document.createElement("div");
     questionEl.className = "quiz-question";
     questionEl.textContent = config.question || "Question";
+    const questionId = quizId + "-q";
+    questionEl.id = questionId;
     body.appendChild(questionEl);
 
     const optionsEl = document.createElement("div");
     optionsEl.className = "quiz-options";
+    optionsEl.setAttribute("role", "group");
+    optionsEl.setAttribute("aria-labelledby", questionId);
 
     const feedbackEl = document.createElement("div");
     feedbackEl.className = "quiz-feedback";
+    feedbackEl.setAttribute("aria-live", "polite");
+    feedbackEl.setAttribute("aria-atomic", "true");
 
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -69,6 +75,7 @@
       const btn = document.createElement("button");
       btn.className = "quiz-option";
       btn.type = "button";
+      btn.setAttribute("aria-pressed", "false");
 
       const marker = document.createElement("span");
       marker.className = "option-marker";
@@ -99,10 +106,14 @@
         const isCorrect = i === correctIndex;
 
         // Disable all options
-        optionButtons.forEach((b) => b.classList.add("disabled"));
+        optionButtons.forEach((b) => {
+          b.classList.add("disabled");
+          b.setAttribute("aria-disabled", "true");
+        });
 
         // Highlight selected
         btn.classList.add(isCorrect ? "correct" : "incorrect");
+        btn.setAttribute("aria-pressed", "true");
 
         // If correct, also highlight the correct one (already done)
         // If wrong, show the correct answer too
@@ -179,6 +190,8 @@
       // Reset visual state but keep attempt count
       optionButtons.forEach((b) => {
         b.classList.remove("correct", "incorrect", "disabled");
+        b.setAttribute("aria-pressed", "false");
+        b.removeAttribute("aria-disabled");
       });
       feedbackEl.className = "quiz-feedback";
       retryBtn.style.display = "none";
@@ -209,8 +222,12 @@
     // If previously answered correctly, show that state
     if (saved && saved.score === 1 && correctIndex >= 0) {
       answered = true;
-      optionButtons.forEach((b) => b.classList.add("disabled"));
+      optionButtons.forEach((b) => {
+        b.classList.add("disabled");
+        b.setAttribute("aria-disabled", "true");
+      });
       optionButtons[correctIndex].classList.add("correct");
+      optionButtons[correctIndex].setAttribute("aria-pressed", "true");
       const correctOpt = options[correctIndex];
       feedbackEl.textContent = correctOpt.feedback || "Correct!";
       feedbackEl.className = "quiz-feedback visible correct";
