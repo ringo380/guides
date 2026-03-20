@@ -61,7 +61,7 @@
 
     const optionsEl = document.createElement("div");
     optionsEl.className = "quiz-options";
-    optionsEl.setAttribute("role", "group");
+    optionsEl.setAttribute("role", "radiogroup");
     optionsEl.setAttribute("aria-labelledby", questionId);
 
     const feedbackEl = document.createElement("div");
@@ -75,7 +75,8 @@
       const btn = document.createElement("button");
       btn.className = "quiz-option";
       btn.type = "button";
-      btn.setAttribute("aria-pressed", "false");
+      btn.setAttribute("role", "radio");
+      btn.setAttribute("aria-checked", "false");
 
       const marker = document.createElement("span");
       marker.className = "option-marker";
@@ -113,7 +114,7 @@
 
         // Highlight selected
         btn.classList.add(isCorrect ? "correct" : "incorrect");
-        btn.setAttribute("aria-pressed", "true");
+        btn.setAttribute("aria-checked", "true");
 
         // If correct, also highlight the correct one (already done)
         // If wrong, show the correct answer too
@@ -190,7 +191,7 @@
       // Reset visual state but keep attempt count
       optionButtons.forEach((b) => {
         b.classList.remove("correct", "incorrect", "disabled");
-        b.setAttribute("aria-pressed", "false");
+        b.setAttribute("aria-checked", "false");
         b.removeAttribute("aria-disabled");
       });
       feedbackEl.className = "quiz-feedback";
@@ -227,7 +228,7 @@
         b.setAttribute("aria-disabled", "true");
       });
       optionButtons[correctIndex].classList.add("correct");
-      optionButtons[correctIndex].setAttribute("aria-pressed", "true");
+      optionButtons[correctIndex].setAttribute("aria-checked", "true");
       const correctOpt = options[correctIndex];
       feedbackEl.textContent = correctOpt.feedback || "Correct!";
       feedbackEl.className = "quiz-feedback visible correct";

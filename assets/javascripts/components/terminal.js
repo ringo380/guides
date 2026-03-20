@@ -54,7 +54,6 @@
     const terminalWindow = document.createElement("div");
     terminalWindow.className = "terminal-window";
     terminalWindow.setAttribute("role", "log");
-    terminalWindow.setAttribute("aria-live", "polite");
     terminalWindow.setAttribute("aria-label", (config.title || "Terminal") + " output");
 
     // Narration area
@@ -103,8 +102,11 @@
       nextBtn.setAttribute("aria-disabled", String(nextBtn.disabled));
       replayBtn.disabled = isAnimating;
       replayBtn.setAttribute("aria-disabled", String(isAnimating));
-      stepIndicator.textContent =
-        steps.length > 0 ? `Step ${currentStep + 1} of ${steps.length}` : "";
+      // Only update step text when not animating to avoid duplicate aria-live announcements
+      if (!isAnimating) {
+        stepIndicator.textContent =
+          steps.length > 0 ? `Step ${currentStep + 1} of ${steps.length}` : "";
+      }
     }
 
     function renderPreviousSteps() {
@@ -280,19 +282,22 @@
       }
     });
 
-    // Keyboard navigation
-    container.setAttribute("tabindex", "0");
+    // Keyboard navigation - listen on controls so arrow keys work when buttons are focused
     container.setAttribute("role", "region");
     container.setAttribute("aria-label", (config.title || "Terminal") + " interactive demo");
 
-    container.addEventListener("keydown", (e) => {
+    controls.addEventListener("keydown", (e) => {
       if (isAnimating) return;
       if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-        e.preventDefault();
-        if (currentStep < steps.length - 1) animateStep(currentStep + 1, "next");
+        if (currentStep < steps.length - 1) {
+          e.preventDefault();
+          animateStep(currentStep + 1, "next");
+        }
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-        e.preventDefault();
-        if (currentStep > 0) animateStep(currentStep - 1, "prev");
+        if (currentStep > 0) {
+          e.preventDefault();
+          animateStep(currentStep - 1, "prev");
+        }
       }
     });
 
