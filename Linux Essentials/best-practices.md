@@ -235,44 +235,44 @@ title: Catching Bugs with ShellCheck
 steps:
   - command: "cat buggy.sh"
     output: |
+      #!/bin/bash
       files=$(ls *.txt)
       for f in $files; do
           if [ $f == "important" ]; then
-              echo "Found it"
+              rm $f
           fi
       done
-    narration: "This script has several common problems that are easy to miss by eye. There's no shebang line, variables aren't quoted, and it uses a bashism inside a POSIX test bracket."
+    narration: "This script looks reasonable at first glance, but it has several issues hiding in plain sight. The variables aren't quoted, ls is being parsed, and there's a bashism inside a POSIX test bracket."
   - command: "shellcheck buggy.sh"
     output: |
-      In buggy.sh line 1:
-      files=$(ls *.txt)
-      ^-- SC2148 (error): Tips depend on target shell and target shell was not specified. Add a shebang.
-
       In buggy.sh line 2:
-      for f in $files; do
-               ^----^ SC2086 (info): Double quote to prevent globbing and word splitting.
+      files=$(ls *.txt)
+              ^------^ SC2012: Use find instead of ls to better handle non-alphanumeric filenames.
 
       In buggy.sh line 3:
+      for f in $files; do
+               ^----^ SC2086: Double quote to prevent globbing and word splitting.
+
+      In buggy.sh line 4:
           if [ $f == "important" ]; then
-               ^-- SC2086 (info): Double quote to prevent globbing and word splitting.
-               ^-- SC2039 (warning): In POSIX sh, == in place of = is undefined.
-    narration: "ShellCheck finds three distinct issues. SC2148 flags the missing shebang, SC2086 catches unquoted variables that would break on filenames with spaces, and SC2039 warns that == inside [ ] is not portable POSIX syntax."
+               ^-- SC2086: Double quote to prevent globbing and word splitting.
+               ^-- SC2039: In POSIX sh, == in place of = is undefined.
+    narration: "ShellCheck finds four findings across three rules. SC2012 flags parsing ls output, SC2086 catches unquoted variables that would break on filenames with spaces, and SC2039 warns that == inside [ ] is not portable POSIX syntax."
   - command: "cat fixed.sh"
     output: |
-      #!/usr/bin/env bash
-      files=$(ls *.txt)
-      for f in $files; do
+      #!/bin/bash
+      for f in *.txt; do
           if [ "$f" = "important" ]; then
-              echo "Found it"
+              rm "$f"
           fi
       done
-    narration: "The fixed version adds a bash shebang, quotes the variable in the test, and uses the portable = operator. These are small changes, but they prevent real breakage on filenames with spaces or on systems with a strict POSIX shell."
+    narration: "The fixed version replaces the ls pipeline with a direct glob, quotes every variable expansion, and uses the portable = operator. The glob also handles filenames with spaces or special characters correctly."
   - command: "shellcheck fixed.sh"
     output: ""
     narration: "No output means no findings. ShellCheck exits silently when your script is clean, making it easy to use in CI pipelines where a non-zero exit code would fail the build."
   - command: "bash fixed.sh"
-    output: "Found it"
-    narration: "The script runs successfully. This fix-verify cycle - edit, run ShellCheck, fix findings, confirm clean, then execute - is the workflow that catches bugs before they reach production."
+    output: ""
+    narration: "The script runs without errors. No output here because there was no file named 'important' to match. This fix-verify cycle - edit, run ShellCheck, fix findings, confirm clean, then execute - is the workflow that catches bugs before they reach production."
 ```
 
 ```quiz

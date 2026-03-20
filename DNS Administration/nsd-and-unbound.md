@@ -159,10 +159,9 @@ steps:
   - command: "nsd-control status"
     output: |
       version: 4.9.1
-      zonesdir: /etc/nsd/zones
-      options: 1
-      zones: 3
-    narration: "The status command confirms NSD is running and shows how many zones it is serving. If the server had crashed during reload, this command would fail with a connection error."
+      verbosity: 0
+      ratelimit: 0
+    narration: "The status command confirms NSD is running and responding to control commands. If the server had crashed during reload, this command would fail with a connection error instead of returning version information."
   - command: "dig @127.0.0.1 example.com A +short"
     output: "93.184.216.34"
     narration: "Querying localhost directly confirms NSD is serving the updated zone. This bypasses any caching resolver in front of NSD, so you see exactly what your authoritative server returns."
