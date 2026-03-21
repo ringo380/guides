@@ -33,6 +33,10 @@
     var walkthroughTimer = null;
     var lastStepEndTime = null;
 
+    // Accessibility: region wrapper
+    container.setAttribute("role", "region");
+    container.setAttribute("aria-label", "Code Walkthrough: " + (config.title || "Untitled"));
+
     // Header
     const header = document.createElement("div");
     header.className = "interactive-header";
@@ -69,6 +73,8 @@
     // Annotation display
     const annotationEl = document.createElement("div");
     annotationEl.className = "walkthrough-annotation";
+    annotationEl.setAttribute("aria-live", "polite");
+    annotationEl.setAttribute("aria-atomic", "true");
     annotationEl.textContent = annotations.length > 0 ? "Click 'Next' to begin the walkthrough" : "No annotations available";
 
     // Controls
@@ -78,17 +84,24 @@
     const prevBtn = document.createElement("button");
     prevBtn.type = "button";
     prevBtn.textContent = "Previous";
+    prevBtn.setAttribute("aria-label", "Previous step");
     prevBtn.disabled = true;
+    prevBtn.setAttribute("aria-disabled", "true");
 
     const nextBtn = document.createElement("button");
     nextBtn.type = "button";
     nextBtn.textContent = "Next";
-    nextBtn.disabled = annotations.length === 0;
+    nextBtn.setAttribute("aria-label", "Next step");
+    if (annotations.length === 0) {
+      nextBtn.disabled = true;
+      nextBtn.setAttribute("aria-disabled", "true");
+    }
 
     const showAllBtn = document.createElement("button");
     showAllBtn.type = "button";
     showAllBtn.className = "show-all-toggle";
     showAllBtn.textContent = "Show All";
+    showAllBtn.setAttribute("aria-label", "Show all annotations");
 
     const stepInfo = document.createElement("span");
     stepInfo.className = "walkthrough-step-info";
@@ -97,6 +110,21 @@
     controls.appendChild(nextBtn);
     controls.appendChild(showAllBtn);
     controls.appendChild(stepInfo);
+
+    // Arrow key navigation on controls (matching terminal pattern)
+    controls.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        if (currentStepIndex > 0 && !showAll) {
+          e.preventDefault();
+          showStep(currentStepIndex - 1, "prev");
+        }
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        if (currentStepIndex < annotations.length - 1 && !showAll) {
+          e.preventDefault();
+          showStep(currentStepIndex + 1, "next");
+        }
+      }
+    });
 
     function highlightLine(lineNum) {
       lineElements.forEach((el) => el.classList.remove("active"));
@@ -139,7 +167,7 @@
 
         const ann = annotations[index];
         highlightLine(ann.line);
-        annotationEl.textContent = ann.text;
+        annotationEl.textContent = "Step " + (index + 1) + " of " + annotations.length + ": " + ann.text;
         stepInfo.textContent = `Step ${index + 1} of ${annotations.length}`;
 
         if (window.RunbookAnalytics) {
@@ -167,15 +195,20 @@
       }
 
       prevBtn.disabled = index <= 0;
+      prevBtn.setAttribute("aria-disabled", String(index <= 0));
       nextBtn.disabled = index >= annotations.length - 1;
+      nextBtn.setAttribute("aria-disabled", String(index >= annotations.length - 1));
     }
 
     function showAllAnnotations() {
       showAll = true;
       showAllBtn.classList.add("active");
       showAllBtn.textContent = "Step Mode";
+      showAllBtn.setAttribute("aria-label", "Switch to step mode");
       prevBtn.disabled = true;
+      prevBtn.setAttribute("aria-disabled", "true");
       nextBtn.disabled = true;
+      nextBtn.setAttribute("aria-disabled", "true");
       stepInfo.textContent = `${annotations.length} annotations`;
 
       // Highlight all annotated lines
@@ -207,6 +240,7 @@
       showAll = false;
       showAllBtn.classList.remove("active");
       showAllBtn.textContent = "Show All";
+      showAllBtn.setAttribute("aria-label", "Show all annotations");
 
       if (currentStepIndex >= 0) {
         showStep(currentStepIndex, "next");
@@ -235,15 +269,25 @@
       }
     });
 
-    // Allow clicking on annotated lines
+    // Allow clicking/keyboard on annotated lines
     lineElements.forEach((el, i) => {
       const lineNum = i + 1;
       const annIndex = annotations.findIndex((a) => a.line === lineNum);
       if (annIndex >= 0) {
         el.style.cursor = "pointer";
+        el.setAttribute("tabindex", "0");
+        el.setAttribute("role", "button");
+        el.setAttribute("aria-label", "Go to annotation for line " + lineNum);
         el.addEventListener("click", () => {
           if (showAll) exitShowAll();
           showStep(annIndex, "jump");
+        });
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            if (showAll) exitShowAll();
+            showStep(annIndex, "jump");
+          }
         });
       }
     });

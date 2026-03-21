@@ -25,9 +25,23 @@
 (function () {
   "use strict";
 
+  function generateId(config) {
+    let hash = 0;
+    const str = (config.base || "") + (config.description || "");
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+    }
+    return "cb" + Math.abs(hash).toString(36);
+  }
+
   function initCommandBuilder(container, config) {
     const base = config.base || "command";
     const options = config.options || [];
+    const builderId = generateId(config);
+
+    // Accessibility: region wrapper
+    container.setAttribute("role", "region");
+    container.setAttribute("aria-label", "Command Builder: " + base);
 
     const trackOptionChange = window.RunbookAnalytics
       ? window.RunbookAnalytics.debounce("command_option_change", 1000)
@@ -58,6 +72,7 @@
     copyBtn.className = "builder-copy";
     copyBtn.type = "button";
     copyBtn.textContent = "Copy";
+    copyBtn.setAttribute("aria-label", "Copy command");
     copyBtn.addEventListener("click", () => {
       const text = buildCommandString();
       navigator.clipboard.writeText(text).then(
@@ -97,6 +112,8 @@
     result.appendChild(copyBtn);
 
     const resultCode = document.createElement("code");
+    resultCode.setAttribute("aria-live", "polite");
+    resultCode.setAttribute("aria-atomic", "true");
     result.appendChild(resultCode);
     body.appendChild(result);
 
@@ -106,12 +123,14 @@
 
     const inputs = [];
 
-    options.forEach((opt) => {
+    options.forEach((opt, optIndex) => {
       const row = document.createElement("div");
       row.className = "builder-option";
 
+      const inputId = builderId + "-" + optIndex;
       const label = document.createElement("label");
       label.textContent = opt.label || opt.flag;
+      label.setAttribute("for", inputId);
       row.appendChild(label);
 
       let input;
@@ -140,6 +159,8 @@
         input.type = "text";
         input.placeholder = opt.placeholder || "";
       }
+
+      input.id = inputId;
 
       input.addEventListener("input", () => {
         updateCommand();

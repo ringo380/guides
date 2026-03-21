@@ -78,8 +78,33 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
+.lightbox-close:focus-visible {
+  outline: 2px solid white;
+  outline-offset: -1px;
+}
+
 /* ---- Prevent background scroll ---- */
 
 body.lightbox-open {
   overflow: hidden;
+}
+
+/* ---- Reduced Motion ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-ready {
+    transition: none;
+  }
+
+  .lightbox-overlay {
+    transition: none;
+  }
+
+  .lightbox-overlay img {
+    transition: none;
+  }
+
+  .lightbox-close {
+    transition: none;
+  }
 }

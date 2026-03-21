@@ -128,6 +128,12 @@
   50% { opacity: 0; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .tx-hero-terminal__cursor {
+    animation: none;
+  }
+}
+
 /* ================================
    Stats Row
    ================================ */
