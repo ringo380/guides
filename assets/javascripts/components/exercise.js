@@ -101,11 +101,7 @@
     body.appendChild(statusEl);
 
     function announce(text) {
-      statusEl.textContent = "";
-      // Clear then set on next frame to ensure re-announcement
-      requestAnimationFrame(function () {
-        statusEl.textContent = text;
-      });
+      statusEl.textContent = text;
     }
 
     // Meta: title + difficulty
