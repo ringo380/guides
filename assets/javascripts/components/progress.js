@@ -114,6 +114,11 @@
     const progressContainer = document.createElement("div");
     progressContainer.className = "runbook-progress-bar";
     progressContainer.id = "runbook-page-progress";
+    progressContainer.setAttribute("role", "progressbar");
+    progressContainer.setAttribute("aria-valuemin", "0");
+    progressContainer.setAttribute("aria-valuemax", String(headings.length));
+    progressContainer.setAttribute("aria-valuenow", "0");
+    progressContainer.setAttribute("aria-label", "Page reading progress");
 
     const fill = document.createElement("div");
     fill.className = "progress-fill";
@@ -147,6 +152,9 @@
 
     if (fill) fill.style.width = pct + "%";
     if (label) label.textContent = `${sectionsRead}/${totalSections} sections`;
+
+    bar.setAttribute("aria-valuenow", String(sectionsRead));
+    bar.setAttribute("aria-valuetext", sectionsRead + " of " + totalSections + " sections");
   }
 
   function setupEventListeners(storage) {
@@ -214,7 +222,12 @@
       const pct = Math.round((guidesWithProgress / topicInfo.guides.length) * 100);
 
       progressDiv.innerHTML =
-        '<span class="topic-progress-bar"><span class="topic-progress-fill" style="width:' +
+        '<span class="topic-progress-bar" role="progressbar"' +
+        ' aria-valuemin="0"' +
+        ' aria-valuemax="' + topicInfo.guides.length + '"' +
+        ' aria-valuenow="' + guidesWithProgress + '"' +
+        ' aria-label="' + topicKey + ' progress">' +
+        '<span class="topic-progress-fill" style="width:' +
         pct +
         '%"></span></span>' +
         '<span class="topic-progress-text">' +

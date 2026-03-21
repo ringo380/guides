@@ -504,6 +504,11 @@
   color: var(--md-primary-bg-color);
 }
 
+.interactive-command-builder .builder-copy:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
 .interactive-command-builder .builder-explanations {
   font-size: 0.85rem;
   line-height: 1.6;
@@ -613,6 +618,11 @@
   cursor: default;
 }
 
+.interactive-code-walkthrough .walkthrough-controls button:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
 .interactive-code-walkthrough .walkthrough-controls .show-all-toggle {
   border-color: var(--md-default-fg-color--lighter);
   color: var(--md-default-fg-color--light);
@@ -674,4 +684,64 @@
   font-size: 0.7rem;
   color: var(--md-default-fg-color--lighter);
   margin-top: 0.25rem;
+}
+
+/* ---- Accessibility Utilities ---- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus-visible for clickable walkthrough lines and lightbox images */
+.interactive-code-walkthrough .walkthrough-line[tabindex]:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
+.lightbox-ready[tabindex]:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
+/* ---- Reduced Motion ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-cursor {
+    animation: none;
+  }
+
+  .progress-fill,
+  .topic-progress-fill {
+    transition: none;
+  }
+
+  .interactive-code-walkthrough .walkthrough-line {
+    transition: none;
+  }
+
+  .interactive-quiz .quiz-option,
+  .interactive-quiz .quiz-option .option-marker {
+    transition: none;
+  }
+
+  .interactive-quiz .quiz-retry,
+  .interactive-exercise .exercise-btn,
+  .interactive-terminal .terminal-btn,
+  .interactive-command-builder .builder-btn,
+  .interactive-command-builder .builder-copy,
+  .interactive-code-walkthrough .walkthrough-controls button {
+    transition: none;
+  }
+
+  .lightbox-ready {
+    transition: none;
+  }
 }

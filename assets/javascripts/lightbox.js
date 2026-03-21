@@ -17,12 +17,16 @@
   var overlay = null;
   var modalImg = null;
   var closeBtn = null;
+  var lastTrigger = null;
 
   function createOverlay() {
     if (overlay) return;
 
     overlay = document.createElement("div");
     overlay.className = "lightbox-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Enlarged image");
 
     modalImg = document.createElement("img");
     modalImg.alt = "";
@@ -49,18 +53,26 @@
       closeLightbox();
     });
 
-    // Close on Escape
+    // Keyboard handling: Escape to close, Tab focus trap
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && overlay.classList.contains("active")) {
+      if (!overlay.classList.contains("active")) return;
+
+      if (e.key === "Escape") {
         closeLightbox();
+      } else if (e.key === "Tab") {
+        // Focus trap: only focusable element is close button
+        e.preventDefault();
+        closeBtn.focus();
       }
     });
   }
 
-  function openLightbox(src, alt) {
+  function openLightbox(src, alt, trigger) {
     createOverlay();
+    lastTrigger = trigger || null;
     modalImg.src = src;
     modalImg.alt = alt || "";
+    overlay.setAttribute("aria-label", alt ? "Enlarged image: " + alt : "Enlarged image");
     document.body.classList.add("lightbox-open");
     overlay.classList.add("active");
     closeBtn.focus();
@@ -81,6 +93,12 @@
       var closedPath = modalImg.src;
       try { closedPath = new URL(modalImg.src, window.location.origin).pathname; } catch (e) {}
       window.RunbookAnalytics.track("lightbox_close", { image_src: closedPath });
+    }
+
+    // Return focus to the element that opened the lightbox
+    if (lastTrigger && lastTrigger.focus) {
+      lastTrigger.focus();
+      lastTrigger = null;
     }
   }
 
@@ -105,11 +123,21 @@
         if (img.dataset.noLightbox === "true") return;
         img.dataset.lightbox = "true";
         img.classList.add("lightbox-ready");
+        img.setAttribute("tabindex", "0");
+        img.setAttribute("role", "button");
+        img.setAttribute("aria-label", (img.alt ? img.alt + " - " : "") + "Click to enlarge");
 
         img.addEventListener("click", function (e) {
           e.preventDefault();
           e.stopPropagation();
-          openLightbox(resolvedSrc(img), img.alt);
+          openLightbox(resolvedSrc(img), img.alt, img);
+        });
+
+        img.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openLightbox(resolvedSrc(img), img.alt, img);
+          }
         });
       });
     });

@@ -63,6 +63,10 @@
     let started = false;
     var exerciseTimer = null;
 
+    // Accessibility: region wrapper
+    container.setAttribute("role", "region");
+    container.setAttribute("aria-label", "Exercise: " + (config.title || "Untitled"));
+
     function markStarted() {
       if (started) return;
       started = true;
@@ -89,6 +93,17 @@
     const body = document.createElement("div");
     body.className = "interactive-body";
 
+    // Visually-hidden live region for announcements
+    const statusEl = document.createElement("span");
+    statusEl.className = "sr-only";
+    statusEl.setAttribute("aria-live", "polite");
+    statusEl.setAttribute("aria-atomic", "true");
+    body.appendChild(statusEl);
+
+    function announce(text) {
+      statusEl.textContent = text;
+    }
+
     // Meta: title + difficulty
     const meta = document.createElement("div");
     meta.className = "exercise-meta";
@@ -103,6 +118,7 @@
       const badge = document.createElement("span");
       badge.className = "exercise-difficulty " + config.difficulty;
       badge.textContent = config.difficulty;
+      badge.setAttribute("aria-label", "Difficulty: " + config.difficulty);
       meta.appendChild(badge);
     }
 
@@ -119,6 +135,8 @@
     // Hints container
     const hintsContainer = document.createElement("div");
     hintsContainer.className = "exercise-hints";
+    const hintsContainerId = exerciseId + "-hints";
+    hintsContainer.id = hintsContainerId;
 
     const hintElements = hints.map((hintText) => {
       const hint = document.createElement("div");
@@ -141,6 +159,8 @@
       hintBtn.className = "exercise-btn";
       hintBtn.type = "button";
       hintBtn.textContent = `Show Hint (1/${hints.length})`;
+      hintBtn.setAttribute("aria-expanded", "false");
+      hintBtn.setAttribute("aria-controls", hintsContainerId);
       hintBtn.addEventListener("click", () => {
         if (hintsRevealed < hints.length) {
           markStarted();
@@ -155,6 +175,9 @@
             });
           }
 
+          hintBtn.setAttribute("aria-expanded", "true");
+          announce("Hint " + hintsRevealed + " of " + hints.length + " revealed");
+
           if (hintsRevealed >= hints.length) {
             hintBtn.style.display = "none";
           } else {
@@ -168,12 +191,16 @@
     // Show Solution button
     const solutionContainer = document.createElement("div");
     solutionContainer.className = "exercise-solution";
+    const solutionContainerId = exerciseId + "-solution";
+    solutionContainer.id = solutionContainerId;
 
     if (config.solution) {
       const solutionBtn = document.createElement("button");
       solutionBtn.className = "exercise-btn";
       solutionBtn.type = "button";
       solutionBtn.textContent = "Show Solution";
+      solutionBtn.setAttribute("aria-expanded", "false");
+      solutionBtn.setAttribute("aria-controls", solutionContainerId);
 
       const solutionContent = document.createElement("div");
       solutionContent.className = "exercise-solution-content";
@@ -186,9 +213,13 @@
         if (isVisible) {
           solutionContainer.classList.remove("visible");
           solutionBtn.textContent = "Show Solution";
+          solutionBtn.setAttribute("aria-expanded", "false");
+          announce("Solution hidden");
         } else {
           solutionContainer.classList.add("visible");
           solutionBtn.textContent = "Hide Solution";
+          solutionBtn.setAttribute("aria-expanded", "true");
+          announce("Solution shown");
 
           if (window.RunbookAnalytics) {
             window.RunbookAnalytics.track("exercise_solution_view", {
@@ -207,13 +238,17 @@
     completeBtn.className = "exercise-btn";
     completeBtn.type = "button";
     completeBtn.textContent = completed ? "Completed" : "Mark Complete";
-    if (completed) completeBtn.disabled = true;
+    if (completed) {
+      completeBtn.disabled = true;
+      completeBtn.setAttribute("aria-disabled", "true");
+    }
 
     completeBtn.addEventListener("click", () => {
       markStarted();
       completed = true;
       completeBtn.textContent = "Completed";
       completeBtn.disabled = true;
+      completeBtn.setAttribute("aria-disabled", "true");
 
       if (window.RunbookAnalytics && exerciseTimer) {
         window.RunbookAnalytics.trackTimed("exercise_duration", exerciseTimer.elapsed(), {
@@ -231,6 +266,8 @@
       completeIndicator.className = "exercise-complete";
       completeIndicator.textContent = "Exercise completed";
       body.appendChild(completeIndicator);
+
+      announce("Exercise completed");
 
       container.dispatchEvent(
         new CustomEvent("exercise-completed", {
