@@ -224,6 +224,46 @@ options:
     feedback: "Perl's syntax is famously flexible (and sometimes cryptic). Its strength for sysadmin work is powerful built-in features for text and system operations, not syntactic simplicity."
 ```
 
+```terminal
+title: Perl One-Liners in Action
+steps:
+  - command: "perl -e 'print \"Hello, Perl!\\n\"'"
+    output: "Hello, Perl!"
+    narration: "The -e flag executes code directly from the command line. No script file needed. This is the foundation of every Perl one-liner."
+  - command: "printf 'INFO  server started\\nERROR connection refused\\nINFO  request handled\\nERROR disk full\\nINFO  shutting down\\n' > server.log && cat server.log"
+    output: |
+      INFO  server started
+      ERROR connection refused
+      INFO  request handled
+      ERROR disk full
+      INFO  shutting down
+    narration: "Create a sample log file to work with. Five lines, two of which contain ERROR."
+  - command: "perl -ne 'print if /ERROR/' server.log"
+    output: |
+      ERROR connection refused
+      ERROR disk full
+    narration: "The -n flag wraps your code in a while(<>){...} loop that reads input line by line. Each line is placed in $_ automatically, so /ERROR/ tests the current line."
+  - command: "perl -pe 's/ERROR/WARNING/' server.log"
+    output: |
+      INFO  server started
+      WARNING connection refused
+      INFO  request handled
+      WARNING disk full
+      INFO  shutting down
+    narration: "The -p flag works like -n but also prints each line after processing. Combined with s///, it becomes a search-and-replace tool across the entire file."
+  - command: "perl -lane 'print $F[0]' server.log"
+    output: |
+      INFO
+      ERROR
+      INFO
+      ERROR
+      INFO
+    narration: "The -a flag auto-splits each line on whitespace into the @F array. The -l flag handles newlines automatically. Together, -lane gives you column extraction like awk."
+  - command: "perl -ne '$c++ if /ERROR/; END { print \"$c errors\\n\" }' server.log"
+    output: "2 errors"
+    narration: "Combine -n with an END block to accumulate results across all lines and print a summary. The END block runs once after all input is processed."
+```
+
 ---
 
 ## Perl in the Unix Tool Ecosystem

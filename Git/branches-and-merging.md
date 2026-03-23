@@ -141,6 +141,49 @@ git checkout -b new-branch        # Create and switch
 !!! warning "Uncommitted changes and switching"
     If you have uncommitted changes that would conflict with the branch you're switching to, Git refuses the switch to prevent data loss. You have three options: commit the changes, stash them (`git stash`), or discard them (`git restore .`).
 
+```terminal
+title: Branch, Switch, and Merge
+steps:
+  - command: "mkdir branch-demo && cd branch-demo && git init"
+    output: "Initialized empty Git repository in /home/user/branch-demo/.git/"
+    narration: "Create a fresh repository to work through a complete branching workflow."
+  - command: "echo '# My Project' > README.md && git add README.md && git commit -m 'Initial commit'"
+    output: "[main (root-commit) a1b2c3d] Initial commit"
+    narration: "Start with a single commit on main. Right now there's only one branch and one commit."
+  - command: "git branch"
+    output: "* main"
+    narration: "The asterisk marks the current branch. Only main exists so far."
+  - command: "git switch -c feature/greeting"
+    output: "Switched to a new branch 'feature/greeting'"
+    narration: "Create and switch to a new branch in one step. Git creates a new pointer at the current commit and moves HEAD to point at it."
+  - command: "echo 'Hello from the feature branch!' >> README.md && git add README.md && git commit -m 'Add greeting to README'"
+    output: "[feature/greeting d4e5f6a] Add greeting to README"
+    narration: "Make a commit on the feature branch. The feature/greeting pointer advances to the new commit, but main stays where it was."
+  - command: "git switch main"
+    output: "Switched to branch 'main'"
+    narration: "Switch back to main. Your working directory reverts to main's version of the files - the greeting line disappears."
+  - command: "git branch -v"
+    output: |
+        feature/greeting d4e5f6a Add greeting to README
+      * main             a1b2c3d Initial commit
+    narration: "Both branches with their latest commits. main is still at the initial commit, while feature/greeting is one commit ahead."
+  - command: "git merge feature/greeting"
+    output: |
+      Updating a1b2c3d..d4e5f6a
+      Fast-forward
+       README.md | 1 +
+       1 file changed, 1 insertion(+)
+    narration: "Since main had no new commits, Git performs a fast-forward merge. It moves the main pointer forward to the same commit as feature/greeting. No merge commit is needed."
+  - command: "git log --oneline --graph --all"
+    output: |
+      * d4e5f6a (HEAD -> main, feature/greeting) Add greeting to README
+      * a1b2c3d Initial commit
+    narration: "Both branches now point to the same commit. The history is linear because the fast-forward just moved the pointer."
+  - command: "git branch -d feature/greeting"
+    output: "Deleted branch feature/greeting (was d4e5f6a)."
+    narration: "Clean up the merged branch. The -d flag only works if the branch is fully merged, preventing accidental data loss. The commits remain in the history."
+```
+
 ---
 
 ## Renaming and Deleting Branches

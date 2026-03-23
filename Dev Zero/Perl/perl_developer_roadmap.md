@@ -2,7 +2,7 @@
 
 ## The Road to Perl Developer Mastery
 
-**Version:** 1.6
+**Version:** 1.7
 **Year:** 2026
 
 ---
@@ -149,7 +149,7 @@ To help with the learning process, here are some engaging and helpful resources:
 
 - [Vim Adventures](https://vim-adventures.com) – a game-based way to learn Vim
 - [Vimcasts](http://vimcasts.org) – screencasts teaching practical Vim usage
-- [Vimbook on GitHub](https://github.com)
+- [Learn-Vim on GitHub](https://github.com/iggredible/Learn-Vim)
 
 Practice regularly, and you'll soon find Vim indispensable.
 
@@ -303,6 +303,55 @@ Developing fluency in Perl starts with a clear understanding of its foundational
 - **Code Style**: Perl's expressiveness allows multiple ways to solve problems, making it essential to develop good habits around clarity, consistency, and maintainability.
 
 The goal is not just to write functional code, but to write code that is efficient, idiomatic, and easy to understand—hallmarks of an experienced Perl developer.
+
+```code-walkthrough
+title: "A First Perl Script: Log Summary"
+description: A practical script that counts log levels from STDIN, demonstrating the core concepts from Learning the Ropes in a single working program.
+language: perl
+code: |
+  #!/usr/bin/env perl
+  use strict;
+  use warnings;
+
+  my %count;
+  my $total = 0;
+
+  while (my $line = <STDIN>) {
+      chomp $line;
+      if ($line =~ /\b(ERROR|WARN|INFO)\b/) {
+          $count{$1}++;
+          $total++;
+      }
+  }
+
+  for my $level (sort keys %count) {
+      printf "%s: %d (%.0f%%)\n", $level, $count{$level},
+          $count{$level} / $total * 100;
+  }
+annotations:
+  - line: 1
+    text: "The env shebang finds perl in the user's PATH, making the script portable across systems where Perl is installed in different locations."
+  - line: 2
+    text: "use strict forces you to declare variables with my and catches common mistakes like typos in variable names. Always include this."
+  - line: 3
+    text: "use warnings alerts you to questionable constructs like using an undefined value. Together with strict, these two pragmas are the first lines of every serious Perl script."
+  - line: 5
+    text: "A hash (%count) declared with the % sigil. Hashes store key-value pairs - here each log level maps to its count. Perl auto-creates entries on first use (auto-vivification)."
+  - line: 6
+    text: "A scalar ($total) declared with the $ sigil and initialized to 0. Scalars hold a single value - a number, string, or reference."
+  - line: 8
+    text: "The diamond operator <STDIN> reads one line at a time from standard input. The while loop processes the file line by line, storing each line in the lexical variable $line."
+  - line: 9
+    text: "chomp removes the trailing newline character from $line. Without this, string comparisons and output would include unwanted newlines."
+  - line: 10
+    text: "The =~ operator applies a regex match. \\b matches a word boundary, and the parentheses capture the matched level (ERROR, WARN, or INFO) into the special variable $1."
+  - line: 11
+    text: "Hash auto-vivification in action: $count{$1}++ creates the key if it doesn't exist (starting at 0) and increments it. No need to check if the key exists first."
+  - line: 16
+    text: "sort keys %count returns the hash keys in alphabetical order. The for loop assigns each key to the lexical variable $level."
+  - line: 17
+    text: "printf provides C-style formatted output. %s inserts a string, %d an integer, and %.0f%% a float with zero decimal places followed by a literal percent sign."
+```
 
 **References and Error Handling**
 
