@@ -36,8 +36,8 @@
     }
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      // Resolve relative to site root
-      script.src = new URL(src, window.location.origin + "/guides/").href;
+      // Resolve relative to site root (document.baseURI adapts to any deploy path)
+      script.src = new URL(src, document.baseURI).href;
       script.onload = () => {
         loadedScripts.add(src);
         resolve();
