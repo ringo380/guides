@@ -340,7 +340,7 @@ annotations:
   - line: 6
     text: "A scalar ($total) declared with the $ sigil and initialized to 0. Scalars hold a single value - a number, string, or reference."
   - line: 8
-    text: "The diamond operator <STDIN> reads one line at a time from standard input. The while loop processes the file line by line, storing each line in the lexical variable $line."
+    text: "The filehandle read operator <STDIN> reads one line at a time from standard input. The while loop processes the file line by line, storing each line in the lexical variable $line."
   - line: 9
     text: "chomp removes the trailing newline character from $line. Without this, string comparisons and output would include unwanted newlines."
   - line: 10
