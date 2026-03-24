@@ -36,8 +36,8 @@
     }
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      // Resolve relative to site root
-      script.src = new URL(src, window.location.origin + "/guides/").href;
+      // Resolve relative to site root (__md_scope is set by MkDocs Material per page)
+      script.src = new URL(src, window.__md_scope || document.baseURI).href;
       script.onload = () => {
         loadedScripts.add(src);
         resolve();
