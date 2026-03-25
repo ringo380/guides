@@ -95,7 +95,7 @@ mtr -r -c 100 google.com     # report mode: send 100 packets and print summary
 
 ### curl
 
-[**`curl`**](https://curl.se/docs/) transfers data to or from a server. It supports HTTP, HTTPS, FTP, and many other protocols.
+[**`curl`**](https://curl.se/docs/) transfers data to or from a server. It supports HTTP, HTTPS, FTP, and many other protocols. It's an indispensable tool for testing **API endpoints**, verifying **Nginx server blocks**, and debugging **TLS/SSL handshakes**.
 
 **Basic requests:**
 
@@ -267,7 +267,7 @@ wget -r --no-parent https://example.com/docs/   # don't go above starting direct
 
 ### ssh
 
-[**`ssh`**](https://www.openssh.com/manual.html) (Secure Shell) provides encrypted remote access to other machines.
+[**`ssh`**](https://www.openssh.com/manual.html) (Secure Shell) provides encrypted remote access to other machines. It's the standard for managing servers, whether they are physical machines, cloud instances, or **Docker containers**.
 
 **Basic connection:**
 
