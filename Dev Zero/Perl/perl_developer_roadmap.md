@@ -2,7 +2,7 @@
 
 ## The Road to Perl Developer Mastery
 
-**Version:** 1.7
+**Version:** 1.8
 **Year:** 2026
 
 ---
@@ -705,56 +705,152 @@ Staying fluent in Git and GitHub workflows will make you a stronger collaborator
 
 ### Debugging Methods
 
-Effective debugging is a skill that separates productive developers from frustrated ones. Perl provides multiple layers of debugging tools, from compile-time checks to interactive debuggers.
+Effective debugging is a skill that separates productive developers from frustrated ones. Perl provides multiple layers of debugging tools, from compile-time checks to interactive debuggers. The key is knowing which tool fits the problem.
 
-**Prevention first**: `use strict` and `use warnings` catch the majority of bugs before your code even runs. Undeclared variables, misused data types, and common mistakes are flagged immediately. See the [Introduction](perl_dev0_introduction.md) for why these two lines are non-negotiable.
+**Prevention first**: `use strict` and `use warnings` catch the majority of bugs before your code even runs. Undeclared variables, misused data types, and common mistakes are flagged immediately. See the [Introduction](perl_dev0_introduction.md) for why these two lines are non-negotiable. You can also run `perl -c script.pl` to syntax-check a file without executing it - useful for catching typos in scripts that would be expensive or dangerous to run.
 
-**Print debugging**: The simplest approach - add `print` or `warn` statements to trace variable values and execution flow. `warn` writes to STDERR (so it doesn't corrupt program output) and includes the file and line number. `Data::Dumper` displays complex data structures in a readable format:
+**Print debugging**: The simplest approach - add `print` or `warn` statements to trace variable values and execution flow. `warn` writes to STDERR (so it doesn't corrupt program output) and includes the file and line number. [**Data::Dumper**](https://metacpan.org/pod/Data::Dumper) displays complex data structures in a readable format:
 
 ```perl
 use Data::Dumper;
+local $Data::Dumper::Sortkeys = 1;  # Consistent output for comparison
+local $Data::Dumper::Indent = 1;    # Compact but readable
 warn Dumper(\%config);  # Prints the entire hash structure to STDERR
 ```
 
-**The Perl debugger**: Run any script with `perl -d script.pl` to start the interactive debugger. You can set breakpoints (`b`), step through code (`n` for next, `s` for step into), inspect variables (`x $var`), and evaluate expressions. The debugger is invaluable for tracing logic errors in unfamiliar code.
+Print debugging is fast and works everywhere, but remember to remove debug statements before committing. A common pattern is to use an environment variable as a toggle:
 
-**Devel:: modules**: [**Devel::NYTProf**](https://metacpan.org/pod/Devel::NYTProf) is a powerful profiler that identifies performance bottlenecks. [**Devel::Peek**](https://metacpan.org/pod/Devel::Peek) shows Perl's internal representation of variables. [**Devel::Cover**](https://metacpan.org/pod/Devel::Cover) measures test coverage so you know which code paths remain untested.
+```perl
+my $DEBUG = $ENV{DEBUG} // 0;
+warn "Processing record: $id\n" if $DEBUG;
+```
+
+**Better stack traces with Carp**: The [**Carp**](https://metacpan.org/pod/Carp) module replaces `die` and `warn` with versions that include the caller's perspective. `carp` warns from the caller's point of view, and `confess` dies with a full stack trace. This is essential in library code where the bug is in how the caller used your module, not in the module itself:
+
+```perl
+use Carp;
+
+sub connect_db {
+    my ($dsn) = @_;
+    $dsn or croak "connect_db() requires a DSN argument";  # Dies pointing at the caller
+    # ...
+}
+```
+
+**The Perl debugger**: Run any script with `perl -d script.pl` to start the interactive debugger. The essential commands:
+
+| Command | Action |
+|---------|--------|
+| `n` | Execute next line (step over) |
+| `s` | Step into subroutine |
+| `r` | Return from current subroutine |
+| `b 42` | Set breakpoint at line 42 |
+| `b load Module.pm` | Break when a module is loaded |
+| `c` | Continue to next breakpoint |
+| `x $var` | Display variable with full structure |
+| `p expr` | Print expression result |
+| `T` | Print stack trace |
+| `q` | Quit |
+
+The debugger is invaluable for tracing logic errors in unfamiliar code. You can also use `perl -d -e 0` to start a debugger session with no script - useful for testing expressions interactively.
+
+**Devel:: modules**: [**Devel::NYTProf**](https://metacpan.org/pod/Devel::NYTProf) is the gold standard for profiling. Run your script with `perl -d:NYTProf script.pl`, then generate an HTML report with `nytprofhtml`. The report shows time spent per line, per subroutine, and per call - so you can identify the actual bottleneck rather than guessing.
+
+[**Devel::Peek**](https://metacpan.org/pod/Devel::Peek) shows Perl's internal representation of variables, which helps when you suspect a value isn't what you think it is (mixed numeric/string state, unexpected references). [**Devel::Cover**](https://metacpan.org/pod/Devel::Cover) measures test coverage so you know which code paths remain untested:
+
+```bash
+cover -test                        # Run tests with coverage tracking
+cover -report html                 # Generate browsable HTML report
+```
+
+!!! tip
+    When debugging a complex issue, resist the urge to change multiple things at once. Change one thing, test, observe. Binary search your way to the bug: if the problem happens somewhere in a 100-line function, add a debug print at line 50 and determine which half contains the bug. Repeat until you've isolated the exact line.
+
+**Debugging strategy**: Start with the error message. Read it carefully - Perl error messages include file names and line numbers. If the message points to a line that looks correct, the actual bug is usually in the data flowing into that line. Trace the data backward: where did the variable get its value? Common patterns include uninitialized values from failed regex matches, off-by-one errors in array indexing, and hash keys with trailing whitespace from sloppy input parsing.
 
 For more on debugging strategies, see [Error Handling and Debugging](error-handling-debugging.md).
 
 ### Linux Package Managers
 
-Perl development on Linux means working with the system's package manager to install libraries, development headers, and tools that Perl modules depend on.
+Perl development on Linux means working with the system's package manager to install libraries, development headers, and tools that Perl modules depend on. Many CPAN modules are pure Perl, but modules that interface with C libraries (databases, SSL, image processing) need those libraries installed at the system level first.
 
 **RPM-based systems** (RHEL, Rocky Linux, AlmaLinux, Fedora) use `yum` or its successor `dnf`:
 
 ```bash
 # Install development tools and libraries
 sudo dnf groupinstall "Development Tools"
-sudo dnf install perl perl-devel perl-CPAN openssl-devel
+sudo dnf install perl perl-devel perl-CPAN openssl-devel expat-devel
 ```
+
+The `Development Tools` group provides `gcc`, `make`, and other compilation tools that XS modules need. The `-devel` packages contain header files - without them, modules that compile C extensions will fail during `cpanm` installation with errors about missing `.h` files.
 
 **Debian-based systems** (Ubuntu, Debian) use `apt`:
 
 ```bash
 sudo apt update
-sudo apt install build-essential perl perl-doc cpanminus libssl-dev
+sudo apt install build-essential perl perl-doc cpanminus libssl-dev libexpat1-dev
 ```
+
+`build-essential` is the Debian equivalent of `Development Tools`. When a CPAN module fails to install, the error message usually names the missing library. Search your package manager for the `-dev` (Debian) or `-devel` (RPM) variant of that library.
 
 **Perl module installation** is handled separately from the system package manager. [**cpanm**](https://metacpan.org/pod/App::cpanminus) (cpanminus) is the recommended tool:
 
 ```bash
 cpanm Mojolicious           # Install from CPAN
 cpanm --installdeps .       # Install dependencies from cpanfile
+cpanm -n Some::Module       # Skip tests (faster, use cautiously)
+cpanm --look Some::Module   # Download and open a shell in the module directory
 ```
 
-Use the system package manager for system libraries (like `libssl-dev`) and `cpanm` for Perl modules. Mixing the two (installing Perl modules via `apt`) can cause version conflicts.
+Use the system package manager for system libraries (like `libssl-dev`) and `cpanm` for Perl modules. Installing Perl modules via `apt` or `dnf` gives you whatever version your distro packages, which is often outdated. CPAN gives you the latest release.
+
+**Managing Perl versions with perlbrew**: The system Perl (`/usr/bin/perl`) serves the operating system's own scripts. Modifying it or its modules can break system tools. [**perlbrew**](https://perlbrew.pl/) installs independent Perl versions in your home directory:
+
+```bash
+curl -L https://install.perlbrew.pl | bash
+perlbrew install perl-5.40.0
+perlbrew switch perl-5.40.0     # Make it the default
+perlbrew list                    # Show installed versions
+```
+
+An alternative is [**plenv**](https://github.com/tokuhirom/plenv), which follows the same model as `rbenv` (Ruby) and `pyenv` (Python). Both tools solve the same problem: isolating your development Perl from the system Perl.
+
+**Dependency management with cpanfile**: A `cpanfile` declares your project's CPAN dependencies in a single file, similar to `requirements.txt` in Python or `package.json` in Node:
+
+```perl
+# cpanfile
+requires 'Mojolicious', '>= 9.0';
+requires 'DBI';
+requires 'DBD::Pg';
+
+on 'test' => sub {
+    requires 'Test::More', '>= 0.98';
+    requires 'Test::Mojo';
+};
+```
+
+Run `cpanm --installdeps .` to install everything listed. This makes onboarding new developers straightforward and keeps CI environments reproducible.
+
+!!! tip
+    If `cpanm` fails with compilation errors, check three things: (1) are the system `-dev`/`-devel` packages installed? (2) is a C compiler available (`gcc --version`)? (3) does the module's CPAN page list specific system dependencies? The `--verbose` flag to `cpanm` shows the full build log.
 
 ### Application Security Awareness
 
-Writing secure code is a professional responsibility. Perl applications face the same security threats as any web-facing software, plus some language-specific concerns.
+Writing secure code is a professional responsibility. Perl applications face the same security threats as any web-facing software, plus some language-specific concerns. Security is not a feature you add at the end - it's a mindset you apply throughout development.
 
-**Cross-Site Scripting (XSS)**: Any user-supplied data rendered in HTML must be escaped. Perl web frameworks like Mojolicious auto-escape template variables by default, but raw output (using `<%==` or `b()`) bypasses this protection. Always treat user input as untrusted.
+**Cross-Site Scripting (XSS)**: Any user-supplied data rendered in HTML must be escaped. Perl web frameworks like Mojolicious auto-escape template variables by default, but raw output (using `<%==` or `b()`) bypasses this protection. Always treat user input as untrusted:
+
+```perl
+# In a Mojolicious template:
+<p>Hello, <%= $name %></p>      # SAFE - auto-escaped
+<p>Hello, <%== $name %></p>     # DANGEROUS - raw output, XSS risk
+
+# Manual escaping when building HTML strings:
+use Mojo::Util 'xml_escape';
+my $safe = xml_escape($user_input);
+```
+
+If you're generating HTML outside a template engine, use [**HTML::Entities**](https://metacpan.org/pod/HTML::Entities) to encode special characters. The rule is simple: never insert untrusted data into HTML without escaping it first.
 
 **SQL Injection**: Never interpolate variables directly into SQL queries. Use [**DBI**](https://metacpan.org/pod/DBI) placeholders instead:
 
@@ -765,23 +861,168 @@ my $sth = $dbh->prepare("SELECT * FROM users WHERE name = '$name'");
 # SAFE - parameterized query
 my $sth = $dbh->prepare("SELECT * FROM users WHERE name = ?");
 $sth->execute($name);
+
+# SAFE - named placeholders with DBIx::Class
+my $user = $schema->resultset('User')->search({ name => $name });
 ```
 
-**Taint mode**: Running Perl with the `-T` flag enables [**taint checking**](https://perldoc.perl.org/perlsec), which tracks data that came from outside the program (user input, environment variables, file reads) and prevents it from being used in system calls, file operations, or database queries until it's been explicitly validated through a regex match.
+Placeholders ensure that user input is always treated as data, never as SQL syntax. ORMs like [**DBIx::Class**](https://metacpan.org/pod/DBIx::Class) build parameterized queries automatically, but you can still introduce injection vulnerabilities if you pass raw SQL fragments through `literal` or `\` escapes.
 
-**Input validation**: Validate all external data at system boundaries - command-line arguments, form submissions, API payloads, file uploads. Reject invalid input early rather than trying to sanitize it later.
+**Command injection**: Perl's `system()` and backticks interpolate variables into shell commands. If those variables contain user input, an attacker can inject arbitrary commands:
+
+```perl
+# DANGEROUS - command injection
+system("convert $filename output.png");  # $filename could be "; rm -rf /"
+
+# SAFE - list form bypasses the shell entirely
+system("convert", $filename, "output.png");
+
+# SAFE - for backticks, use open() with a pipe
+open(my $fh, '-|', 'convert', $filename, 'output.png') or die $!;
+```
+
+The list form of `system()` passes arguments directly to the program without shell interpretation. Always use it when any argument comes from external input.
+
+!!! danger
+    Never use `eval` on untrusted strings. `eval $user_input` executes arbitrary Perl code. If you need to parse structured data, use JSON, YAML, or a purpose-built parser - not `eval`.
+
+**Taint mode**: Running Perl with the `-T` flag enables [**taint checking**](https://perldoc.perl.org/perlsec), which tracks data that came from outside the program (user input, environment variables, file reads) and prevents it from being used in system calls, file operations, or database queries until it's been explicitly validated through a regex match:
+
+```perl
+#!/usr/bin/perl -T
+use strict;
+use warnings;
+
+my $input = <STDIN>;    # Tainted - came from outside
+chomp $input;
+
+# This would die: "Insecure dependency in system"
+# system("echo $input");
+
+# Untaint by validating with a regex capture
+if ($input =~ /^([a-zA-Z0-9_]+)$/) {
+    my $clean = $1;     # Untainted - validated by regex
+    system("echo", $clean);  # Now permitted
+}
+```
+
+Taint mode is especially valuable for CGI scripts and any program that processes external input. It forces you to explicitly validate every piece of external data before using it in a sensitive operation.
+
+**Input validation**: Validate all external data at system boundaries - command-line arguments, form submissions, API payloads, file uploads. Reject invalid input early rather than trying to sanitize it later. Validation means checking that data matches an expected pattern, not trying to strip dangerous characters:
+
+```perl
+# Validate an email (basic pattern)
+die "Invalid email" unless $email =~ /^[^@\s]+\@[^@\s]+\.[^@\s]+$/;
+
+# Validate a numeric ID
+die "Invalid ID" unless $id =~ /^\d+$/;
+
+# Validate file paths - prevent directory traversal
+die "Invalid path" if $path =~ /\.\./;
+```
+
+**File handling security**: When creating files based on user input, be cautious with filenames and paths. Validate that paths don't escape the intended directory (`../` traversal), use `File::Spec->catfile()` to build paths safely, and set restrictive permissions on created files with `umask` or explicit `chmod`.
+
+**Password handling**: Never store passwords in plaintext. Use [**Crypt::Passphrase**](https://metacpan.org/pod/Crypt::Passphrase) (or the older but still common `Crypt::Bcrypt`) to hash passwords with a salt. When comparing passwords, always use the module's verification function rather than string comparison to prevent timing attacks.
 
 ### Additional Architecture Concepts
 
-As your applications grow beyond single scripts, architectural patterns become important for maintainability and scalability.
+As your applications grow beyond single scripts, architectural patterns become important for maintainability and scalability. You don't need to apply all of these from day one, but recognizing when a problem calls for a particular pattern is a mark of experience.
 
-**SOLID principles** apply to Perl code just as they do to Java or Python. The most relevant for Perl development: **Single Responsibility** (each module does one thing), **Open/Closed** (extend behavior through composition, not modification), and **Dependency Inversion** (depend on interfaces, not implementations).
+**SOLID principles** apply to Perl code just as they do to Java or Python. In practice, three of the five come up most often:
 
-**Caching** reduces repeated work. [**CHI**](https://metacpan.org/pod/CHI) provides a unified caching interface with backends for memory, file, [**Redis**](https://redis.io/), and Memcached. Cache database query results, API responses, or expensive computations.
+- **Single Responsibility**: Each module does one thing. A module that handles both database access and email sending is doing too much. Split it into two modules that can be tested and modified independently.
+- **Open/Closed**: Extend behavior through composition, not modification. Instead of adding flags to an existing function to handle new cases, create new modules that implement a shared interface. Perl's duck typing (if it has the method, it works) makes this natural.
+- **Dependency Inversion**: Depend on interfaces, not implementations. Pass dependencies into constructors rather than hardcoding them:
 
-**Message queues** decouple producers from consumers in distributed systems. Perl integrates with [**RabbitMQ**](https://www.rabbitmq.com/) (via `Net::AMQP::RabbitMQ`), Redis pub/sub, and job queue systems like [**Minion**](https://metacpan.org/pod/Minion) (built into Mojolicious).
+```perl
+# Hardcoded dependency - difficult to test
+sub new {
+    my ($class) = @_;
+    return bless { db => DBI->connect(...) }, $class;
+}
 
-**Full-text search** engines like [**Elasticsearch**](https://www.elastic.co/elasticsearch) or [**Sphinx**](http://sphinxsearch.com/) handle search queries that SQL `LIKE` clauses cannot scale to. Perl clients exist for both, and Elasticsearch is increasingly the standard for log analysis and search features.
+# Injected dependency - easy to test with a mock
+sub new {
+    my ($class, %args) = @_;
+    return bless { db => $args{db} || die "db required" }, $class;
+}
+```
+
+Dependency injection makes unit testing straightforward: pass a mock object instead of a real database handle, and your tests run without touching a database.
+
+**Caching** reduces repeated work. [**CHI**](https://metacpan.org/pod/CHI) provides a unified caching interface with pluggable backends - you can start with in-memory caching during development and switch to [**Redis**](https://redis.io/) or Memcached in production without changing your code:
+
+```perl
+use CHI;
+
+my $cache = CHI->new(
+    driver   => 'Redis',
+    server   => '127.0.0.1:6379',
+    namespace => 'myapp',
+);
+
+sub get_user {
+    my ($user_id) = @_;
+    return $cache->compute("user:$user_id", '5 minutes', sub {
+        return $schema->resultset('User')->find($user_id);
+    });
+}
+```
+
+The `compute` method checks the cache first and only runs the expensive query if the cached value is missing or expired. Cache database query results, API responses, and expensive computations. Be deliberate about cache invalidation - stale data is worse than slow data.
+
+!!! warning
+    Caching is not a substitute for fixing slow queries. Profile first (with Devel::NYTProf), optimize the query, and only then add caching for results that don't change frequently.
+
+**Message queues** decouple producers from consumers in distributed systems. When your web application needs to send emails, generate reports, or process uploads, doing that work in the request cycle makes the response slow. Offload it to a background worker.
+
+[**Minion**](https://metacpan.org/pod/Minion) is a job queue built into the Mojolicious ecosystem. It uses PostgreSQL or SQLite as its backend - no separate queue server needed:
+
+```perl
+# Define a job in your application
+$app->minion->add_task(send_email => sub {
+    my ($job, $to, $subject, $body) = @_;
+    # ... send the email ...
+    $job->finish("Sent to $to");
+});
+
+# Enqueue the job from a controller
+$c->minion->enqueue(send_email => [$to, $subject, $body]);
+```
+
+Run workers with `script/myapp minion worker`. For larger deployments, Perl integrates with [**RabbitMQ**](https://www.rabbitmq.com/) (via `Net::AMQP::RabbitMQ`) and Redis pub/sub for cross-language message passing.
+
+**Full-text search** engines handle queries that SQL `LIKE` clauses cannot scale to. [**Elasticsearch**](https://www.elastic.co/elasticsearch) is the standard for search features and log analysis. The [**Search::Elasticsearch**](https://metacpan.org/pod/Search::Elasticsearch) client provides a clean Perl interface:
+
+```perl
+use Search::Elasticsearch;
+
+my $es = Search::Elasticsearch->new(nodes => ['localhost:9200']);
+
+# Index a document
+$es->index(
+    index => 'articles',
+    id    => $article_id,
+    body  => { title => $title, content => $body, tags => \@tags },
+);
+
+# Search with relevance ranking
+my $results = $es->search(
+    index => 'articles',
+    body  => { query => { match => { content => $search_term } } },
+);
+```
+
+**Configuration management**: As applications grow, configuration moves from hardcoded values to environment variables to configuration files. [**Config::Tiny**](https://metacpan.org/pod/Config::Tiny) handles INI files, and [**YAML::XS**](https://metacpan.org/pod/YAML::XS) or [**JSON::MaybeXS**](https://metacpan.org/pod/JSON::MaybeXS) handle structured config. A common pattern is to load defaults from a file and allow environment variables to override specific values:
+
+```perl
+my $config = YAML::XS::LoadFile('config.yml');
+$config->{database}{host} = $ENV{DB_HOST} if $ENV{DB_HOST};
+$config->{database}{port} = $ENV{DB_PORT} if $ENV{DB_PORT};
+```
+
+This approach works well with container deployments where environment variables are the standard mechanism for runtime configuration.
 
 ---
 
