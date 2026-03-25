@@ -359,6 +359,24 @@ Use `-E` for extended regex (same as `grep -E`):
 sed -E 's/[0-9]{3}-[0-9]{4}/XXX-XXXX/g' data.txt
 ```
 
+```code-walkthrough
+language: bash
+title: Advanced sed Pattern Replacement
+code: |
+  sed -E 's/([0-9]{4})-([0-9]{2})-([0-9]{2})/Day: \3, Month: \2, Year: \1/g' dates.txt
+annotations:
+  - line: 1
+    text: "The -E flag enables Extended Regular Expressions (ERE), which lets us use ( ) and { } without backslash escapes."
+  - line: 1
+    text: "The 's/pattern/replacement/g' command performs a Global Substitution across each line of the input file."
+  - line: 1
+    text: "([0-9]{4}) is our first capture group, matching exactly 4 digits (the year)."
+  - line: 1
+    text: "([0-9]{2}) matches exactly 2 digits for the month and day, respectively, in the second and third capture groups."
+  - line: 1
+    text: "\\1, \\2, and \\3 are backreferences to the captured groups. We've reordered them to convert YYYY-MM-DD to a more descriptive format."
+```
+
 ### Multiple Commands
 
 ```bash

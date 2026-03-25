@@ -112,6 +112,33 @@ git commit --amend    # Modify the commit
 git rebase --continue
 ```
 
+```terminal
+title: Interactive Rebase Simulation
+steps:
+  - command: "git log --oneline -n 3"
+    output: |
+      d4e5f6a Add user tests
+      c3d4e5f Fix typo in user model
+      b2c3d4e Add user controller
+    narration: "We've got three commits. Let's clean up that typo fix and squash it into the controller commit."
+  - command: "git rebase -i HEAD~3"
+    output: |
+      pick b2c3d4e Add user controller
+      pick c3d4e5f Fix typo in user model
+      pick d4e5f6a Add user tests
+      
+      # Commands:
+      # p, pick <commit> = use commit
+      # s, squash <commit> = use commit, but meld into previous commit
+      # f, fixup <commit> = like "squash", but discard this commit's log message
+    narration: "Git opens the editor. We'll change 'pick c3d4e5f' to 'fixup c3d4e5f' to squash the typo fix into the commit above it."
+  - command: "git log --oneline -n 2"
+    output: |
+      f1a2b3c Add user tests
+      e9d8c7b Add user controller
+    narration: "After the rebase completes, we have only two commits. Notice the hashes have changed—these are brand-new commits."
+```
+
 ### Autosquash
 
 If you know while committing that a change should be squashed into an earlier commit, use `--fixup`:
