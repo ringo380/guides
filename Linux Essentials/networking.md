@@ -780,4 +780,4 @@ nc hostname 9999 < file_to_send.txt
 
 ---
 
-**Previous:** [SSH Configuration](ssh-configuration.md) | **Next:** [System Information](system-information.md) | [Back to Index](README.md)
+**Previous:** [Log Management](log-management.md) | **Next:** [System Information](system-information.md) | [Back to Index](README.md)

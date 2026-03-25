@@ -60,6 +60,10 @@ Managing users, groups, and access control. Covers `useradd`/`usermod`/`userdel`
 
 Deep dive into SSH configuration and key management. Covers key types and generation (Ed25519 vs RSA), ssh-agent, `~/.ssh/config` patterns (ProxyJump, ControlMaster multiplexing, Match blocks), `authorized_keys` options, SSH certificates (user and host CAs), `sshd_config` hardening, port forwarding (local, remote, dynamic), and troubleshooting.
 
+### [Log Management](log-management.md)
+
+Finding, filtering, and managing system logs. Covers `/var/log/` directory structure, advanced `journalctl` filtering (unit, priority, time, JSON output), rsyslog configuration (facilities, severities, remote forwarding), `logrotate` setup, structured log parsing with `grep`/`awk`/`jq`, and centralized logging overview.
+
 ### [Networking](networking.md)
 
 Essential networking from the command line. Covers `ping`/`traceroute`/`mtr`, `curl`/`wget`, `ssh` (keys, config, port forwarding, jump hosts), `scp`/`rsync`, `ss`/`ip`, `dig`/`nslookup`, and `nc` (netcat).
@@ -83,7 +87,3 @@ Automating recurring tasks. Covers the cron daemon, crontab syntax and managemen
 ### [Firewall and Networking Security](firewall-fundamentals.md)
 
 Protecting your Linux system from unauthorized network access. Covers the Netfilter framework, low-level tools like `iptables` and `nftables`, and high-level abstractions like `ufw` and `firewalld`. Includes best practices for default-deny policies and stateful inspection.
-
-### [Log Management](log-management.md)
-
-Understanding what is happening on your system. Covers `/var/log` directory, `journalctl` for querying the systemd journal, `logrotate` for managing log growth, and basic log parsing techniques.
