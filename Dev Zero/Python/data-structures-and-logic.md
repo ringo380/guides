@@ -447,13 +447,14 @@ options:
 
 ```exercise
 title: "Parse and Analyze Server Logs"
-description: "Write a Python script that reads a list of log entries, counts occurrences by status level, and identifies the most frequent error messages."
-requirements:
-  - "Given a list of log entry dictionaries (each with 'level', 'message', and 'timestamp' keys), count entries per level"
-  - "Use Counter from the collections module for counting"
-  - "Group error messages (level == 'ERROR') into a list"
-  - "Print the top 3 most common log levels and all unique error messages"
-  - "Handle the case where the log list is empty"
+scenario: |
+  You have a list of log entry dictionaries, each with `level`, `message`, and `timestamp` keys. Write a function that:
+
+  1. Counts entries per level using `Counter` from the `collections` module
+  2. Prints the top 3 most common log levels with their counts
+  3. Groups error messages (level == `ERROR`) into a list
+  4. Prints all unique error messages, sorted alphabetically
+  5. Handles the case where the log list is empty
 hints:
   - "Counter([entry['level'] for entry in logs]) counts all levels in one line"
   - "Use a list comprehension to filter: [e['message'] for e in logs if e['level'] == 'ERROR']"
@@ -470,7 +471,7 @@ solution: |
       # Count entries per level
       levels = Counter(entry["level"] for entry in logs)
       print("Log level counts:")
-      for level, count in levels.most_common():
+      for level, count in levels.most_common(3):
           print(f"  {level}: {count}")
 
       # Collect unique error messages

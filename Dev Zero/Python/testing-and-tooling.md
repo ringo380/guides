@@ -339,9 +339,9 @@ annotations:
     text: "Runtime dependencies. These are installed automatically when someone pip installs your package."
   - line: 10
     text: "Optional dependency groups. Install with pip install -e '.[dev]' to get testing and linting tools."
-  - line: 17
+  - line: 18
     text: "Console script entry points. After installation, typing 'my-tool' on the command line runs the main() function from my_tool/cli.py."
-  - line: 20
+  - line: 21
     text: "Tool-specific configuration. pytest, ruff, mypy, and other tools read their settings from pyproject.toml instead of separate config files."
 ```
 
@@ -459,13 +459,14 @@ options:
 
 ```exercise
 title: "Add Tests to an Existing Function"
-description: "Write a comprehensive test suite for a disk usage checker function, including fixtures, parametrize, and mocking."
-requirements:
-  - "Write tests for a check_disk(path) function that returns ('OK', 0), ('WARNING', 1), or ('CRITICAL', 2) based on usage percentage"
-  - "Use @pytest.mark.parametrize to test multiple thresholds"
-  - "Use @patch to mock shutil.disk_usage so tests don't depend on actual disk state"
-  - "Test the error case where the path doesn't exist (should return ('ERROR', 2))"
-  - "Include at least 5 test cases covering normal, warning, critical, error, and edge cases (exactly 80%)"
+scenario: |
+  You have a `check_disk(path)` function that returns `('OK', 0)`, `('WARNING', 1)`, or `('CRITICAL', 2)` based on disk usage percentage. Write a comprehensive test suite that:
+
+  1. Uses `@pytest.mark.parametrize` to test multiple thresholds (normal, warning, critical)
+  2. Uses `@patch` to mock `shutil.disk_usage` so tests don't depend on actual disk state
+  3. Tests the error case where the path doesn't exist (should return `('ERROR', 2)`)
+  4. Includes at least 5 test cases covering normal, warning, critical, error, and edge cases (exactly 80%)
+  5. Verifies both the status string and exit code for each case
 hints:
   - "Mock shutil.disk_usage to return a named tuple: MagicMock(total=100, used=X, free=100-X)"
   - "Use @pytest.mark.parametrize('used,expected_status,expected_code', [...]) for multiple thresholds"

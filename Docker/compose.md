@@ -371,15 +371,16 @@ options:
 
 ```exercise
 title: "Build a Three-Service Development Stack"
-description: "Create a compose.yml for a Node.js API with PostgreSQL and Redis, including health checks, proper volume strategy, and environment configuration."
-requirements:
-  - "Define a 'web' service that builds from the current directory and maps port 3000"
-  - "Define a 'db' service using postgres:16 with a named volume for data persistence"
-  - "Define a 'cache' service using redis:7-alpine"
-  - "Add a health check to the db service using pg_isready"
-  - "Make the web service wait for db to be healthy before starting"
-  - "Use a .env file for the database password instead of hardcoding it"
-  - "Add a bind mount on the web service for live code reloading in development"
+scenario: |
+  You need a development stack for a Node.js API with PostgreSQL and Redis. Create a `compose.yml` that meets these requirements:
+
+  1. Define a `web` service that builds from the current directory and maps port 3000
+  2. Define a `db` service using `postgres:16` with a named volume for data persistence
+  3. Define a `cache` service using `redis:7-alpine`
+  4. Add a health check to the `db` service using `pg_isready`
+  5. Make the `web` service wait for `db` to be healthy before starting
+  6. Use a `.env` file for the database password instead of hardcoding it
+  7. Add a bind mount on the `web` service for live code reloading in development
 hints:
   - "The healthcheck test for PostgreSQL is: [\"CMD-SHELL\", \"pg_isready -U postgres\"]"
   - "Use ${DB_PASSWORD} syntax in compose.yml and define DB_PASSWORD in a .env file"
@@ -433,39 +434,30 @@ solution: |
 ---
 
 ```command-builder
-title: "Docker Compose Command Builder"
-description: "Build docker compose commands for common stack operations."
+description: Build docker compose commands for common stack operations
 base: "docker compose"
-groups:
-  - name: "Action"
-    options:
-      - label: "Start stack"
-        value: "up -d"
-      - label: "Stop and remove stack"
-        value: "down"
-      - label: "View logs"
-        value: "logs -f"
-      - label: "List services"
-        value: "ps"
-      - label: "Run command in service"
-        value: "exec"
-      - label: "Rebuild and start"
-        value: "up -d --build"
-  - name: "Options"
-    required: false
-    options:
-      - label: "Remove volumes too"
-        value: "-v"
-        description: "Also delete named volumes (data loss!)"
-      - label: "Include debug profile"
-        value: "--profile debug"
-        description: "Start services tagged with the debug profile"
-      - label: "Scale workers"
-        value: "--scale worker=3"
-        description: "Run 3 replicas of the worker service"
-      - label: "Force recreate"
-        value: "--force-recreate"
-        description: "Recreate containers even if config hasn't changed"
+options:
+  - flag: ""
+    type: select
+    label: "Action"
+    explanation: "The primary compose operation to perform"
+    choices:
+      - ["up -d", "Start stack (detached)"]
+      - ["down", "Stop and remove stack"]
+      - ["logs -f", "View logs (follow)"]
+      - ["ps", "List services"]
+      - ["exec", "Run command in service"]
+      - ["up -d --build", "Rebuild and start"]
+  - flag: ""
+    type: select
+    label: "Additional option"
+    explanation: "Optional flags to modify the command behavior"
+    choices:
+      - ["", "(none)"]
+      - ["-v", "Remove volumes too (data loss!)"]
+      - ["--profile debug", "Include debug profile"]
+      - ["--scale worker=3", "Scale workers to 3 replicas"]
+      - ["--force-recreate", "Force recreate containers"]
 ```
 
 ---

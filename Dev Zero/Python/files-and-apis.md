@@ -381,13 +381,14 @@ options:
 
 ```exercise
 title: "Build a Configuration-Driven API Client"
-description: "Write a Python script that reads API configuration from a JSON file, makes authenticated requests, handles errors gracefully, and saves results to a local file."
-requirements:
-  - "Read a config.json file containing: api_url, auth_token, output_file, and timeout"
-  - "Make a GET request to the API URL with the auth token in an Authorization header"
-  - "Handle connection errors, timeouts, and HTTP errors with meaningful messages"
-  - "Parse the JSON response and save it to the output file with pretty formatting"
-  - "Print a summary: status code, response size, and output file path"
+scenario: |
+  You need a reusable script that reads its configuration from a JSON file and makes authenticated API requests. Write a script that:
+
+  1. Reads a `config.json` file containing: `api_url`, `auth_token`, `output_file`, and `timeout`
+  2. Makes a GET request to the API URL with the auth token in an Authorization header
+  3. Handles connection errors, timeouts, and HTTP errors with meaningful messages
+  4. Parses the JSON response and saves it to the output file with pretty formatting
+  5. Prints a summary: status code, response size, and output file path
 hints:
   - "Use json.load() to read the config, requests.get() for the API call, json.dump() to write results"
   - "Set headers={'Authorization': f'Bearer {config[\"auth_token\"]}'}"

@@ -421,19 +421,19 @@ annotations:
     text: "An upstream block with two backend servers. least_conn routes each request to the server with the fewest active connections."
   - line: 12
     text: "HTTP server block that redirects everything to HTTPS. The 301 tells browsers to remember the redirect permanently."
-  - line: 17
+  - line: 18
     text: "The main HTTPS server block. http2 enables HTTP/2 for better performance (multiplexing, header compression)."
-  - line: 22
-    text: "Modern TLS: only TLSv1.2 and 1.3. Older protocols (SSLv3, TLSv1.0, TLSv1.1) have known vulnerabilities."
   - line: 24
+    text: "Modern TLS: only TLSv1.2 and 1.3. Older protocols (SSLv3, TLSv1.0, TLSv1.1) have known vulnerabilities."
+  - line: 26
     text: "HSTS tells browsers to always use HTTPS for this domain. max-age is in seconds (63072000 = 2 years)."
-  - line: 28
+  - line: 30
     text: "API routes get the general rate limit with a burst of 20. nodelay processes burst requests immediately instead of queuing."
-  - line: 36
+  - line: 39
     text: "Login gets an aggressive rate limit (1/s, burst 3) to slow brute-force attacks. Returns 429 instead of the default 503."
-  - line: 44
+  - line: 47
     text: "Static files served directly from disk with a 30-day cache. 'immutable' tells browsers not to revalidate during the cache period."
-  - line: 50
+  - line: 53
     text: "Health check endpoint for load balancers. access_log off prevents it from flooding logs with noise."
 ```
 
@@ -518,14 +518,15 @@ options:
 
 ```exercise
 title: "Configure Nginx for a Multi-Application Setup"
-description: "Write Nginx configurations that serve a static marketing site, proxy an API backend, and rate-limit the login endpoint."
-requirements:
-  - "Create a server block that redirects all HTTP traffic to HTTPS"
-  - "Serve static files from /var/www/marketing at the root location with 7-day cache headers"
-  - "Proxy /api/ requests to a backend running on localhost:4000"
-  - "Add rate limiting to /api/auth/ at 2 requests per second with a burst of 5"
-  - "Include security headers: X-Frame-Options, X-Content-Type-Options, and HSTS"
-  - "Add a health check endpoint at /health that returns 200 with logging disabled"
+scenario: |
+  You are configuring Nginx for a company that has a static marketing site and an API backend on the same domain. Write the Nginx configuration to:
+
+  1. Redirect all HTTP traffic to HTTPS
+  2. Serve static files from `/var/www/marketing` at the root location with 7-day cache headers
+  3. Proxy `/api/` requests to a backend running on `localhost:4000`
+  4. Add rate limiting to `/api/auth/` at 2 requests per second with a burst of 5
+  5. Include security headers: `X-Frame-Options`, `X-Content-Type-Options`, and HSTS
+  6. Add a health check endpoint at `/health` that returns 200 with logging disabled
 hints:
   - "Define the limit_req_zone in the http context (outside the server block) - you can put it in a separate conf.d/rate-limit.conf file"
   - "Use expires 7d and add_header Cache-Control 'public' for static file caching"

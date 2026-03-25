@@ -504,14 +504,15 @@ options:
 
 ```exercise
 title: "Write a System Health Checker"
-description: "Create a command-line tool that checks disk usage, service status, and port reachability, then reports results with proper logging and exit codes."
-requirements:
-  - "Accept --services (list of systemd service names) and --disk-paths (list of filesystem paths) as arguments"
-  - "Check each service with systemctl is-active via subprocess"
-  - "Check each disk path with shutil.disk_usage, warning at 80% and critical at 90%"
-  - "Use the logging module for all output (not print)"
-  - "Support --verbose flag that enables DEBUG-level logging"
-  - "Exit with code 0 if all checks pass, 1 for warnings, 2 for critical failures"
+scenario: |
+  Your team needs a monitoring tool that can be run from cron or a monitoring system. Write a command-line health checker that:
+
+  1. Accepts `--services` (list of systemd service names) and `--disk-paths` (list of filesystem paths) as arguments
+  2. Checks each service with `systemctl is-active` via subprocess
+  3. Checks each disk path with `shutil.disk_usage`, warning at 80% and critical at 90%
+  4. Uses the `logging` module for all output (not `print`)
+  5. Supports a `--verbose` flag that enables DEBUG-level logging
+  6. Exits with code 0 if all checks pass, 1 for warnings, 2 for critical failures
 hints:
   - "Use argparse with nargs='+' for arguments that accept multiple values"
   - "subprocess.run(['systemctl', 'is-active', name], capture_output=True, text=True) returns the status"

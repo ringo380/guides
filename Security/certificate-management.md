@@ -362,13 +362,14 @@ options:
 
 ```exercise
 title: "Set Up Certificate Auto-Renewal with Monitoring"
-description: "Configure Certbot renewal with a post-deploy hook and create a monitoring script that alerts when certificates are close to expiration."
-requirements:
-  - "Create a Certbot deploy hook script that reloads Nginx after renewal"
-  - "Make the hook executable and place it in the correct directory"
-  - "Write a shell script that checks a domain's certificate expiration and warns if it's within 14 days"
-  - "The monitoring script should output the domain, days remaining, and expiration date"
-  - "Test the renewal configuration with a dry run"
+scenario: |
+  Your team manages several HTTPS services and needs automated certificate renewal with monitoring. Complete these tasks:
+
+  1. Create a Certbot deploy hook script that reloads Nginx after renewal
+  2. Make the hook executable and place it in the correct directory
+  3. Write a shell script that checks a domain's certificate expiration and warns if it's within 14 days
+  4. The monitoring script should output the domain, days remaining, and expiration date
+  5. Test the renewal configuration with a dry run
 hints:
   - "Deploy hooks go in /etc/letsencrypt/renewal-hooks/deploy/"
   - "Use openssl s_client to connect and openssl x509 to extract the expiration date"
@@ -422,28 +423,22 @@ solution: |
 ---
 
 ```command-builder
-title: "OpenSSL Certificate Commands"
-description: "Build common OpenSSL commands for certificate management."
+description: Build common OpenSSL commands for certificate management
 base: "openssl"
-groups:
-  - name: "Operation"
-    options:
-      - label: "Inspect a certificate"
-        value: "x509 -in cert.pem -text -noout"
-      - label: "Check expiration date"
-        value: "x509 -in cert.pem -enddate -noout"
-      - label: "Generate RSA private key"
-        value: "genrsa -out server.key 4096"
-      - label: "Create a CSR"
-        value: "req -new -key server.key -out server.csr"
-      - label: "Test remote server"
-        value: "s_client -connect example.com:443 -servername example.com"
-      - label: "Verify certificate chain"
-        value: "verify -CAfile ca-bundle.pem cert.pem"
-      - label: "Convert PEM to PKCS#12"
-        value: "pkcs12 -export -in cert.pem -inkey server.key -out cert.p12"
-      - label: "Check cert/key match"
-        value: "x509 -noout -modulus -in cert.pem | openssl md5"
+options:
+  - flag: ""
+    type: select
+    label: "Operation"
+    explanation: "The OpenSSL subcommand and arguments for the task"
+    choices:
+      - ["x509 -in cert.pem -text -noout", "Inspect a certificate"]
+      - ["x509 -in cert.pem -enddate -noout", "Check expiration date"]
+      - ["genrsa -out server.key 4096", "Generate RSA private key"]
+      - ["req -new -key server.key -out server.csr", "Create a CSR"]
+      - ["s_client -connect example.com:443 -servername example.com", "Test remote server"]
+      - ["verify -CAfile ca-bundle.pem cert.pem", "Verify certificate chain"]
+      - ["pkcs12 -export -in cert.pem -inkey server.key -out cert.p12", "Convert PEM to PKCS#12"]
+      - ["x509 -noout -modulus -in cert.pem | openssl md5", "Check cert/key match"]
 ```
 
 ---

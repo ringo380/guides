@@ -239,7 +239,7 @@ steps:
     output: "CONNECTED(00000003)\n---\nCertificate chain\n 0 s:C = US, ST = California, L = San Francisco, O = GitHub, Inc., CN = github.com\n   i:C = US, O = DigiCert Inc, CN = DigiCert TLS Hybrid ECC SHA384 2020 CA1\n 1 s:C = US, O = DigiCert Inc, CN = DigiCert TLS Hybrid ECC SHA384 2020 CA1\n   i:C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA\n---"
     narration: "Connect to GitHub's server and display the certificate chain. You can see two certificates: the end-entity cert for github.com (signed by DigiCert's intermediate CA) and the intermediate CA cert (signed by DigiCert's root CA)."
   - command: "echo | openssl s_client -connect github.com:443 2>/dev/null | openssl x509 -noout -subject -issuer -dates"
-    output: "subject=C = US, ST = California, L = San Francisco, O = GitHub, Inc., CN = github.com\nissuer=C = US, O = DigiCert Inc, CN = DigiCert TLS Hybrid ECC SHA384 2020 CA1\nnotBefore=Mar 15 00:00:00 2024 GMT\nnotAfter=Mar 15 23:59:59 2025 GMT"
+    output: "subject=C = US, ST = California, L = San Francisco, O = GitHub, Inc., CN = github.com\nissuer=C = US, O = DigiCert Inc, CN = DigiCert TLS Hybrid ECC SHA384 2020 CA1\nnotBefore=Mar 15 00:00:00 2026 GMT\nnotAfter=Mar 15 23:59:59 2027 GMT"
     narration: "Extract the subject (who the certificate is for), issuer (who signed it), and validity dates. This certificate is valid for one year."
   - command: "echo | openssl s_client -connect github.com:443 2>/dev/null | openssl x509 -noout -text | grep -A 3 'Subject Alternative Name'"
     output: "            X509v3 Subject Alternative Name:\n                DNS:github.com, DNS:www.github.com"
@@ -308,14 +308,15 @@ options:
 
 ```exercise
 title: "Generate and Verify a Self-Signed Certificate"
-description: "Create a self-signed certificate with Subject Alternative Names, inspect it, and verify it works with a local HTTPS server."
-requirements:
-  - "Generate a 4096-bit RSA private key"
-  - "Create a self-signed certificate valid for 365 days with CN=localhost"
-  - "Include SANs for both DNS:localhost and IP:127.0.0.1"
-  - "Verify the certificate details: subject, issuer (should match subject for self-signed), dates, and SANs"
-  - "Confirm the certificate and key match by comparing their modulus hashes"
-  - "Test the certificate by starting a local HTTPS server with openssl s_server"
+scenario: |
+  You need a self-signed certificate for local development and testing. Complete these steps:
+
+  1. Generate a 4096-bit RSA private key
+  2. Create a self-signed certificate valid for 365 days with CN=localhost
+  3. Include SANs for both DNS:localhost and IP:127.0.0.1
+  4. Verify the certificate details: subject, issuer (should match subject for self-signed), dates, and SANs
+  5. Confirm the certificate and key match by comparing their modulus hashes
+  6. Test the certificate by starting a local HTTPS server with `openssl s_server`
 hints:
   - "Use openssl req -new -x509 to combine key generation and certificate creation in one step, or generate the key first with openssl genrsa"
   - "SANs are added with -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1'"

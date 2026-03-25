@@ -421,8 +421,8 @@ steps:
     output: "Dockerfile  app.py  requirements.txt"
     narration: "You have a Python application with its Dockerfile and dependency file ready."
   - command: "cat Dockerfile"
-    output: "FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .\nUSER nobody\nEXPOSE 8000\nCMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]"
-    narration: "The Dockerfile uses a slim base image, installs dependencies first for layer caching, copies application code, drops to a non-root user, and runs the app with uvicorn."
+    output: "FROM python:3.12-slim\nWORKDIR /app\nRUN adduser --disabled-password --no-create-home appuser\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .\nUSER appuser\nEXPOSE 8000\nCMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]"
+    narration: "The Dockerfile uses a slim base image, creates a dedicated non-root user, installs dependencies first for layer caching, copies application code, switches to that user, and runs the app with uvicorn."
   - command: "docker build -t my-api:1.0 ."
     output: "[+] Building 12.3s (9/9) FINISHED\n => [1/5] FROM python:3.12-slim\n => [2/5] WORKDIR /app\n => [3/5] COPY requirements.txt .\n => [4/5] RUN pip install --no-cache-dir -r requirements.txt\n => [5/5] COPY . .\n => exporting to image\n => naming to docker.io/library/my-api:1.0"
     narration: "Docker builds the image layer by layer. Each step is cached - if you change only app.py, steps 1-4 use the cache and only step 5 runs again."
@@ -499,15 +499,16 @@ options:
 
 ```exercise
 title: "Containerize a Python Application"
-description: "Write a Dockerfile and supporting files for a Flask API, then build and run it."
-requirements:
-  - "Create a Dockerfile that uses python:3.12-slim as the base image"
-  - "Install dependencies from requirements.txt using pip with --no-cache-dir"
-  - "Copy application code after installing dependencies (for layer caching)"
-  - "Run the app as a non-root user"
-  - "Create a .dockerignore that excludes .git, __pycache__, .env, and venv/"
-  - "Build the image tagged as flask-app:1.0"
-  - "Run the container with port 5000 mapped and a 256MB memory limit"
+scenario: |
+  You have a Flask API application with `app.py` and `requirements.txt`. Your tasks:
+
+  1. Create a Dockerfile that uses `python:3.12-slim` as the base image
+  2. Install dependencies from `requirements.txt` using pip with `--no-cache-dir`
+  3. Copy application code after installing dependencies (for layer caching)
+  4. Run the app as a non-root user (create a dedicated user with `adduser`)
+  5. Create a `.dockerignore` that excludes `.git`, `__pycache__`, `.env`, and `venv/`
+  6. Build the image tagged as `flask-app:1.0`
+  7. Run the container with port 5000 mapped and a 256MB memory limit
 hints:
   - "Start with FROM, then WORKDIR, then COPY just the requirements file"
   - "Use RUN adduser --disabled-password appuser and USER appuser to drop root privileges"

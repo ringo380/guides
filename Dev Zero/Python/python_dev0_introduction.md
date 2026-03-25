@@ -306,7 +306,7 @@ annotations:
     text: "A conditional expression (ternary) provides a default value if no argument is given. sys.argv[0] is always the script name, sys.argv[1] is the first argument."
   - line: 9
     text: "Tuple unpacking assigns all three return values from disk_usage() in one line. This is more readable than accessing them by index."
-  - line: 13
+  - line: 14
     text: "Exit codes follow the Nagios/monitoring convention: 0 = OK, 1 = WARNING, 2 = CRITICAL. This makes the script usable as a monitoring check."
   - line: 22
     text: "The __name__ guard. When Python runs a file directly, __name__ is set to '__main__'. When the file is imported by another script, __name__ is set to the module name - so main() won't run on import."
@@ -365,13 +365,14 @@ options:
 
 ```exercise
 title: "Write a CLI Disk Usage Checker"
-description: "Create a Python script that checks disk usage for one or more paths and reports their status using exit codes compatible with monitoring systems."
-requirements:
-  - "Accept one or more filesystem paths as command-line arguments (default to '/' if none provided)"
-  - "For each path, display the usage percentage formatted to one decimal place"
-  - "Exit with code 2 if any path exceeds 90%, code 1 if any exceeds 75%, code 0 otherwise"
-  - "Handle the case where a path doesn't exist (print an error message and skip it)"
-  - "Use a shebang line and __name__ guard"
+scenario: |
+  You need a monitoring script that checks disk usage across multiple filesystems. Write a Python script that:
+
+  1. Accepts one or more filesystem paths as command-line arguments (default to `/` if none provided)
+  2. For each path, displays the usage percentage formatted to one decimal place
+  3. Exits with code 2 if any path exceeds 90%, code 1 if any exceeds 75%, code 0 otherwise
+  4. Handles the case where a path doesn't exist (prints an error message and skips it)
+  5. Uses a shebang line and `__name__` guard
 hints:
   - "Use shutil.disk_usage(path) to get total, used, and free bytes"
   - "sys.argv[1:] gives you all arguments after the script name - default to ['/'] if empty"
