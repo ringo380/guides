@@ -1,0 +1,28 @@
+name: Validate PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev libffi-dev
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Prepare docs directory
+        run: ./setup-docs.sh
+
+      - name: Build site (strict mode)
+        run: mkdocs build --strict
