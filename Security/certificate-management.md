@@ -85,38 +85,53 @@ Older servers might use insecure protocols (like SSLv3 or TLS 1.0). Use [**SSL L
 
 ---
 
-## Interactive Quiz: Certificate Management
+## Interactive Quizzes: Certificate Management
 
 Test your practical knowledge.
 
 ```quiz
-questions:
-  - question: "How long are Let's Encrypt certificates valid for before they must be renewed?"
-    options:
-      - "30 days"
-      - "90 days"
-      - "1 year"
-      - "10 years"
-    answer: 1
-    explanation: "Let's Encrypt certificates are short-lived (90 days) to encourage automation and minimize the damage if a key is compromised."
+question: "How long are Let's Encrypt certificates valid for before they must be renewed?"
+type: multiple-choice
+options:
+  - text: "30 days"
+    feedback: "30 days is too short; the actual validity is 90 days."
+  - text: "90 days"
+    correct: true
+    feedback: "Correct! Let's Encrypt certificates are short-lived (90 days) to encourage automation and minimize the damage if a key is compromised."
+  - text: "1 year"
+    feedback: "Commercial certificates often last 1 year, but Let's Encrypt uses 90 days."
+  - text: "10 years"
+    feedback: "Root certificates can last 10 years, but end-entity certificates are much shorter."
+```
 
-  - question: "If your server configuration uses `cert.pem` and clients are seeing 'Untrusted Authority' errors, what should you likely use instead?"
-    options:
-      - "privkey.pem"
-      - "csr.pem"
-      - "fullchain.pem"
-      - "root.pem"
-    answer: 2
-    explanation: "Most servers need the certificate *plus* the intermediate certificates to establish a path to a trusted root. `fullchain.pem` contains both."
+```quiz
+question: "If your server configuration uses `cert.pem` and clients are seeing 'Untrusted Authority' errors, what should you likely use instead?"
+type: multiple-choice
+options:
+  - text: "privkey.pem"
+    feedback: "privkey.pem is your secret private key, not for public distribution."
+  - text: "csr.pem"
+    feedback: "csr.pem is a Certificate Signing Request, used only during issuance."
+  - text: "fullchain.pem"
+    correct: true
+    feedback: "Correct! Most servers need the certificate *plus* the intermediate certificates to establish a path to a trusted root. `fullchain.pem` contains both."
+  - text: "root.pem"
+    feedback: "Root certificates are already in the browser's trust store. You need the intermediate chain."
+```
 
-  - question: "Which Certbot challenge is best if you need to issue a wildcard certificate (e.g., `*.example.com`)?"
-    options:
-      - "HTTP-01"
-      - "DNS-01"
-      - "TLS-ALPN-01"
-      - "Wildcard-01"
-    answer: 1
-    explanation: "Let's Encrypt requires the DNS-01 challenge for wildcard certificates, as it proves control over the entire DNS zone."
+```quiz
+question: "Which Certbot challenge is best if you need to issue a wildcard certificate (e.g., `*.example.com`)?"
+type: multiple-choice
+options:
+  - text: "HTTP-01"
+    feedback: "HTTP-01 cannot be used for wildcard certificates with Let's Encrypt."
+  - text: "DNS-01"
+    correct: true
+    feedback: "Correct! Let's Encrypt requires the DNS-01 challenge for wildcard certificates, as it proves control over the entire DNS zone."
+  - text: "TLS-ALPN-01"
+    feedback: "TLS-ALPN-01 is for specific port 443 challenges, not for wildcards."
+  - text: "Wildcard-01"
+    feedback: "There is no 'Wildcard-01' challenge; it's just a DNS-01 challenge for a wildcard name."
 ```
 
 ---

@@ -107,38 +107,53 @@ if response.ok:
 
 ---
 
-## Interactive Quiz: Files and APIs
+## Interactive Quizzes: Files and APIs
 
 Verify your understanding of Python's I/O and networking capabilities.
 
 ```quiz
-questions:
-  - question: "What is the primary benefit of using the `with open(...) as f:` syntax in Python?"
-    options:
-      - text: "It makes the code run significantly faster."
-      - text: "It automatically handles file closing, even if an exception occurs."
-        correct: true
-      - text: "It encrypts the file contents while they are open in memory."
-      - text: "It allows multiple processes to write to the same file simultaneously."
-    explanation: "The context manager (`with` statement) ensures that the file's `close()` method is called automatically when the block is exited, preventing resource leaks and potential file corruption."
+question: "What is the primary benefit of using the `with open(...) as f:` syntax in Python?"
+type: multiple-choice
+options:
+  - text: "It makes the code run significantly faster."
+    feedback: "The with statement is for safe resource management, not performance."
+  - text: "It automatically handles file closing, even if an exception occurs."
+    correct: true
+    feedback: "Correct! The context manager (`with` statement) ensures that the file's `close()` method is called automatically when the block is exited, preventing resource leaks and potential file corruption."
+  - text: "It encrypts the file contents while they are open in memory."
+    feedback: "Encryption is a separate process. The with statement doesn't encrypt data."
+  - text: "It allows multiple processes to write to the same file simultaneously."
+    feedback: "Simultaneous access depends on OS file locks and how you open the file. The with statement doesn't solve this."
+```
 
-  - question: "Which method in the `json` module should you use to parse a JSON-formatted string that is already in memory?"
-    options:
-      - text: "json.load()"
-      - text: "json.parse()"
-      - text: "json.loads()"
-        correct: true
-      - text: "json.read()"
-    explanation: "`json.loads()` (short for 'load string') is used to parse a JSON string, while `json.load()` is used to read and parse from a file-like object."
+```quiz
+question: "Which method in the `json` module should you use to parse a JSON-formatted string that is already in memory?"
+type: multiple-choice
+options:
+  - text: "json.load()"
+    feedback: "json.load() is used to read and parse from a file-like object."
+  - text: "json.parse()"
+    feedback: "Python's json module doesn't have a parse() method."
+  - text: "json.loads()"
+    correct: true
+    feedback: "Correct! `json.loads()` (short for 'load string') is used to parse a JSON string, while `json.load()` is used to read and parse from a file-like object."
+  - text: "json.read()"
+    feedback: "The method is loads(), not read()."
+```
 
-  - question: "How do you access the JSON response body from a `requests` Response object?"
-    options:
-      - text: "response.data"
-      - text: "response.json()"
-        correct: true
-      - text: "json.parse(response.text)"
-      - text: "response.body"
-    explanation: "The `requests` library provides a convenient `.json()` method on the response object that automatically parses the response body as JSON."
+```quiz
+question: "How do you access the JSON response body from a `requests` Response object?"
+type: multiple-choice
+options:
+  - text: "response.data"
+    feedback: "Response objects don't have a .data attribute by default in requests."
+  - text: "response.json()"
+    correct: true
+    feedback: "Correct! The `requests` library provides a convenient `.json()` method on the response object that automatically parses the response body as JSON."
+  - text: "json.parse(response.text)"
+    feedback: "While you could use json.loads(response.text), the .json() method is the more Pythonic way."
+  - text: "response.body"
+    feedback: "The attribute is usually .text or .content, but the method for JSON is .json()."
 ```
 
 ---

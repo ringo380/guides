@@ -73,38 +73,53 @@ sudo firewall-cmd --reload
 
 ---
 
-## Interactive Quiz: Firewall Basics
+## Interactive Quizzes: Firewall Basics
 
 Test your knowledge of Linux firewall tools.
 
 ```quiz
-questions:
-  - question: "Which tool is the modern, high-performance successor to iptables in the Linux kernel?"
-    options:
-      - text: "ufw"
-      - text: "nftables"
-        correct: true
-      - text: "firewalld"
-      - text: "ipchains"
-    explanation: "`nftables` replaces `iptables` and related tools, offering better performance and a unified framework for IPv4, IPv6, and other protocols."
+question: "Which tool is the modern, high-performance successor to iptables in the Linux kernel?"
+type: multiple-choice
+options:
+  - text: "ufw"
+    feedback: "ufw is a high-level front-end, not the kernel-level successor."
+  - text: "nftables"
+    correct: true
+    feedback: "Correct! `nftables` replaces `iptables` and related tools, offering better performance and a unified framework for IPv4, IPv6, and other protocols."
+  - text: "firewalld"
+    feedback: "firewalld is a dynamic firewall manager, not the kernel-level framework itself."
+  - text: "ipchains"
+    feedback: "ipchains was the predecessor to iptables, replaced many years ago."
+```
 
-  - question: "What is the primary benefit of using a high-level tool like UFW instead of raw iptables?"
-    options:
-      - text: "It runs in the kernel for better speed."
-      - text: "It provides a simpler, more human-readable syntax."
-        correct: true
-      - text: "It can bypass hardware firewalls."
-      - text: "It doesn't require sudo privileges."
-    explanation: "UFW stands for 'Uncomplicated Firewall'. It is a front-end designed to make managing common firewall tasks much easier and less error-prone."
+```quiz
+question: "What is the primary benefit of using a high-level tool like UFW instead of raw iptables?"
+type: multiple-choice
+options:
+  - text: "It runs in the kernel for better speed."
+    feedback: "Both tools eventually interact with the kernel-level Netfilter hooks."
+  - text: "It provides a simpler, more human-readable syntax."
+    correct: true
+    feedback: "Correct! UFW stands for 'Uncomplicated Firewall'. It is a front-end designed to make managing common firewall tasks much easier and less error-prone."
+  - text: "It can bypass hardware firewalls."
+    feedback: "A software firewall only controls traffic at the operating system level."
+  - text: "It doesn't require sudo privileges."
+    feedback: "Managing firewall rules always requires root or sudo privileges."
+```
 
-  - question: "In a 'Default Deny' firewall configuration, what happens to a packet that doesn't match any specific allow rule?"
-    options:
-      - text: "It is forwarded to the gateway."
-      - text: "It is logged and then allowed."
-      - text: "It is dropped or rejected."
-        correct: true
-      - text: "It is held in a buffer for manual review."
-    explanation: "A 'Default Deny' policy means that unless a packet is explicitly allowed by a rule, it is stopped (dropped) by the firewall."
+```quiz
+question: "In a 'Default Deny' firewall configuration, what happens to a packet that doesn't match any specific allow rule?"
+type: multiple-choice
+options:
+  - text: "It is forwarded to the gateway."
+    feedback: "The packet is stopped by the firewall, not forwarded."
+  - text: "It is logged and then allowed."
+    feedback: "Default Deny means the packet is stopped, regardless of logging."
+  - text: "It is dropped or rejected."
+    correct: true
+    feedback: "Correct! A 'Default Deny' policy means that unless a packet is explicitly allowed by a rule, it is stopped (dropped) by the firewall."
+  - text: "It is held in a buffer for manual review."
+    feedback: "Firewalls process packets in real-time and don't buffer them for human review."
 ```
 
 ---

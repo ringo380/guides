@@ -85,38 +85,53 @@ docker build -t my-node-app .
 
 ---
 
-## Interactive Quiz: Docker Basics
+## Interactive Quizzes: Docker Basics
 
 Test your knowledge of Docker fundamentals.
 
 ```quiz
-questions:
-  - question: "What is the primary difference between an image and a container?"
-    options:
-      - text: "Images are running instances of containers."
-      - text: "A container is a read-only template, while an image is its running instance."
-      - text: "An image is a read-only template, while a container is its runnable instance."
-        correct: true
-      - text: "There is no difference; the terms are interchangeable."
-    explanation: "Think of an image as a blueprint (template) and a container as the actual building (instance) created from that blueprint."
+question: "What is the primary difference between an image and a container?"
+type: multiple-choice
+options:
+  - text: "Images are running instances of containers."
+    feedback: "It's the other way around. Containers are running instances of images."
+  - text: "A container is a read-only template, while an image is its running instance."
+    feedback: "An image is the template; a container is the instance."
+  - text: "An image is a read-only template, while a container is its runnable instance."
+    correct: true
+    feedback: "Correct! Think of an image as a blueprint (template) and a container as the actual building (instance) created from that blueprint."
+  - text: "There is no difference; the terms are interchangeable."
+    feedback: "They are distinct concepts. An image is static; a container is active."
+```
 
-  - question: "Which Docker command is used to list all containers, including those that are stopped?"
-    options:
-      - text: "docker ps"
-      - text: "docker ps -a"
-        correct: true
-      - text: "docker list"
-      - text: "docker containers --all"
-    explanation: "`docker ps` only shows running containers. Adding the `-a` (or `--all`) flag includes stopped containers in the output."
+```quiz
+question: "Which Docker command is used to list all containers, including those that are stopped?"
+type: multiple-choice
+options:
+  - text: "docker ps"
+    feedback: "docker ps only shows running containers by default."
+  - text: "docker ps -a"
+    correct: true
+    feedback: "Correct! Adding the `-a` (or `--all`) flag includes stopped containers in the output."
+  - text: "docker list"
+    feedback: "There is no 'docker list' command; the command is 'docker container ls' or 'docker ps'."
+  - text: "docker containers --all"
+    feedback: "The correct syntax is 'docker container ls -a' or 'docker ps -a'."
+```
 
-  - question: "In the command `docker run -p 8080:80 nginx`, what does the `8080:80` part do?"
-    options:
-      - text: "Sets the container ID to 8080."
-      - text: "Maps host port 80 to container port 8080."
-      - text: "Maps host port 8080 to container port 80."
-        correct: true
-      - text: "Limits the container to 8080MB of RAM."
-    explanation: "The port mapping syntax is `HOST_PORT:CONTAINER_PORT`. Here, it forwards traffic from the host's port 8080 to the container's port 80."
+```quiz
+question: "In the command `docker run -p 8080:80 nginx`, what does the `8080:80` part do?"
+type: multiple-choice
+options:
+  - text: "Sets the container ID to 8080."
+    feedback: "Container IDs are generated hashes, not set via port flags."
+  - text: "Maps host port 80 to container port 8080."
+    feedback: "The mapping is HOST:CONTAINER, not the other way around."
+  - text: "Maps host port 8080 to container port 80."
+    correct: true
+    feedback: "Correct! The port mapping syntax is `HOST_PORT:CONTAINER_PORT`. Here, it forwards traffic from the host's port 8080 to the container's port 80."
+  - text: "Limits the container to 8080MB of RAM."
+    feedback: "Memory limits are set with the -m flag, not -p."
 ```
 
 ---

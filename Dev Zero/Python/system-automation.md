@@ -114,38 +114,53 @@ if args.verbose:
 
 ---
 
-## Interactive Quiz: System Automation
+## Interactive Quizzes: System Automation
 
 Test your understanding of Python's system interaction capabilities.
 
 ```quiz
-questions:
-  - question: "Which module should you use if you need to recursively delete a directory tree (similar to `rm -rf`)?"
-    options:
-      - text: "os"
-      - text: "sys"
-      - text: "shutil"
-        correct: true
-      - text: "subprocess"
-    explanation: "`shutil.rmtree()` is the standard function for recursively deleting a directory and all of its contents."
+question: "Which module should you use if you need to recursively delete a directory tree (similar to `rm -rf`)?"
+type: multiple-choice
+options:
+  - text: "os"
+    feedback: "os.remove() deletes a single file, and os.rmdir() deletes an empty directory. Neither deletes recursively."
+  - text: "sys"
+    feedback: "The sys module is for system parameters, not file operations."
+  - text: "shutil"
+    correct: true
+    feedback: "Correct! `shutil.rmtree()` is the standard function for recursively deleting a directory and all of its contents."
+  - text: "subprocess"
+    feedback: "While you could call 'rm -rf' via subprocess, using shutil.rmtree() is more Pythonic and platform-independent."
+```
 
-  - question: "What is the recommended function for running an external command and waiting for it to complete?"
-    options:
-      - text: "os.system()"
-      - text: "subprocess.run()"
-        correct: true
-      - text: "subprocess.Popen()"
-      - text: "sys.execute()"
-    explanation: "`subprocess.run()` (introduced in Python 3.5) is the recommended high-level function for executing commands. `os.system()` is considered legacy and less secure."
+```quiz
+question: "What is the recommended function for running an external command and waiting for it to complete?"
+type: multiple-choice
+options:
+  - text: "os.system()"
+    feedback: "os.system() is considered legacy and provides limited control over input/output."
+  - text: "subprocess.run()"
+    correct: true
+    feedback: "Correct! `subprocess.run()` (introduced in Python 3.5) is the recommended high-level function for executing commands."
+  - text: "subprocess.Popen()"
+    feedback: "Popen is for advanced scenarios where you need more control over the process lifecycle. For simple tasks, run() is preferred."
+  - text: "sys.execute()"
+    feedback: "There is no sys.execute() function in the standard library."
+```
 
-  - question: "How do you access the list of raw command-line arguments passed to a Python script?"
-    options:
-      - text: "sys.args"
-      - text: "os.argv"
-      - text: "sys.argv"
-        correct: true
-      - text: "argparse.list()"
-    explanation: "`sys.argv` is a list in Python that contains all the command-line arguments passed to the script, where `sys.argv[0]` is the script name itself."
+```quiz
+question: "How do you access the list of raw command-line arguments passed to a Python script?"
+type: multiple-choice
+options:
+  - text: "sys.args"
+    feedback: "The name of the list is sys.argv, not sys.args."
+  - text: "os.argv"
+    feedback: "Command-line arguments are stored in the sys module, not os."
+  - text: "sys.argv"
+    correct: true
+    feedback: "Correct! `sys.argv` is a list in Python that contains all the command-line arguments passed to the script, where `sys.argv[0]` is the script name itself."
+  - text: "argparse.list()"
+    feedback: "argparse is used for parsing arguments, but the raw arguments themselves are in sys.argv."
 ```
 
 ---

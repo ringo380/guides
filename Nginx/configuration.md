@@ -110,33 +110,53 @@ server {
 
 ---
 
+## Interactive Quizzes: Nginx Configuration
+
+Verify your understanding of Nginx's core configuration directives.
+
 ```quiz
-title: Nginx Configuration Quiz
-questions:
-  - question: "Which directive is used to host multiple domains on a single IP address?"
-    options:
-      - text: "proxy_pass"
-      - text: "server_name"
-      - text: "listen"
-      - text: "root"
-    answer: 1
-    explanation: "The `server_name` directive tells Nginx which domain names a specific server block should handle."
-  - question: "What is the purpose of the `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` directive?"
-    options:
-      - text: "To encrypt the request"
-      - text: "To speed up the connection"
-      - text: "To pass the original client's IP address to the backend"
-      - text: "To set the domain name"
-    answer: 2
-    explanation: "`X-Forwarded-For` is a standard header used by proxies to tell the backend server the IP address of the original client."
-  - question: "In rate limiting, what does the `burst` parameter do?"
-    options:
-      - text: "It completely blocks the user if they exceed the limit"
-      - text: "It allows a certain number of requests to exceed the base rate"
-      - text: "It resets the limit every minute"
-      - text: "It increases the bandwidth"
-    answer: 1
-    explanation: The `burst` parameter defines how many requests beyond the rate limit a client can make before they are rejected.
+question: "Which directive is used to host multiple domains on a single IP address?"
+type: multiple-choice
+options:
+  - text: "proxy_pass"
+    feedback: "proxy_pass is for reverse proxying to a backend, not for domain matching."
+  - text: "server_name"
+    correct: true
+    feedback: "Correct! The `server_name` directive tells Nginx which domain names a specific server block should handle."
+  - text: "listen"
+    feedback: "listen specifies the IP/port to monitor, but server_name distinguishes domains on that IP."
+  - text: "root"
+    feedback: "root sets the directory for static files."
+```
+
+```quiz
+question: "What is the purpose of the `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` directive?"
+type: multiple-choice
+options:
+  - text: "To encrypt the request"
+    feedback: "Encryption is handled by SSL/TLS settings, not proxy headers."
+  - text: "To speed up the connection"
+    feedback: "Headers don't inherently speed up connections; they provide metadata."
+  - text: "To pass the original client's IP address to the backend"
+    correct: true
+    feedback: "Correct! `X-Forwarded-For` is a standard header used by proxies to tell the backend server the IP address of the original client."
+  - text: "To set the domain name"
+    feedback: "Domain names are set using the Host header or server_name directive."
+```
+
+```quiz
+question: "In rate limiting, what does the `burst` parameter do?"
+type: multiple-choice
+options:
+  - text: "It completely blocks the user if they exceed the limit"
+    feedback: "It allows exceeding the limit for a short burst before blocking."
+  - text: "It allows a certain number of requests to exceed the base rate"
+    correct: true
+    feedback: "Correct! The `burst` parameter defines how many requests beyond the rate limit a client can make before they are rejected."
+  - text: "It resets the limit every minute"
+    feedback: "Rate limits are usually tracked in seconds or milliseconds."
+  - text: "It increases the bandwidth"
+    feedback: "Rate limiting is about request counts, not bandwidth (though bandwidth limiting is a separate Nginx feature)."
 ```
 
 ---

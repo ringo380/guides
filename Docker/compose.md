@@ -67,38 +67,53 @@ Docker Compose commands are run from the directory containing the `docker-compos
 
 ---
 
-## Interactive Quiz: Docker Compose
+## Interactive Quizzes: Docker Compose
 
 Verify your understanding of Docker Compose.
 
 ```quiz
-questions:
-  - question: "Which command is used to stop and remove all resources (containers, networks) created by Docker Compose?"
-    options:
-      - "docker-compose stop"
-      - "docker-compose rm"
-      - "docker-compose down"
-      - "docker-compose delete"
-    answer: 2
-    explanation: "`docker-compose down` stops containers and also removes them along with the networks created for the project. `stop` only pauses them."
+question: "Which command is used to stop and remove all resources (containers, networks) created by Docker Compose?"
+type: multiple-choice
+options:
+  - text: "docker-compose stop"
+    feedback: "stop only pauses the containers; it doesn't remove them or their networks."
+  - text: "docker-compose rm"
+    feedback: "rm removes stopped containers but doesn't stop them or remove networks."
+  - text: "docker-compose down"
+    correct: true
+    feedback: "Correct! `docker-compose down` stops containers and also removes them along with the networks created for the project."
+  - text: "docker-compose delete"
+    feedback: "There is no 'delete' command in Docker Compose."
+```
 
-  - question: "In a `docker-compose.yml` file, what does the `depends_on` directive do?"
-    options:
-      - "It links the container to an external network."
-      - "It ensures services are started in a specific order."
-      - "It copies files from one service to another."
-      - "It merges two Docker images into one."
-    answer: 1
-    explanation: "`depends_on` defines the order in which services are started and stopped. For example, a web app might depend on a database service."
+```quiz
+question: "In a `docker-compose.yml` file, what does the `depends_on` directive do?"
+type: multiple-choice
+options:
+  - text: "It links the container to an external network."
+    feedback: "Networking is handled by the 'networks' directive."
+  - text: "It ensures services are started in a specific order."
+    correct: true
+    feedback: "Correct! `depends_on` defines the order in which services are started and stopped. For example, a web app might depend on a database service."
+  - text: "It copies files from one service to another."
+    feedback: "Copying files is handled by 'volumes' or 'build' context."
+  - text: "It merges two Docker images into one."
+    feedback: "Images are not merged. Each service runs its own image."
+```
 
-  - question: "What is the primary format used for Docker Compose configuration files?"
-    options:
-      - "JSON"
-      - "XML"
-      - "YAML"
-      - "TOML"
-    answer: 2
-    explanation: "Docker Compose uses YAML (`.yml` or `.yaml`) for its configuration files due to its readability and support for HTML structure."
+```quiz
+question: "What is the primary format used for Docker Compose configuration files?"
+type: multiple-choice
+options:
+  - text: "JSON"
+    feedback: "While Docker Compose can sometimes parse JSON, YAML is the standard format."
+  - text: "XML"
+    feedback: "XML is not used for Docker Compose configuration."
+  - text: "YAML"
+    correct: true
+    feedback: "Correct! Docker Compose uses YAML (`.yml` or `.yaml`) for its configuration files due to its readability."
+  - text: "TOML"
+    feedback: "TOML is used by some tools (like Poetry), but not Docker Compose."
 ```
 
 ---

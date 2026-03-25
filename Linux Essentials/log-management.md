@@ -85,38 +85,53 @@ For more advanced analysis, logs are often shipped to centralized systems like t
 
 ---
 
-## Interactive Quiz: Log Management
+## Interactive Quizzes: Log Management
 
 Test your understanding of Linux logging.
 
 ```quiz
-questions:
-  - question: "Which command is used to view logs managed by systemd-journald?"
-    options:
-      - text: "logctl"
-      - text: "syslog-view"
-      - text: "journalctl"
-        correct: true
-      - text: "systemctl logs"
-    explanation: "`journalctl` is the standard tool for interacting with the systemd journal."
+question: "Which command is used to view logs managed by systemd-journald?"
+type: multiple-choice
+options:
+  - text: "logctl"
+    feedback: "There is no 'logctl' command in modern Linux."
+  - text: "syslog-view"
+    feedback: "syslog-view is not a standard Linux command."
+  - text: "journalctl"
+    correct: true
+    feedback: "Correct! `journalctl` is the standard tool for interacting with the systemd journal."
+  - text: "systemctl logs"
+    feedback: "The command is journalctl, not systemctl logs (though systemctl can show some status information)."
+```
 
-  - question: "What is the primary purpose of the `logrotate` utility?"
-    options:
-      - text: "To encrypt log files for security."
-      - text: "To prevent log files from consuming all available disk space."
-        correct: true
-      - text: "To send logs to a remote server."
-      - text: "To translate binary logs into text."
-    explanation: "`logrotate` manages log growth by rotating old logs out, compressing them, and eventually deleting them based on your configuration."
+```quiz
+question: "What is the primary purpose of the `logrotate` utility?"
+type: multiple-choice
+options:
+  - text: "To encrypt log files for security."
+    feedback: "logrotate is for rotation and compression, not encryption."
+  - text: "To prevent log files from consuming all available disk space."
+    correct: true
+    feedback: "Correct! `logrotate` manages log growth by rotating old logs out, compressing them, and eventually deleting them based on your configuration."
+  - text: "To send logs to a remote server."
+    feedback: "Tools like rsyslog or fluentd are used for remote log shipping."
+  - text: "To translate binary logs into text."
+    feedback: "Journald handles binary logs; logrotate works on text files in /var/log."
+```
 
-  - question: "In `journalctl`, which flag is used to follow logs in real-time as they are written?"
-    options:
-      - text: "-f"
-        correct: true
-      - text: "-t"
-      - text: "-r"
-      - text: "-n"
-    explanation: "Like the `tail` command, `-f` (or `--follow`) allows you to watch logs as they happen."
+```quiz
+question: "In `journalctl`, which flag is used to follow logs in real-time as they are written?"
+type: multiple-choice
+options:
+  - text: "-f"
+    correct: true
+    feedback: "Correct! Like the `tail` command, `-f` (or `--follow`) allows you to watch logs as they happen."
+  - text: "-t"
+    feedback: "-t is for filtering by identifier (tag)."
+  - text: "-r"
+    feedback: "-r shows the journal entries in reverse order (newest first)."
+  - text: "-n"
+    feedback: "-n specifies the number of lines to show (default 10)."
 ```
 
 ---

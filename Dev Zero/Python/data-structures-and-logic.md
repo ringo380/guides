@@ -110,38 +110,53 @@ absolute_paths = [f"{log_dir}/{f}" for f in files]
 
 ---
 
-## Interactive Quiz: Data Structures and Logic
+## Interactive Quizzes: Data Structures and Logic
 
 Test your knowledge of Python's collections and control flow.
 
 ```quiz
-questions:
-  - question: "Which data structure would be most appropriate for storing a collection of unique usernames from a large CSV file?"
-    options:
-      - text: "List"
-      - text: "Tuple"
-      - text: "Set"
-        correct: true
-      - text: "Dictionary"
-    explanation: "A Set is ideal because it automatically handles deduplication, ensuring that each username appears only once regardless of how many times it appeared in the source file."
+question: "Which data structure would be most appropriate for storing a collection of unique usernames from a large CSV file?"
+type: multiple-choice
+options:
+  - text: "List"
+    feedback: "Lists allow duplicates. If you need unique usernames, a list is not the most efficient choice."
+  - text: "Tuple"
+    feedback: "Tuples allow duplicates and are immutable. Not ideal for gathering a collection of unique items."
+  - text: "Set"
+    correct: true
+    feedback: "Correct! A Set is ideal because it automatically handles deduplication, ensuring that each username appears only once regardless of how many times it appeared in the source file."
+  - text: "Dictionary"
+    feedback: "While dictionary keys must be unique, a Set is simpler for storing a collection of unique values."
+```
 
-  - question: "What is the result of the following list slice? `['a', 'b', 'c', 'd'][1:3]`"
-    options:
-      - text: "['a', 'b']"
-      - text: "['b', 'c']"
-        correct: true
-      - text: "['b', 'c', 'd']"
-      - text: "['a', 'b', 'c']"
-    explanation: "List slicing is inclusive of the start index (1) and exclusive of the stop index (3). Index 1 is 'b' and index 2 is 'c'. Index 3 ('d') is excluded."
+```quiz
+question: "What is the result of the following list slice? `['a', 'b', 'c', 'd'][1:3]`"
+type: multiple-choice
+options:
+  - text: "['a', 'b']"
+    feedback: "Slice starts at index 1 ('b'), not index 0 ('a')."
+  - text: "['b', 'c']"
+    correct: true
+    feedback: "Correct! List slicing is inclusive of the start index (1) and exclusive of the stop index (3). Index 1 is 'b' and index 2 is 'c'. Index 3 ('d') is excluded."
+  - text: "['b', 'c', 'd']"
+    feedback: "Index 3 ('d') is the stop index, so it's excluded from the slice."
+  - text: "['a', 'b', 'c']"
+    feedback: "Slice starts at index 1 ('b'), not index 0 ('a')."
+```
 
-  - question: "Which keyword is used to add an alternative condition to an `if` statement if the first condition is False?"
-    options:
-      - text: "else if"
-      - text: "elseif"
-      - text: "elif"
-        correct: true
-      - text: "otherwise"
-    explanation: "Python uses the `elif` keyword (short for 'else if') to provide additional conditional branches."
+```quiz
+question: "Which keyword is used to add an alternative condition to an `if` statement if the first condition is False?"
+type: multiple-choice
+options:
+  - text: "else if"
+    feedback: "This is used in languages like Java or C, but not Python."
+  - text: "elseif"
+    feedback: "This is used in languages like PHP or Perl, but not Python."
+  - text: "elif"
+    correct: true
+    feedback: "Correct! Python uses the `elif` keyword (short for 'else if') to provide additional conditional branches."
+  - text: "otherwise"
+    feedback: "This is not a Python keyword."
 ```
 
 ---

@@ -84,38 +84,53 @@ black my_script.py
 
 ---
 
-## Interactive Quiz: Testing and Tooling
+## Interactive Quizzes: Testing and Tooling
 
 Verify your understanding of Python's quality assurance tools.
 
 ```quiz
-questions:
-  - question: "Which command would you use to install a list of dependencies from a text file named `requirements.txt`?"
-    options:
-      - text: "pip install requirements.txt"
-      - text: "pip get -r requirements.txt"
-      - text: "pip install -r requirements.txt"
-        correct: true
-      - text: "python -m pip requirements.txt"
-    explanation: "The `-r` (or `--requirement`) flag tells `pip` to read the dependency list from the specified file."
+question: "Which command would you use to install a list of dependencies from a text file named `requirements.txt`?"
+type: multiple-choice
+options:
+  - text: "pip install requirements.txt"
+    feedback: "This would try to install a package literally named 'requirements.txt' from PyPI."
+  - text: "pip get -r requirements.txt"
+    feedback: "There is no 'get' command in pip."
+  - text: "pip install -r requirements.txt"
+    correct: true
+    feedback: "Correct! The `-r` (or `--requirement`) flag tells `pip` to read the dependency list from the specified file."
+  - text: "python -m pip requirements.txt"
+    feedback: "While 'python -m pip' is a valid way to run pip, you still need the 'install -r' command and flag."
+```
 
-  - question: "In `pytest`, which keyword is used to verify that a value matches your expectation?"
-    options:
-      - text: "verify"
-      - text: "check"
-      - text: "assert"
-        correct: true
-      - text: "expect"
-    explanation: "Python's built-in `assert` statement is the primary way to perform checks in `pytest`. If the expression following `assert` is False, the test fails."
+```quiz
+question: "In `pytest`, which keyword is used to verify that a value matches your expectation?"
+type: multiple-choice
+options:
+  - text: "verify"
+    feedback: "Python doesn't have a 'verify' keyword."
+  - text: "check"
+    feedback: "Python doesn't have a 'check' keyword."
+  - text: "assert"
+    correct: true
+    feedback: "Correct! Python's built-in `assert` statement is the primary way to perform checks in `pytest`. If the expression following `assert` is False, the test fails."
+  - text: "expect"
+    feedback: "Some testing frameworks use 'expect', but pytest uses 'assert'."
+```
 
-  - question: "Which tool is used for 'uncompromising' automatic code formatting in Python?"
-    options:
-      - text: "flake8"
-      - text: "pylint"
-      - text: "black"
-        correct: true
-      - text: "pytest"
-    explanation: "`black` is the most popular auto-formatter for Python, known for its strict, opinionated style that eliminates debates over code formatting."
+```quiz
+question: "Which tool is used for 'uncompromising' automatic code formatting in Python?"
+type: multiple-choice
+options:
+  - text: "flake8"
+    feedback: "flake8 is a linter (it checks for style and errors), not a formatter (it doesn't change your code)."
+  - text: "pylint"
+    feedback: "pylint is a static code analyzer/linter."
+  - text: "black"
+    correct: true
+    feedback: "Correct! `black` is the most popular auto-formatter for Python, known for its strict, opinionated style that eliminates debates over code formatting."
+  - text: "pytest"
+    feedback: "pytest is a testing framework, not a code formatter."
 ```
 
 ---

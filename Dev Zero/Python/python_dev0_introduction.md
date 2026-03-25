@@ -58,38 +58,53 @@ check_disk("/")
 
 ---
 
-## Interactive Quiz: Python Basics
+## Interactive Quizzes: Python Basics
 
 Verify your understanding of Python fundamentals.
 
 ```quiz
-questions:
-  - question: "What is the primary reason for using a Virtual Environment in Python?"
-    options:
-      - text: "To make Python scripts run faster."
-      - text: "To isolate project dependencies and avoid version conflicts."
-      - text: "To encrypt the source code for security."
-      - text: "To compile Python into a binary executable."
-    answer: 1
-    explanation: "Virtual environments ensure that each project has its own set of libraries, preventing 'dependency hell' where one project needs version A of a library and another needs version B."
+question: "What is the primary reason for using a Virtual Environment in Python?"
+type: multiple-choice
+options:
+  - text: "To make Python scripts run faster."
+    feedback: "Virtual environments are for isolation, not performance optimization."
+  - text: "To isolate project dependencies and avoid version conflicts."
+    correct: true
+    feedback: "Correct! Virtual environments ensure that each project has its own set of libraries, preventing 'dependency hell' where one project needs version A of a library and another needs version B."
+  - text: "To encrypt the source code for security."
+    feedback: "Isolation does not mean encryption. The source code remains visible."
+  - text: "To compile Python into a binary executable."
+    feedback: "Tools like PyInstaller are used for compilation, not venv."
+```
 
-  - question: "How does Python primarily define blocks of code (like the body of a function or a loop)?"
-    options:
-      - text: "Using curly braces `{ }`."
-      - text: "Using `BEGIN` and `END` keywords."
-      - text: "Using consistent indentation (whitespace)."
-      - text: "Using semicolons `;` at the end of every line."
-    answer: 2
-    explanation: "Python is unique in using whitespace (indentation) to define block structure. This is one of the features that contributes to its readability."
+```quiz
+question: "How does Python primarily define blocks of code (like the body of a function or a loop)?"
+type: multiple-choice
+options:
+  - text: "Using curly braces `{ }`."
+    feedback: "Languages like C, Java, and Perl use braces. Python does not."
+  - text: "Using `BEGIN` and `END` keywords."
+    feedback: "Languages like Ruby or Pascal use BEGIN/END. Python uses whitespace."
+  - text: "Using consistent indentation (whitespace)."
+    correct: true
+    feedback: "Correct! Python is unique in using whitespace (indentation) to define block structure. This is one of the features that contributes to its readability."
+  - text: "Using semicolons `;` at the end of every line."
+    feedback: "Semicolons are optional in Python and are not used to define blocks."
+```
 
-  - question: "Which tool is the standard package manager for Python?"
-    options:
-      - text: "apt"
-      - text: "npm"
-      - text: "pip"
-      - text: "cpan"
-    answer: 2
-    explanation: "`pip` is the standard tool for installing and managing Python packages from the Python Package Index (PyPI)."
+```quiz
+question: "Which tool is the standard package manager for Python?"
+type: multiple-choice
+options:
+  - text: "apt"
+    feedback: "apt is a system package manager for Debian-based Linux distributions."
+  - text: "npm"
+    feedback: "npm is the package manager for Node.js."
+  - text: "pip"
+    correct: true
+    feedback: "Correct! `pip` is the standard tool for installing and managing Python packages from the Python Package Index (PyPI)."
+  - text: "cpan"
+    feedback: "cpan is the package manager for Perl."
 ```
 
 ---
