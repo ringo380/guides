@@ -609,4 +609,4 @@ solution: |
 
 ---
 
-**Previous:** [User and Group Management](user-and-group-management.md) | **Next:** [Networking](networking.md) | [Back to Index](README.md)
+**Previous:** [User and Group Management](user-and-group-management.md) | **Next:** [Log Management](log-management.md) | [Back to Index](README.md)
