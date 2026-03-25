@@ -41,6 +41,9 @@ theme:
     - search.highlight
     - content.code.copy
     - content.action.edit
+    - navigation.footer
+    - toc.follow
+    - content.tabs.link
 
 plugins:
   - search
