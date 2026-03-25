@@ -55,7 +55,7 @@ systemctl is-enabled nginx
 systemctl is-failed nginx
 ```
 
-The `status` output includes the service state, PID, memory usage, and the most recent log lines - it's usually the first thing you check when something goes wrong.
+The `status` output includes the service state, PID, memory usage, and the most recent log lines - it's usually the first thing you check when something goes wrong. For practical examples of managing a production service like Nginx, see the **[Nginx Configuration](../Nginx/configuration.md)** guide.
 
 ### Enabling and Disabling
 

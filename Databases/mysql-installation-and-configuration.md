@@ -74,7 +74,7 @@ Homebrew installs MySQL with no root password by default. You should run `mysql_
 
 ### Docker
 
-Running MySQL in [**Docker**](https://hub.docker.com/_/mysql) is the fastest way to get a disposable instance for development or testing. The official `mysql` image supports all 8.0.x releases.
+Running MySQL in [**Docker**](https://hub.docker.com/_/mysql) is the fastest way to get a disposable instance for development or testing. The official `mysql` image supports all 8.0.x releases. For a deep dive into containerization, see the **[Docker and Containers](../Docker/README.md)** guide.
 
 ```bash
 # Pull and run MySQL 8.0
