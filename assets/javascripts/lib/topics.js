@@ -23,6 +23,7 @@
         "disk-and-filesystem",
         "package-management",
         "system-services",
+        "user-and-group-management",
         "networking",
         "system-information",
         "archiving-and-compression",

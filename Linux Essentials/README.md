@@ -52,6 +52,10 @@ Installing, updating, and removing software. Covers `apt` (Debian/Ubuntu) and `d
 
 Managing services with systemd. Covers `systemctl` (start, stop, enable, mask), unit file anatomy (`[Unit]`, `[Service]`, `[Install]` sections), writing custom services, `journalctl` log filtering, targets (runlevel equivalents), systemd timers as a cron alternative, and boot performance analysis with `systemd-analyze`.
 
+### [User and Group Management](user-and-group-management.md)
+
+Managing users, groups, and access control. Covers `useradd`/`usermod`/`userdel`, `/etc/passwd` and `/etc/shadow` field-by-field, group management, the `sudo` system (`visudo`, sudoers syntax, drop-in files), `su` vs `sudo -i`, PAM basics, and user auditing commands.
+
 ### [Networking](networking.md)
 
 Essential networking from the command line. Covers `ping`/`traceroute`/`mtr`, `curl`/`wget`, `ssh` (keys, config, port forwarding, jump hosts), `scp`/`rsync`, `ss`/`ip`, `dig`/`nslookup`, and `nc` (netcat).

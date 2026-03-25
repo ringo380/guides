@@ -18,6 +18,7 @@ body:
         - "Linux Essentials: Disk and Filesystem"
         - "Linux Essentials: Package Management"
         - "Linux Essentials: System Services"
+        - "Linux Essentials: User and Group Management"
         - "Linux Essentials: Networking"
         - "Linux Essentials: System Information"
         - "Linux Essentials: Archiving and Compression"
