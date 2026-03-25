@@ -580,4 +580,4 @@ solution: |
 
 ---
 
-**Previous:** [System Services](system-services.md) | **Next:** [Networking](networking.md) | [Back to Index](README.md)
+**Previous:** [System Services](system-services.md) | **Next:** [SSH Configuration](ssh-configuration.md) | [Back to Index](README.md)

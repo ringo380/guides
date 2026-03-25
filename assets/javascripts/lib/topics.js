@@ -24,6 +24,7 @@
         "package-management",
         "system-services",
         "user-and-group-management",
+        "ssh-configuration",
         "networking",
         "system-information",
         "archiving-and-compression",

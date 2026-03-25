@@ -56,6 +56,10 @@ Managing services with systemd. Covers `systemctl` (start, stop, enable, mask), 
 
 Managing users, groups, and access control. Covers `useradd`/`usermod`/`userdel`, `/etc/passwd` and `/etc/shadow` field-by-field, group management, the `sudo` system (`visudo`, sudoers syntax, drop-in files), `su` vs `sudo -i`, PAM basics, and user auditing commands.
 
+### [SSH Configuration](ssh-configuration.md)
+
+Deep dive into SSH configuration and key management. Covers key types and generation (Ed25519 vs RSA), ssh-agent, `~/.ssh/config` patterns (ProxyJump, ControlMaster multiplexing, Match blocks), `authorized_keys` options, SSH certificates (user and host CAs), `sshd_config` hardening, port forwarding (local, remote, dynamic), and troubleshooting.
+
 ### [Networking](networking.md)
 
 Essential networking from the command line. Covers `ping`/`traceroute`/`mtr`, `curl`/`wget`, `ssh` (keys, config, port forwarding, jump hosts), `scp`/`rsync`, `ss`/`ip`, `dig`/`nslookup`, and `nc` (netcat).
