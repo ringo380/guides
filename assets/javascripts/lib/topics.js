@@ -16,6 +16,7 @@
         "shell-basics",
         "streams-and-redirection",
         "text-processing",
+        "regular-expressions",
         "finding-files",
         "file-permissions",
         "job-control",

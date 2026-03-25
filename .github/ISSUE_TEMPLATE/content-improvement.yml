@@ -11,6 +11,7 @@ body:
         - "Linux Essentials: Shell Basics"
         - "Linux Essentials: Streams and Redirection"
         - "Linux Essentials: Text Processing"
+        - "Linux Essentials: Regular Expressions"
         - "Linux Essentials: Finding Files"
         - "Linux Essentials: File Permissions"
         - "Linux Essentials: Job Control"
