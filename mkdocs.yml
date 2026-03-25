@@ -143,6 +143,7 @@ nav:
       - Disk and Filesystem: Linux Essentials/disk-and-filesystem.md
       - Package Management: Linux Essentials/package-management.md
       - System Services: Linux Essentials/system-services.md
+      - User and Group Management: Linux Essentials/user-and-group-management.md
       - Networking: Linux Essentials/networking.md
       - System Information: Linux Essentials/system-information.md
       - Archiving and Compression: Linux Essentials/archiving-and-compression.md

@@ -661,4 +661,4 @@ solution: |
 
 ---
 
-**Previous:** [Package Management](package-management.md) | **Next:** [Networking](networking.md) | [Back to Index](README.md)
+**Previous:** [Package Management](package-management.md) | **Next:** [User and Group Management](user-and-group-management.md) | [Back to Index](README.md)
