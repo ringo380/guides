@@ -20,6 +20,7 @@ body:
         - "Linux Essentials: System Information"
         - "Linux Essentials: Archiving and Compression"
         - "Linux Essentials: Best Practices"
+        - "Linux Essentials: Cron and Scheduled Tasks"
         - "DNS Administration: DNS Fundamentals"
         - "DNS Administration: Zone Files and Records"
         - "DNS Administration: DNS Tools and Troubleshooting"

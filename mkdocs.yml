@@ -145,6 +145,7 @@ nav:
       - System Information: Linux Essentials/system-information.md
       - Archiving and Compression: Linux Essentials/archiving-and-compression.md
       - Best Practices: Linux Essentials/best-practices.md
+      - Cron and Scheduled Tasks: Linux Essentials/cron-and-scheduled-tasks.md
   - DNS Administration:
       - Index: DNS Administration/README.md
       - DNS Fundamentals: DNS Administration/dns-fundamentals.md

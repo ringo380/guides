@@ -59,3 +59,7 @@ Bundling and compressing files. Covers `tar` (with gzip, bzip2, and xz), standal
 ### [Best Practices](best-practices.md)
 
 Conventions that prevent real bugs. Covers `set -euo pipefail`, quoting variables, `[[ ]]` vs `[ ]`, `$()` vs backticks, `mktemp`, `shellcheck`, avoiding `ls` parsing, using arrays, portability considerations, and a script template.
+
+### [Cron and Scheduled Tasks](cron-and-scheduled-tasks.md)
+
+Automating recurring tasks. Covers the cron daemon, crontab syntax and management, system crontab files and `/etc/cron.d/`, cron environment gotchas, anacron for intermittently-on machines, and systemd timers as a modern alternative.

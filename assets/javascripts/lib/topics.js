@@ -25,6 +25,7 @@
         "system-information",
         "archiving-and-compression",
         "best-practices",
+        "cron-and-scheduled-tasks",
       ],
     },
     "DNS Administration": {
