@@ -7,7 +7,7 @@ hide:
 
 # The Runbook
 
-Practical, open-access technical guides covering Linux, DNS, Git, databases, and development. Created for practitioners - be aware some content may be outdated and should be verified.
+Practical, open-access technical guides covering Linux, DNS, Git, databases, and development. Created for practitioners - be aware that some content may be outdated and should be verified.
 
 ## Topics
 
