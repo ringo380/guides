@@ -21,6 +21,7 @@
         "job-control",
         "scripting-fundamentals",
         "disk-and-filesystem",
+        "package-management",
         "networking",
         "system-information",
         "archiving-and-compression",
