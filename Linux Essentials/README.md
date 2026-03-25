@@ -24,6 +24,10 @@ How programs communicate through STDIN, STDOUT, and STDERR. Covers basic redirec
 
 The core toolkit for searching, transforming, and analyzing text. Covers `grep` (with regular expressions - basic, extended, and POSIX classes), `sed` (substitution, addresses, in-place editing), `awk` (fields, patterns, BEGIN/END, variables), `cut`, `sort`, `uniq`, `tr`, `wc`, `head`, `tail`, and `tee`.
 
+### [Regular Expressions](regular-expressions.md)
+
+The pattern-matching language used across Linux tools. Covers metacharacters, anchors, character classes (POSIX and PCRE shorthand), quantifiers (greedy vs lazy), alternation and grouping, backreferences, BRE vs ERE vs PCRE comparison, lookahead/lookbehind, practical patterns (IPs, emails, log parsing), and debugging techniques.
+
 ### [Finding Files](finding-files.md)
 
 Searching directory trees and operating on the results. Covers `find` (name, type, size, time, permission, and owner tests, depth control, logical operators, and actions) and `xargs` (null-delimited input, placeholder substitution, parallel execution).

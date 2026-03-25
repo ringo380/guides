@@ -1051,4 +1051,4 @@ solution: |
 
 ---
 
-**Previous:** [Streams and Redirection](streams-and-redirection.md) | **Next:** [Finding Files](finding-files.md) | [Back to Index](README.md)
+**Previous:** [Streams and Redirection](streams-and-redirection.md) | **Next:** [Regular Expressions](regular-expressions.md) | [Back to Index](README.md)

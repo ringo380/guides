@@ -136,6 +136,7 @@ nav:
       - Shell Basics: Linux Essentials/shell-basics.md
       - Streams and Redirection: Linux Essentials/streams-and-redirection.md
       - Text Processing: Linux Essentials/text-processing.md
+      - Regular Expressions: Linux Essentials/regular-expressions.md
       - Finding Files: Linux Essentials/finding-files.md
       - File Permissions: Linux Essentials/file-permissions.md
       - Job Control: Linux Essentials/job-control.md
