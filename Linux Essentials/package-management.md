@@ -564,4 +564,4 @@ solution: |
 
 ---
 
-**Previous:** [Disk and Filesystem](disk-and-filesystem.md) | **Next:** [Networking](networking.md) | [Back to Index](README.md)
+**Previous:** [Disk and Filesystem](disk-and-filesystem.md) | **Next:** [System Services](system-services.md) | [Back to Index](README.md)

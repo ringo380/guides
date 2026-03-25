@@ -22,6 +22,7 @@
         "scripting-fundamentals",
         "disk-and-filesystem",
         "package-management",
+        "system-services",
         "networking",
         "system-information",
         "archiving-and-compression",

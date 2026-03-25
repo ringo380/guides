@@ -48,6 +48,10 @@ Managing storage. Covers `df` (filesystem usage), `du` (directory sizes), `mount
 
 Installing, updating, and removing software. Covers `apt` (Debian/Ubuntu) and `dnf` (RHEL/Fedora) workflows, low-level tools (`dpkg`, `rpm`), repository management with GPG verification, universal formats (snap, flatpak, AppImage), version pinning, security updates, and system maintenance.
 
+### [System Services](system-services.md)
+
+Managing services with systemd. Covers `systemctl` (start, stop, enable, mask), unit file anatomy (`[Unit]`, `[Service]`, `[Install]` sections), writing custom services, `journalctl` log filtering, targets (runlevel equivalents), systemd timers as a cron alternative, and boot performance analysis with `systemd-analyze`.
+
 ### [Networking](networking.md)
 
 Essential networking from the command line. Covers `ping`/`traceroute`/`mtr`, `curl`/`wget`, `ssh` (keys, config, port forwarding, jump hosts), `scp`/`rsync`, `ss`/`ip`, `dig`/`nslookup`, and `nc` (netcat).
