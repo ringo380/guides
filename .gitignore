@@ -15,6 +15,7 @@ site/
 docs/
 hooks/__pycache__/
 .cache/
+.pytest_cache/
 
 # Unused design assets
 assets/images/runbook-logo.png
