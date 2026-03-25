@@ -429,6 +429,52 @@ steps:
     narration: "git log shows the commit history. You can see the full SHA-1 hash, the author identity from your git config, the timestamp, and the commit message. HEAD -> main indicates this is the latest commit on the main branch."
 ```
 
+```exercise
+title: Configure Git and Create Your First Repository
+difficulty: beginner
+scenario: |
+  You just installed Git on a new machine. Complete these steps to set up your identity
+  and create your first repository:
+
+  1. Configure your name and email address globally
+  2. Create a new directory called `my-project` and initialize a Git repository inside it
+  3. Create two files: `README.md` with a project title, and `main.py` with a hello-world script
+  4. Stage both files and commit them with the message "Initial commit"
+  5. Run `git log` to verify your commit appears with the correct author information
+hints:
+  - "Use `git config --global user.name` and `git config --global user.email` to set your identity"
+  - "Use `mkdir` to create the directory, then `git init` inside it"
+  - "Use `git add` to stage files - you can add multiple files at once"
+  - "Check `git status` before committing to confirm both files are staged"
+solution: |
+  ```bash
+  # Step 1: Configure identity
+  git config --global user.name "Your Name"
+  git config --global user.email "you@example.com"
+
+  # Step 2: Create and initialize
+  mkdir my-project
+  cd my-project
+  git init
+
+  # Step 3: Create files
+  echo "# My Project" > README.md
+  echo 'print("Hello, world!")' > main.py
+
+  # Step 4: Stage and commit
+  git add README.md main.py
+  git commit -m "Initial commit"
+
+  # Step 5: Verify
+  git log
+  ```
+
+  After running `git log`, you should see your commit with the name and email you
+  configured. The output shows the commit hash, author, date, and message. If the
+  author information is wrong, re-run the `git config` commands and amend the commit
+  with `git commit --amend --reset-author`.
+```
+
 ---
 
 ## What's Ahead

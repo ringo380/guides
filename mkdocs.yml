@@ -150,6 +150,8 @@ nav:
       - Archiving and Compression: Linux Essentials/archiving-and-compression.md
       - Best Practices: Linux Essentials/best-practices.md
       - Cron and Scheduled Tasks: Linux Essentials/cron-and-scheduled-tasks.md
+      - Firewall and Networking: Linux Essentials/firewall-fundamentals.md
+      - Log Management: Linux Essentials/log-management.md
   - DNS Administration:
       - Index: DNS Administration/README.md
       - DNS Fundamentals: DNS Administration/dns-fundamentals.md
@@ -198,6 +200,17 @@ nav:
       - Database Security: Databases/database-security.md
       - Scaling & Architecture Patterns: Databases/scaling-and-architecture.md
       - InnoDB Recovery with PDRT: Databases/innodb-recovery-pdrt.md
+  - Nginx:
+      - Index: Nginx/README.md
+      - Configuration: Nginx/configuration.md
+  - Security:
+      - Index: Security/README.md
+      - TLS/SSL Fundamentals: Security/tls-ssl-fundamentals.md
+      - Certificate Management: Security/certificate-management.md
+  - Docker:
+      - Index: Docker/README.md
+      - Fundamentals: Docker/fundamentals.md
+      - Compose: Docker/compose.md
   - Dev Zero:
       - Perl:
           - Index: Dev Zero/Perl/README.md
@@ -216,3 +229,10 @@ nav:
           - Networking and Daemons: Dev Zero/Perl/networking-daemons.md
           - Web Frameworks and APIs: Dev Zero/Perl/web-frameworks-apis.md
           - Developer Roadmap: Dev Zero/Perl/perl_developer_roadmap.md
+      - Python:
+          - Index: Dev Zero/Python/README.md
+          - Introduction: Dev Zero/Python/python_dev0_introduction.md
+          - Data Structures and Logic: Dev Zero/Python/data-structures-and-logic.md
+          - Working with Files and APIs: Dev Zero/Python/files-and-apis.md
+          - System Automation: Dev Zero/Python/system-automation.md
+          - Testing and Tooling: Dev Zero/Python/testing-and-tooling.md

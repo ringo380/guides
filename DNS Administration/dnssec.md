@@ -666,6 +666,81 @@ options:
       - ["+cd", "Checking disabled (bypass validation)"]
 ```
 
+```exercise
+title: Diagnose a DNSSEC Validation Failure
+difficulty: intermediate
+scenario: |
+  A colleague reports that `secure.example.com` returns SERVFAIL from your recursive
+  resolver, but the domain was working fine yesterday. Users are complaining they cannot
+  reach the site. Walk through the troubleshooting process:
+
+  1. Confirm the failure is DNSSEC-related, not a general DNS issue
+  2. Determine whether the zone's DNSKEY records are present and valid
+  3. Check if the DS record in the parent zone matches the zone's DNSKEY
+  4. Identify the root cause from the following clues: `delv` reports
+     "no valid signature found," and the RRSIG expiration date is in the past
+
+  For each step, write the `dig` or `delv` command you would run and explain what
+  the output tells you.
+hints:
+  - "Compare `dig secure.example.com A` (SERVFAIL) with `dig +cd secure.example.com A` (success) to confirm DNSSEC is the cause"
+  - "Use `delv secure.example.com A` to have it trace the trust chain and report where validation fails"
+  - "Query DNSKEY and DS records: `dig +dnssec secure.example.com DNSKEY` and `dig DS secure.example.com @parent-ns`"
+  - "Check RRSIG expiration with `dig +dnssec secure.example.com A` and look at the signature inception/expiration timestamps"
+solution: |
+  **Step 1: Confirm it's DNSSEC**
+
+  ```bash
+  dig secure.example.com A
+  # Returns SERVFAIL
+
+  dig +cd secure.example.com A
+  # Returns the A record successfully
+  ```
+
+  The `+cd` flag tells the resolver to skip DNSSEC validation. If you get an answer
+  with `+cd` but SERVFAIL without it, the problem is definitely DNSSEC validation.
+
+  **Step 2: Trace the trust chain**
+
+  ```bash
+  delv secure.example.com A
+  # Output: "resolution failed: no valid signature found"
+  ```
+
+  `delv` performs its own validation independent of your resolver. The "no valid
+  signature" message tells you the RRSIG covering the queried records cannot be verified.
+
+  **Step 3: Check DNSKEY and DS records**
+
+  ```bash
+  dig +dnssec secure.example.com DNSKEY +multiline
+  # Verify DNSKEYs are present (flags 256 for ZSK, 257 for KSK)
+
+  dig DS secure.example.com
+  # Verify the DS record hash matches the KSK's key tag
+  ```
+
+  If the DS record's key tag matches the DNSKEY with flag 257, the delegation chain
+  is intact. The problem lies elsewhere.
+
+  **Step 4: Identify expired signatures**
+
+  ```bash
+  dig +dnssec secure.example.com A
+  # Look at the RRSIG record's expiration field
+  ```
+
+  The RRSIG record contains inception and expiration timestamps. If the expiration
+  date is in the past, the signature is no longer valid and resolvers will reject
+  it with SERVFAIL.
+
+  **Root cause**: The zone's RRSIG signatures expired. This typically happens when
+  automatic re-signing (via `dnssec-signzone` or a DNSSEC-aware server like BIND
+  with `auto-dnssec maintain`) stops running. The fix is to re-sign the zone and
+  ensure the re-signing schedule is restored.
+```
+
 ---
 
 ## Further Reading

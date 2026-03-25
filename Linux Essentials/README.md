@@ -79,3 +79,11 @@ Conventions that prevent real bugs. Covers `set -euo pipefail`, quoting variable
 ### [Cron and Scheduled Tasks](cron-and-scheduled-tasks.md)
 
 Automating recurring tasks. Covers the cron daemon, crontab syntax and management, system crontab files and `/etc/cron.d/`, cron environment gotchas, anacron for intermittently-on machines, and systemd timers as a modern alternative.
+
+### [Firewall and Networking Security](firewall-fundamentals.md)
+
+Protecting your Linux system from unauthorized network access. Covers the Netfilter framework, low-level tools like `iptables` and `nftables`, and high-level abstractions like `ufw` and `firewalld`. Includes best practices for default-deny policies and stateful inspection.
+
+### [Log Management](log-management.md)
+
+Understanding what is happening on your system. Covers `/var/log` directory, `journalctl` for querying the systemd journal, `logrotate` for managing log growth, and basic log parsing techniques.

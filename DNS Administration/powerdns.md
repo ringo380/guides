@@ -366,6 +366,76 @@ options:
       - ["-d '{\"rrsets\": [{\"name\": \"www.example.com.\", \"type\": \"A\", \"ttl\": 3600, \"changetype\": \"REPLACE\", \"records\": [{\"content\": \"203.0.113.10\", \"disabled\": false}]}]}'", "Update A record"]
 ```
 
+```exercise
+title: Create and Manage a Zone with pdnsutil and the HTTP API
+difficulty: intermediate
+scenario: |
+  You're setting up DNS for a new domain `lab.example.com` on a PowerDNS authoritative
+  server. The API is enabled on `127.0.0.1:8081` with the key `secretkey`. Complete
+  these tasks using both `pdnsutil` and the HTTP API:
+
+  1. Use `pdnsutil` to create the zone with `ns1.lab.example.com` as the primary nameserver
+  2. Use `pdnsutil` to add an A record for the apex pointing to `198.51.100.10` with a 3600s TTL
+  3. Use `pdnsutil` to add an MX record at the apex with priority 10 pointing to `mail.lab.example.com.`
+  4. Run `pdnsutil check-zone` to validate your work
+  5. Use the HTTP API (curl) to add a `www` A record pointing to `198.51.100.10` with a 3600s TTL
+  6. Use the HTTP API to verify the zone contains all four records (SOA, NS, A, MX, plus your new www A)
+hints:
+  - "Create the zone: `pdnsutil create-zone lab.example.com ns1.lab.example.com`"
+  - "For the apex A record, use an empty string for the name: `pdnsutil add-record lab.example.com '' A 3600 198.51.100.10`"
+  - "MX content includes the priority: `pdnsutil add-record lab.example.com '' MX 3600 '10 mail.lab.example.com.'`"
+  - "For the API PATCH request, remember trailing dots on domain names and use `changetype: REPLACE`"
+solution: |
+  **Steps 1-4: pdnsutil**
+
+  ```bash
+  # Create the zone
+  pdnsutil create-zone lab.example.com ns1.lab.example.com
+
+  # Add apex A record (empty string = zone apex)
+  pdnsutil add-record lab.example.com '' A 3600 198.51.100.10
+
+  # Add MX record (priority is part of the content)
+  pdnsutil add-record lab.example.com '' MX 3600 '10 mail.lab.example.com.'
+
+  # Validate the zone
+  pdnsutil check-zone lab.example.com
+  ```
+
+  **Step 5: Add www record via HTTP API**
+
+  ```bash
+  curl -s -X PATCH -H "X-API-Key: secretkey" \
+      -H "Content-Type: application/json" \
+      -d '{
+          "rrsets": [
+              {
+                  "name": "www.lab.example.com.",
+                  "type": "A",
+                  "ttl": 3600,
+                  "changetype": "REPLACE",
+                  "records": [
+                      {"content": "198.51.100.10", "disabled": false}
+                  ]
+              }
+          ]
+      }' \
+      http://127.0.0.1:8081/api/v1/servers/localhost/zones/lab.example.com.
+  ```
+
+  **Step 6: Verify the zone via HTTP API**
+
+  ```bash
+  curl -s -H "X-API-Key: secretkey" \
+      http://127.0.0.1:8081/api/v1/servers/localhost/zones/lab.example.com. \
+      | python3 -m json.tool
+  ```
+
+  The JSON response should include the SOA, NS, apex A, MX, and www A records. Key
+  details to verify: domain names have trailing dots, the MX priority is in the content
+  field, and no records show `"disabled": true`.
+```
+
 ---
 
 ## PowerDNS Recursor

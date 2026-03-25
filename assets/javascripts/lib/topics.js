@@ -30,6 +30,8 @@
         "archiving-and-compression",
         "best-practices",
         "cron-and-scheduled-tasks",
+        "firewall-fundamentals",
+        "log-management",
       ],
     },
     "DNS Administration": {
@@ -65,6 +67,10 @@
         "perl_developer_roadmap",
       ],
     },
+    "Dev Zero/Python": {
+      prefix: "Dev Zero/Python/",
+      guides: ["python_dev0_introduction", "data-structures-and-logic", "files-and-apis", "system-automation", "testing-and-tooling"],
+    },
     Databases: {
       prefix: "Databases/",
       guides: [
@@ -86,6 +92,18 @@
         "scaling-and-architecture",
         "innodb-recovery-pdrt",
       ],
+    },
+    Nginx: {
+      prefix: "Nginx/",
+      guides: ["configuration"],
+    },
+    Security: {
+      prefix: "Security/",
+      guides: ["tls-ssl-fundamentals", "certificate-management"],
+    },
+    Docker: {
+      prefix: "Docker/",
+      guides: ["fundamentals", "compose"],
     },
     Git: {
       prefix: "Git/",

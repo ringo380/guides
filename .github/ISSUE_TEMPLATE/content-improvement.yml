@@ -25,6 +25,8 @@ body:
         - "Linux Essentials: Archiving and Compression"
         - "Linux Essentials: Best Practices"
         - "Linux Essentials: Cron and Scheduled Tasks"
+        - "Linux Essentials: Firewall and Networking Security"
+        - "Linux Essentials: Log Management"
         - "DNS Administration: DNS Fundamentals"
         - "DNS Administration: Zone Files and Records"
         - "DNS Administration: DNS Tools and Troubleshooting"
@@ -67,6 +69,11 @@ body:
         - "Databases: Database Security"
         - "Databases: Scaling & Architecture Patterns"
         - "Databases: InnoDB Recovery with PDRT"
+        - "Nginx: Configuration"
+        - "Security: TLS/SSL Fundamentals"
+        - "Security: Certificate Management"
+        - "Docker: Fundamentals"
+        - "Docker: Compose"
         - "Perl: Introduction"
         - "Perl: Scalars, Strings, and Numbers"
         - "Perl: Arrays, Hashes, and Lists"
@@ -82,6 +89,12 @@ body:
         - "Perl: Networking and Daemons"
         - "Perl: Web Frameworks and APIs"
         - "Perl: Developer Roadmap"
+        - "Python: Introduction"
+        - "Python: Data Structures and Logic"
+        - "Python: Working with Files and APIs"
+        - "Python: System Automation"
+        - "Python: Testing and Tooling"
+        - "Python: Developer Roadmap"
     validations:
       required: true
   - type: textarea
