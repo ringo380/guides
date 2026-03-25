@@ -100,6 +100,23 @@ const last = (coll, n = 5) => db[coll].find().sort({ _id: -1 }).limit(n);
 const count = (coll, query = {}) => db[coll].countDocuments(query);
 ```
 
+```terminal
+scenario: "Practice basic shell commands in mongosh."
+steps:
+  - command: "show dbs"
+    output: "admin   0.000GB\nconfig  0.000GB\nlocal   0.000GB"
+    narration: "Start by listing the available databases."
+  - command: "use myapp"
+    output: "switched to db myapp"
+    narration: "Switch to a new database named 'myapp'. MongoDB won't actually create it until you perform your first write."
+  - command: "db.users.insertOne({ name: 'Junie', role: 'admin' })"
+    output: "{\n  acknowledged: true,\n  insertedId: ObjectId(\"65a1b2c3d4e5f6a7b8c9d0e1\")\n}"
+    narration: "Insert a document into a new 'users' collection."
+  - command: "show collections"
+    output: "users"
+    narration: "Now that we've performed a write, the 'users' collection (and 'myapp' database) are visible."
+```
+
 ---
 
 ## CRUD Operations

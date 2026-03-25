@@ -408,6 +408,22 @@ RIGHT JOIN departments d ON s.dept_id = d.id;
 
 Both unmatched sides appear: Dijkstra (no department) and Legal (no staff).
 
+```exercise
+scenario: "Retrieve a list of all departments and the count of staff in each. Include departments that have no staff (count should be 0)."
+initial_code: |
+  SELECT d.name, COUNT(s.id) AS staff_count
+  FROM departments d
+  -- Add your JOIN and GROUP BY here
+  ORDER BY staff_count DESC;
+solution: |
+  SELECT d.name, COUNT(s.id) AS staff_count
+  FROM departments d
+  LEFT JOIN staff s ON d.id = s.dept_id
+  GROUP BY d.name
+  ORDER BY staff_count DESC;
+hint: "Use a LEFT JOIN starting from the departments table to ensure all departments are included even if they have no matches in the staff table."
+```
+
 ### CROSS JOIN
 
 Returns the **Cartesian product** - every row from the left table combined with every row from the right table. If the left table has 5 rows and the right has 4, the result has 20 rows. Use CROSS JOIN when you genuinely need all combinations, such as generating a schedule grid.
