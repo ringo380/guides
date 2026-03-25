@@ -17,6 +17,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+          cache: 'pip'
 
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y libcairo2-dev libffi-dev
@@ -26,6 +27,9 @@ jobs:
 
       - name: Prepare docs directory
         run: ./setup-docs.sh
+
+      - name: Build site (strict mode)
+        run: mkdocs build --strict
 
       - name: Deploy to GitHub Pages
         run: mkdocs gh-deploy --force
