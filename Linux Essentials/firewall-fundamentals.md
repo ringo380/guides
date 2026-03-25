@@ -81,29 +81,29 @@ Test your knowledge of Linux firewall tools.
 questions:
   - question: "Which tool is the modern, high-performance successor to iptables in the Linux kernel?"
     options:
-      - "ufw"
-      - "nftables"
-      - "firewalld"
-      - "ipchains"
-    answer: 1
+      - text: "ufw"
+      - text: "nftables"
+        correct: true
+      - text: "firewalld"
+      - text: "ipchains"
     explanation: "`nftables` replaces `iptables` and related tools, offering better performance and a unified framework for IPv4, IPv6, and other protocols."
 
   - question: "What is the primary benefit of using a high-level tool like UFW instead of raw iptables?"
     options:
-      - "It runs in the kernel for better speed."
-      - "It provides a simpler, more human-readable syntax."
-      - "It can bypass hardware firewalls."
-      - "It doesn't require sudo privileges."
-    answer: 1
+      - text: "It runs in the kernel for better speed."
+      - text: "It provides a simpler, more human-readable syntax."
+        correct: true
+      - text: "It can bypass hardware firewalls."
+      - text: "It doesn't require sudo privileges."
     explanation: "UFW stands for 'Uncomplicated Firewall'. It is a front-end designed to make managing common firewall tasks much easier and less error-prone."
 
   - question: "In a 'Default Deny' firewall configuration, what happens to a packet that doesn't match any specific allow rule?"
     options:
-      - "It is forwarded to the gateway."
-      - "It is logged and then allowed."
-      - "It is dropped or rejected."
-      - "It is held in a buffer for manual review."
-    answer: 2
+      - text: "It is forwarded to the gateway."
+      - text: "It is logged and then allowed."
+      - text: "It is dropped or rejected."
+        correct: true
+      - text: "It is held in a buffer for manual review."
     explanation: "A 'Default Deny' policy means that unless a packet is explicitly allowed by a rule, it is stopped (dropped) by the firewall."
 ```
 

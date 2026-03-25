@@ -93,29 +93,29 @@ Test your understanding of Linux logging.
 questions:
   - question: "Which command is used to view logs managed by systemd-journald?"
     options:
-      - "logctl"
-      - "syslog-view"
-      - "journalctl"
-      - "systemctl logs"
-    answer: 2
+      - text: "logctl"
+      - text: "syslog-view"
+      - text: "journalctl"
+        correct: true
+      - text: "systemctl logs"
     explanation: "`journalctl` is the standard tool for interacting with the systemd journal."
 
   - question: "What is the primary purpose of the `logrotate` utility?"
     options:
-      - "To encrypt log files for security."
-      - "To prevent log files from consuming all available disk space."
-      - "To send logs to a remote server."
-      - "To translate binary logs into text."
-    answer: 1
+      - text: "To encrypt log files for security."
+      - text: "To prevent log files from consuming all available disk space."
+        correct: true
+      - text: "To send logs to a remote server."
+      - text: "To translate binary logs into text."
     explanation: "`logrotate` manages log growth by rotating old logs out, compressing them, and eventually deleting them based on your configuration."
 
   - question: "In `journalctl`, which flag is used to follow logs in real-time as they are written?"
     options:
-      - "-f"
-      - "-t"
-      - "-r"
-      - "-n"
-    answer: 0
+      - text: "-f"
+        correct: true
+      - text: "-t"
+      - text: "-r"
+      - text: "-n"
     explanation: "Like the `tail` command, `-f` (or `--follow`) allows you to watch logs as they happen."
 ```
 

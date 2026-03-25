@@ -122,29 +122,29 @@ Test your understanding of Python's system interaction capabilities.
 questions:
   - question: "Which module should you use if you need to recursively delete a directory tree (similar to `rm -rf`)?"
     options:
-      - "os"
-      - "sys"
-      - "shutil"
-      - "subprocess"
-    answer: 2
+      - text: "os"
+      - text: "sys"
+      - text: "shutil"
+        correct: true
+      - text: "subprocess"
     explanation: "`shutil.rmtree()` is the standard function for recursively deleting a directory and all of its contents."
 
   - question: "What is the recommended function for running an external command and waiting for it to complete?"
     options:
-      - "os.system()"
-      - "subprocess.run()"
-      - "subprocess.Popen()"
-      - "sys.execute()"
-    answer: 1
+      - text: "os.system()"
+      - text: "subprocess.run()"
+        correct: true
+      - text: "subprocess.Popen()"
+      - text: "sys.execute()"
     explanation: "`subprocess.run()` (introduced in Python 3.5) is the recommended high-level function for executing commands. `os.system()` is considered legacy and less secure."
 
   - question: "How do you access the list of raw command-line arguments passed to a Python script?"
     options:
-      - "sys.args"
-      - "os.argv"
-      - "sys.argv"
-      - "argparse.list()"
-    answer: 2
+      - text: "sys.args"
+      - text: "os.argv"
+      - text: "sys.argv"
+        correct: true
+      - text: "argparse.list()"
     explanation: "`sys.argv` is a list in Python that contains all the command-line arguments passed to the script, where `sys.argv[0]` is the script name itself."
 ```
 

@@ -115,29 +115,29 @@ Verify your understanding of Python's I/O and networking capabilities.
 questions:
   - question: "What is the primary benefit of using the `with open(...) as f:` syntax in Python?"
     options:
-      - "It makes the code run significantly faster."
-      - "It automatically handles file closing, even if an exception occurs."
-      - "It encrypts the file contents while they are open in memory."
-      - "It allows multiple processes to write to the same file simultaneously."
-    answer: 1
+      - text: "It makes the code run significantly faster."
+      - text: "It automatically handles file closing, even if an exception occurs."
+        correct: true
+      - text: "It encrypts the file contents while they are open in memory."
+      - text: "It allows multiple processes to write to the same file simultaneously."
     explanation: "The context manager (`with` statement) ensures that the file's `close()` method is called automatically when the block is exited, preventing resource leaks and potential file corruption."
 
   - question: "Which method in the `json` module should you use to parse a JSON-formatted string that is already in memory?"
     options:
-      - "json.load()"
-      - "json.parse()"
-      - "json.loads()"
-      - "json.read()"
-    answer: 2
+      - text: "json.load()"
+      - text: "json.parse()"
+      - text: "json.loads()"
+        correct: true
+      - text: "json.read()"
     explanation: "`json.loads()` (short for 'load string') is used to parse a JSON string, while `json.load()` is used to read and parse from a file-like object."
 
   - question: "How do you access the JSON response body from a `requests` Response object?"
     options:
-      - "response.data"
-      - "response.json()"
-      - "json.parse(response.text)"
-      - "response.body"
-    answer: 1
+      - text: "response.data"
+      - text: "response.json()"
+        correct: true
+      - text: "json.parse(response.text)"
+      - text: "response.body"
     explanation: "The `requests` library provides a convenient `.json()` method on the response object that automatically parses the response body as JSON."
 ```
 

@@ -93,29 +93,29 @@ Test your knowledge of Docker fundamentals.
 questions:
   - question: "What is the primary difference between an image and a container?"
     options:
-      - "Images are running instances of containers."
-      - "A container is a read-only template, while an image is its running instance."
-      - "An image is a read-only template, while a container is its runnable instance."
-      - "There is no difference; the terms are interchangeable."
-    answer: 2
+      - text: "Images are running instances of containers."
+      - text: "A container is a read-only template, while an image is its running instance."
+      - text: "An image is a read-only template, while a container is its runnable instance."
+        correct: true
+      - text: "There is no difference; the terms are interchangeable."
     explanation: "Think of an image as a blueprint (template) and a container as the actual building (instance) created from that blueprint."
 
   - question: "Which Docker command is used to list all containers, including those that are stopped?"
     options:
-      - "docker ps"
-      - "docker ps -a"
-      - "docker list"
-      - "docker containers --all"
-    answer: 1
+      - text: "docker ps"
+      - text: "docker ps -a"
+        correct: true
+      - text: "docker list"
+      - text: "docker containers --all"
     explanation: "`docker ps` only shows running containers. Adding the `-a` (or `--all`) flag includes stopped containers in the output."
 
   - question: "In the command `docker run -p 8080:80 nginx`, what does the `8080:80` part do?"
     options:
-      - "Sets the container ID to 8080."
-      - "Maps host port 80 to container port 8080."
-      - "Maps host port 8080 to container port 80."
-      - "Limits the container to 8080MB of RAM."
-    answer: 2
+      - text: "Sets the container ID to 8080."
+      - text: "Maps host port 80 to container port 8080."
+      - text: "Maps host port 8080 to container port 80."
+        correct: true
+      - text: "Limits the container to 8080MB of RAM."
     explanation: "The port mapping syntax is `HOST_PORT:CONTAINER_PORT`. Here, it forwards traffic from the host's port 8080 to the container's port 80."
 ```
 

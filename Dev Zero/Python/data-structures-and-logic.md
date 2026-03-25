@@ -118,29 +118,29 @@ Test your knowledge of Python's collections and control flow.
 questions:
   - question: "Which data structure would be most appropriate for storing a collection of unique usernames from a large CSV file?"
     options:
-      - "List"
-      - "Tuple"
-      - "Set"
-      - "Dictionary"
-    answer: 2
+      - text: "List"
+      - text: "Tuple"
+      - text: "Set"
+        correct: true
+      - text: "Dictionary"
     explanation: "A Set is ideal because it automatically handles deduplication, ensuring that each username appears only once regardless of how many times it appeared in the source file."
 
   - question: "What is the result of the following list slice? `['a', 'b', 'c', 'd'][1:3]`"
     options:
-      - "['a', 'b']"
-      - "['b', 'c']"
-      - "['b', 'c', 'd']"
-      - "['a', 'b', 'c']"
-    answer: 1
+      - text: "['a', 'b']"
+      - text: "['b', 'c']"
+        correct: true
+      - text: "['b', 'c', 'd']"
+      - text: "['a', 'b', 'c']"
     explanation: "List slicing is inclusive of the start index (1) and exclusive of the stop index (3). Index 1 is 'b' and index 2 is 'c'. Index 3 ('d') is excluded."
 
   - question: "Which keyword is used to add an alternative condition to an `if` statement if the first condition is False?"
     options:
-      - "else if"
-      - "elseif"
-      - "elif"
-      - "otherwise"
-    answer: 2
+      - text: "else if"
+      - text: "elseif"
+      - text: "elif"
+        correct: true
+      - text: "otherwise"
     explanation: "Python uses the `elif` keyword (short for 'else if') to provide additional conditional branches."
 ```
 

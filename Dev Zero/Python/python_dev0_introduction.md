@@ -66,28 +66,28 @@ Verify your understanding of Python fundamentals.
 questions:
   - question: "What is the primary reason for using a Virtual Environment in Python?"
     options:
-      - "To make Python scripts run faster."
-      - "To isolate project dependencies and avoid version conflicts."
-      - "To encrypt the source code for security."
-      - "To compile Python into a binary executable."
+      - text: "To make Python scripts run faster."
+      - text: "To isolate project dependencies and avoid version conflicts."
+      - text: "To encrypt the source code for security."
+      - text: "To compile Python into a binary executable."
     answer: 1
     explanation: "Virtual environments ensure that each project has its own set of libraries, preventing 'dependency hell' where one project needs version A of a library and another needs version B."
 
   - question: "How does Python primarily define blocks of code (like the body of a function or a loop)?"
     options:
-      - "Using curly braces `{ }`."
-      - "Using `BEGIN` and `END` keywords."
-      - "Using consistent indentation (whitespace)."
-      - "Using semicolons `;` at the end of every line."
+      - text: "Using curly braces `{ }`."
+      - text: "Using `BEGIN` and `END` keywords."
+      - text: "Using consistent indentation (whitespace)."
+      - text: "Using semicolons `;` at the end of every line."
     answer: 2
     explanation: "Python is unique in using whitespace (indentation) to define block structure. This is one of the features that contributes to its readability."
 
   - question: "Which tool is the standard package manager for Python?"
     options:
-      - "apt"
-      - "npm"
-      - "pip"
-      - "cpan"
+      - text: "apt"
+      - text: "npm"
+      - text: "pip"
+      - text: "cpan"
     answer: 2
     explanation: "`pip` is the standard tool for installing and managing Python packages from the Python Package Index (PyPI)."
 ```

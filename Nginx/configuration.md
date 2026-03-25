@@ -113,29 +113,29 @@ server {
 ```quiz
 title: Nginx Configuration Quiz
 questions:
-  - question: Which directive is used to host multiple domains on a single IP address?
+  - question: "Which directive is used to host multiple domains on a single IP address?"
     options:
-      - proxy_pass
-      - server_name
-      - listen
-      - root
-    answer: server_name
-    explanation: The `server_name` directive tells Nginx which domain names a specific server block should handle.
-  - question: What is the purpose of the `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` directive?
+      - text: "proxy_pass"
+      - text: "server_name"
+      - text: "listen"
+      - text: "root"
+    answer: 1
+    explanation: "The `server_name` directive tells Nginx which domain names a specific server block should handle."
+  - question: "What is the purpose of the `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` directive?"
     options:
-      - To encrypt the request
-      - To speed up the connection
-      - To pass the original client's IP address to the backend
-      - To set the domain name
-    answer: To pass the original client's IP address to the backend
-    explanation: `X-Forwarded-For` is a standard header used by proxies to tell the backend server the IP address of the original client.
-  - question: In rate limiting, what does the `burst` parameter do?
+      - text: "To encrypt the request"
+      - text: "To speed up the connection"
+      - text: "To pass the original client's IP address to the backend"
+      - text: "To set the domain name"
+    answer: 2
+    explanation: "`X-Forwarded-For` is a standard header used by proxies to tell the backend server the IP address of the original client."
+  - question: "In rate limiting, what does the `burst` parameter do?"
     options:
-      - It completely blocks the user if they exceed the limit
-      - It allows a certain number of requests to exceed the base rate
-      - It resets the limit every minute
-      - It increases the bandwidth
-    answer: It allows a certain number of requests to exceed the base rate
+      - text: "It completely blocks the user if they exceed the limit"
+      - text: "It allows a certain number of requests to exceed the base rate"
+      - text: "It resets the limit every minute"
+      - text: "It increases the bandwidth"
+    answer: 1
     explanation: The `burst` parameter defines how many requests beyond the rate limit a client can make before they are rejected.
 ```
 

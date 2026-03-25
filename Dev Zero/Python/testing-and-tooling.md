@@ -92,29 +92,29 @@ Verify your understanding of Python's quality assurance tools.
 questions:
   - question: "Which command would you use to install a list of dependencies from a text file named `requirements.txt`?"
     options:
-      - "pip install requirements.txt"
-      - "pip get -r requirements.txt"
-      - "pip install -r requirements.txt"
-      - "python -m pip requirements.txt"
-    answer: 2
+      - text: "pip install requirements.txt"
+      - text: "pip get -r requirements.txt"
+      - text: "pip install -r requirements.txt"
+        correct: true
+      - text: "python -m pip requirements.txt"
     explanation: "The `-r` (or `--requirement`) flag tells `pip` to read the dependency list from the specified file."
 
   - question: "In `pytest`, which keyword is used to verify that a value matches your expectation?"
     options:
-      - "verify"
-      - "check"
-      - "assert"
-      - "expect"
-    answer: 2
+      - text: "verify"
+      - text: "check"
+      - text: "assert"
+        correct: true
+      - text: "expect"
     explanation: "Python's built-in `assert` statement is the primary way to perform checks in `pytest`. If the expression following `assert` is False, the test fails."
 
   - question: "Which tool is used for 'uncompromising' automatic code formatting in Python?"
     options:
-      - "flake8"
-      - "pylint"
-      - "black"
-      - "pytest"
-    answer: 2
+      - text: "flake8"
+      - text: "pylint"
+      - text: "black"
+        correct: true
+      - text: "pytest"
     explanation: "`black` is the most popular auto-formatter for Python, known for its strict, opinionated style that eliminates debates over code formatting."
 ```
 
