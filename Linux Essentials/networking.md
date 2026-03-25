@@ -780,4 +780,4 @@ nc hostname 9999 < file_to_send.txt
 
 ---
 
-**Previous:** [Disk and Filesystem](disk-and-filesystem.md) | **Next:** [System Information](system-information.md) | [Back to Index](README.md)
+**Previous:** [Package Management](package-management.md) | **Next:** [System Information](system-information.md) | [Back to Index](README.md)

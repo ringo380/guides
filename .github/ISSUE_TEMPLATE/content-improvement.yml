@@ -16,6 +16,7 @@ body:
         - "Linux Essentials: Job Control"
         - "Linux Essentials: Scripting Fundamentals"
         - "Linux Essentials: Disk and Filesystem"
+        - "Linux Essentials: Package Management"
         - "Linux Essentials: Networking"
         - "Linux Essentials: System Information"
         - "Linux Essentials: Archiving and Compression"

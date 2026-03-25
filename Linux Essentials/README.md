@@ -44,6 +44,10 @@ Writing reliable bash scripts. Covers exit codes, conditionals (`test`/`[ ]`/`[[
 
 Managing storage. Covers `df` (filesystem usage), `du` (directory sizes), `mount`/`umount`, `/etc/fstab`, `lsblk`, partition management (`fdisk`/`parted`), `mkfs`, and `fsck`.
 
+### [Package Management](package-management.md)
+
+Installing, updating, and removing software. Covers `apt` (Debian/Ubuntu) and `dnf` (RHEL/Fedora) workflows, low-level tools (`dpkg`, `rpm`), repository management with GPG verification, universal formats (snap, flatpak, AppImage), version pinning, security updates, and system maintenance.
+
 ### [Networking](networking.md)
 
 Essential networking from the command line. Covers `ping`/`traceroute`/`mtr`, `curl`/`wget`, `ssh` (keys, config, port forwarding, jump hosts), `scp`/`rsync`, `ss`/`ip`, `dig`/`nslookup`, and `nc` (netcat).

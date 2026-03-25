@@ -539,4 +539,4 @@ df -h /mnt/data
 
 ---
 
-**Previous:** [Scripting Fundamentals](scripting-fundamentals.md) | **Next:** [Networking](networking.md) | [Back to Index](README.md)
+**Previous:** [Scripting Fundamentals](scripting-fundamentals.md) | **Next:** [Package Management](package-management.md) | [Back to Index](README.md)
