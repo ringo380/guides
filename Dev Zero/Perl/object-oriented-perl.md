@@ -927,7 +927,7 @@ options:
   - text: "A script that reads a CSV file, filters rows, and writes output to STDOUT"
     feedback: "This is a classic pipeline - read, transform, output. Procedural style with map/grep is simpler and more idiomatic. No persistent state or polymorphism is needed."
   - text: "A library that manages database connections with pooling, reconnection, and transaction state"
-    feedback: ""
+    feedback: "Correct! This is a perfect use case for OOP. A database connection pool has persistent state (active connections, credentials), complex behavior (reconnecting, health checks), and can benefit from polymorphism (different backends for MySQL vs PostgreSQL)."
     correct: true
   - text: "A one-liner that extracts IP addresses from a log file"
     feedback: "One-liners are the domain of procedural Perl. Adding OOP to a one-liner would add complexity without benefit."
