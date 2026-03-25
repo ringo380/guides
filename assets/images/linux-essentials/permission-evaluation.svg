@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 380">
+<defs>
+  <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+  </marker>
+  <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+  </marker>
+</defs>
+<style>
+  .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+  .label { font-size: 10px; fill: #555; }
+  .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+  .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+  .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+  .diamond { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; }
+  .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+  .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+
+  @media (prefers-color-scheme: dark) {
+    .title { fill: #e0e0e0; }
+    .label { fill: #aaa; }
+    .code { fill: #e0e0e0; }
+    .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+    .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+    .diamond { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+    .connector { stroke: #666; marker-end: url(#arrow-dark); }
+    .heading { fill: #4db6ac; }
+  }
+</style>
+
+<!-- Heading -->
+<text x="310" y="24" text-anchor="middle" class="heading">Permission Evaluation Order</text>
+
+<!-- Row 1: Process accesses file (accent box) -->
+<rect x="230" y="38" width="160" height="30" class="box-accent"/>
+<text x="310" y="57" text-anchor="middle" class="title">Process accesses file</text>
+
+<!-- Arrow down to UID diamond -->
+<line x1="310" y1="68" x2="310" y2="88" class="connector"/>
+
+<!-- Row 2: UID = Owner? diamond -->
+<polygon points="310,88 380,118 310,148 240,118" class="diamond"/>
+<text x="310" y="122" text-anchor="middle" class="title">UID = Owner?</text>
+
+<!-- YES branch: right from UID diamond to Check user perms -->
+<line x1="380" y1="118" x2="420" y2="118" class="connector"/>
+<text x="395" y="112" text-anchor="middle" class="label">Yes</text>
+
+<rect x="420" y="103" width="130" height="30" class="box"/>
+<text x="485" y="122" text-anchor="middle" class="title">Check user perms</text>
+
+<!-- Arrow right to Permitted? diamond -->
+<line x1="550" y1="118" x2="570" y2="118" class="connector" style="marker-end: none;"/>
+
+<!-- Permitted? diamond (user) - positioned further right, smaller -->
+<!-- We'll use a vertical layout for the permitted check -->
+<!-- Arrow down from Check user perms -->
+<line x1="485" y1="133" x2="485" y2="153" class="connector"/>
+
+<polygon points="485,153 540,178 485,203 430,178" class="diamond"/>
+<text x="485" y="182" text-anchor="middle" class="label">Permitted?</text>
+
+<!-- Yes from user permitted → Access Allowed -->
+<line x1="540" y1="178" x2="565" y2="178" class="connector"/>
+<text x="549" y="172" text-anchor="middle" class="label">Yes</text>
+
+<rect x="565" y="163" width="48" height="30" class="box-accent"/>
+<text x="589" y="175" text-anchor="middle" class="label" style="font-size:8px;">Access</text>
+<text x="589" y="187" text-anchor="middle" class="label" style="font-size:8px;">Allowed</text>
+
+<!-- No from user permitted → Permission Denied -->
+<line x1="485" y1="203" x2="485" y2="220" class="connector"/>
+<text x="495" y="215" class="label">No</text>
+
+<rect x="437" y="220" width="96" height="26" class="box"/>
+<text x="485" y="237" text-anchor="middle" class="label" style="font-size:8.5px;">Permission Denied</text>
+
+<!-- NO branch: down from UID diamond to GID diamond -->
+<line x1="310" y1="148" x2="310" y2="172" class="connector"/>
+<text x="320" y="164" class="label">No</text>
+
+<!-- Row 3: GID = Group? diamond -->
+<polygon points="310,172 380,202 310,232 240,202" class="diamond"/>
+<text x="310" y="206" text-anchor="middle" class="title">GID = Group?</text>
+
+<!-- YES branch: right from GID diamond to Check group perms -->
+<line x1="380" y1="202" x2="420" y2="202" class="connector"/>
+<text x="395" y="196" text-anchor="middle" class="label">Yes</text>
+
+<rect x="420" y="187" width="130" height="30" class="box"/>
+<text x="485" y="206" text-anchor="middle" class="title">Check group perms</text>
+
+<!-- Arrow down from Check group perms to Permitted? -->
+<line x1="485" y1="217" x2="485" y2="237" class="connector"/>
+
+<polygon points="485,237 540,262 485,287 430,262" class="diamond"/>
+<text x="485" y="266" text-anchor="middle" class="label">Permitted?</text>
+
+<!-- Yes from group permitted → Access Allowed -->
+<line x1="540" y1="262" x2="565" y2="262" class="connector"/>
+<text x="549" y="256" text-anchor="middle" class="label">Yes</text>
+
+<rect x="565" y="247" width="48" height="30" class="box-accent"/>
+<text x="589" y="259" text-anchor="middle" class="label" style="font-size:8px;">Access</text>
+<text x="589" y="271" text-anchor="middle" class="label" style="font-size:8px;">Allowed</text>
+
+<!-- No from group permitted → Permission Denied -->
+<line x1="485" y1="287" x2="485" y2="304" class="connector"/>
+<text x="495" y="299" class="label">No</text>
+
+<rect x="437" y="304" width="96" height="26" class="box"/>
+<text x="485" y="321" text-anchor="middle" class="label" style="font-size:8.5px;">Permission Denied</text>
+
+<!-- NO branch: down from GID diamond to Check other perms -->
+<line x1="310" y1="232" x2="310" y2="258" class="connector"/>
+<text x="320" y="248" class="label">No</text>
+
+<!-- Row 4: Check other perms -->
+<rect x="240" y="258" width="140" height="30" class="box"/>
+<text x="310" y="277" text-anchor="middle" class="title">Check other perms</text>
+
+<!-- Arrow down to Permitted? diamond -->
+<line x1="310" y1="288" x2="310" y2="308" class="connector"/>
+
+<polygon points="310,308 365,333 310,358 255,333" class="diamond"/>
+<text x="310" y="337" text-anchor="middle" class="label">Permitted?</text>
+
+<!-- Yes → Access Allowed -->
+<line x1="365" y1="333" x2="400" y2="333" class="connector"/>
+<text x="379" y="327" text-anchor="middle" class="label">Yes</text>
+
+<rect x="400" y="318" width="100" height="30" class="box-accent"/>
+<text x="450" y="337" text-anchor="middle" class="title">Access Allowed</text>
+
+<!-- No → Permission Denied -->
+<line x1="255" y1="333" x2="220" y2="333" class="connector"/>
+<text x="241" y="327" text-anchor="middle" class="label">No</text>
+
+<rect x="110" y="318" width="110" height="30" class="box"/>
+<text x="165" y="337" text-anchor="middle" class="title">Permission Denied</text>
+
+</svg>

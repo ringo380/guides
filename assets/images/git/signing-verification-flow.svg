@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 260" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .section-heading { font-size: 12px; font-weight: 700; fill: #009485; }
+    .divider { stroke: #ccc; stroke-width: 1; stroke-dasharray: 4,3; }
+    .section-rule { stroke: #009485; stroke-width: 1; opacity: 0.3; }
+    .badge { fill: #009485; rx: 4; }
+    .badge-text { font-size: 9px; font-weight: 600; fill: #fff; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .heading { fill: #4db6ac; }
+      .section-heading { fill: #4db6ac; }
+      .divider { stroke: rgba(255,255,255,0.15); }
+      .section-rule { stroke: #4db6ac; }
+      .badge { fill: #4db6ac; }
+      .badge-text { fill: #1a1a1a; }
+    }
+  </style>
+
+  <!-- Main heading -->
+  <text x="400" y="22" text-anchor="middle" class="heading">GPG / SSH Commit Signing and Verification</text>
+
+  <!-- ==================== LEFT SECTION: SIGNING ==================== -->
+
+  <!-- Section label -->
+  <text x="200" y="52" text-anchor="middle" class="section-heading">Signing</text>
+  <line x1="110" y1="57" x2="290" y2="57" class="section-rule"/>
+
+  <!-- Step 1: Developer commits -->
+  <rect x="22" y="80" width="110" height="50" class="box"/>
+  <text x="77" y="101" text-anchor="middle" class="title">Developer</text>
+  <text x="77" y="115" text-anchor="middle" class="code">git commit</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="132" y1="105" x2="152" y2="105" class="connector"/>
+
+  <!-- Step 2: Git calls GPG/SSH -->
+  <rect x="154" y="80" width="100" height="50" class="box"/>
+  <text x="204" y="101" text-anchor="middle" class="title">Git Invokes</text>
+  <text x="204" y="115" text-anchor="middle" class="code">gpg / ssh</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="254" y1="105" x2="274" y2="105" class="connector"/>
+
+  <!-- Step 3: Private key signs (accent) -->
+  <rect x="276" y="72" width="114" height="66" class="box-accent"/>
+  <text x="333" y="93" text-anchor="middle" class="title">Private Key</text>
+  <text x="333" y="108" text-anchor="middle" class="title">Signs Hash</text>
+  <text x="333" y="126" text-anchor="middle" class="label">commit SHA + metadata</text>
+
+  <!-- Arrow 3 down to Step 4 -->
+  <path d="M 333 138 L 333 160 L 200 160 L 200 178" class="connector"/>
+
+  <!-- Step 4: Signed commit stored -->
+  <rect x="122" y="180" width="156" height="56" class="box"/>
+  <text x="200" y="201" text-anchor="middle" class="title">Signed Commit Object</text>
+  <text x="200" y="216" text-anchor="middle" class="code">gpgsig</text>
+  <text x="200" y="228" text-anchor="middle" class="label">header in commit data</text>
+
+  <!-- ==================== DIVIDER ==================== -->
+
+  <line x1="400" y1="44" x2="400" y2="248" class="divider"/>
+
+  <!-- ==================== RIGHT SECTION: VERIFICATION ==================== -->
+
+  <!-- Section label -->
+  <text x="600" y="52" text-anchor="middle" class="section-heading">Verification</text>
+  <line x1="510" y1="57" x2="690" y2="57" class="section-rule"/>
+
+  <!-- Step 5: Verifier runs command -->
+  <rect x="420" y="80" width="130" height="50" class="box"/>
+  <text x="485" y="99" text-anchor="middle" class="title">Verifier Runs</text>
+  <text x="485" y="115" text-anchor="middle" class="code">git verify-commit</text>
+
+  <!-- Arrow 5→6 -->
+  <line x1="550" y1="105" x2="570" y2="105" class="connector"/>
+
+  <!-- Step 6: Git extracts signature -->
+  <rect x="572" y="80" width="110" height="50" class="box"/>
+  <text x="627" y="101" text-anchor="middle" class="title">Git Extracts</text>
+  <text x="627" y="115" text-anchor="middle" class="label">signature from object</text>
+
+  <!-- Arrow 6→7 -->
+  <line x1="682" y1="105" x2="702" y2="105" class="connector"/>
+
+  <!-- Step 7: Public key verifies (accent) -->
+  <rect x="704" y="72" width="82" height="66" class="box-accent"/>
+  <text x="745" y="93" text-anchor="middle" class="title">Public Key</text>
+  <text x="745" y="108" text-anchor="middle" class="title">Verifies</text>
+  <text x="745" y="126" text-anchor="middle" class="label">signature</text>
+
+  <!-- Arrow 7 down to Step 8 -->
+  <path d="M 745 138 L 745 160 L 600 160 L 600 178" class="connector"/>
+
+  <!-- Step 8: Result -->
+  <rect x="490" y="180" width="220" height="56" class="box"/>
+  <text x="600" y="200" text-anchor="middle" class="title">Verification Result</text>
+  <text x="600" y="216" text-anchor="middle" class="code">Good signature from...</text>
+  <!-- Verified badge -->
+  <rect x="556" y="222" width="88" height="16" class="badge"/>
+  <text x="600" y="233" text-anchor="middle" class="badge-text">Verified</text>
+</svg>

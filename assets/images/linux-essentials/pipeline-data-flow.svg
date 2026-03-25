@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 220">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .connector-stderr { stroke: #9e9e9e; stroke-width: 1; fill: none; marker-end: url(#arrow-light); stroke-dasharray: 4,3; }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .connector-stderr { stroke: #666; marker-end: url(#arrow-dark); stroke-dasharray: 4,3; }
+      .heading { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- Heading -->
+  <text x="350" y="24" text-anchor="middle" class="heading">Pipeline Data Flow</text>
+
+  <!-- Command 1 box -->
+  <rect x="40" y="48" width="130" height="50" class="box-accent"/>
+  <text x="105" y="70" text-anchor="middle" class="code">cmd1</text>
+  <text x="105" y="86" text-anchor="middle" class="label">Process 1</text>
+
+  <!-- Pipe: cmd1 stdout -> cmd2 stdin -->
+  <line x1="170" y1="73" x2="248" y2="73" class="connector"/>
+  <text x="209" y="65" text-anchor="middle" class="label">stdout | stdin</text>
+
+  <!-- Command 2 box -->
+  <rect x="250" y="48" width="130" height="50" class="box-accent"/>
+  <text x="315" y="70" text-anchor="middle" class="code">cmd2</text>
+  <text x="315" y="86" text-anchor="middle" class="label">Process 2</text>
+
+  <!-- Pipe: cmd2 stdout -> cmd3 stdin -->
+  <line x1="380" y1="73" x2="458" y2="73" class="connector"/>
+  <text x="419" y="65" text-anchor="middle" class="label">stdout | stdin</text>
+
+  <!-- Command 3 box -->
+  <rect x="460" y="48" width="130" height="50" class="box-accent"/>
+  <text x="525" y="70" text-anchor="middle" class="code">cmd3</text>
+  <text x="525" y="86" text-anchor="middle" class="label">Process 3</text>
+
+  <!-- Final stdout arrow from cmd3 -->
+  <line x1="590" y1="73" x2="668" y2="73" class="connector"/>
+  <text x="640" y="65" text-anchor="middle" class="label">stdout</text>
+
+  <!-- Terminal box (stderr destination) -->
+  <rect x="230" y="160" width="170" height="44" class="box"/>
+  <text x="315" y="183" text-anchor="middle" class="title">Terminal</text>
+  <text x="315" y="197" text-anchor="middle" class="label">(stderr output)</text>
+
+  <!-- stderr: cmd1 -> Terminal (dashed) -->
+  <path d="M 105 98 L 105 140 C 105 155, 130 165, 230 175" class="connector-stderr"/>
+  <text x="80" y="125" text-anchor="middle" class="code">fd 2</text>
+
+  <!-- stderr: cmd2 -> Terminal (dashed, straight down) -->
+  <line x1="315" y1="98" x2="315" y2="158" class="connector-stderr"/>
+  <text x="335" y="135" text-anchor="start" class="code">fd 2</text>
+
+  <!-- stderr: cmd3 -> Terminal (dashed) -->
+  <path d="M 525 98 L 525 140 C 525 155, 500 165, 400 175" class="connector-stderr"/>
+  <text x="548" y="125" text-anchor="middle" class="code">fd 2</text>
+</svg>

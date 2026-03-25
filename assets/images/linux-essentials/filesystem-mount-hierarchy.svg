@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .tree-line { stroke: #9e9e9e; stroke-width: 1.2; fill: none; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .heading { fill: #4db6ac; }
+      .tree-line { stroke: #666; }
+    }
+  </style>
+
+  <!-- Heading -->
+  <text x="300" y="24" text-anchor="middle" class="heading">Typical Mount Hierarchy</text>
+
+  <!-- Root / (accent) -->
+  <rect x="255" y="42" width="90" height="32" class="box-accent"/>
+  <text x="300" y="63" text-anchor="middle" class="code">/</text>
+
+  <!-- Level 1 nodes -->
+  <!-- /boot -->
+  <rect x="20" y="120" width="90" height="32" class="box"/>
+  <text x="65" y="141" text-anchor="middle" class="code">/boot</text>
+
+  <!-- /home -->
+  <rect x="130" y="120" width="90" height="32" class="box"/>
+  <text x="175" y="141" text-anchor="middle" class="code">/home</text>
+
+  <!-- /var -->
+  <rect x="255" y="120" width="90" height="32" class="box"/>
+  <text x="300" y="141" text-anchor="middle" class="code">/var</text>
+
+  <!-- /tmp -->
+  <rect x="380" y="120" width="90" height="32" class="box"/>
+  <text x="425" y="141" text-anchor="middle" class="code">/tmp</text>
+
+  <!-- /mnt -->
+  <rect x="490" y="120" width="90" height="32" class="box"/>
+  <text x="535" y="141" text-anchor="middle" class="code">/mnt</text>
+
+  <!-- Tree connectors: root -> level 1 -->
+  <!-- Vertical from root down -->
+  <line x1="300" y1="74" x2="300" y2="90" class="tree-line"/>
+  <!-- Horizontal bar -->
+  <line x1="65" y1="90" x2="535" y2="90" class="tree-line"/>
+  <!-- Verticals down to each box -->
+  <line x1="65" y1="90" x2="65" y2="120" class="tree-line"/>
+  <line x1="175" y1="90" x2="175" y2="120" class="tree-line"/>
+  <line x1="300" y1="90" x2="300" y2="120" class="tree-line"/>
+  <line x1="425" y1="90" x2="425" y2="120" class="tree-line"/>
+  <line x1="535" y1="90" x2="535" y2="120" class="tree-line"/>
+
+  <!-- Level 2: /var children -->
+  <!-- /var/log -->
+  <rect x="220" y="210" width="90" height="32" class="box"/>
+  <text x="265" y="231" text-anchor="middle" class="code">/var/log</text>
+
+  <!-- /var/www -->
+  <rect x="330" y="210" width="90" height="32" class="box"/>
+  <text x="375" y="231" text-anchor="middle" class="code">/var/www</text>
+
+  <!-- Tree connectors: /var -> children -->
+  <line x1="300" y1="152" x2="300" y2="180" class="tree-line"/>
+  <line x1="265" y1="180" x2="375" y2="180" class="tree-line"/>
+  <line x1="265" y1="180" x2="265" y2="210" class="tree-line"/>
+  <line x1="375" y1="180" x2="375" y2="210" class="tree-line"/>
+
+  <!-- Level 2: /mnt children -->
+  <!-- /mnt/data -->
+  <rect x="490" y="210" width="90" height="32" class="box"/>
+  <text x="535" y="231" text-anchor="middle" class="code">/mnt/data</text>
+
+  <!-- Tree connector: /mnt -> /mnt/data -->
+  <line x1="535" y1="152" x2="535" y2="210" class="tree-line"/>
+
+  <!-- Mount point labels -->
+  <text x="65" y="168" text-anchor="middle" class="label">ext4</text>
+  <text x="175" y="168" text-anchor="middle" class="label">ext4</text>
+  <text x="425" y="168" text-anchor="middle" class="label">tmpfs</text>
+  <text x="265" y="258" text-anchor="middle" class="label">separate partition</text>
+  <text x="535" y="258" text-anchor="middle" class="label">external disk</text>
+</svg>

@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340" font-family="system-ui, -apple-system, sans-serif">
+  <style>
+    /* Light mode (default) */
+    .title { font-size: 18px; font-weight: 700; fill: #1a1a1a; }
+    .year { font-size: 12px; font-weight: 600; fill: #009485; }
+    .desc { font-size: 11px; fill: #1a1a1a; }
+    .subdesc { font-size: 10px; fill: #555; }
+    .timeline-line { stroke: #9e9e9e; stroke-width: 2; }
+    .dot { fill: #009485; }
+    .card { fill: #f5f5f5; stroke: #ddd; stroke-width: 1; rx: 6; }
+    .connector { stroke: #9e9e9e; stroke-width: 1; stroke-dasharray: 3,3; }
+    .arrow { fill: #9e9e9e; }
+    .card-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 6; }
+    .era-line { stroke: #009485; stroke-width: 1.5; opacity: 0.5; }
+    .era-text { font-size: 10px; fill: #009485; opacity: 0.7; font-style: italic; }
+
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .year { fill: #4db6ac; }
+      .desc { fill: #e0e0e0; }
+      .subdesc { fill: #aaa; }
+      .timeline-line { stroke: #666; }
+      .dot { fill: #4db6ac; }
+      .card { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .connector { stroke: #666; }
+      .arrow { fill: #666; }
+      .card-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .era-line { stroke: #4db6ac; }
+      .era-text { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- Title -->
+  <text x="400" y="24" text-anchor="middle" class="title">Perl Version History</text>
+
+  <!-- Timeline line at y=170 -->
+  <line x1="30" y1="170" x2="770" y2="170" class="timeline-line"/>
+  <polygon points="770,165 780,170 770,175" class="arrow"/>
+
+  <!-- === TOP ROW entries (1987, 1989, 1994, 2019) === -->
+
+  <!-- 1987 - top -->
+  <circle cx="60" cy="170" r="4.5" class="dot"/>
+  <line x1="60" y1="165" x2="60" y2="120" class="connector"/>
+  <rect x="10" y="68" width="100" height="50" class="card"/>
+  <text x="60" y="86" text-anchor="middle" class="desc">Perl 1</text>
+  <text x="60" y="100" text-anchor="middle" class="subdesc">Text processing tool</text>
+  <text x="60" y="113" text-anchor="middle" class="year">1987</text>
+
+  <!-- 1989 - top -->
+  <circle cx="220" cy="170" r="4.5" class="dot"/>
+  <line x1="220" y1="165" x2="220" y2="120" class="connector"/>
+  <rect x="170" y="68" width="100" height="50" class="card"/>
+  <text x="220" y="86" text-anchor="middle" class="desc">Perl 3</text>
+  <text x="220" y="100" text-anchor="middle" class="subdesc">Binary data support</text>
+  <text x="220" y="113" text-anchor="middle" class="year">1989</text>
+
+  <!-- 1994 - top (major release) -->
+  <circle cx="400" cy="170" r="6" class="dot"/>
+  <line x1="400" y1="164" x2="400" y2="120" class="connector"/>
+  <rect x="342" y="68" width="116" height="50" class="card-accent"/>
+  <text x="400" y="88" text-anchor="middle" class="desc" font-weight="600">Perl 5</text>
+  <text x="400" y="103" text-anchor="middle" class="subdesc">OOP, modules, CPAN</text>
+  <text x="400" y="62" text-anchor="middle" class="year">1994</text>
+
+  <!-- 2019 - top -->
+  <circle cx="620" cy="170" r="4.5" class="dot"/>
+  <line x1="620" y1="165" x2="620" y2="120" class="connector"/>
+  <rect x="565" y="68" width="110" height="50" class="card"/>
+  <text x="620" y="86" text-anchor="middle" class="desc">Renamed to Raku</text>
+  <text x="620" y="100" text-anchor="middle" class="subdesc">Separate language</text>
+  <text x="620" y="113" text-anchor="middle" class="year">2019</text>
+
+  <!-- === BOTTOM ROW entries (1988, 1991, 2000, 2025) === -->
+
+  <!-- 1988 - bottom -->
+  <circle cx="140" cy="170" r="4.5" class="dot"/>
+  <line x1="140" y1="175" x2="140" y2="200" class="connector"/>
+  <rect x="90" y="202" width="100" height="50" class="card"/>
+  <text x="140" y="215" text-anchor="middle" class="year">1988</text>
+  <text x="140" y="230" text-anchor="middle" class="desc">Perl 2</text>
+  <text x="140" y="244" text-anchor="middle" class="subdesc">Improved regex engine</text>
+
+  <!-- 1991 - bottom -->
+  <circle cx="310" cy="170" r="4.5" class="dot"/>
+  <line x1="310" y1="175" x2="310" y2="200" class="connector"/>
+  <rect x="260" y="202" width="100" height="50" class="card"/>
+  <text x="310" y="215" text-anchor="middle" class="year">1991</text>
+  <text x="310" y="230" text-anchor="middle" class="desc">Perl 4</text>
+  <text x="310" y="244" text-anchor="middle" class="subdesc">The Camel Book era</text>
+
+  <!-- 2000 - bottom -->
+  <circle cx="510" cy="170" r="4.5" class="dot"/>
+  <line x1="510" y1="175" x2="510" y2="200" class="connector"/>
+  <rect x="460" y="202" width="100" height="50" class="card"/>
+  <text x="510" y="215" text-anchor="middle" class="year">2000</text>
+  <text x="510" y="230" text-anchor="middle" class="desc">Perl 6</text>
+  <text x="510" y="244" text-anchor="middle" class="subdesc">Announced</text>
+
+  <!-- 2025 - bottom -->
+  <circle cx="730" cy="170" r="4.5" class="dot"/>
+  <line x1="730" y1="175" x2="730" y2="200" class="connector"/>
+  <rect x="678" y="202" width="104" height="50" class="card"/>
+  <text x="730" y="215" text-anchor="middle" class="year">2025</text>
+  <text x="730" y="230" text-anchor="middle" class="desc">Perl 5.40+</text>
+  <text x="730" y="244" text-anchor="middle" class="subdesc">Actively maintained</text>
+
+  <!-- Era bracket: Perl 5 era -->
+  <line x1="400" y1="290" x2="730" y2="290" class="era-line"/>
+  <line x1="400" y1="285" x2="400" y2="290" class="era-line"/>
+  <line x1="730" y1="285" x2="730" y2="290" class="era-line"/>
+  <text x="565" y="308" text-anchor="middle" class="era-text">Perl 5 era — the production version</text>
+</svg>

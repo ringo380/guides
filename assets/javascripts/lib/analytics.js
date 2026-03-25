@@ -1,0 +1,134 @@
+/* SPDX-License-Identifier: MIT */
+/* Copyright (c) 2025-2026 Robworks Software LLC */
+
+/**
+ * Analytics wrapper for GA4 event tracking.
+ *
+ * Provides RunbookAnalytics.track(eventName, params, options) which:
+ * - Guards against missing gtag (ad blockers, local dev)
+ * - Auto-attaches page_path to all events
+ * - Truncates string params to 100 chars (GA4 limit)
+ * - Supports { once: true } for per-session deduplication
+ * - Provides debounced tracking for high-frequency events
+ */
+
+(function () {
+  "use strict";
+
+  const fired = new Set();
+
+  function isAvailable() {
+    return typeof gtag === "function";
+  }
+
+  function pagePath() {
+    return window.location.pathname;
+  }
+
+  function truncate(val, max) {
+    if (typeof val === "string" && val.length > max) {
+      return val.substring(0, max);
+    }
+    return val;
+  }
+
+  function sanitizeParams(params) {
+    const clean = {};
+    for (const [key, val] of Object.entries(params)) {
+      clean[key] = truncate(val, 100);
+    }
+    return clean;
+  }
+
+  /** Lightweight timer using performance.now(). */
+  class Timer {
+    constructor() {
+      this._start = performance.now();
+    }
+    /** Returns elapsed seconds since construction. */
+    elapsed() {
+      return (performance.now() - this._start) / 1000;
+    }
+  }
+
+  const RunbookAnalytics = {
+    /** Create a new Timer instance. */
+    Timer() {
+      return new Timer();
+    },
+
+    track(eventName, params, options) {
+      if (!isAvailable()) return;
+
+      const opts = options || {};
+      const sanitized = sanitizeParams(params || {});
+
+      if (opts.once) {
+        const key = eventName + pagePath() + JSON.stringify(sanitized);
+        if (fired.has(key)) return;
+        fired.add(key);
+      }
+
+      sanitized.page_path = pagePath();
+      gtag("event", eventName, sanitized);
+    },
+
+    /** Track a timed event. Ignores durations under 0.5s. */
+    trackTimed(eventName, durationSeconds, params, options) {
+      if (durationSeconds < 0.5) return;
+      const merged = Object.assign({}, params || {}, {
+        duration_seconds: Math.round(durationSeconds * 10) / 10,
+      });
+      this.track(eventName, merged, options);
+    },
+
+    /** Track a component error. Fires component_error with truncated message. */
+    trackError(context, error) {
+      var message = "";
+      if (error instanceof Error) {
+        message = error.message;
+      } else if (typeof error === "string") {
+        message = error;
+      } else {
+        message = String(error);
+      }
+      this.track("component_error", {
+        error_context: truncate(context, 100),
+        error_message: truncate(message, 100),
+      });
+    },
+
+    /** Returns a debounced version of track(). */
+    debounce(eventName, delay) {
+      let timer = null;
+      return function (params, options) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          RunbookAnalytics.track(eventName, params, options);
+        }, delay);
+      };
+    },
+  };
+
+  // --- Code block copy tracking ---
+  // Material 9.x injects .md-code__button[data-md-type="copy"] buttons dynamically.
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest('.md-code__button[data-md-type="copy"]');
+    if (!btn) return;
+
+    const codeBlock = btn.closest(".highlight");
+    if (!codeBlock) return;
+
+    // Detect language from the code element's class (e.g., "language-python")
+    const codeEl = codeBlock.querySelector("code[class*='language-']");
+    let language = "unknown";
+    if (codeEl) {
+      const match = codeEl.className.match(/language-(\S+)/);
+      if (match) language = match[1];
+    }
+
+    RunbookAnalytics.track("code_copy", { code_language: language });
+  });
+
+  window.RunbookAnalytics = RunbookAnalytics;
+})();

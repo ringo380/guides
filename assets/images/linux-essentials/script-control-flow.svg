@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 420">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .diamond { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .diamond { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .heading { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- Heading -->
+  <text x="290" y="24" text-anchor="middle" class="heading">Script Control Flow</text>
+
+  <!-- set -euo pipefail (accent) -->
+  <rect x="175" y="40" width="230" height="32" class="box-accent"/>
+  <text x="290" y="61" text-anchor="middle" class="code">set -euo pipefail</text>
+
+  <!-- Arrow -->
+  <line x1="290" y1="72" x2="290" y2="90" class="connector"/>
+
+  <!-- Parse arguments -->
+  <rect x="200" y="90" width="180" height="32" class="box"/>
+  <text x="290" y="111" text-anchor="middle" class="title">Parse arguments</text>
+
+  <!-- Arrow -->
+  <line x1="290" y1="122" x2="290" y2="140" class="connector"/>
+
+  <!-- Validate input -->
+  <rect x="200" y="140" width="180" height="32" class="box"/>
+  <text x="290" y="161" text-anchor="middle" class="title">Validate input</text>
+
+  <!-- Arrow -->
+  <line x1="290" y1="172" x2="290" y2="190" class="connector"/>
+
+  <!-- Main logic -->
+  <rect x="200" y="190" width="180" height="32" class="box"/>
+  <text x="290" y="211" text-anchor="middle" class="title">Main logic</text>
+
+  <!-- Arrow to diamond -->
+  <line x1="290" y1="222" x2="290" y2="250" class="connector"/>
+
+  <!-- Diamond: Error? -->
+  <polygon points="290,250 345,278 290,306 235,278" class="diamond"/>
+  <text x="290" y="282" text-anchor="middle" class="title">Error?</text>
+
+  <!-- Yes path (right side branch) -->
+  <line x1="345" y1="278" x2="420" y2="278" class="connector"/>
+  <text x="360" y="272" class="label">Yes</text>
+
+  <!-- trap ERR box -->
+  <rect x="420" y="262" width="130" height="32" class="box"/>
+  <text x="485" y="283" text-anchor="middle" class="code">trap ERR</text>
+
+  <!-- Arrow down from trap ERR -->
+  <line x1="485" y1="294" x2="485" y2="330" class="connector"/>
+
+  <!-- EXIT trap box (error path) -->
+  <rect x="420" y="330" width="130" height="32" class="box"/>
+  <text x="485" y="351" text-anchor="middle" class="code">EXIT trap</text>
+
+  <!-- Arrow down from EXIT trap (error path) -->
+  <line x1="485" y1="362" x2="485" y2="380" class="connector"/>
+
+  <!-- Merge: line from error-path EXIT trap down then left to Cleanup -->
+  <polyline points="485,380 485,394 290,394" class="connector"/>
+
+  <!-- No path (down from diamond) -->
+  <line x1="290" y1="306" x2="290" y2="330" class="connector"/>
+  <text x="296" y="322" class="label">No</text>
+
+  <!-- EXIT trap box (normal path) -->
+  <rect x="200" y="330" width="180" height="32" class="box"/>
+  <text x="290" y="351" text-anchor="middle" class="code">EXIT trap</text>
+
+  <!-- Arrow to Cleanup -->
+  <line x1="290" y1="362" x2="290" y2="380" class="connector"/>
+
+  <!-- Cleanup (accent) -->
+  <rect x="210" y="380" width="160" height="32" class="box-accent"/>
+  <text x="290" y="401" text-anchor="middle" class="title">Cleanup</text>
+</svg>

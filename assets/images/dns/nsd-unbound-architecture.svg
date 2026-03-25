@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 520" font-family="'Helvetica Neue', Arial, sans-serif">
+  <style>
+    .bg { fill: #1e1e2e; }
+    .box { rx: 8; stroke-width: 2; }
+    .label { fill: #fff; font-weight: bold; font-size: 15px; text-anchor: middle; }
+    .sublabel { fill: #fff; font-size: 12px; text-anchor: middle; opacity: 0.85; }
+    .detail { fill: #cdd6f4; font-size: 11px; text-anchor: middle; }
+    .arrow { stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    .arrow-label { fill: #cdd6f4; font-size: 11px; text-anchor: middle; }
+    .boundary { fill: none; stroke: #45475a; stroke-width: 1; stroke-dasharray: 6,4; rx: 12; }
+    .boundary-label { fill: #6c7086; font-size: 11px; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#cdd6f4"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="700" height="520" rx="8"/>
+
+  <!-- Title -->
+  <text x="350" y="30" fill="#cdd6f4" font-size="16" font-weight="bold" text-anchor="middle">NSD + Unbound: Split Architecture</text>
+
+  <!-- Client boxes -->
+  <rect x="240" y="50" width="220" height="44" class="box" fill="#585b70" stroke="#7f849c"/>
+  <text x="350" y="68" class="label">DNS Clients</text>
+  <text x="350" y="84" class="sublabel" opacity="0.7">Laptops, servers, phones</text>
+
+  <!-- Arrow from clients to Unbound -->
+  <path d="M350,94 L350,140" class="arrow" stroke="#cdd6f4"/>
+  <text x="380" y="122" class="arrow-label">port 53</text>
+
+  <!-- Network boundary -->
+  <rect x="30" y="130" width="640" height="360" class="boundary"/>
+  <text x="50" y="148" class="boundary-label">Server (your machine)</text>
+
+  <!-- Unbound box -->
+  <rect x="175" y="160" width="350" height="70" class="box" fill="#1e66f5" stroke="#89b4fa"/>
+  <text x="350" y="187" class="label">Unbound</text>
+  <text x="350" y="205" class="sublabel">Recursive Resolver - port 53</text>
+
+  <!-- Decision diamond -->
+  <polygon points="350,270 430,310 350,350 270,310" fill="#fab387" stroke="#e64553" stroke-width="2"/>
+  <text x="350" y="307" fill="#1e1e2e" font-size="11" font-weight="bold" text-anchor="middle">Query for</text>
+  <text x="350" y="321" fill="#1e1e2e" font-size="11" font-weight="bold" text-anchor="middle">your zone?</text>
+
+  <!-- Arrow from Unbound to decision -->
+  <path d="M350,230 L350,270" class="arrow" stroke="#cdd6f4"/>
+
+  <!-- External resolution path (left) -->
+  <path d="M270,310 L120,310 L120,400" class="arrow" stroke="#a6e3a1"/>
+  <text x="180" y="298" class="arrow-label" fill="#a6e3a1">no</text>
+
+  <rect x="45" y="400" width="150" height="70" class="box" fill="#40a02b" stroke="#a6e3a1"/>
+  <text x="120" y="425" class="label" font-size="13">External DNS</text>
+  <text x="120" y="443" class="sublabel" font-size="11">Root → TLD →</text>
+  <text x="120" y="457" class="sublabel" font-size="11">Authoritative</text>
+
+  <!-- NSD path (right) -->
+  <path d="M430,310 L580,310 L580,400" class="arrow" stroke="#89b4fa"/>
+  <text x="518" y="298" class="arrow-label" fill="#89b4fa">yes (stub-zone)</text>
+
+  <rect x="505" y="400" width="150" height="70" class="box" fill="#7287fd" stroke="#89b4fa"/>
+  <text x="580" y="425" class="label" font-size="13">NSD</text>
+  <text x="580" y="443" class="sublabel" font-size="11">Authoritative Server</text>
+  <text x="580" y="457" class="sublabel" font-size="11">127.0.0.1:5353</text>
+
+  <!-- Config notes -->
+  <text x="580" y="490" class="detail" fill="#6c7086">stub-addr: 127.0.0.1@5353</text>
+</svg>

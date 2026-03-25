@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 560" font-family="'Helvetica Neue', Arial, sans-serif">
+  <style>
+    .bg { fill: #1e1e2e; }
+    .box { rx: 8; stroke-width: 2; }
+    .label { fill: #fff; font-weight: bold; font-size: 13px; text-anchor: middle; }
+    .sublabel { fill: #fff; font-size: 11px; text-anchor: middle; opacity: 0.85; }
+    .detail { fill: #cdd6f4; font-size: 11px; text-anchor: middle; }
+    .arrow { stroke-width: 2; fill: none; marker-end: url(#arrowhead3); }
+    .arrow-fail { stroke-width: 2; fill: none; stroke-dasharray: 6,4; }
+    .section-label { fill: #cdd6f4; font-size: 14px; font-weight: bold; }
+    .note { fill: #6c7086; font-size: 11px; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#cdd6f4"/>
+    </marker>
+    <marker id="arrowgreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#a6e3a1"/>
+    </marker>
+    <marker id="arrowred" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#f38ba8"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="780" height="560" rx="8"/>
+
+  <!-- Title -->
+  <text x="390" y="30" fill="#cdd6f4" font-size="16" font-weight="bold" text-anchor="middle">Anycast DNS: Same IP, Multiple Locations</text>
+
+  <!-- Shared IP label -->
+  <rect x="270" y="45" width="240" height="28" class="box" fill="#313244" stroke="#45475a"/>
+  <text x="390" y="64" class="label" font-size="12">All nodes announce: 198.51.100.53</text>
+
+  <!-- ========== Normal Operation (top half) ========== -->
+  <text x="30" y="105" class="section-label">Normal Operation</text>
+  <line x1="30" y1="112" x2="750" y2="112" stroke="#45475a" stroke-width="1"/>
+
+  <!-- DNS Nodes -->
+  <!-- Tokyo -->
+  <rect x="60" y="140" width="140" height="70" class="box" fill="#40a02b" stroke="#a6e3a1"/>
+  <text x="130" y="165" class="label">Tokyo Node</text>
+  <text x="130" y="183" class="sublabel">198.51.100.53</text>
+  <text x="130" y="197" class="sublabel" font-size="10">BGP announcing ✓</text>
+
+  <!-- London -->
+  <rect x="310" y="140" width="140" height="70" class="box" fill="#40a02b" stroke="#a6e3a1"/>
+  <text x="380" y="165" class="label">London Node</text>
+  <text x="380" y="183" class="sublabel">198.51.100.53</text>
+  <text x="380" y="197" class="sublabel" font-size="10">BGP announcing ✓</text>
+
+  <!-- NYC -->
+  <rect x="560" y="140" width="140" height="70" class="box" fill="#40a02b" stroke="#a6e3a1"/>
+  <text x="630" y="165" class="label">NYC Node</text>
+  <text x="630" y="183" class="sublabel">198.51.100.53</text>
+  <text x="630" y="197" class="sublabel" font-size="10">BGP announcing ✓</text>
+
+  <!-- Clients -->
+  <rect x="60" y="250" width="120" height="36" class="box" fill="#585b70" stroke="#7f849c"/>
+  <text x="120" y="273" class="label" font-size="12">Client (Asia)</text>
+
+  <rect x="310" y="250" width="120" height="36" class="box" fill="#585b70" stroke="#7f849c"/>
+  <text x="370" y="273" class="label" font-size="12">Client (EU)</text>
+
+  <rect x="570" y="250" width="120" height="36" class="box" fill="#585b70" stroke="#7f849c"/>
+  <text x="630" y="273" class="label" font-size="12">Client (US)</text>
+
+  <!-- Normal arrows -->
+  <path d="M120,250 L125,210" class="arrow" stroke="#a6e3a1" marker-end="url(#arrowgreen)"/>
+  <path d="M370,250 L378,210" class="arrow" stroke="#a6e3a1" marker-end="url(#arrowgreen)"/>
+  <path d="M630,250 L630,210" class="arrow" stroke="#a6e3a1" marker-end="url(#arrowgreen)"/>
+
+  <text x="85" y="238" class="note" fill="#a6e3a1">nearest</text>
+  <text x="335" y="238" class="note" fill="#a6e3a1">nearest</text>
+  <text x="595" y="238" class="note" fill="#a6e3a1">nearest</text>
+
+  <!-- ========== Failover Scenario (bottom half) ========== -->
+  <text x="30" y="320" class="section-label">Failover: London Node Fails</text>
+  <line x1="30" y1="327" x2="750" y2="327" stroke="#45475a" stroke-width="1"/>
+
+  <!-- Tokyo (still up) -->
+  <rect x="60" y="350" width="140" height="70" class="box" fill="#40a02b" stroke="#a6e3a1"/>
+  <text x="130" y="375" class="label">Tokyo Node</text>
+  <text x="130" y="393" class="sublabel">198.51.100.53</text>
+  <text x="130" y="407" class="sublabel" font-size="10">BGP announcing ✓</text>
+
+  <!-- London (down) -->
+  <rect x="310" y="350" width="140" height="70" class="box" fill="#45475a" stroke="#f38ba8" stroke-dasharray="4,3"/>
+  <text x="380" y="375" class="label" fill="#f38ba8">London Node</text>
+  <text x="380" y="393" class="sublabel" fill="#f38ba8">198.51.100.53</text>
+  <text x="380" y="407" class="sublabel" font-size="10" fill="#f38ba8">BGP withdrawn ✗</text>
+
+  <!-- NYC (still up) -->
+  <rect x="560" y="350" width="140" height="70" class="box" fill="#40a02b" stroke="#a6e3a1"/>
+  <text x="630" y="375" class="label">NYC Node</text>
+  <text x="630" y="393" class="sublabel">198.51.100.53</text>
+  <text x="630" y="407" class="sublabel" font-size="10">BGP announcing ✓</text>
+
+  <!-- EU Client rerouted -->
+  <rect x="310" y="460" width="120" height="36" class="box" fill="#585b70" stroke="#7f849c"/>
+  <text x="370" y="483" class="label" font-size="12">Client (EU)</text>
+
+  <!-- Crossed-out arrow to London -->
+  <path d="M370,460 L378,420" class="arrow-fail" stroke="#f38ba8"/>
+  <line x1="358" y1="455" x2="392" y2="425" stroke="#f38ba8" stroke-width="2"/>
+
+  <!-- Reroute arrow to NYC -->
+  <path d="M430,478 C500,478 540,450 630,420" class="arrow" stroke="#fab387" marker-end="url(#arrowred)" stroke-dasharray="none"/>
+  <text x="530" y="465" class="note" fill="#fab387">auto-rerouted</text>
+  <text x="530" y="478" class="note" fill="#fab387">to next nearest</text>
+
+  <!-- Bottom note -->
+  <text x="390" y="540" class="detail" fill="#6c7086" font-size="11" text-anchor="middle">BGP withdrawal is automatic - clients reroute within seconds with no configuration change</text>
+</svg>

@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 320" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    /* Light mode */
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .code-muted { font-size: 9.5px; fill: #555; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .result { fill: #fafafa; stroke: #ddd; stroke-width: 1; rx: 6; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .context-title { font-size: 9px; font-weight: 600; fill: #009485; text-transform: uppercase; letter-spacing: 0.05em; }
+    .divider { stroke: #009485; stroke-width: 1; opacity: 0.3; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .code-muted { fill: #aaa; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .result { fill: rgba(255,255,255,0.04); stroke: rgba(255,255,255,0.1); }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .heading { fill: #4db6ac; }
+      .context-title { fill: #4db6ac; }
+      .divider { stroke: #4db6ac; }
+    }
+  </style>
+
+  <!-- Heading -->
+  <text x="350" y="22" text-anchor="middle" class="heading">Perl Type Coercion</text>
+
+  <!-- Central Scalar Value box -->
+  <rect x="280" y="40" width="140" height="46" class="box-accent"/>
+  <text x="350" y="60" text-anchor="middle" class="context-title">Scalar Value</text>
+  <text x="350" y="76" text-anchor="middle" class="code">$x</text>
+
+  <!-- LEFT: Numeric Context -->
+  <!-- Arrow from center to left -->
+  <path d="M280,63 L140,63 L140,108" class="connector"/>
+  <text x="210" y="56" text-anchor="middle" class="label">+ - * / == &lt; &gt;</text>
+
+  <rect x="40" y="110" width="200" height="36" class="box-accent"/>
+  <text x="140" y="133" text-anchor="middle" class="heading">Numeric Context</text>
+
+  <!-- Numeric result box -->
+  <rect x="20" y="160" width="240" height="100" class="result"/>
+  <text x="140" y="178" text-anchor="middle" class="context-title">Conversions</text>
+  <text x="62" y="198" text-anchor="start" class="code">"42abc"</text>
+  <text x="148" y="198" text-anchor="start" class="code-muted">&#x2192; 42</text>
+  <text x="62" y="216" text-anchor="start" class="code">"hello"</text>
+  <text x="148" y="216" text-anchor="start" class="code-muted">&#x2192; 0</text>
+  <text x="62" y="234" text-anchor="start" class="code">"3.14"</text>
+  <text x="148" y="234" text-anchor="start" class="code-muted">&#x2192; 3.14</text>
+  <text x="62" y="252" text-anchor="start" class="code">undef</text>
+  <text x="148" y="252" text-anchor="start" class="code-muted">&#x2192; 0</text>
+
+  <!-- CENTER: String Context -->
+  <!-- Arrow from center down -->
+  <line x1="350" y1="86" x2="350" y2="108" class="connector"/>
+  <text x="350" y="100" text-anchor="middle" class="label">. eq lt gt</text>
+
+  <rect x="270" y="110" width="160" height="36" class="box-accent"/>
+  <text x="350" y="133" text-anchor="middle" class="heading">String Context</text>
+
+  <!-- String result box -->
+  <rect x="270" y="160" width="160" height="100" class="result"/>
+  <text x="350" y="178" text-anchor="middle" class="context-title">Conversions</text>
+  <text x="290" y="198" text-anchor="start" class="code">42</text>
+  <text x="330" y="198" text-anchor="start" class="code-muted">&#x2192; "42"</text>
+  <text x="290" y="216" text-anchor="start" class="code">3.14</text>
+  <text x="330" y="216" text-anchor="start" class="code-muted">&#x2192; "3.14"</text>
+  <text x="290" y="234" text-anchor="start" class="code">0</text>
+  <text x="330" y="234" text-anchor="start" class="code-muted">&#x2192; "0"</text>
+  <text x="290" y="252" text-anchor="start" class="code">undef</text>
+  <text x="330" y="252" text-anchor="start" class="code-muted">&#x2192; ""</text>
+
+  <!-- RIGHT: Boolean Context -->
+  <!-- Arrow from center to right -->
+  <path d="M420,63 L560,63 L560,108" class="connector"/>
+  <text x="490" y="56" text-anchor="middle" class="label">if / while / unless</text>
+
+  <rect x="460" y="110" width="200" height="36" class="box-accent"/>
+  <text x="560" y="133" text-anchor="middle" class="heading">Boolean Context</text>
+
+  <!-- Boolean result box -->
+  <rect x="440" y="160" width="240" height="100" class="result"/>
+  <text x="560" y="178" text-anchor="middle" class="context-title">Evaluation Rules</text>
+  <text x="472" y="198" text-anchor="start" class="code-muted">False:</text>
+  <text x="560" y="198" text-anchor="middle" class="code">0  ""  "0"  undef</text>
+  <text x="472" y="224" text-anchor="start" class="code-muted">True:</text>
+  <text x="472" y="242" text-anchor="start" class="code">1  "hello"  " "  "00"</text>
+  <text x="472" y="256" text-anchor="start" class="code-muted">(everything else)</text>
+
+  <!-- Bottom summary -->
+  <line x1="20" y1="284" x2="680" y2="284" class="divider"/>
+  <text x="350" y="304" text-anchor="middle" class="label" style="font-style: italic;">Perl coerces values automatically based on the operator used - no explicit casting needed.</text>
+</svg>

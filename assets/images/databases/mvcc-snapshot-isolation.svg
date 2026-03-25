@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 350" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .connector-no-arrow { stroke: #9e9e9e; stroke-width: 1.2; fill: none; }
+    .divider { stroke: #ccc; stroke-width: 1; stroke-dasharray: 4,3; }
+    .section-rule { stroke: #009485; stroke-width: 1; opacity: 0.3; }
+    .row-header { font-size: 9px; font-weight: 600; fill: #009485; }
+    .cell-border { stroke: #ccc; stroke-width: 0.8; fill: none; }
+    .cell-fill { fill: #f5f5f5; stroke: #ccc; stroke-width: 0.8; }
+    .cell-visible { fill: #f5f5f5; stroke: #009485; stroke-width: 1.2; }
+    .cell-hidden { fill: #f5f5f5; stroke: #ccc; stroke-width: 0.8; opacity: 0.4; }
+    .cell-new { fill: #f5f5f5; stroke: #009485; stroke-width: 1.2; stroke-dasharray: 4,2; }
+    .vis-yes { font-size: 9px; font-weight: 600; fill: #009485; }
+    .vis-no { font-size: 9px; font-weight: 600; fill: #999; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .heading { fill: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .connector-no-arrow { stroke: #666; }
+      .divider { stroke: rgba(255,255,255,0.15); }
+      .section-rule { stroke: #4db6ac; }
+      .row-header { fill: #4db6ac; }
+      .cell-border { stroke: rgba(255,255,255,0.15); }
+      .cell-fill { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .cell-visible { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .cell-hidden { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); opacity: 0.4; }
+      .cell-new { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .vis-yes { fill: #4db6ac; }
+      .vis-no { fill: #666; }
+    }
+  </style>
+
+  <!-- ==================== HEADING ==================== -->
+  <text x="375" y="22" text-anchor="middle" class="heading">MVCC Snapshot Isolation</text>
+  <line x1="220" y1="27" x2="530" y2="27" class="section-rule"/>
+
+  <!-- ==================== TABLE: Row Versions ==================== -->
+  <text x="40" y="52" class="title">Table: orders</text>
+
+  <!-- Column headers -->
+  <rect x="40" y="58" width="60" height="22" class="cell-fill"/>
+  <text x="70" y="73" text-anchor="middle" class="row-header">Row</text>
+  <rect x="100" y="58" width="70" height="22" class="cell-fill"/>
+  <text x="135" y="73" text-anchor="middle" class="row-header">xmin</text>
+  <rect x="170" y="58" width="70" height="22" class="cell-fill"/>
+  <text x="205" y="73" text-anchor="middle" class="row-header">xmax</text>
+  <rect x="240" y="58" width="120" height="22" class="cell-fill"/>
+  <text x="300" y="73" text-anchor="middle" class="row-header">Data</text>
+
+  <!-- Row 1: committed long ago, visible to both -->
+  <rect x="40" y="80" width="60" height="22" class="cell-visible"/>
+  <text x="70" y="95" text-anchor="middle" class="code">r1</text>
+  <rect x="100" y="80" width="70" height="22" class="cell-visible"/>
+  <text x="135" y="95" text-anchor="middle" class="code">90</text>
+  <rect x="170" y="80" width="70" height="22" class="cell-visible"/>
+  <text x="205" y="95" text-anchor="middle" class="code">-</text>
+  <rect x="240" y="80" width="120" height="22" class="cell-visible"/>
+  <text x="300" y="95" text-anchor="middle" class="code">price=50</text>
+
+  <!-- Row 2: committed at 98, visible to both -->
+  <rect x="40" y="102" width="60" height="22" class="cell-visible"/>
+  <text x="70" y="117" text-anchor="middle" class="code">r2</text>
+  <rect x="100" y="102" width="70" height="22" class="cell-visible"/>
+  <text x="135" y="117" text-anchor="middle" class="code">98</text>
+  <rect x="170" y="102" width="70" height="22" class="cell-visible"/>
+  <text x="205" y="117" text-anchor="middle" class="code">-</text>
+  <rect x="240" y="102" width="120" height="22" class="cell-visible"/>
+  <text x="300" y="117" text-anchor="middle" class="code">price=30</text>
+
+  <!-- Row 3: old version, updated by T1 -->
+  <rect x="40" y="124" width="60" height="22" class="cell-fill"/>
+  <text x="70" y="139" text-anchor="middle" class="code">r3</text>
+  <rect x="100" y="124" width="70" height="22" class="cell-fill"/>
+  <text x="135" y="139" text-anchor="middle" class="code">95</text>
+  <rect x="170" y="124" width="70" height="22" class="cell-fill"/>
+  <text x="205" y="139" text-anchor="middle" class="code">100</text>
+  <rect x="240" y="124" width="120" height="22" class="cell-fill"/>
+  <text x="300" y="139" text-anchor="middle" class="code">price=20</text>
+
+  <!-- Row 3': new version created by T1 -->
+  <rect x="40" y="146" width="60" height="22" class="cell-new"/>
+  <text x="70" y="161" text-anchor="middle" class="code">r3'</text>
+  <rect x="100" y="146" width="70" height="22" class="cell-new"/>
+  <text x="135" y="161" text-anchor="middle" class="code">100</text>
+  <rect x="170" y="146" width="70" height="22" class="cell-new"/>
+  <text x="205" y="161" text-anchor="middle" class="code">-</text>
+  <rect x="240" y="146" width="120" height="22" class="cell-new"/>
+  <text x="300" y="161" text-anchor="middle" class="code">price=25</text>
+
+  <!-- Row 4: inserted by T1, only visible after T1 commits -->
+  <rect x="40" y="168" width="60" height="22" class="cell-new"/>
+  <text x="70" y="183" text-anchor="middle" class="code">r4</text>
+  <rect x="100" y="168" width="70" height="22" class="cell-new"/>
+  <text x="135" y="183" text-anchor="middle" class="code">103</text>
+  <rect x="170" y="168" width="70" height="22" class="cell-new"/>
+  <text x="205" y="183" text-anchor="middle" class="code">-</text>
+  <rect x="240" y="168" width="120" height="22" class="cell-new"/>
+  <text x="300" y="183" text-anchor="middle" class="code">price=40</text>
+
+  <!-- Annotation: T1 updated r3 -->
+  <text x="370" y="139" class="label">old version (xmax set to 100)</text>
+  <text x="370" y="161" class="label">new version by T1</text>
+  <text x="370" y="183" class="label">inserted by txid 103 (future)</text>
+
+  <!-- ==================== SEPARATOR ==================== -->
+  <line x1="30" y1="200" x2="720" y2="200" class="divider"/>
+
+  <!-- ==================== TRANSACTIONS AND VISIBILITY ==================== -->
+  <text x="375" y="222" text-anchor="middle" class="heading">Transaction Visibility</text>
+  <line x1="250" y1="227" x2="500" y2="227" class="section-rule"/>
+
+  <!-- T1 box -->
+  <rect x="40" y="240" width="310" height="100" class="box-accent"/>
+  <text x="195" y="258" text-anchor="middle" class="title">T1 (txid 100)</text>
+  <text x="195" y="272" text-anchor="middle" class="label">Snapshot: sees xmin ≤ 100, xmax &gt; 100 or null</text>
+
+  <!-- T1 visibility list -->
+  <text x="60" y="290" class="vis-yes">r1 (xmin 90, xmax -)</text>
+  <text x="250" y="290" class="vis-yes">visible</text>
+  <text x="60" y="304" class="vis-yes">r2 (xmin 98, xmax -)</text>
+  <text x="250" y="304" class="vis-yes">visible</text>
+  <text x="60" y="318" class="vis-yes">r3' (xmin 100, xmax -)</text>
+  <text x="250" y="318" class="vis-yes">visible (own write)</text>
+
+  <!-- T2 box -->
+  <rect x="400" y="240" width="310" height="100" class="box"/>
+  <text x="555" y="258" text-anchor="middle" class="title">T2 (txid 105)</text>
+  <text x="555" y="272" text-anchor="middle" class="label">Snapshot: sees xmin ≤ 105 (committed only)</text>
+
+  <!-- T2 visibility list -->
+  <text x="420" y="290" class="vis-yes">r1 (xmin 90, xmax -)</text>
+  <text x="610" y="290" class="vis-yes">visible</text>
+  <text x="420" y="304" class="vis-yes">r2 (xmin 98, xmax -)</text>
+  <text x="610" y="304" class="vis-yes">visible</text>
+  <text x="420" y="318" class="vis-no">r3 (xmin 95, xmax 100)</text>
+  <text x="610" y="318" class="vis-yes">visible (T1 uncommitted)</text>
+
+  <!-- Bottom label -->
+  <text x="375" y="348" text-anchor="middle" class="label">Each transaction sees a consistent snapshot based on its start time</text>
+</svg>

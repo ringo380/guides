@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .connector-no-arrow { stroke: #9e9e9e; stroke-width: 1.2; fill: none; }
+    .divider { stroke: #ccc; stroke-width: 1; stroke-dasharray: 4,3; }
+    .section-rule { stroke: #009485; stroke-width: 1; opacity: 0.3; }
+    .layer-outer { fill: #f5f5f5; stroke: #ccc; stroke-width: 1.5; rx: 12; }
+    .layer-1 { fill: #f5f5f5; stroke: #ccc; stroke-width: 1.5; rx: 12; }
+    .layer-2 { fill: #f5f5f5; stroke: #ccc; stroke-width: 1.5; rx: 10; }
+    .layer-3 { fill: #f5f5f5; stroke: #ccc; stroke-width: 1.5; rx: 8; }
+    .layer-4 { fill: #f5f5f5; stroke: #009485; stroke-width: 2; rx: 6; }
+    .layer-title { font-size: 12px; font-weight: 700; fill: #009485; }
+    .layer-detail { font-size: 9px; fill: #555; }
+    .detail-box { fill: #f5f5f5; stroke: #ccc; stroke-width: 0.8; rx: 4; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .heading { fill: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .connector-no-arrow { stroke: #666; }
+      .divider { stroke: rgba(255,255,255,0.15); }
+      .section-rule { stroke: #4db6ac; }
+      .layer-outer { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.15); }
+      .layer-1 { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.15); }
+      .layer-2 { fill: rgba(255,255,255,0.05); stroke: rgba(255,255,255,0.15); }
+      .layer-3 { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .layer-4 { fill: rgba(255,255,255,0.10); stroke: #4db6ac; }
+      .layer-title { fill: #4db6ac; }
+      .layer-detail { fill: #aaa; }
+      .detail-box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+    }
+  </style>
+
+  <!-- ==================== HEADING ==================== -->
+  <text x="300" y="22" text-anchor="middle" class="heading">Database Security Layers</text>
+  <line x1="180" y1="27" x2="420" y2="27" class="section-rule"/>
+
+  <!-- ==================== LAYER 1: Network (outermost) ==================== -->
+  <rect x="30" y="40" width="540" height="320" class="layer-1"/>
+  <text x="55" y="62" class="layer-title">Network</text>
+
+  <!-- Network detail boxes -->
+  <rect x="55" y="70" width="70" height="22" class="detail-box"/>
+  <text x="90" y="85" text-anchor="middle" class="code">Firewall</text>
+  <rect x="135" y="70" width="66" height="22" class="detail-box"/>
+  <text x="168" y="85" text-anchor="middle" class="code">SSL/TLS</text>
+  <rect x="211" y="70" width="90" height="22" class="detail-box"/>
+  <text x="256" y="85" text-anchor="middle" class="code">VPN / VPC</text>
+  <rect x="311" y="70" width="100" height="22" class="detail-box"/>
+  <text x="361" y="85" text-anchor="middle" class="code">IP allowlist</text>
+
+  <!-- ==================== LAYER 2: Authentication ==================== -->
+  <rect x="55" y="102" width="490" height="240" class="layer-2"/>
+  <text x="80" y="124" class="layer-title">Authentication</text>
+
+  <!-- Authentication detail boxes -->
+  <rect x="80" y="132" width="80" height="22" class="detail-box"/>
+  <text x="120" y="147" text-anchor="middle" class="code">Passwords</text>
+  <rect x="170" y="132" width="90" height="22" class="detail-box"/>
+  <text x="215" y="147" text-anchor="middle" class="code">Certificates</text>
+  <rect x="270" y="132" width="56" height="22" class="detail-box"/>
+  <text x="298" y="147" text-anchor="middle" class="code">LDAP</text>
+  <rect x="336" y="132" width="78" height="22" class="detail-box"/>
+  <text x="375" y="147" text-anchor="middle" class="code">Kerberos</text>
+  <rect x="424" y="132" width="56" height="22" class="detail-box"/>
+  <text x="452" y="147" text-anchor="middle" class="code">SCRAM</text>
+
+  <!-- ==================== LAYER 3: Authorization ==================== -->
+  <rect x="80" y="166" width="440" height="158" class="layer-3"/>
+  <text x="105" y="188" class="layer-title">Authorization</text>
+
+  <!-- Authorization detail boxes -->
+  <rect x="105" y="196" width="120" height="22" class="detail-box"/>
+  <text x="165" y="211" text-anchor="middle" class="code">GRANT / REVOKE</text>
+  <rect x="235" y="196" width="60" height="22" class="detail-box"/>
+  <text x="265" y="211" text-anchor="middle" class="code">Roles</text>
+  <rect x="305" y="196" width="120" height="22" class="detail-box"/>
+  <text x="365" y="211" text-anchor="middle" class="code">Row-level security</text>
+  <rect x="435" y="196" width="72" height="22" class="detail-box"/>
+  <text x="471" y="211" text-anchor="middle" class="code">Schemas</text>
+
+  <!-- ==================== LAYER 4: Encryption (innermost) ==================== -->
+  <rect x="105" y="230" width="390" height="78" class="layer-4"/>
+  <text x="130" y="252" class="layer-title">Encryption</text>
+
+  <!-- Encryption detail boxes -->
+  <rect x="130" y="260" width="50" height="22" class="detail-box"/>
+  <text x="155" y="275" text-anchor="middle" class="code">TDE</text>
+  <rect x="190" y="260" width="100" height="22" class="detail-box"/>
+  <text x="240" y="275" text-anchor="middle" class="code">Column-level</text>
+  <rect x="300" y="260" width="120" height="22" class="detail-box"/>
+  <text x="360" y="275" text-anchor="middle" class="code">Backup encryption</text>
+  <rect x="430" y="260" width="50" height="22" class="detail-box"/>
+  <text x="455" y="275" text-anchor="middle" class="code">KMS</text>
+
+  <!-- Inner label for encryption -->
+  <text x="300" y="300" text-anchor="middle" class="layer-detail">Protects data at rest and in transit</text>
+
+  <!-- ==================== RIGHT-SIDE ANNOTATIONS ==================== -->
+  <!-- Connector lines from right edge to labels -->
+
+  <!-- Arrow pointing inward -->
+  <line x1="580" y1="80" x2="580" y2="280" class="connector-no-arrow" stroke-dasharray="3,3"/>
+  <line x1="575" y1="80" x2="585" y2="80" class="connector-no-arrow"/>
+  <line x1="575" y1="280" x2="585" y2="280" class="connector-no-arrow"/>
+
+  <!-- "Defense in depth" label -->
+  <text x="578" y="165" class="label" transform="rotate(90,578,165)">Defense in depth</text>
+
+  <!-- ==================== BOTTOM LABEL ==================== -->
+  <text x="300" y="378" text-anchor="middle" class="label">Each layer adds protection - compromising one layer does not expose the data</text>
+  <text x="300" y="392" text-anchor="middle" class="label">Outermost layers block unauthorized connections; innermost layers protect stored data</text>
+</svg>

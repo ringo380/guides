@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 320" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrow-light" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#9e9e9e"/>
+    </marker>
+    <marker id="arrow-dark" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 3.5 L 0 7 z" fill="#666"/>
+    </marker>
+  </defs>
+  <style>
+    .title { font-size: 11px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 10px; fill: #555; }
+    .code { font-size: 10px; fill: #1a1a1a; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .box { fill: #f5f5f5; stroke: #ccc; stroke-width: 1; rx: 8; }
+    .box-accent { fill: #f5f5f5; stroke: #009485; stroke-width: 1.5; rx: 8; }
+    .heading { font-size: 13px; font-weight: 700; fill: #009485; }
+    .connector { stroke: #9e9e9e; stroke-width: 1.2; fill: none; marker-end: url(#arrow-light); }
+    .divider { stroke: #ccc; stroke-width: 1; stroke-dasharray: 6,4; }
+    .arrow-label { font-size: 9px; font-weight: 600; fill: #009485; font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace; }
+    .branch-tag { font-size: 9px; font-weight: 600; fill: #009485; }
+
+    @media (prefers-color-scheme: dark) {
+      .title { fill: #e0e0e0; }
+      .label { fill: #aaa; }
+      .code { fill: #e0e0e0; }
+      .box { fill: rgba(255,255,255,0.07); stroke: rgba(255,255,255,0.15); }
+      .box-accent { fill: rgba(255,255,255,0.07); stroke: #4db6ac; }
+      .heading { fill: #4db6ac; }
+      .connector { stroke: #666; marker-end: url(#arrow-dark); }
+      .divider { stroke: rgba(255,255,255,0.15); }
+      .arrow-label { fill: #4db6ac; }
+      .branch-tag { fill: #4db6ac; }
+    }
+  </style>
+
+  <!-- ===== LEFT PANEL: Stash Stack ===== -->
+  <text x="175" y="24" text-anchor="middle" class="heading">Stash Stack</text>
+  <text x="175" y="40" text-anchor="middle" class="label">Last in, first out (LIFO)</text>
+
+  <!-- "git stash push" arrow on the left side -->
+  <line x1="32" y1="68" x2="32" y2="120" class="connector"/>
+  <text x="28" y="82" text-anchor="end" class="arrow-label">git stash</text>
+  <text x="28" y="93" text-anchor="end" class="arrow-label">push</text>
+
+  <!-- "git stash pop" arrow on the right side -->
+  <line x1="330" y1="120" x2="330" y2="68" class="connector"/>
+  <text x="334" y="82" text-anchor="start" class="arrow-label">git stash</text>
+  <text x="334" y="93" text-anchor="start" class="arrow-label">pop</text>
+
+  <!-- Top label -->
+  <text x="175" y="62" text-anchor="middle" class="label">Top of stack</text>
+
+  <!-- Stash entry 0 (most recent, accent border) -->
+  <rect x="48" y="70" width="268" height="46" class="box-accent"/>
+  <text x="62" y="89" class="code">stash@{0}</text>
+  <text x="62" y="106" class="title">WIP: user profile validation</text>
+
+  <!-- Stash entry 1 -->
+  <rect x="48" y="126" width="268" height="46" class="box"/>
+  <text x="62" y="145" class="code">stash@{1}</text>
+  <text x="62" y="162" class="title">WIP: fix login timeout</text>
+
+  <!-- Stash entry 2 -->
+  <rect x="48" y="182" width="268" height="46" class="box"/>
+  <text x="62" y="201" class="code">stash@{2}</text>
+  <text x="62" y="218" class="title">WIP: database migration</text>
+
+  <!-- Bottom label -->
+  <text x="175" y="248" text-anchor="middle" class="label">Bottom of stack (oldest)</text>
+
+  <!-- Stack side brackets (visual grouping) -->
+  <line x1="42" y1="70" x2="42" y2="228" stroke="#ccc" stroke-width="1"/>
+  <line x1="42" y1="70" x2="48" y2="70" stroke="#ccc" stroke-width="1"/>
+  <line x1="42" y1="228" x2="48" y2="228" stroke="#ccc" stroke-width="1"/>
+
+  <line x1="322" y1="70" x2="322" y2="228" stroke="#ccc" stroke-width="1"/>
+  <line x1="316" y1="70" x2="322" y2="70" stroke="#ccc" stroke-width="1"/>
+  <line x1="316" y1="228" x2="322" y2="228" stroke="#ccc" stroke-width="1"/>
+
+  <!-- Note about stash storage -->
+  <text x="175" y="278" text-anchor="middle" class="label">Each stash captures staged changes, unstaged</text>
+  <text x="175" y="292" text-anchor="middle" class="label">changes, and optionally untracked files</text>
+
+  <!-- ===== VERTICAL DIVIDER ===== -->
+  <line x1="380" y1="10" x2="380" y2="310" class="divider"/>
+
+  <!-- ===== RIGHT PANEL: Worktrees ===== -->
+  <text x="565" y="24" text-anchor="middle" class="heading">Worktrees</text>
+  <text x="565" y="40" text-anchor="middle" class="label">Separate working directories, one repo</text>
+
+  <!-- Main worktree (accent) -->
+  <rect x="400" y="60" width="330" height="60" class="box-accent"/>
+  <text x="416" y="79" class="code">~/project/</text>
+  <text x="416" y="95" class="title">Main working directory</text>
+  <rect x="594" y="72" width="124" height="20" rx="4" fill="none" stroke="#009485" stroke-width="1"/>
+  <text x="656" y="86" text-anchor="middle" class="branch-tag">main</text>
+  <text x="416" y="111" class="label">Primary checkout (has .git directory)</text>
+
+  <!-- Connector from main to hotfix worktree -->
+  <line x1="420" y1="120" x2="420" y2="144" class="connector"/>
+
+  <!-- Hotfix worktree -->
+  <rect x="400" y="144" width="330" height="52" class="box"/>
+  <text x="416" y="163" class="code">../project-hotfix/</text>
+  <text x="416" y="179" class="title">Linked worktree</text>
+  <rect x="568" y="155" width="150" height="20" rx="4" fill="none" stroke="#ccc" stroke-width="1"/>
+  <text x="643" y="169" text-anchor="middle" class="branch-tag">hotfix/login-fix</text>
+  <text x="416" y="191" class="label"></text>
+
+  <!-- Connector from main to feature worktree -->
+  <line x1="420" y1="196" x2="420" y2="216" class="connector"/>
+
+  <!-- Feature worktree -->
+  <rect x="400" y="216" width="330" height="52" class="box"/>
+  <text x="416" y="235" class="code">../project-feature/</text>
+  <text x="416" y="251" class="title">Linked worktree</text>
+  <rect x="568" y="227" width="150" height="20" rx="4" fill="none" stroke="#ccc" stroke-width="1"/>
+  <text x="643" y="241" text-anchor="middle" class="branch-tag">feature/new-ui</text>
+
+  <!-- Note about worktrees -->
+  <text x="565" y="292" text-anchor="middle" class="label">Each worktree has its own index and working</text>
+  <text x="565" y="306" text-anchor="middle" class="label">tree, but shares the same object database</text>
+</svg>
