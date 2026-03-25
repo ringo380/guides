@@ -1,6 +1,6 @@
 # System Automation with Python
 
-**Version:** 0.1  
+**Version:** 0.2
 **Year:** 2026
 
 ---
@@ -11,173 +11,593 @@ Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed und
 
 ---
 
-Python's real power for sysadmins lies in its ability to interact with the underlying operating system. Whether you are managing files, running external commands, or parsing command-line arguments, Python provides robust modules that are often more reliable and readable than complex Bash scripts.
-
-## Core Automation Modules
-
-Python includes several built-in modules specifically designed for system tasks.
-
-- [**`os`**](https://docs.python.org/3/library/os.html): Miscellaneous operating system interfaces (env vars, directory listing).
-- [**`sys`**](https://docs.python.org/3/library/sys.html): System-specific parameters and functions (command-line arguments, exit codes).
-- [**`shutil`**](https://docs.python.org/3/library/shutil.html): High-level file operations (copying, moving, archiving).
-- [**`subprocess`**](https://docs.python.org/3/library/subprocess.html): Running external commands and capturing their output.
+Python's real power for sysadmins lies in its ability to interact with the operating system. Whether you're managing files, running external commands, parsing arguments, or building monitoring checks, Python provides robust modules that are more reliable, testable, and readable than complex Bash scripts.
 
 ---
 
-## Managing Files and Directories
+## File and Directory Operations
 
-While Bash is great for quick file operations, Python's `os` and `shutil` modules provide better error handling and cross-platform compatibility.
+### `os` Module Basics
 
-### Directory Listing and Navigation
+The [**`os`**](https://docs.python.org/3/library/os.html) module provides low-level operating system interfaces.
 
 ```python
 import os
 
-# Get current working directory
+# Current working directory
 cwd = os.getcwd()
 
-# List all files in a directory
-for filename in os.listdir("/var/log"):
-    if filename.endswith(".log"):
-        print(f"Found log file: {filename}")
+# Environment variables
+home = os.getenv("HOME")
+debug = os.getenv("DEBUG", "false")    # Default if not set
 
-# Check if a path exists and is a file
-if os.path.isfile("/etc/hosts"):
-    print("Hosts file exists.")
+# List directory contents
+for entry in os.listdir("/var/log"):
+    full_path = os.path.join("/var/log", entry)
+    if os.path.isfile(full_path):
+        size = os.path.getsize(full_path)
+        print(f"{entry}: {size:,} bytes")
+
+# Create directories
+os.makedirs("/tmp/backup/2026/03", exist_ok=True)  # Creates parents, no error if exists
 ```
 
-### High-Level File Operations
+### `pathlib` for Modern File Operations
+
+[**`pathlib`**](https://docs.python.org/3/library/pathlib.html) provides a cleaner interface for everything `os.path` does.
+
+```python
+from pathlib import Path
+
+# Build paths
+log_dir = Path("/var/log")
+backup_dir = Path("/tmp/backup") / "2026" / "03"
+backup_dir.mkdir(parents=True, exist_ok=True)
+
+# Find files by pattern
+for log_file in log_dir.glob("*.log"):
+    print(f"{log_file.name}: {log_file.stat().st_size:,} bytes")
+
+# Recursive search
+for conf in Path("/etc").rglob("*.conf"):
+    print(conf)
+```
+
+### `shutil` for High-Level Operations
+
+[**`shutil`**](https://docs.python.org/3/library/shutil.html) handles operations that work on entire files and directory trees.
 
 ```python
 import shutil
-import os
 
-# Copy a file
-shutil.copy2("config.yaml", "config.yaml.bak")  # copy2 preserves metadata
+# Copy a file (preserves metadata with copy2)
+shutil.copy2("config.yaml", "config.yaml.bak")
 
 # Move a file
 shutil.move("temp_data.csv", "/data/archives/")
 
-# Recursively delete a directory (equivalent to rm -rf)
-if os.path.exists("old_project"):
-    shutil.rmtree("old_project")
+# Copy an entire directory tree
+shutil.copytree("/etc/nginx", "/tmp/nginx-backup")
+
+# Delete a directory tree (equivalent to rm -rf)
+shutil.rmtree("/tmp/nginx-backup")
+
+# Create a compressed archive
+shutil.make_archive("/tmp/logs-backup", "gztar", "/var/log")
+# Creates /tmp/logs-backup.tar.gz
+```
+
+### `tempfile` for Safe Temporary Files
+
+The [**`tempfile`**](https://docs.python.org/3/library/tempfile.html) module creates temporary files and directories that are cleaned up automatically.
+
+```python
+import tempfile
+
+# Temporary file (auto-deleted when closed)
+with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmp:
+    tmp.write('{"status": "processing"}')
+    print(f"Temp file: {tmp.name}")
+
+# Temporary directory (auto-deleted when context exits)
+with tempfile.TemporaryDirectory() as tmpdir:
+    work_file = Path(tmpdir) / "output.txt"
+    work_file.write_text("intermediate results")
+    # Process files in tmpdir...
+# Directory and contents are gone here
 ```
 
 ---
 
 ## Running External Commands
 
-The [**`subprocess`**](https://docs.python.org/3/library/subprocess.html) module is the modern way to run shell commands from Python.
+The [**`subprocess`**](https://docs.python.org/3/library/subprocess.html) module is the standard way to run shell commands from Python.
 
-### Capturing Output
+### `subprocess.run()` - The Default Choice
 
-The `subprocess.run()` function is the recommended approach for most tasks.
+`subprocess.run()` executes a command, waits for it to finish, and returns the result.
 
 ```python
 import subprocess
 
-# Run a simple command and capture its output
-result = subprocess.run(["df", "-h", "/"], capture_output=True, text=True)
+# Run a command and capture output
+result = subprocess.run(
+    ["df", "-h", "/"],
+    capture_output=True,
+    text=True                        # Return strings, not bytes
+)
 
 if result.returncode == 0:
-    print("Disk usage for root partition:")
     print(result.stdout)
 else:
-    print(f"Error running df: {result.stderr}")
+    print(f"Error: {result.stderr}")
+```
+
+### Capturing stdout and stderr Separately
+
+```python
+# Capture both streams
+result = subprocess.run(
+    ["systemctl", "status", "nginx"],
+    capture_output=True,
+    text=True
+)
+
+print(f"Exit code: {result.returncode}")
+print(f"stdout:\n{result.stdout}")
+print(f"stderr:\n{result.stderr}")
+```
+
+### Checking Return Codes
+
+```python
+# Raise an exception if the command fails
+try:
+    result = subprocess.run(
+        ["nginx", "-t"],
+        capture_output=True,
+        text=True,
+        check=True                   # Raises CalledProcessError on non-zero exit
+    )
+    print("Nginx config is valid")
+except subprocess.CalledProcessError as e:
+    print(f"Nginx config error:\n{e.stderr}")
 ```
 
 ### Passing Input to Commands
 
 ```python
-# Pass a string as stdin to a command
-process = subprocess.run(
-    ["grep", "ERROR"], 
-    input="INFO: All good\nERROR: Disk full\nINFO: Syncing...", 
-    capture_output=True, 
+# Pipe a string as stdin
+result = subprocess.run(
+    ["grep", "ERROR"],
+    input="INFO: All good\nERROR: Disk full\nINFO: Syncing...\nERROR: Timeout",
+    capture_output=True,
     text=True
 )
-print(process.stdout)  # "ERROR: Disk full"
+print(result.stdout)
+# ERROR: Disk full
+# ERROR: Timeout
+```
+
+!!! warning "`shell=True` is a security risk"
+    Never pass user input to `subprocess.run()` with `shell=True`. It enables shell injection attacks where a malicious input like `; rm -rf /` gets executed. Always pass commands as a list of arguments (which bypasses the shell entirely), or use `shlex.quote()` if you absolutely must use `shell=True`.
+
+    ```python
+    # DANGEROUS - user_input could contain shell metacharacters
+    subprocess.run(f"grep {user_input} /var/log/syslog", shell=True)
+
+    # SAFE - each argument is passed directly to the program
+    subprocess.run(["grep", user_input, "/var/log/syslog"])
+    ```
+
+### `subprocess.run()` vs `subprocess.Popen()`
+
+| Feature | `run()` | `Popen()` |
+|---------|---------|-----------|
+| Waits for completion | Yes (blocking) | No (non-blocking) |
+| Returns | `CompletedProcess` | `Popen` object |
+| Use when | You need the result before proceeding | You need to interact with the process while it runs |
+
+Use `run()` for 95% of cases. Use `Popen()` when you need to stream output line by line, send input interactively, or run commands concurrently.
+
+```python
+# Popen for streaming output
+process = subprocess.Popen(
+    ["tail", "-f", "/var/log/syslog"],
+    stdout=subprocess.PIPE,
+    text=True
+)
+
+for line in process.stdout:
+    if "ERROR" in line:
+        print(f"ALERT: {line.strip()}")
+        process.terminate()
+        break
 ```
 
 ---
 
-## Handling Command-Line Arguments
+## Logging
 
-For simple scripts, use `sys.argv`. For complex tools with flags and help menus, use the built-in [**`argparse`**](https://docs.python.org/3/library/argparse.html) module.
+The [**`logging`**](https://docs.python.org/3/library/logging.html) module is Python's built-in logging framework. It replaces `print()` for anything beyond quick debugging.
+
+```python
+import logging
+
+# Basic configuration
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+logger = logging.getLogger(__name__)
+
+logger.info("Service check started")
+logger.warning("Disk usage at 85%%")
+logger.error("Connection to db01 failed")
+logger.critical("All backend servers unreachable")
+```
+
+### Logging to a File
+
+```python
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[
+        logging.FileHandler("/var/log/my-tool.log"),
+        logging.StreamHandler()      # Also print to console
+    ]
+)
+```
+
+!!! tip "Use `logging` instead of `print()` for operational scripts"
+    `print()` goes to stdout and has no concept of severity levels, timestamps, or output routing. The `logging` module gives you all three, plus the ability to change verbosity without modifying code (`--verbose` sets level to DEBUG, default is INFO, `--quiet` sets WARNING). For one-off scripts during development, `print()` is fine. For anything that runs in production, use `logging`.
+
+---
+
+## Command-Line Arguments
+
+### `sys.argv` for Simple Scripts
+
+```python
+import sys
+
+if len(sys.argv) < 2:
+    print(f"Usage: {sys.argv[0]} <hostname>")
+    sys.exit(1)
+
+hostname = sys.argv[1]
+print(f"Checking {hostname}...")
+```
+
+### `argparse` for Production Tools
+
+The [**`argparse`**](https://docs.python.org/3/library/argparse.html) module builds CLI interfaces with help text, type validation, default values, and subcommands.
 
 ```python
 import argparse
 
-parser = argparse.ArgumentParser(description="A tool to archive logs.")
-parser.add_argument("directory", help="The directory containing logs to archive")
-parser.add_argument("--days", type=int, default=7, help="Archive logs older than X days")
-parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+parser = argparse.ArgumentParser(
+    description="Archive and compress old log files."
+)
+parser.add_argument(
+    "directory",
+    help="Directory containing logs to archive"
+)
+parser.add_argument(
+    "--days", type=int, default=7,
+    help="Archive logs older than this many days (default: 7)"
+)
+parser.add_argument(
+    "--compress", choices=["gzip", "bzip2", "none"], default="gzip",
+    help="Compression method (default: gzip)"
+)
+parser.add_argument(
+    "-v", "--verbose", action="store_true",
+    help="Enable verbose output"
+)
+parser.add_argument(
+    "-n", "--dry-run", action="store_true",
+    help="Show what would be done without making changes"
+)
 
 args = parser.parse_args()
 
-print(f"Archiving logs in {args.directory} older than {args.days} days.")
+print(f"Archiving logs in {args.directory} older than {args.days} days")
 if args.verbose:
-    print("Verbose mode enabled.")
+    print(f"Compression: {args.compress}")
+if args.dry_run:
+    print("(dry run - no changes will be made)")
+```
+
+```bash
+$ python3 archive_logs.py --help
+usage: archive_logs.py [-h] [--days DAYS] [--compress {gzip,bzip2,none}]
+                       [-v] [-n] directory
+
+Archive and compress old log files.
+
+positional arguments:
+  directory             Directory containing logs to archive
+
+options:
+  -h, --help            show this help message and exit
+  --days DAYS           Archive logs older than this many days (default: 7)
+  --compress {gzip,bzip2,none}
+                        Compression method (default: gzip)
+  -v, --verbose         Enable verbose output
+  -n, --dry-run         Show what would be done without making changes
 ```
 
 ---
 
-## Interactive Quizzes: System Automation
+## Environment Variables
 
-Test your understanding of Python's system interaction capabilities.
+Environment variables pass configuration to scripts without hardcoding values or using config files.
+
+```python
+import os
+
+# Read with defaults
+db_host = os.getenv("DB_HOST", "localhost")
+db_port = int(os.getenv("DB_PORT", "5432"))
+debug = os.getenv("DEBUG", "false").lower() == "true"
+
+# Require a variable (fail fast if missing)
+api_key = os.environ["API_KEY"]    # Raises KeyError if not set
+
+# Safer pattern
+api_key = os.getenv("API_KEY")
+if not api_key:
+    print("Error: API_KEY environment variable is required")
+    sys.exit(1)
+```
+
+---
+
+## Real-World Pattern: Service Health Checker
+
+```python
+#!/usr/bin/env python3
+"""Check the health of services and report status."""
+
+import argparse
+import logging
+import subprocess
+import sys
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+logger = logging.getLogger("healthcheck")
+
+def check_service(name):
+    """Check if a systemd service is active."""
+    result = subprocess.run(
+        ["systemctl", "is-active", name],
+        capture_output=True, text=True
+    )
+    return result.stdout.strip() == "active"
+
+def check_port(host, port):
+    """Check if a TCP port is reachable."""
+    result = subprocess.run(
+        ["timeout", "3", "bash", "-c", f"echo > /dev/tcp/{host}/{port}"],
+        capture_output=True
+    )
+    return result.returncode == 0
+
+def main():
+    parser = argparse.ArgumentParser(description="Service health checker")
+    parser.add_argument("--services", nargs="+", default=["nginx", "postgresql"])
+    parser.add_argument("--check-ports", nargs="+", help="host:port pairs to check")
+    parser.add_argument("-v", "--verbose", action="store_true")
+    args = parser.parse_args()
+
+    if args.verbose:
+        logger.setLevel(logging.DEBUG)
+
+    failures = []
+
+    for service in args.services:
+        if check_service(service):
+            logger.info(f"{service}: OK")
+        else:
+            logger.error(f"{service}: DOWN")
+            failures.append(service)
+
+    if args.check_ports:
+        for pair in args.check_ports:
+            host, port = pair.split(":")
+            if check_port(host, int(port)):
+                logger.info(f"{host}:{port}: REACHABLE")
+            else:
+                logger.error(f"{host}:{port}: UNREACHABLE")
+                failures.append(pair)
+
+    if failures:
+        logger.critical(f"Failed checks: {', '.join(failures)}")
+        sys.exit(2)
+    else:
+        logger.info("All checks passed")
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()
+```
+
+---
+
+```terminal
+scenario: "Build and test a system automation script"
+steps:
+  - command: "python3 -c \"import subprocess; r = subprocess.run(['uptime'], capture_output=True, text=True); print(r.stdout.strip())\""
+    output: " 14:23:01 up 42 days,  3:17,  2 users,  load average: 0.15, 0.22, 0.18"
+    narration: "subprocess.run() captures the output of any command. The capture_output=True and text=True flags give you the output as a Python string."
+  - command: "python3 -c \"import subprocess; r = subprocess.run(['systemctl', 'is-active', 'nginx'], capture_output=True, text=True); print(f'nginx: {r.stdout.strip()} (exit code {r.returncode})')\""
+    output: "nginx: active (exit code 0)"
+    narration: "Check a systemd service status. 'is-active' returns 'active' with exit code 0, or 'inactive'/'failed' with a non-zero code. This makes it easy to use in conditionals."
+  - command: "python3 -c \"import os; print(f'HOME={os.getenv(\\\"HOME\\\")}'); print(f'USER={os.getenv(\\\"USER\\\")}'); print(f'DEBUG={os.getenv(\\\"DEBUG\\\", \\\"not set\\\")}')\""
+    output: "HOME=/home/admin\nUSER=admin\nDEBUG=not set"
+    narration: "Environment variables are the standard way to pass configuration to scripts. os.getenv() returns None (or a default) if the variable isn't set, avoiding KeyError exceptions."
+  - command: "python3 -c \"from pathlib import Path; import shutil; Path('/tmp/demo-backup').mkdir(exist_ok=True); shutil.copy2('/etc/hostname', '/tmp/demo-backup/'); print('Backed up:', list(Path('/tmp/demo-backup').iterdir()))\""
+    output: "Backed up: [PosixPath('/tmp/demo-backup/hostname')]"
+    narration: "Combine pathlib for directory creation with shutil for file copying. copy2 preserves file metadata (timestamps, permissions)."
+  - command: "python3 -c \"import logging; logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s'); logging.info('Backup complete'); logging.warning('Disk at 82%%')\""
+    output: "2026-03-25 14:23:05 [INFO] Backup complete\n2026-03-25 14:23:05 [WARNING] Disk at 82%"
+    narration: "The logging module produces timestamped, leveled output. In production, route this to a file or syslog instead of the console."
+```
+
+---
+
+## Interactive Quizzes
 
 ```quiz
-question: "Which module should you use if you need to recursively delete a directory tree (similar to `rm -rf`)?"
+question: "Which function should you use to recursively delete a directory tree?"
 type: multiple-choice
 options:
-  - text: "os"
-    feedback: "os.remove() deletes a single file, and os.rmdir() deletes an empty directory. Neither deletes recursively."
-  - text: "sys"
-    feedback: "The sys module is for system parameters, not file operations."
-  - text: "shutil"
+  - text: "os.remove()"
+    feedback: "os.remove() deletes a single file. It raises an error on directories."
+  - text: "os.rmdir()"
+    feedback: "os.rmdir() deletes only empty directories. It fails if the directory has contents."
+  - text: "shutil.rmtree()"
     correct: true
-    feedback: "Correct! `shutil.rmtree()` is the standard function for recursively deleting a directory and all of its contents."
-  - text: "subprocess"
-    feedback: "While you could call 'rm -rf' via subprocess, using shutil.rmtree() is more Pythonic and platform-independent."
+    feedback: "Correct! shutil.rmtree() recursively removes a directory and all its contents, like rm -rf. Use it with caution."
+  - text: "pathlib.Path.unlink()"
+    feedback: "unlink() removes a single file. For directories, use shutil.rmtree()."
 ```
 
 ```quiz
-question: "What is the recommended function for running an external command and waiting for it to complete?"
+question: "Why is `shell=True` dangerous in `subprocess.run()`?"
 type: multiple-choice
 options:
-  - text: "os.system()"
-    feedback: "os.system() is considered legacy and provides limited control over input/output."
-  - text: "subprocess.run()"
+  - text: "It makes the command run slower."
+    feedback: "There's a small overhead from spawning a shell, but the real issue is security."
+  - text: "It enables shell injection attacks when user input is part of the command."
     correct: true
-    feedback: "Correct! `subprocess.run()` (introduced in Python 3.5) is the recommended high-level function for executing commands."
-  - text: "subprocess.Popen()"
-    feedback: "Popen is for advanced scenarios where you need more control over the process lifecycle. For simple tasks, run() is preferred."
-  - text: "sys.execute()"
-    feedback: "There is no sys.execute() function in the standard library."
+    feedback: "Correct! With shell=True, metacharacters like ;, |, and $() are interpreted by the shell. User input containing '; rm -rf /' would be executed. Passing commands as a list bypasses the shell entirely."
+  - text: "It only works on Linux, not macOS."
+    feedback: "shell=True works on both platforms. The security risk exists on all operating systems."
+  - text: "It prevents output capture."
+    feedback: "You can capture output with shell=True. The issue is security, not functionality."
 ```
 
 ```quiz
-question: "How do you access the list of raw command-line arguments passed to a Python script?"
+question: "What is the main advantage of `logging` over `print()` for production scripts?"
 type: multiple-choice
 options:
-  - text: "sys.args"
-    feedback: "The name of the list is sys.argv, not sys.args."
-  - text: "os.argv"
-    feedback: "Command-line arguments are stored in the sys module, not os."
-  - text: "sys.argv"
+  - text: "logging is faster than print."
+    feedback: "Performance is similar. The advantage is in functionality."
+  - text: "logging provides severity levels, timestamps, and configurable output destinations."
     correct: true
-    feedback: "Correct! `sys.argv` is a list in Python that contains all the command-line arguments passed to the script, where `sys.argv[0]` is the script name itself."
-  - text: "argparse.list()"
-    feedback: "argparse is used for parsing arguments, but the raw arguments themselves are in sys.argv."
+    feedback: "Correct! logging supports DEBUG/INFO/WARNING/ERROR/CRITICAL levels, automatic timestamps, output to files and syslog, and runtime verbosity control. print() has none of these."
+  - text: "print() is deprecated in Python 3."
+    feedback: "print() is not deprecated and is fine for interactive use and quick scripts."
+  - text: "logging uses less memory."
+    feedback: "Memory usage is similar. The advantage is operational features."
+```
+
+---
+
+```exercise
+title: "Write a System Health Checker"
+description: "Create a command-line tool that checks disk usage, service status, and port reachability, then reports results with proper logging and exit codes."
+requirements:
+  - "Accept --services (list of systemd service names) and --disk-paths (list of filesystem paths) as arguments"
+  - "Check each service with systemctl is-active via subprocess"
+  - "Check each disk path with shutil.disk_usage, warning at 80% and critical at 90%"
+  - "Use the logging module for all output (not print)"
+  - "Support --verbose flag that enables DEBUG-level logging"
+  - "Exit with code 0 if all checks pass, 1 for warnings, 2 for critical failures"
+hints:
+  - "Use argparse with nargs='+' for arguments that accept multiple values"
+  - "subprocess.run(['systemctl', 'is-active', name], capture_output=True, text=True) returns the status"
+  - "Track the worst exit code: worst = max(worst, current_code)"
+  - "Set logger.setLevel(logging.DEBUG) when --verbose is passed"
+solution: |
+  #!/usr/bin/env python3
+  """System health checker with configurable checks."""
+
+  import argparse
+  import logging
+  import shutil
+  import subprocess
+  import sys
+
+  logging.basicConfig(
+      level=logging.INFO,
+      format="%(asctime)s [%(levelname)s] %(message)s",
+      datefmt="%Y-%m-%d %H:%M:%S"
+  )
+  logger = logging.getLogger("healthcheck")
+
+  def check_service(name):
+      result = subprocess.run(
+          ["systemctl", "is-active", name],
+          capture_output=True, text=True
+      )
+      status = result.stdout.strip()
+      if status == "active":
+          logger.info(f"Service {name}: OK")
+          return 0
+      else:
+          logger.error(f"Service {name}: {status}")
+          return 2
+
+  def check_disk(path, warn=80, crit=90):
+      try:
+          total, used, free = shutil.disk_usage(path)
+      except OSError as e:
+          logger.error(f"Disk {path}: {e}")
+          return 2
+
+      percent = (used / total) * 100
+      if percent >= crit:
+          logger.critical(f"Disk {path}: {percent:.1f}% (CRITICAL)")
+          return 2
+      elif percent >= warn:
+          logger.warning(f"Disk {path}: {percent:.1f}% (WARNING)")
+          return 1
+      else:
+          logger.info(f"Disk {path}: {percent:.1f}% (OK)")
+          return 0
+
+  def main():
+      parser = argparse.ArgumentParser(description="System health checker")
+      parser.add_argument("--services", nargs="+", default=[])
+      parser.add_argument("--disk-paths", nargs="+", default=["/"])
+      parser.add_argument("-v", "--verbose", action="store_true")
+      args = parser.parse_args()
+
+      if args.verbose:
+          logger.setLevel(logging.DEBUG)
+
+      worst = 0
+      for svc in args.services:
+          worst = max(worst, check_service(svc))
+      for path in args.disk_paths:
+          worst = max(worst, check_disk(path))
+
+      if worst == 0:
+          logger.info("All checks passed")
+      sys.exit(worst)
+
+  if __name__ == "__main__":
+      main()
 ```
 
 ---
 
 ## Further Reading
 
-- [**Python Docs: os Module**](https://docs.python.org/3/library/os.html)  
-- [**Python Docs: subprocess Module**](https://docs.python.org/3/library/subprocess.html)  
-- [**Real Python: Working with Files and Directories**](https://realpython.com/working-with-files-in-python/)  
+- [Python Docs: subprocess](https://docs.python.org/3/library/subprocess.html) - complete reference for running external commands
+- [Python Docs: pathlib](https://docs.python.org/3/library/pathlib.html) - modern object-oriented path handling
+- [Python Docs: argparse](https://docs.python.org/3/library/argparse.html) - building command-line interfaces
+- [Python Docs: logging](https://docs.python.org/3/library/logging.html) - the standard logging framework
+- [Real Python: Working with Files](https://realpython.com/working-with-files-in-python/) - practical guide to file operations
 
 ---
 
