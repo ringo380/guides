@@ -1,7 +1,15 @@
 # Working with Files and APIs (Python)
 
 **Version:** 0.1  
-**Year:** 2026  
+**Year:** 2026
+
+---
+
+## Copyright Notice
+
+Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed under [CC BY-NC-ND 4.0](../../LICENSE-CONTENT). You may share this material for non-commercial purposes with attribution, but you may not distribute modified versions.
+
+---
 
 Sysadmin automation often involves interacting with external data sources—whether they are local configuration files, system logs, or remote web services. Python makes these tasks straightforward with its built-in `json` module and the widely used `requests` library.
 

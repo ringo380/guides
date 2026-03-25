@@ -1,7 +1,15 @@
 # Introduction to Python for Sysadmins
 
 **Version:** 0.1  
-**Year:** 2026  
+**Year:** 2026
+
+---
+
+## Copyright Notice
+
+Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed under [CC BY-NC-ND 4.0](../../LICENSE-CONTENT). You may share this material for non-commercial purposes with attribution, but you may not distribute modified versions.
+
+---
 
 Python has become the de facto standard for systems automation and tool building. Its clean syntax and extensive standard library make it an ideal choice for replacing complex shell scripts and integrating with modern APIs.
 

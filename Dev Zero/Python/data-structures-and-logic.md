@@ -1,7 +1,15 @@
 # Data Structures and Logic (Python)
 
 **Version:** 0.1  
-**Year:** 2026  
+**Year:** 2026
+
+---
+
+## Copyright Notice
+
+Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed under [CC BY-NC-ND 4.0](../../LICENSE-CONTENT). You may share this material for non-commercial purposes with attribution, but you may not distribute modified versions.
+
+---
 
 Modern sysadmin tasks involve more than just parsing single lines of text. We often need to store collections of data, transform them, and make decisions based on their contents. Python's built-in data structures and clean control flow logic are designed for exactly these scenarios.
 

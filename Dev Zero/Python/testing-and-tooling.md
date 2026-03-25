@@ -1,7 +1,15 @@
 # Testing and Tooling in Python
 
 **Version:** 0.1  
-**Year:** 2026  
+**Year:** 2026
+
+---
+
+## Copyright Notice
+
+Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed under [CC BY-NC-ND 4.0](../../LICENSE-CONTENT). You may share this material for non-commercial purposes with attribution, but you may not distribute modified versions.
+
+---
 
 As your automation scripts grow from simple snippets to production-grade tools, reliability and maintainability become critical. Python has a mature ecosystem for testing and dependency management that helps ensure your code behaves as expected and is easy to share.
 

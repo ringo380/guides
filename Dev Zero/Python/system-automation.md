@@ -1,7 +1,15 @@
 # System Automation with Python
 
 **Version:** 0.1  
-**Year:** 2026  
+**Year:** 2026
+
+---
+
+## Copyright Notice
+
+Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed under [CC BY-NC-ND 4.0](../../LICENSE-CONTENT). You may share this material for non-commercial purposes with attribution, but you may not distribute modified versions.
+
+---
 
 Python's real power for sysadmins lies in its ability to interact with the underlying operating system. Whether you are managing files, running external commands, or parsing command-line arguments, Python provides robust modules that are often more reliable and readable than complex Bash scripts.
 
