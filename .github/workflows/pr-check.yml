@@ -16,14 +16,25 @@ jobs:
           python-version: "3.x"
           cache: 'pip'
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y libcairo2-dev libffi-dev
 
       - name: Install dependencies
         run: pip install -r requirements-test.txt
 
-      - name: Run tests
+      - name: Run Python tests
         run: python -m pytest tests/ -v
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Run JS tests
+        run: npx vitest run
 
       - name: Prepare docs directory
         run: ./setup-docs.sh
