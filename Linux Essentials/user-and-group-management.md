@@ -328,6 +328,30 @@ The format is: `who host=(runas_user:runas_group) commands`
 | `(runas)` | Which user/group to run as (`ALL` = any) |
 | `commands` | Comma-separated list of allowed commands (full paths) |
 
+```code-walkthrough
+language: bash
+title: Anatomy of a sudoers Entry
+code: |
+  %developers ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart nginx, \
+                                  /usr/bin/systemctl restart myapp, \
+                                  /usr/bin/systemctl status *
+annotations:
+  - line: 1
+    text: "The % prefix means this rule applies to a group, not a user. %developers matches all members of the 'developers' group. Without %, it would match a user named 'developers'."
+  - line: 1
+    text: "The first ALL is the host field. ALL means this rule applies on any host. In multi-server environments with shared sudoers (via LDAP/SSSD), you can restrict rules to specific hostnames."
+  - line: 1
+    text: "(ALL) is the runas specification - which user the commands run as. (ALL) means any user, including root. (www-data) would restrict to only running commands as www-data."
+  - line: 1
+    text: "NOPASSWD: means these commands run without prompting for the user's password. Remove it to require password confirmation. NOPASSWD should only be used for specific commands, not broad access."
+  - line: 1
+    text: "/usr/bin/systemctl restart nginx is a fully qualified command path. sudoers requires absolute paths - 'systemctl' alone would not work. This restricts the rule to exactly this command with these arguments."
+  - line: 2
+    text: "The backslash continues the rule onto the next line. Multiple commands are separated by commas. Each command must include its full path."
+  - line: 3
+    text: "The * wildcard in 'systemctl status *' allows any argument after 'status'. Members can check the status of any service, but can only restart nginx and myapp specifically."
+```
+
 ### Drop-in Files
 
 Rather than modifying the main `/etc/sudoers` file, use drop-in files in `/etc/sudoers.d/`:
@@ -474,6 +498,50 @@ This locks an account for 10 minutes after 5 failed login attempts within 15 min
 
 !!! tip "Be careful with PAM"
     PAM misconfiguration can lock everyone - including root - out of a system. Always keep a separate root session open when editing PAM files, and test changes in a second terminal before closing your safety session.
+
+```command-builder
+base: useradd
+description: Build a useradd command to create a new Linux user
+options:
+  - flag: ""
+    type: select
+    label: "Home directory"
+    explanation: "Create a home directory populated from /etc/skel"
+    choices:
+      - ["-m", "Create home directory (-m)"]
+      - ["", "No home directory"]
+      - ["-m -d /opt/appuser", "Custom home path (-m -d /opt/appuser)"]
+  - flag: ""
+    type: select
+    label: "Login shell"
+    explanation: "Set the user's default shell"
+    choices:
+      - ["-s /bin/bash", "Bash (-s /bin/bash)"]
+      - ["-s /bin/zsh", "Zsh (-s /bin/zsh)"]
+      - ["-s /sbin/nologin", "No login shell (-s /sbin/nologin)"]
+  - flag: ""
+    type: select
+    label: "Account type"
+    explanation: "Regular user or system/service account"
+    choices:
+      - ["", "Regular user (UID 1000+)"]
+      - ["-r", "System account (-r, UID below 1000)"]
+  - flag: "-G"
+    type: text
+    label: "Supplementary groups"
+    placeholder: "sudo,docker"
+    explanation: "Comma-separated groups to add the user to (-G)"
+  - flag: "-c"
+    type: text
+    label: "Comment (full name)"
+    placeholder: "Jane Doe"
+    explanation: "GECOS field, usually the user's full name (-c)"
+  - flag: ""
+    type: text
+    label: "Username"
+    placeholder: "jdoe"
+    explanation: "The login name for the new account"
+```
 
 ---
 

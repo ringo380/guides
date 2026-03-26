@@ -429,6 +429,63 @@ if __name__ == "__main__":
     main()
 ```
 
+```code-walkthrough
+language: python
+title: Service Health Checker Structure
+code: |
+  #!/usr/bin/env python3
+  """Check the health of services and report status."""
+
+  import argparse
+  import logging
+  import subprocess
+  import sys
+
+  logging.basicConfig(
+      level=logging.INFO,
+      format="%(asctime)s [%(levelname)s] %(message)s"
+  )
+  logger = logging.getLogger("healthcheck")
+
+  def check_service(name):
+      """Check if a systemd service is active."""
+      result = subprocess.run(
+          ["systemctl", "is-active", name],
+          capture_output=True, text=True
+      )
+      return result.stdout.strip() == "active"
+
+  def main():
+      parser = argparse.ArgumentParser(description="Service health checker")
+      parser.add_argument("--services", nargs="+", default=["nginx", "postgresql"])
+      parser.add_argument("-v", "--verbose", action="store_true")
+      args = parser.parse_args()
+
+      if args.verbose:
+          logger.setLevel(logging.DEBUG)
+annotations:
+  - line: 1
+    text: "The shebang line makes this script directly executable on Unix systems with `chmod +x` - no need to type `python3` before the filename."
+  - line: 4
+    text: "argparse, logging, and subprocess form the standard toolkit for CLI automation scripts. All three are in the standard library."
+  - line: 9
+    text: "Configure logging once at module level. The format string adds timestamps and severity levels to every message automatically."
+  - line: 13
+    text: "getLogger() with a name creates a named logger. This is useful when multiple modules log to the same destination - you can tell which component produced each message."
+  - line: 15
+    text: "Each check is a standalone function that returns a boolean. This makes the script testable - you can call check_service() in a unit test without running main()."
+  - line: 18
+    text: "The command is passed as a list, not a string. This avoids shell=True and prevents shell injection if the service name comes from user input."
+  - line: 19
+    text: "capture_output=True captures both stdout and stderr. text=True decodes bytes to strings so you can use string methods like .strip() directly."
+  - line: 25
+    text: "nargs='+' accepts one or more values after the flag. The default provides sensible services to check when no arguments are given."
+  - line: 26
+    text: "action='store_true' makes --verbose a boolean flag. No value needed - its presence sets args.verbose to True."
+  - line: 30
+    text: "Changing the logger level at runtime based on a CLI flag. DEBUG shows everything; the default INFO level hides debug-level messages."
+```
+
 ---
 
 ```terminal
@@ -585,6 +642,91 @@ solution: |
       if worst == 0:
           logger.info("All checks passed")
       sys.exit(worst)
+
+  if __name__ == "__main__":
+      main()
+```
+
+---
+
+```exercise
+title: "Build a File Processing CLI Tool"
+difficulty: intermediate
+scenario: |
+  Your team needs a command-line utility that processes files in a directory. Write a Python script (`file_processor.py`) that:
+
+  1. Uses `argparse` to accept: a required `directory` positional argument, an optional `--pattern` flag (default: `*.log`), an optional `--command` flag (a shell command to run on each file, default: `wc -l`), and a `--verbose` flag
+  2. Uses `pathlib.Path.glob()` to find all files matching the pattern in the given directory (non-recursive)
+  3. Runs the specified command on each matched file using `subprocess.run()`, passing the command as a list (split the command string and append the file path)
+  4. Logs each result using the `logging` module: the filename, the command output (stripped), and whether it succeeded or failed
+  5. Prints a summary at the end: total files found, successful, and failed
+
+  Example usage:
+  ```
+  python3 file_processor.py /var/log --pattern "*.log" --command "wc -l" --verbose
+  ```
+hints:
+  - "Use pathlib.Path(args.directory).glob(args.pattern) to find matching files"
+  - "Split the command string with args.command.split() and append str(file_path) to the list"
+  - "Wrap each subprocess.run() in try/except for subprocess.CalledProcessError when using check=True"
+  - "Track success/failure counts with simple integer counters"
+solution: |
+  #!/usr/bin/env python3
+  """Process files matching a pattern with a shell command."""
+
+  import argparse
+  import logging
+  import subprocess
+  import sys
+  from pathlib import Path
+
+  logging.basicConfig(
+      level=logging.INFO,
+      format="%(asctime)s [%(levelname)s] %(message)s",
+      datefmt="%Y-%m-%d %H:%M:%S"
+  )
+  logger = logging.getLogger("file_processor")
+
+  def main():
+      parser = argparse.ArgumentParser(description="Process files with a command")
+      parser.add_argument("directory", help="Directory to search for files")
+      parser.add_argument("--pattern", default="*.log", help="Glob pattern (default: *.log)")
+      parser.add_argument("--command", default="wc -l", help="Command to run on each file (default: wc -l)")
+      parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
+      args = parser.parse_args()
+
+      if args.verbose:
+          logger.setLevel(logging.DEBUG)
+
+      target_dir = Path(args.directory)
+      if not target_dir.is_dir():
+          logger.error(f"Not a directory: {args.directory}")
+          sys.exit(1)
+
+      files = sorted(target_dir.glob(args.pattern))
+      if not files:
+          logger.warning(f"No files matching '{args.pattern}' in {args.directory}")
+          sys.exit(0)
+
+      logger.info(f"Found {len(files)} files matching '{args.pattern}'")
+
+      succeeded = 0
+      failed = 0
+
+      for file_path in files:
+          cmd = args.command.split() + [str(file_path)]
+          logger.debug(f"Running: {' '.join(cmd)}")
+
+          try:
+              result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+              output = result.stdout.strip()
+              logger.info(f"{file_path.name}: {output}")
+              succeeded += 1
+          except subprocess.CalledProcessError as e:
+              logger.error(f"{file_path.name}: command failed (exit {e.returncode})")
+              failed += 1
+
+      logger.info(f"Summary: {len(files)} total, {succeeded} succeeded, {failed} failed")
 
   if __name__ == "__main__":
       main()

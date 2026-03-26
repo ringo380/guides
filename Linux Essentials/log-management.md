@@ -150,6 +150,56 @@ journalctl -u nginx -o verbose
 journalctl -u nginx -o short-precise
 ```
 
+```command-builder
+base: journalctl
+description: Build a journalctl command to query systemd logs
+options:
+  - flag: ""
+    type: select
+    label: "Unit filter"
+    explanation: "Show logs from a specific systemd service"
+    choices:
+      - ["", "All units (default)"]
+      - ["-u sshd", "SSH daemon (-u sshd)"]
+      - ["-u nginx", "Nginx web server (-u nginx)"]
+      - ["-u postgresql", "PostgreSQL (-u postgresql)"]
+  - flag: ""
+    type: select
+    label: "Time range"
+    explanation: "Filter logs by time window"
+    choices:
+      - ["", "All time (default)"]
+      - ["-b", "Current boot only (-b)"]
+      - ["--since '1 hour ago'", "Last hour (--since '1 hour ago')"]
+      - ["--since '24 hours ago'", "Last 24 hours (--since '24 hours ago')"]
+      - ["--since today", "Since midnight (--since today)"]
+  - flag: ""
+    type: select
+    label: "Priority level"
+    explanation: "Filter by minimum severity (includes all more severe levels above)"
+    choices:
+      - ["", "All priorities (default)"]
+      - ["-p err", "Errors and above (-p err)"]
+      - ["-p warning", "Warnings and above (-p warning)"]
+      - ["-p crit", "Critical and above (-p crit)"]
+  - flag: ""
+    type: select
+    label: "Output format"
+    explanation: "Control how log entries are displayed"
+    choices:
+      - ["", "Default (short)"]
+      - ["-o json-pretty", "JSON pretty-printed (-o json-pretty)"]
+      - ["-o cat", "Message only, no metadata (-o cat)"]
+      - ["-o verbose", "All fields (-o verbose)"]
+  - flag: ""
+    type: select
+    label: "Follow mode"
+    explanation: "Watch for new log entries in real time"
+    choices:
+      - ["", "Show existing logs and exit"]
+      - ["-f", "Follow new entries in real time (-f)"]
+```
+
 ### Journal Disk Usage
 
 ```bash
@@ -314,6 +364,48 @@ Global settings live in `/etc/logrotate.conf`. Per-application configs go in `/e
         [ -f /var/run/nginx.pid ] && kill -USR1 $(cat /var/run/nginx.pid)
     endscript
 }
+```
+
+```code-walkthrough
+language: bash
+title: Anatomy of a logrotate Configuration
+code: |
+  /var/log/nginx/*.log {
+      daily
+      missingok
+      rotate 14
+      compress
+      delaycompress
+      notifempty
+      create 0640 www-data adm
+      sharedscripts
+      postrotate
+          [ -f /var/run/nginx.pid ] && kill -USR1 $(cat /var/run/nginx.pid)
+      endscript
+  }
+annotations:
+  - line: 1
+    text: "The path with wildcard matches all .log files in /var/log/nginx/. Each matching file gets the same rotation rules."
+  - line: 2
+    text: "'daily' sets the rotation frequency. Other options: weekly, monthly, yearly."
+  - line: 3
+    text: "'missingok' suppresses errors if a log file doesn't exist. Without it, logrotate reports an error for missing files."
+  - line: 4
+    text: "'rotate 14' keeps 14 rotated copies. Older copies are deleted. With daily rotation, this retains two weeks of logs."
+  - line: 5
+    text: "'compress' gzips rotated files to save disk space. Rotated files get a .gz extension."
+  - line: 6
+    text: "'delaycompress' skips compression on the most recently rotated file. This is important when a process might still be writing to the just-rotated file."
+  - line: 7
+    text: "'notifempty' skips rotation if the log file is empty. Avoids creating pointless empty archive files."
+  - line: 8
+    text: "'create 0640 www-data adm' creates a new empty log file after rotation with the specified permissions and ownership."
+  - line: 9
+    text: "'sharedscripts' runs the postrotate block once for all matched files, not once per file. Without it, the signal would be sent for every .log file individually."
+  - line: 10
+    text: "The postrotate block runs after rotation completes. This checks if nginx is running and sends USR1, which tells nginx to reopen its log files."
+  - line: 11
+    text: "kill -USR1 sends the USR1 signal to the nginx master process. Nginx handles this by gracefully reopening log file descriptors to write to the new files."
 ```
 
 ### Key Directives

@@ -105,6 +105,46 @@ systemctl list-unit-files --type=service
 systemctl --failed
 ```
 
+```command-builder
+base: systemctl
+description: Build a systemctl command to manage systemd services
+options:
+  - flag: ""
+    type: select
+    label: "Action"
+    explanation: "The operation to perform on the service"
+    choices:
+      - ["status", "Show service status (status)"]
+      - ["start", "Start a service (start)"]
+      - ["stop", "Stop a service (stop)"]
+      - ["restart", "Stop then start a service (restart)"]
+      - ["reload", "Reload config without restart (reload)"]
+      - ["enable", "Start at boot (enable)"]
+      - ["disable", "Remove from boot (disable)"]
+      - ["enable --now", "Enable and start immediately (enable --now)"]
+      - ["disable --now", "Disable and stop immediately (disable --now)"]
+      - ["mask", "Prevent service from starting entirely (mask)"]
+      - ["unmask", "Remove mask (unmask)"]
+      - ["is-active", "Check if running (is-active)"]
+      - ["is-enabled", "Check if enabled at boot (is-enabled)"]
+  - flag: ""
+    type: text
+    label: "Unit name"
+    placeholder: "nginx"
+    explanation: "The service or unit to manage (e.g., nginx, sshd, postgresql)"
+  - flag: ""
+    type: select
+    label: "List units"
+    explanation: "List units instead of managing a specific one (overrides unit name)"
+    choices:
+      - ["", "Manage a specific unit"]
+      - ["list-units --type=service", "List all active services"]
+      - ["list-units --type=service --all", "List all services including inactive"]
+      - ["list-unit-files --type=service", "List enabled/disabled status of all services"]
+      - ["--failed", "Show only failed services"]
+      - ["list-timers", "List all active timers"]
+```
+
 ```terminal
 title: "Managing a Service with systemctl"
 steps:
@@ -227,6 +267,65 @@ Defines what happens when you run `systemctl enable`:
 | `WantedBy=multi-user.target` | Enable this service in the standard multi-user boot (most services) |
 | `WantedBy=graphical.target` | Enable for graphical desktop environments |
 | `RequiredBy=` | Like WantedBy but creates a hard dependency |
+
+```code-walkthrough
+language: ini
+title: Anatomy of a systemd Service Unit File
+code: |
+  [Unit]
+  Description=My Application Server
+  Documentation=https://example.com/docs
+  After=network.target postgresql.service
+  Wants=postgresql.service
+
+  [Service]
+  Type=simple
+  User=appuser
+  Group=appuser
+  WorkingDirectory=/opt/myapp
+  ExecStart=/opt/myapp/bin/server --config /etc/myapp/config.yaml
+  ExecReload=/bin/kill -HUP $MAINPID
+  Restart=on-failure
+  RestartSec=5
+  StandardOutput=journal
+  StandardError=journal
+
+  [Install]
+  WantedBy=multi-user.target
+annotations:
+  - line: 1
+    text: "[Unit] defines metadata and relationships with other units. This section is common to all unit types (services, timers, sockets, etc.)."
+  - line: 2
+    text: "Description appears in systemctl status output and journalctl. Make it concise but descriptive enough to identify the service."
+  - line: 3
+    text: "Documentation links are shown in systemctl status. Accepts man: pages, https:// URLs, or file:// paths."
+  - line: 4
+    text: "After= controls startup ordering. This service starts after network.target and postgresql.service - but only if those units are being started. It does not pull them in as dependencies."
+  - line: 5
+    text: "Wants= is a soft dependency. systemd tries to start postgresql.service alongside this unit, but won't fail this service if PostgreSQL can't start. Use Requires= for hard dependencies."
+  - line: 7
+    text: "[Service] defines how the process runs. This section is specific to .service unit files."
+  - line: 8
+    text: "Type=simple means systemd considers the service 'started' as soon as ExecStart launches. Use 'forking' for daemons that fork into the background, 'oneshot' for scripts that run and exit."
+  - line: 9
+    text: "User= and Group= run the process as a non-root user. The process cannot access files owned by other users unless group permissions allow it."
+  - line: 11
+    text: "WorkingDirectory sets the current directory before running ExecStart. The application sees this as its pwd."
+  - line: 12
+    text: "ExecStart must use an absolute path - systemd doesn't use PATH. This is the main command that runs when the service starts."
+  - line: 13
+    text: "ExecReload defines the command for 'systemctl reload'. HUP (hangup) is the conventional signal for 'reread your config'. $MAINPID is a systemd variable holding the service's PID."
+  - line: 14
+    text: "Restart=on-failure restarts the process if it exits with a non-zero status, is killed by a signal, or times out. Use 'always' to restart regardless of exit status."
+  - line: 15
+    text: "RestartSec=5 waits 5 seconds before restarting. Prevents a crashing service from consuming resources in a tight restart loop."
+  - line: 16
+    text: "StandardOutput=journal sends stdout to the systemd journal. View it with journalctl -u unitname. The default is 'journal' in most distributions."
+  - line: 19
+    text: "[Install] defines what happens when you run 'systemctl enable'. Without this section, the service can't be enabled (it's 'static')."
+  - line: 20
+    text: "WantedBy=multi-user.target means enabling this service adds it to the standard multi-user boot sequence. Most server services use this target."
+```
 
 ### Editing Unit Files Safely
 

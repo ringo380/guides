@@ -284,6 +284,44 @@ except requests.HTTPError as e:
     print(f"API returned error: {e}")
 ```
 
+```code-walkthrough
+language: python
+title: HTTP Request with Error Handling
+code: |
+  import requests
+
+  try:
+      response = requests.get(
+          "https://api.example.com/status",
+          timeout=10
+      )
+      response.raise_for_status()
+      data = response.json()
+  except requests.ConnectionError:
+      print("Could not connect to the API.")
+  except requests.Timeout:
+      print("Request timed out after 10 seconds.")
+  except requests.HTTPError as e:
+      print(f"API returned error: {e}")
+annotations:
+  - line: 3
+    text: "The try block wraps everything that can fail - the request, status check, and JSON parsing."
+  - line: 4
+    text: "requests.get() can raise ConnectionError (DNS failure, refused connection) or Timeout."
+  - line: 6
+    text: "timeout=10 sets a 10-second limit for both connection and response. Without this, a stalled server blocks your script indefinitely."
+  - line: 8
+    text: "raise_for_status() inspects the response code and raises HTTPError for any 4xx or 5xx status. Without it, a 500 response silently passes through."
+  - line: 9
+    text: "response.json() parses the body as JSON into a Python dict or list. This can raise ValueError if the response isn't valid JSON."
+  - line: 10
+    text: "ConnectionError catches network-level failures: DNS resolution, refused connections, dropped packets."
+  - line: 12
+    text: "Timeout fires when the server takes longer than the specified timeout to respond."
+  - line: 14
+    text: "HTTPError is raised by raise_for_status() for 4xx/5xx codes. The exception object contains the response, so e.response.status_code gives the exact code."
+```
+
 ### Pagination
 
 Many APIs return results in pages. You need to loop until there are no more pages:
@@ -444,6 +482,68 @@ solution: |
       print(f"Status: {response.status_code}")
       print(f"Response size: {len(response.content):,} bytes")
       print(f"Saved to: {output_path}")
+
+  if __name__ == "__main__":
+      main()
+```
+
+---
+
+```exercise
+title: "Log File Analyzer"
+difficulty: intermediate
+scenario: |
+  You have a directory of CSV log files from different servers. Each file has columns: `timestamp`, `level`, `message`. Write a Python script that:
+
+  1. Uses `pathlib` to find all `.csv` files in a `logs/` directory
+  2. Reads each file with `csv.DictReader`
+  3. Counts the number of ERROR and WARNING entries per file
+  4. Writes a summary to `log_summary.json` containing: filename, total lines, error count, and warning count for each file
+  5. Prints which file had the most errors
+
+  Example CSV row: `2026-03-25T10:30:00,ERROR,Connection refused to database`
+hints:
+  - "Use Path('logs').glob('*.csv') to find all CSV files"
+  - "csv.DictReader(f) gives you rows as dictionaries keyed by header names"
+  - "Track counts with a list of dicts: {'file': path.name, 'total': 0, 'errors': 0, 'warnings': 0}"
+  - "Use max() with a key function to find the file with the most errors"
+solution: |
+  #!/usr/bin/env python3
+  """Analyze CSV log files and produce a JSON summary."""
+
+  import csv
+  import json
+  from pathlib import Path
+
+  def analyze_log(filepath):
+      """Count total, error, and warning lines in a CSV log file."""
+      totals = {"file": filepath.name, "total": 0, "errors": 0, "warnings": 0}
+      with open(filepath) as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+              totals["total"] += 1
+              level = row.get("level", "").strip().upper()
+              if level == "ERROR":
+                  totals["errors"] += 1
+              elif level == "WARNING":
+                  totals["warnings"] += 1
+      return totals
+
+  def main():
+      log_dir = Path("logs")
+      if not log_dir.is_dir():
+          print("Error: logs/ directory not found")
+          return
+
+      results = [analyze_log(f) for f in sorted(log_dir.glob("*.csv"))]
+
+      with open("log_summary.json", "w") as f:
+          json.dump(results, f, indent=2)
+
+      if results:
+          worst = max(results, key=lambda r: r["errors"])
+          print(f"Most errors: {worst['file']} ({worst['errors']} errors)")
+      print(f"Summary written to log_summary.json ({len(results)} files analyzed)")
 
   if __name__ == "__main__":
       main()
