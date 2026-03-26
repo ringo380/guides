@@ -146,7 +146,7 @@ options:
   - flag: ""
     type: select
     label: "Connection state"
-    explanation: "Match packets by their connection tracking state"
+    explanation: "Match packets by their connection tracking state. Older kernels (pre-3.x) use -m state --state instead of -m conntrack --ctstate"
     choices:
       - ["", "No state filter"]
       - ["-m conntrack --ctstate NEW", "NEW (first packet of a connection)"]

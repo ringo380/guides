@@ -337,11 +337,11 @@ options:
   - flag: ""
     type: select
     label: "Regex mode"
-    explanation: "Basic (BRE) is the default; Extended (ERE) avoids escaping +, ?, {}, (); PCRE adds \\d, lookaround, and lazy quantifiers"
+    explanation: "Basic (BRE) is the default; Extended (ERE) avoids escaping +, ?, {}, (); PCRE adds \\d, lookaround, and lazy quantifiers. -P requires GNU grep and is unavailable on macOS or Alpine Linux"
     choices:
       - ["", "Basic regex (default BRE)"]
       - ["-E", "Extended regex (-E)"]
-      - ["-P", "Perl-compatible regex (-P)"]
+      - ["-P", "Perl-compatible regex (-P, GNU grep only)"]
   - flag: ""
     type: select
     label: "Match options"

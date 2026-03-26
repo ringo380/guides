@@ -589,7 +589,7 @@ options:
   - flag: ""
     type: select
     label: "Jump host"
-    explanation: "Route through a bastion/jump server"
+    explanation: "Route through a bastion/jump server. -J requires OpenSSH 7.3+ (2016). Older systems need ProxyCommand with nc instead"
     choices:
       - ["", "Direct connection"]
       - ["-J bastion", "Jump through bastion (-J bastion)"]
