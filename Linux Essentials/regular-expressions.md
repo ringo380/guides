@@ -330,6 +330,67 @@ grep -P '(?<=price: )\d+' catalog.txt          # lookbehind
 !!! warning "ERE is the practical default"
     Unless you have a specific reason to use BRE, use `grep -E` and `sed -E` for everything. The unescaped syntax is cleaner and less error-prone. Use `grep -P` when you need PCRE-only features like `\d`, lazy quantifiers, or lookaround.
 
+```command-builder
+base: grep
+description: Build a grep command to search file contents with regex
+options:
+  - flag: ""
+    type: select
+    label: "Regex mode"
+    explanation: "Basic (BRE) is the default; Extended (ERE) avoids escaping +, ?, {}, (); PCRE adds \\d, lookaround, and lazy quantifiers"
+    choices:
+      - ["", "Basic regex (default BRE)"]
+      - ["-E", "Extended regex (-E)"]
+      - ["-P", "Perl-compatible regex (-P)"]
+  - flag: ""
+    type: select
+    label: "Match options"
+    explanation: "Modify how patterns are matched"
+    choices:
+      - ["", "Default matching"]
+      - ["-i", "Case insensitive (-i)"]
+      - ["-w", "Match whole words only (-w)"]
+      - ["-x", "Match whole lines only (-x)"]
+  - flag: ""
+    type: select
+    label: "Output mode"
+    explanation: "Control what appears in the output"
+    choices:
+      - ["", "Print matching lines (default)"]
+      - ["-o", "Print only the matched part (-o)"]
+      - ["-c", "Print count of matching lines (-c)"]
+      - ["-l", "Print only filenames with matches (-l)"]
+      - ["-n", "Prefix line numbers (-n)"]
+  - flag: ""
+    type: select
+    label: "Invert or context"
+    explanation: "Exclude matches or show surrounding lines"
+    choices:
+      - ["", "Normal matching"]
+      - ["-v", "Invert match - show non-matching lines (-v)"]
+      - ["-C 3", "Show 3 lines of context around matches (-C 3)"]
+      - ["-A 5", "Show 5 lines after each match (-A 5)"]
+      - ["-B 5", "Show 5 lines before each match (-B 5)"]
+  - flag: ""
+    type: select
+    label: "Recursive search"
+    explanation: "Search through directory trees"
+    choices:
+      - ["", "Single file or stdin"]
+      - ["-r", "Recursive search (-r)"]
+      - ["-r --include='*.log'", "Recursive, only .log files (-r --include='*.log')"]
+  - flag: ""
+    type: text
+    label: "Pattern"
+    placeholder: "error|warning"
+    explanation: "The regex pattern to search for"
+  - flag: ""
+    type: text
+    label: "File"
+    placeholder: "/var/log/syslog"
+    explanation: "The file or directory to search"
+```
+
 ```quiz
 question: "You run grep '(error|warning)' logfile and get no results, but you know the file contains both words. What's wrong?"
 type: multiple-choice
@@ -425,6 +486,32 @@ grep -E '" 5[0-9]{2} ' access.log
 
 # Extract key=value pairs
 grep -oP '\w+=\S+' config.log
+```
+
+```code-walkthrough
+language: bash
+title: Dissecting an IP Address Validation Regex
+code: |
+  grep -P '\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b' access.log
+annotations:
+  - line: 1
+    text: "-P enables Perl-Compatible Regular Expressions (PCRE), required for \\d (digit shorthand) and non-capturing groups (?:...)."
+  - line: 1
+    text: "\\b is a word boundary anchor. It ensures the match starts and ends at a word boundary, preventing partial matches inside longer numbers like '12345.67.89.01'."
+  - line: 1
+    text: "(?:...) is a non-capturing group. It groups the pattern for repetition without storing the match in a backreference. More efficient than capturing groups when you don't need \\1."
+  - line: 1
+    text: "25[0-5] matches 250-255. This is the first alternative for the highest valid octet range."
+  - line: 1
+    text: "2[0-4]\\d matches 200-249. The second alternative covers the rest of the 200s."
+  - line: 1
+    text: "[01]?\\d\\d? matches 0-199. The optional [01] handles the hundreds digit, and the second \\d? makes the tens digit optional, covering single-digit values like 5 and double-digit values like 42."
+  - line: 1
+    text: "\\. matches a literal dot between octets. Without the backslash, . matches any character."
+  - line: 1
+    text: "{3} repeats the octet-dot group exactly three times, matching the first three octets and their trailing dots (e.g., '192.168.1.')."
+  - line: 1
+    text: "The final octet group repeats the same 0-255 pattern without a trailing dot, completing the four-octet IP address."
 ```
 
 ---

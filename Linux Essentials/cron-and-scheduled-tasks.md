@@ -32,6 +32,28 @@ Each field accepts specific values, ranges, steps, and lists:
 
 Month and day-of-week fields also accept three-letter abbreviations: `jan`, `feb`, `mon`, `tue`, etc.
 
+```code-walkthrough
+language: bash
+title: Anatomy of a Crontab Entry
+code: |
+  */15 * * * * root /usr/local/bin/check-disk-space.sh >> /var/log/disk-check.log 2>&1
+annotations:
+  - line: 1
+    text: "*/15 in the minute field means 'every 15 minutes'. The slash defines a step value - starting from 0, it matches 0, 15, 30, and 45."
+  - line: 1
+    text: "The first * is the hour field (0-23). An asterisk means every hour, so combined with */15, this runs at :00, :15, :30, and :45 of every hour."
+  - line: 1
+    text: "The second * is the day-of-month field (1-31). Asterisk means every day."
+  - line: 1
+    text: "The third * is the month field (1-12). Asterisk means every month."
+  - line: 1
+    text: "The fourth * is the day-of-week field (0-7, where 0 and 7 are Sunday). Asterisk means every day of the week."
+  - line: 1
+    text: "'root' is the user field - only present in system crontabs (/etc/crontab and /etc/cron.d/). User crontabs created with crontab -e omit this field."
+  - line: 1
+    text: ">> appends stdout to the log file. 2>&1 redirects stderr to the same file. Without this, cron emails any output to the crontab owner."
+```
+
 ```quiz
 question: "What does the cron expression 30 2 * * 0 mean?"
 type: multiple-choice
@@ -318,6 +340,28 @@ tasks:
   - prompt: "Write a cron expression that runs a health check every 10 minutes, but only between 8 AM and 6 PM."
     solution: "*/10 8-17 * * * /path/to/health-check.sh"
     hint: "Use a step value (*/10) in the minute field and a range (8-17) in the hour field. Hour 17 covers 5:00-5:59 PM."
+```
+
+```command-builder
+base: crontab
+description: Build a crontab management command
+options:
+  - flag: ""
+    type: select
+    label: "Action"
+    explanation: "What to do with the crontab"
+    choices:
+      - ["-l", "List current crontab entries (-l)"]
+      - ["-e", "Edit crontab in your default editor (-e)"]
+      - ["-r", "Remove entire crontab (-r)"]
+  - flag: ""
+    type: select
+    label: "User"
+    explanation: "Manage another user's crontab (requires root)"
+    choices:
+      - ["", "Current user (default)"]
+      - ["-u root", "root user (-u root)"]
+      - ["-u www-data", "www-data user (-u www-data)"]
 ```
 
 ---

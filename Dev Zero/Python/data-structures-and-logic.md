@@ -162,6 +162,25 @@ host_map = {name: ip for name, ip in zip(names, ips)}
 prod_hosts = {name: ip for name, ip in host_map.items() if name.startswith("web")}
 ```
 
+```code-walkthrough
+language: python
+title: Dictionary Comprehension with Filtering
+code: |
+  names = ["web01", "web02", "db01"]
+  ips = ["10.0.0.1", "10.0.0.2", "10.0.1.1"]
+
+  host_map = {name: ip for name, ip in zip(names, ips)}
+
+  prod_hosts = {name: ip for name, ip in host_map.items() if name.startswith("web")}
+annotations:
+  - line: 1
+    text: "Two parallel lists - the goal is to combine them into a key-value lookup table."
+  - line: 4
+    text: "zip() pairs elements by position: ('web01', '10.0.0.1'), ('web02', '10.0.0.2'), etc. The dict comprehension {name: ip for ...} builds a dictionary from each pair."
+  - line: 6
+    text: "A second comprehension filters the existing dictionary. The 'if' clause at the end acts as a gate - only entries where the name starts with 'web' are included in the result."
+```
+
 ### Useful Patterns
 
 ```python
@@ -232,6 +251,20 @@ unauthorized = active - allowed        # Difference: {"10.0.0.4", "10.0.0.5"}
 # Fast membership testing (O(1) vs O(n) for lists)
 if "10.0.0.4" in allowed:
     print("IP is allowed")
+```
+
+```terminal
+title: Dict, Set, and Counter Operations
+steps:
+  - command: "python3 -c \"from collections import Counter; codes = [200, 200, 404, 500, 200, 404, 200]; c = Counter(codes); print(c); print('Most common:', c.most_common(2))\""
+    output: "Counter({200: 4, 404: 2, 500: 1})\nMost common: [(200, 4), (404, 2)]"
+    narration: "Counter takes any iterable and tallies occurrences. most_common(n) returns the top n elements as (value, count) tuples, sorted by frequency."
+  - command: "python3 -c \"allowed = {'10.0.0.1', '10.0.0.2', '10.0.0.3'}; active = {'10.0.0.2', '10.0.0.4', '10.0.0.5'}; print('Authorized:', allowed & active); print('Unauthorized:', active - allowed)\""
+    output: "Authorized: {'10.0.0.2'}\nUnauthorized: {'10.0.0.4', '10.0.0.5'}"
+    narration: "Set intersection (&) finds IPs that appear in both sets. Set difference (-) finds IPs in active that are not in allowed. These operations run in O(min(len(a), len(b))) time."
+  - command: "python3 -c \"config = {'hostname': 'app01', 'port': 8080}; print(config.get('port')); print(config.get('timeout', 30)); print(config.get('debug'))\""
+    output: "8080\n30\nNone"
+    narration: "dict.get() returns the value for a key if it exists. With a second argument, it returns that default instead of None. This avoids KeyError exceptions when accessing optional configuration keys."
 ```
 
 ---

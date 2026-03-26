@@ -284,6 +284,44 @@ except requests.HTTPError as e:
     print(f"API returned error: {e}")
 ```
 
+```code-walkthrough
+language: python
+title: HTTP Request with Error Handling
+code: |
+  import requests
+
+  try:
+      response = requests.get(
+          "https://api.example.com/status",
+          timeout=10
+      )
+      response.raise_for_status()
+      data = response.json()
+  except requests.ConnectionError:
+      print("Could not connect to the API.")
+  except requests.Timeout:
+      print("Request timed out after 10 seconds.")
+  except requests.HTTPError as e:
+      print(f"API returned error: {e}")
+annotations:
+  - line: 3
+    text: "The try block wraps everything that can fail - the request, status check, and JSON parsing."
+  - line: 4
+    text: "requests.get() can raise ConnectionError (DNS failure, refused connection) or Timeout."
+  - line: 6
+    text: "timeout=10 sets a 10-second limit for both connection and response. Without this, a stalled server blocks your script indefinitely."
+  - line: 8
+    text: "raise_for_status() inspects the response code and raises HTTPError for any 4xx or 5xx status. Without it, a 500 response silently passes through."
+  - line: 9
+    text: "response.json() parses the body as JSON into a Python dict or list. This can raise ValueError if the response isn't valid JSON."
+  - line: 10
+    text: "ConnectionError catches network-level failures: DNS resolution, refused connections, dropped packets."
+  - line: 12
+    text: "Timeout fires when the server takes longer than the specified timeout to respond."
+  - line: 14
+    text: "HTTPError is raised by raise_for_status() for 4xx/5xx codes. The exception object contains the response, so e.response.status_code gives the exact code."
+```
+
 ### Pagination
 
 Many APIs return results in pages. You need to loop until there are no more pages:
@@ -444,6 +482,78 @@ solution: |
       print(f"Status: {response.status_code}")
       print(f"Response size: {len(response.content):,} bytes")
       print(f"Saved to: {output_path}")
+
+  if __name__ == "__main__":
+      main()
+```
+
+---
+
+```exercise
+title: "Config-Driven API Reporter"
+difficulty: intermediate
+scenario: |
+  You need a script that ties together file reading, API calls, error handling, and CSV output. Write a Python script that:
+
+  1. Reads a JSON config file (`report_config.json`) containing a list of API endpoints (each with `name`, `url`, and `timeout`)
+  2. Makes a GET request to each endpoint, catching connection errors and timeouts individually
+  3. Collects the results: endpoint name, HTTP status code (or "ERROR"), and response time in milliseconds
+  4. Writes the results to a CSV file (`api_report.csv`) with columns: `name`, `status`, `response_ms`
+  5. Prints a summary line: how many succeeded and how many failed
+
+  Example config:
+  ```json
+  {
+    "endpoints": [
+      {"name": "GitHub API", "url": "https://api.github.com", "timeout": 5},
+      {"name": "Example", "url": "https://example.com", "timeout": 3}
+    ],
+    "output_file": "api_report.csv"
+  }
+  ```
+hints:
+  - "Use json.load() to read the config, then loop over config['endpoints']"
+  - "Track response time with: start = time.time(); response = requests.get(...); elapsed = (time.time() - start) * 1000"
+  - "Wrap each request in its own try/except so one failure doesn't stop the entire report"
+  - "Use csv.DictWriter with fieldnames=['name', 'status', 'response_ms'] to write results"
+solution: |
+  #!/usr/bin/env python3
+  """Config-driven API health reporter."""
+
+  import csv
+  import json
+  import sys
+  import time
+  import requests
+
+  def main():
+      try:
+          with open("report_config.json") as f:
+              config = json.load(f)
+      except (FileNotFoundError, json.JSONDecodeError) as e:
+          print(f"Error loading config: {e}")
+          sys.exit(1)
+
+      results = []
+      for endpoint in config["endpoints"]:
+          name = endpoint["name"]
+          try:
+              start = time.time()
+              response = requests.get(endpoint["url"], timeout=endpoint.get("timeout", 10))
+              elapsed_ms = round((time.time() - start) * 1000)
+              results.append({"name": name, "status": response.status_code, "response_ms": elapsed_ms})
+          except (requests.ConnectionError, requests.Timeout) as e:
+              results.append({"name": name, "status": "ERROR", "response_ms": 0})
+
+      output_file = config.get("output_file", "api_report.csv")
+      with open(output_file, "w", newline="") as f:
+          writer = csv.DictWriter(f, fieldnames=["name", "status", "response_ms"])
+          writer.writeheader()
+          writer.writerows(results)
+
+      succeeded = sum(1 for r in results if r["status"] != "ERROR")
+      failed = len(results) - succeeded
+      print(f"Report written to {output_file}: {succeeded} succeeded, {failed} failed")
 
   if __name__ == "__main__":
       main()

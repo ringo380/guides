@@ -195,6 +195,37 @@ Host deep-internal
 
 `ProxyJump` is superior to agent forwarding for reaching internal hosts. Your private key never leaves your machine - each hop is negotiated locally through a forwarded TCP connection.
 
+```code-walkthrough
+language: text
+title: Anatomy of an SSH Config Host Block
+code: |
+  Host web
+      HostName 10.0.1.50
+      User deploy
+      IdentityFile ~/.ssh/deploy_key
+      ProxyJump bastion
+      IdentitiesOnly yes
+      ServerAliveInterval 60
+      ServerAliveCountMax 3
+annotations:
+  - line: 1
+    text: "'Host web' defines an alias. Running 'ssh web' applies all directives in this block. Supports wildcards: 'Host *.prod' matches any host ending in .prod."
+  - line: 2
+    text: "HostName is the actual address to connect to - an IP or FQDN. The Host alias above is just a shortcut; this is where SSH actually connects."
+  - line: 3
+    text: "User sets the remote login username. Without this, SSH uses your local username."
+  - line: 4
+    text: "IdentityFile specifies which private key to offer. You can list multiple IdentityFile lines; SSH tries them in order."
+  - line: 5
+    text: "ProxyJump routes the connection through the 'bastion' host. SSH opens a connection to bastion first, then tunnels through it to reach 10.0.1.50. Your private key never leaves your local machine."
+  - line: 6
+    text: "IdentitiesOnly yes prevents SSH from trying keys from the agent that aren't listed in IdentityFile. Avoids 'too many authentication failures' when the agent holds many keys."
+  - line: 7
+    text: "ServerAliveInterval 60 sends a keepalive packet every 60 seconds over the encrypted channel. Prevents firewalls and NAT devices from dropping idle connections."
+  - line: 8
+    text: "ServerAliveCountMax 3 disconnects after 3 missed keepalives (3 minutes of no response). Combined with ServerAliveInterval, this detects dead connections within 3 minutes."
+```
+
 ### Connection Multiplexing (ControlMaster)
 
 Opening multiple SSH sessions to the same host? Multiplexing reuses a single TCP connection, eliminating the handshake overhead for subsequent connections:
@@ -523,6 +554,60 @@ steps:
   - command: "ssh -v webserver 2>&1 | grep -E '(Offering|Authenticated)'"
     output: "debug1: Offering public key: /home/admin/.ssh/id_ed25519 ED25519 SHA256:xR4jKn9B2pMqL7vFh8wYzQ3dN5gT6kA0cW1eR2uI4sM agent\ndebug1: Authenticated to webserver ([10.0.1.50]:22) using \"publickey\"."
     narration: "The verbose flag shows exactly what happens during authentication. 'agent' at the end confirms the key came from ssh-agent, not from reading the file directly. 'Authenticated using publickey' confirms key-based auth succeeded."
+```
+
+```command-builder
+base: ssh
+description: Build an SSH connection command with common options
+options:
+  - flag: ""
+    type: select
+    label: "Identity file"
+    explanation: "Specify which private key to use for authentication"
+    choices:
+      - ["", "Use default keys"]
+      - ["-i ~/.ssh/id_ed25519", "Ed25519 key (-i ~/.ssh/id_ed25519)"]
+      - ["-i ~/.ssh/deploy_key", "Deploy key (-i ~/.ssh/deploy_key)"]
+  - flag: ""
+    type: select
+    label: "Port"
+    explanation: "Connect to a non-standard SSH port"
+    choices:
+      - ["", "Default port 22"]
+      - ["-p 2222", "Port 2222 (-p 2222)"]
+      - ["-p 2200", "Port 2200 (-p 2200)"]
+  - flag: ""
+    type: select
+    label: "Forwarding"
+    explanation: "Set up port forwarding or SOCKS proxy"
+    choices:
+      - ["", "No forwarding"]
+      - ["-L 8080:localhost:80", "Local forward 8080 to remote 80 (-L)"]
+      - ["-L 5432:localhost:5432", "Local forward 5432 for PostgreSQL (-L)"]
+      - ["-R 8080:localhost:3000", "Remote forward local 3000 to remote 8080 (-R)"]
+      - ["-D 1080", "SOCKS5 proxy on port 1080 (-D)"]
+  - flag: ""
+    type: select
+    label: "Jump host"
+    explanation: "Route through a bastion/jump server"
+    choices:
+      - ["", "Direct connection"]
+      - ["-J bastion", "Jump through bastion (-J bastion)"]
+      - ["-J user@bastion.example.com", "Jump with user@host (-J)"]
+  - flag: ""
+    type: select
+    label: "Verbosity"
+    explanation: "Debug connection problems with increasing detail"
+    choices:
+      - ["", "Normal output"]
+      - ["-v", "Verbose (-v)"]
+      - ["-vv", "More verbose (-vv)"]
+      - ["-vvv", "Maximum verbosity (-vvv)"]
+  - flag: ""
+    type: text
+    label: "Destination"
+    placeholder: "user@hostname"
+    explanation: "The remote host to connect to (user@host or just host if User is in config)"
 ```
 
 ```exercise

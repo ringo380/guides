@@ -112,6 +112,56 @@ sudo iptables -A INPUT -m iprange --src-range 10.0.1.1-10.0.1.50 -j ACCEPT
 
 `DROP` vs `REJECT`: `DROP` gives the sender no feedback (the connection times out), making port scanning slower. `REJECT` sends an immediate response. For internet-facing servers, `DROP` is generally preferred.
 
+```command-builder
+base: iptables
+description: Build an iptables rule to filter network traffic
+options:
+  - flag: "-A"
+    type: select
+    label: "Chain"
+    explanation: "Which chain to append the rule to - INPUT for incoming, OUTPUT for outgoing, FORWARD for routed traffic"
+    choices:
+      - ["-A INPUT", "INPUT (incoming traffic)"]
+      - ["-A OUTPUT", "OUTPUT (outgoing traffic)"]
+      - ["-A FORWARD", "FORWARD (routed traffic)"]
+  - flag: "-p"
+    type: select
+    label: "Protocol"
+    explanation: "Match packets by protocol type"
+    choices:
+      - ["", "Any protocol"]
+      - ["-p tcp", "TCP"]
+      - ["-p udp", "UDP"]
+      - ["-p icmp", "ICMP (ping)"]
+  - flag: "--dport"
+    type: text
+    label: "Destination port"
+    placeholder: "e.g. 22, 80, 443"
+    explanation: "Port number to match (requires -p tcp or -p udp)"
+  - flag: "-s"
+    type: text
+    label: "Source address"
+    placeholder: "e.g. 10.0.1.0/24 or 203.0.113.50"
+    explanation: "Restrict the rule to traffic from this IP or subnet"
+  - flag: "-m conntrack --ctstate"
+    type: select
+    label: "Connection state"
+    explanation: "Match packets by their connection tracking state"
+    choices:
+      - ["", "No state filter"]
+      - ["-m conntrack --ctstate NEW", "NEW (first packet of a connection)"]
+      - ["-m conntrack --ctstate ESTABLISHED,RELATED", "ESTABLISHED,RELATED (existing connections)"]
+  - flag: "-j"
+    type: select
+    label: "Target action"
+    explanation: "What to do with matching packets"
+    choices:
+      - ["-j ACCEPT", "ACCEPT (allow through)"]
+      - ["-j DROP", "DROP (silently discard)"]
+      - ["-j REJECT", "REJECT (discard and send error)"]
+      - ["-j LOG", "LOG (log and continue processing)"]
+```
+
 ### Listing, Deleting, and Saving Rules
 
 ```bash

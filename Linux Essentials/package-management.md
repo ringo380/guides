@@ -230,6 +230,40 @@ sudo dnf config-manager --add-repo https://example.com/repo.repo
 !!! warning "Third-party repositories"
     Adding external repositories means trusting their maintainers with root-level access to your system. Every package installed from a repo runs scripts as root during installation. Only add repositories from sources you trust, and prefer official repositories when possible.
 
+```command-builder
+base: apt
+description: Build an apt package management command
+options:
+  - flag: ""
+    type: select
+    label: "Action"
+    explanation: "The package operation to perform"
+    choices:
+      - ["install", "Install a package (install)"]
+      - ["remove", "Remove a package, keep config (remove)"]
+      - ["purge", "Remove package and config files (purge)"]
+      - ["search", "Search for packages (search)"]
+      - ["show", "Show package details (show)"]
+      - ["update", "Refresh package index (update)"]
+      - ["upgrade", "Upgrade all packages (upgrade)"]
+      - ["full-upgrade", "Upgrade with conflict resolution (full-upgrade)"]
+      - ["autoremove", "Remove orphaned dependencies (autoremove)"]
+  - flag: ""
+    type: text
+    label: "Package name"
+    placeholder: "nginx"
+    explanation: "The package to act on (not needed for update, upgrade, or autoremove)"
+  - flag: ""
+    type: select
+    label: "Options"
+    explanation: "Additional flags to modify behavior"
+    choices:
+      - ["", "None"]
+      - ["-y", "Assume yes to prompts (-y)"]
+      - ["--dry-run", "Simulate without making changes (--dry-run)"]
+      - ["--no-install-recommends", "Skip recommended packages (--no-install-recommends)"]
+```
+
 ---
 
 ## Low-level Tools: dpkg and rpm
@@ -315,6 +349,37 @@ Types: deb
 URIs: http://archive.ubuntu.com/ubuntu
 Suites: noble noble-updates
 Components: main restricted universe multiverse
+```
+
+```code-walkthrough
+language: bash
+title: Understanding APT Source Definitions
+code: |
+  deb [signed-by=/usr/share/keyrings/example.gpg] https://example.com/repo stable main
+
+  Types: deb
+  URIs: http://archive.ubuntu.com/ubuntu
+  Suites: noble noble-updates
+  Components: main restricted universe multiverse
+annotations:
+  - line: 1
+    text: "'deb' marks this as a binary package source. Use 'deb-src' for source packages (needed for apt source and apt build-dep)."
+  - line: 1
+    text: "[signed-by=...] ties a specific GPG key to this repository. APT verifies all packages from this repo against this key, preventing unsigned or tampered packages."
+  - line: 1
+    text: "The URL points to the repository root. APT appends the suite and component to form the full path to package lists."
+  - line: 1
+    text: "'stable' is the suite (release codename or class). Ubuntu uses codenames like 'noble'; Debian uses both codenames and classes like 'stable'."
+  - line: 1
+    text: "'main' is the component. Ubuntu splits packages into main (Canonical-supported), restricted (proprietary drivers), universe (community), and multiverse (non-free)."
+  - line: 3
+    text: "This is the newer DEB822 format used in .sources files. It's more readable and supports multiple values per field."
+  - line: 4
+    text: "URIs accepts one or more repository URLs. APT tries them in order, falling back if the first is unavailable."
+  - line: 5
+    text: "Multiple suites on one line: 'noble' is the base release, 'noble-updates' includes post-release bug fixes and security patches."
+  - line: 6
+    text: "Components list which sections to enable. Listing all four gives access to the full Ubuntu package archive."
 ```
 
 Adding a third-party repository typically involves importing a GPG key and creating a sources file:

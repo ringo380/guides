@@ -179,6 +179,28 @@ openssl s_client -connect example.com:443 -tls1_3
 echo | openssl s_client -connect example.com:443 2>/dev/null | openssl x509 -noout -dates
 ```
 
+```code-walkthrough
+language: bash
+title: Inspecting a Remote TLS Certificate with OpenSSL
+code: |
+  openssl s_client \
+    -connect example.com:443 \
+    -servername example.com \
+    </dev/null 2>/dev/null \
+    | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+annotations:
+  - line: 1
+    text: "s_client opens a TLS connection to a remote server. It acts as a generic TLS client, useful for testing and debugging."
+  - line: 2
+    text: "-connect specifies the host and port to connect to. Port 443 is the standard HTTPS port. You can test any TLS-enabled service (e.g., :587 for SMTP with STARTTLS)."
+  - line: 3
+    text: "-servername sends the SNI (Server Name Indication) header. Without it, servers hosting multiple domains on the same IP may return the wrong certificate."
+  - line: 4
+    text: "</dev/null closes stdin immediately so s_client exits after the handshake instead of waiting for input. 2>/dev/null suppresses connection status messages, keeping only the certificate output."
+  - line: 5
+    text: "The output of s_client (the PEM-encoded certificate) is piped to openssl x509 for parsing. -noout suppresses the raw PEM dump. -subject, -issuer, -dates, and -ext subjectAltName extract the key fields: who the cert belongs to, who signed it, when it expires, and which domains it covers."
+```
+
 ### Common Certificate Formats
 
 | Format | Extensions | Encoding | Common Use |
