@@ -131,6 +131,7 @@ extra:
 
 nav:
   - Home: README.md
+  - Contributor Quick-Start: CONTRIBUTOR_QUICKSTART.md
   - Linux Essentials:
       - Index: Linux Essentials/README.md
       - Shell Basics: Linux Essentials/shell-basics.md
