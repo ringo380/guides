@@ -116,7 +116,7 @@ sudo iptables -A INPUT -m iprange --src-range 10.0.1.1-10.0.1.50 -j ACCEPT
 base: iptables
 description: Build an iptables rule to filter network traffic
 options:
-  - flag: "-A"
+  - flag: ""
     type: select
     label: "Chain"
     explanation: "Which chain to append the rule to - INPUT for incoming, OUTPUT for outgoing, FORWARD for routed traffic"
@@ -124,7 +124,7 @@ options:
       - ["-A INPUT", "INPUT (incoming traffic)"]
       - ["-A OUTPUT", "OUTPUT (outgoing traffic)"]
       - ["-A FORWARD", "FORWARD (routed traffic)"]
-  - flag: "-p"
+  - flag: ""
     type: select
     label: "Protocol"
     explanation: "Match packets by protocol type"
@@ -143,7 +143,7 @@ options:
     label: "Source address"
     placeholder: "e.g. 10.0.1.0/24 or 203.0.113.50"
     explanation: "Restrict the rule to traffic from this IP or subnet"
-  - flag: "-m conntrack --ctstate"
+  - flag: ""
     type: select
     label: "Connection state"
     explanation: "Match packets by their connection tracking state"
@@ -151,7 +151,7 @@ options:
       - ["", "No state filter"]
       - ["-m conntrack --ctstate NEW", "NEW (first packet of a connection)"]
       - ["-m conntrack --ctstate ESTABLISHED,RELATED", "ESTABLISHED,RELATED (existing connections)"]
-  - flag: "-j"
+  - flag: ""
     type: select
     label: "Target action"
     explanation: "What to do with matching packets"

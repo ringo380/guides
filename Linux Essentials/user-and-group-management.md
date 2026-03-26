@@ -526,12 +526,12 @@ options:
     choices:
       - ["", "Regular user (UID 1000+)"]
       - ["-r", "System account (-r, UID below 1000)"]
-  - flag: ""
+  - flag: "-G"
     type: text
     label: "Supplementary groups"
     placeholder: "sudo,docker"
     explanation: "Comma-separated groups to add the user to (-G)"
-  - flag: ""
+  - flag: "-c"
     type: text
     label: "Comment (full name)"
     placeholder: "Jane Doe"

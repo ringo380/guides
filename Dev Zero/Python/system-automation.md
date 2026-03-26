@@ -476,11 +476,11 @@ annotations:
     text: "Each check is a standalone function that returns a boolean. This makes the script testable - you can call check_service() in a unit test without running main()."
   - line: 18
     text: "The command is passed as a list, not a string. This avoids shell=True and prevents shell injection if the service name comes from user input."
-  - line: 20
+  - line: 19
     text: "capture_output=True captures both stdout and stderr. text=True decodes bytes to strings so you can use string methods like .strip() directly."
   - line: 25
     text: "nargs='+' accepts one or more values after the flag. The default provides sensible services to check when no arguments are given."
-  - line: 27
+  - line: 26
     text: "action='store_true' makes --verbose a boolean flag. No value needed - its presence sets args.verbose to True."
   - line: 30
     text: "Changing the logger level at runtime based on a CLI flag. DEBUG shows everything; the default INFO level hides debug-level messages."
