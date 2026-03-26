@@ -490,70 +490,60 @@ solution: |
 ---
 
 ```exercise
-title: "Config-Driven API Reporter"
+title: "Log File Analyzer"
 difficulty: intermediate
 scenario: |
-  You need a script that ties together file reading, API calls, error handling, and CSV output. Write a Python script that:
+  You have a directory of CSV log files from different servers. Each file has columns: `timestamp`, `level`, `message`. Write a Python script that:
 
-  1. Reads a JSON config file (`report_config.json`) containing a list of API endpoints (each with `name`, `url`, and `timeout`)
-  2. Makes a GET request to each endpoint, catching connection errors and timeouts individually
-  3. Collects the results: endpoint name, HTTP status code (or "ERROR"), and response time in milliseconds
-  4. Writes the results to a CSV file (`api_report.csv`) with columns: `name`, `status`, `response_ms`
-  5. Prints a summary line: how many succeeded and how many failed
+  1. Uses `pathlib` to find all `.csv` files in a `logs/` directory
+  2. Reads each file with `csv.DictReader`
+  3. Counts the number of ERROR and WARNING entries per file
+  4. Writes a summary to `log_summary.json` containing: filename, total lines, error count, and warning count for each file
+  5. Prints which file had the most errors
 
-  Example config:
-  ```json
-  {
-    "endpoints": [
-      {"name": "GitHub API", "url": "https://api.github.com", "timeout": 5},
-      {"name": "Example", "url": "https://example.com", "timeout": 3}
-    ],
-    "output_file": "api_report.csv"
-  }
-  ```
+  Example CSV row: `2026-03-25T10:30:00,ERROR,Connection refused to database`
 hints:
-  - "Use json.load() to read the config, then loop over config['endpoints']"
-  - "Track response time with: start = time.time(); response = requests.get(...); elapsed = (time.time() - start) * 1000"
-  - "Wrap each request in its own try/except so one failure doesn't stop the entire report"
-  - "Use csv.DictWriter with fieldnames=['name', 'status', 'response_ms'] to write results"
+  - "Use Path('logs').glob('*.csv') to find all CSV files"
+  - "csv.DictReader(f) gives you rows as dictionaries keyed by header names"
+  - "Track counts with a list of dicts: {'file': path.name, 'total': 0, 'errors': 0, 'warnings': 0}"
+  - "Use max() with a key function to find the file with the most errors"
 solution: |
   #!/usr/bin/env python3
-  """Config-driven API health reporter."""
+  """Analyze CSV log files and produce a JSON summary."""
 
   import csv
   import json
-  import sys
-  import time
-  import requests
+  from pathlib import Path
+
+  def analyze_log(filepath):
+      """Count total, error, and warning lines in a CSV log file."""
+      totals = {"file": filepath.name, "total": 0, "errors": 0, "warnings": 0}
+      with open(filepath) as f:
+          reader = csv.DictReader(f)
+          for row in reader:
+              totals["total"] += 1
+              level = row.get("level", "").strip().upper()
+              if level == "ERROR":
+                  totals["errors"] += 1
+              elif level == "WARNING":
+                  totals["warnings"] += 1
+      return totals
 
   def main():
-      try:
-          with open("report_config.json") as f:
-              config = json.load(f)
-      except (FileNotFoundError, json.JSONDecodeError) as e:
-          print(f"Error loading config: {e}")
-          sys.exit(1)
+      log_dir = Path("logs")
+      if not log_dir.is_dir():
+          print("Error: logs/ directory not found")
+          return
 
-      results = []
-      for endpoint in config["endpoints"]:
-          name = endpoint["name"]
-          try:
-              start = time.time()
-              response = requests.get(endpoint["url"], timeout=endpoint.get("timeout", 10))
-              elapsed_ms = round((time.time() - start) * 1000)
-              results.append({"name": name, "status": response.status_code, "response_ms": elapsed_ms})
-          except (requests.ConnectionError, requests.Timeout) as e:
-              results.append({"name": name, "status": "ERROR", "response_ms": 0})
+      results = [analyze_log(f) for f in sorted(log_dir.glob("*.csv"))]
 
-      output_file = config.get("output_file", "api_report.csv")
-      with open(output_file, "w", newline="") as f:
-          writer = csv.DictWriter(f, fieldnames=["name", "status", "response_ms"])
-          writer.writeheader()
-          writer.writerows(results)
+      with open("log_summary.json", "w") as f:
+          json.dump(results, f, indent=2)
 
-      succeeded = sum(1 for r in results if r["status"] != "ERROR")
-      failed = len(results) - succeeded
-      print(f"Report written to {output_file}: {succeeded} succeeded, {failed} failed")
+      if results:
+          worst = max(results, key=lambda r: r["errors"])
+          print(f"Most errors: {worst['file']} ({worst['errors']} errors)")
+      print(f"Summary written to log_summary.json ({len(results)} files analyzed)")
 
   if __name__ == "__main__":
       main()
