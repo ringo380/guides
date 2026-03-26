@@ -7,13 +7,20 @@ CLAUDE.local.md
 .claude-dev-helper/
 .plugin-config/
 
+# Junie
+.junie/
+AGENTS.md
+
+# Environment
+.env
+
 # Worktrees
 .worktrees/
 
 # Build artifacts
 site/
 docs/
-hooks/__pycache__/
+__pycache__/
 .cache/
 .pytest_cache/
 node_modules/
