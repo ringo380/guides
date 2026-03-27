@@ -145,6 +145,20 @@
   background: var(--md-default-fg-color--lightest);
 }
 
+/* Section headings within progression */
+.topic-progression h3 {
+  position: relative;
+  margin: 1.25rem 0 0.25rem;
+  padding-left: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--md-default-fg-color--light);
+  background: var(--md-default-bg-color);
+  z-index: 1;
+}
+
 .topic-card {
   position: relative;
   display: flex;
@@ -164,6 +178,11 @@
   box-shadow: 0 2px 8px color-mix(in srgb, var(--md-accent-fg-color) 15%, transparent);
 }
 
+.topic-card:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
 /* Step number circle */
 .topic-card__number {
   display: flex;
@@ -180,13 +199,8 @@
 }
 
 .topic-card--completed .topic-card__number {
-  background: color-mix(in srgb, #4caf50 20%, transparent);
-  color: #2e7d32;
-}
-
-[data-md-color-scheme="slate"] .topic-card--completed .topic-card__number {
-  background: color-mix(in srgb, #66bb6a 20%, transparent);
-  color: #81c784;
+  background: var(--rb-color-correct-bg-strong);
+  color: var(--rb-color-correct);
 }
 
 .topic-card__body {
@@ -232,12 +246,8 @@
 .topic-card__check {
   display: none;
   align-items: center;
-  color: #2e7d32;
+  color: var(--rb-color-correct);
   font-size: 1.2rem;
-}
-
-[data-md-color-scheme="slate"] .topic-card__check {
-  color: #81c784;
 }
 
 .topic-card--completed .topic-card__check {

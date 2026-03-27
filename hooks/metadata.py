@@ -51,13 +51,16 @@ def build_banner_html(meta: dict) -> str:
         escaped = html_mod.escape(str(time_est))
         parts.append(f'<span class="meta-time">{escaped}</span>')
 
-    # Prerequisites
+    # Prerequisites — use relative links that resolve correctly with
+    # use_directory_urls (guides are siblings in the same directory)
     prereqs = meta.get("prerequisites", [])
     if prereqs:
         links = []
         for p in prereqs:
             escaped = html_mod.escape(str(p))
-            links.append(f'<a href="{escaped}.md" class="meta-prereq-link">{escaped}</a>')
+            links.append(
+                f'<a href="../{escaped}/" class="meta-prereq-link">{escaped}</a>'
+            )
         parts.append(
             '<span class="meta-prerequisites">Prereqs: '
             + ", ".join(links)
