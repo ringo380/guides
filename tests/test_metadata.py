@@ -53,3 +53,57 @@ class TestExtractMetadata:
         result = extract_metadata(meta)
         assert result["difficulty"] == "advanced"
         assert "template" not in result
+
+
+class TestBuildBannerHtml:
+    """Banner HTML is generated from extracted metadata."""
+
+    def test_difficulty_badge_rendered(self):
+        meta = {"difficulty": "beginner", "time_estimate": None,
+                "prerequisites": [], "learning_outcomes": [], "tags": []}
+        html = build_banner_html(meta)
+        assert 'class="meta-difficulty meta-difficulty--beginner"' in html
+        assert "Beginner" in html
+
+    def test_time_estimate_rendered(self):
+        meta = {"difficulty": None, "time_estimate": "30 min",
+                "prerequisites": [], "learning_outcomes": [], "tags": []}
+        html = build_banner_html(meta)
+        assert "30 min" in html
+        assert 'class="meta-time"' in html
+
+    def test_prerequisites_rendered_as_links(self):
+        meta = {"difficulty": None, "time_estimate": None,
+                "prerequisites": ["shell-basics"], "learning_outcomes": [], "tags": []}
+        html = build_banner_html(meta)
+        assert "shell-basics" in html
+        assert 'class="meta-prerequisites"' in html
+
+    def test_learning_outcomes_rendered(self):
+        meta = {"difficulty": None, "time_estimate": None,
+                "prerequisites": [], "learning_outcomes": ["Use the shell"], "tags": []}
+        html = build_banner_html(meta)
+        assert "Use the shell" in html
+        assert 'class="meta-outcomes"' in html
+
+    def test_tags_rendered(self):
+        meta = {"difficulty": None, "time_estimate": None,
+                "prerequisites": [], "learning_outcomes": [], "tags": ["cli", "linux"]}
+        html = build_banner_html(meta)
+        assert "cli" in html
+        assert "linux" in html
+        assert 'class="meta-tag"' in html
+
+    def test_empty_metadata_returns_empty_string(self):
+        meta = {"difficulty": None, "time_estimate": None,
+                "prerequisites": [], "learning_outcomes": [], "tags": []}
+        html = build_banner_html(meta)
+        assert html == ""
+
+    def test_banner_has_wrapper_div(self):
+        meta = {"difficulty": "intermediate", "time_estimate": "45 min",
+                "prerequisites": [], "learning_outcomes": [], "tags": []}
+        html = build_banner_html(meta)
+        assert html.startswith('<div class="guide-metadata"')
+        assert 'role="region"' in html
+        assert html.strip().endswith("</div>")
