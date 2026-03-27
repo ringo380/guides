@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - commits-and-history
+learning_outcomes:
+  - "Explain how branches work as movable pointers to commits"
+  - "Distinguish between fast-forward and three-way merges"
+  - "Resolve merge conflicts using structured strategies"
+tags:
+  - git
+  - branching
+  - merging
+---
+
 # Branches and Merging
 
 Branching is where Git's design pays off. In older systems like SVN, creating a branch meant copying the entire directory tree - it was slow, expensive, and merging was painful enough that teams avoided branches. In Git, a branch is a 41-byte file containing a commit hash. Creating one is instant. Merging is a first-class operation. This changes how you work: branches become disposable tools for isolating work, not heavyweight decisions.

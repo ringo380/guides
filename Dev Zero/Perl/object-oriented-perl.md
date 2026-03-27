@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - modules-and-cpan
+learning_outcomes:
+  - "Build classes using bless, constructors, and methods"
+  - "Implement inheritance with @ISA and use parent"
+  - "Use Moose and Moo for modern OOP with roles and type constraints"
+tags:
+  - perl
+  - programming
+  - oop
+---
 # Object-Oriented Perl
 
 ## From bless to Moose: Building Reusable Abstractions

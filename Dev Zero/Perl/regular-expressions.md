@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - scalars-strings-numbers
+learning_outcomes:
+  - "Match and substitute text with m// and s/// operators"
+  - "Use quantifiers, character classes, captures, and lookaround assertions"
+  - "Apply regex modifiers (/g, /x, /e) and split with patterns"
+tags:
+  - perl
+  - programming
+  - text-processing
+---
 # Regular Expressions
 
 ## Pattern Matching and Text Transformation

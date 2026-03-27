@@ -6,88 +6,217 @@ Each guide is self-contained, but the order below follows a natural learning pat
 
 ---
 
-## Foundations
+## Guides
 
-### [Introduction: Why Git, and Why Version Control](introduction.md)
-
-The history of version control from RCS through SVN to distributed systems, and why Linus Torvalds built Git for the Linux kernel. Covers installing Git on every platform, first-time configuration, and a mental model preview of Git as a content-addressable filesystem.
-
-### [The Three Trees: Working Directory, Index, and Repository](three-trees.md)
-
-Git's core mental model - the working tree, staging area, and committed history. Covers the complete file lifecycle from untracked through committed, the `.gitignore` pattern syntax, and a first look inside the `.git` directory.
-
-### [Commits and History](commits-and-history.md)
-
-What a commit actually stores and how to explore history. Covers commit object anatomy, writing effective messages, `git log` formatting and filtering in depth, `git diff` across the three trees, and amending commits.
-
-### [Branches and Merging](branches-and-merging.md)
-
-Branches as movable pointers, not copies. Covers creating, switching, and managing branches, fast-forward vs three-way merges, conflict resolution strategies, and the difference between `git switch` and `git checkout`.
-
----
-
-## Core Workflows
-
-### [Remote Repositories](remote-repositories.md)
-
-Working with code that lives somewhere else. Covers `clone`, `fetch` vs `pull`, `push` and rejection handling, tracking branches, multiple remotes for fork workflows, and SSH vs HTTPS authentication setup.
-
-### [Rewriting History](rewriting-history.md)
-
-When and how to clean up your commit history. Covers `commit --amend`, interactive rebase (squash, fixup, reorder, edit), `cherry-pick`, `revert` vs `reset` with all three modes, and the reflog as your safety net.
-
-### [Stashing and the Worktree](stashing-and-worktree.md)
-
-Interrupting work without losing it. Covers `git stash` in depth (push, pop, apply, branch), stashing untracked and ignored files, multiple working trees with `git worktree`, and `git clean` for resetting your workspace.
-
-### [Configuring Git](configuring-git.md)
-
-Making Git work the way you want. Covers configuration levels and precedence, aliases, custom diff/merge tools, conditional includes for work vs personal, `.gitattributes` for line endings and diff drivers, and environment variables.
-
----
-
-## Git Internals
-
-### [The Object Model](object-model.md)
-
-Git as a content-addressable filesystem. Covers the four object types (blobs, trees, commits, annotated tags), SHA-1 hashing, the `.git/objects` directory, and building a commit entirely with plumbing commands.
-
-### [Refs, the Reflog, and the DAG](refs-reflog-dag.md)
-
-How Git names things and connects them. Covers references, symbolic refs like HEAD, the directed acyclic graph, garbage collection, the reflog's per-ref change history, and how packfiles compress objects with delta encoding.
-
-### [Transfer Protocols and Plumbing](transfer-protocols.md)
-
-How `fetch` and `push` work at the protocol level. Covers smart HTTP, SSH, and native transports, pack negotiation, shallow and partial clones, sparse checkout, `git bundle` for offline transfer, and protocol v2 improvements.
-
----
-
-## Platform Collaboration
-
-### [Collaboration Workflows](collaboration-workflows.md)
-
-Choosing how your team works with Git. Covers centralized, feature branch, Gitflow, trunk-based, and forking workflows, plus pull request best practices, branch protection, and release management with semantic versioning.
-
-### [GitHub, GitLab, and Bitbucket](platforms.md)
-
-Platform-specific features and tooling. Covers PRs vs MRs, CI/CD configuration (Actions, `.gitlab-ci.yml`, Pipelines), `gh` and `glab` CLIs, code owners, and migrating between platforms.
-
----
-
-## Advanced Operations
-
-### [Git Hooks and Automation](hooks-and-automation.md)
-
-Automating quality checks and workflows. Covers every client-side and server-side hook, hook frameworks (Husky, pre-commit, Lefthook), `git bisect` for binary search debugging, `git blame`, and smudge/clean filters.
-
-### [Git Security](security.md)
-
-Signing, credentials, and secret management. Covers GPG and SSH commit signing, credential helpers, secret scanning tools, removing secrets from history with `git filter-repo`, and verified commits on platforms.
-
-### [Monorepos and Scaling Git](monorepos-and-scaling.md)
-
-Git at enterprise scale. Covers sparse checkout, partial clones, the commit graph file, `git maintenance`, Scalar, filesystem monitors, submodules vs subtrees, and build system integration.
-
-### [Troubleshooting and Recovery](troubleshooting-and-recovery.md)
-
-The "oh no" recovery guide. Covers recovering lost commits from the reflog, undoing every common mistake, Git LFS for large files, history rewriting at scale, performance diagnosis, and repository corruption repair.
+<div class="topic-progression">
+<h3>Foundations</h3>
+<a class="topic-card" href="introduction.md" data-guide="introduction" data-topic="Git">
+<span class="topic-card__number">1</span>
+<span class="topic-card__badge">Start Here</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Introduction: Why Git, and Why Version Control</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--beginner">Beginner</span>
+<span class="meta-time">30 min</span>
+</div>
+<p class="topic-card__description">The history of version control from RCS through SVN to distributed systems, and why Linus Torvalds built Git for the Linux kernel.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="three-trees.md" data-guide="three-trees" data-topic="Git">
+<span class="topic-card__number">2</span>
+<div class="topic-card__body">
+<div class="topic-card__title">The Three Trees: Working Directory, Index, and Repository</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--beginner">Beginner</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Git's core mental model - the working tree, staging area, and committed history. Covers the file lifecycle, .gitignore syntax, and the .git directory.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="commits-and-history.md" data-guide="commits-and-history" data-topic="Git">
+<span class="topic-card__number">3</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Commits and History</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--beginner">Beginner</span>
+<span class="meta-time">40 min</span>
+</div>
+<p class="topic-card__description">What a commit actually stores and how to explore history. Covers commit anatomy, effective messages, git log formatting, and git diff.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="branches-and-merging.md" data-guide="branches-and-merging" data-topic="Git">
+<span class="topic-card__number">4</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Branches and Merging</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">40 min</span>
+</div>
+<p class="topic-card__description">Branches as movable pointers, not copies. Covers fast-forward vs three-way merges, conflict resolution, and git switch vs git checkout.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<h3>Core Workflows</h3>
+<a class="topic-card" href="remote-repositories.md" data-guide="remote-repositories" data-topic="Git">
+<span class="topic-card__number">5</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Remote Repositories</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Working with code that lives somewhere else. Covers clone, fetch vs pull, push, tracking branches, and SSH vs HTTPS authentication.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="rewriting-history.md" data-guide="rewriting-history" data-topic="Git">
+<span class="topic-card__number">6</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Rewriting History</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">40 min</span>
+</div>
+<p class="topic-card__description">When and how to clean up commit history. Covers amend, interactive rebase, cherry-pick, revert vs reset, and the reflog as a safety net.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="stashing-and-worktree.md" data-guide="stashing-and-worktree" data-topic="Git">
+<span class="topic-card__number">7</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Stashing and the Worktree</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">30 min</span>
+</div>
+<p class="topic-card__description">Interrupting work without losing it. Covers git stash, multiple working trees with git worktree, and git clean.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="configuring-git.md" data-guide="configuring-git" data-topic="Git">
+<span class="topic-card__number">8</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Configuring Git</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Making Git work the way you want. Covers configuration levels, aliases, diff/merge tools, conditional includes, and .gitattributes.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<h3>Git Internals</h3>
+<a class="topic-card" href="object-model.md" data-guide="object-model" data-topic="Git">
+<span class="topic-card__number">9</span>
+<div class="topic-card__body">
+<div class="topic-card__title">The Object Model</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--advanced">Advanced</span>
+<span class="meta-time">45 min</span>
+</div>
+<p class="topic-card__description">Git as a content-addressable filesystem. Covers blobs, trees, commits, annotated tags, SHA-1 hashing, and building commits with plumbing commands.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="refs-reflog-dag.md" data-guide="refs-reflog-dag" data-topic="Git">
+<span class="topic-card__number">10</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Refs, the Reflog, and the DAG</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--advanced">Advanced</span>
+<span class="meta-time">40 min</span>
+</div>
+<p class="topic-card__description">How Git names things and connects them. Covers references, symbolic refs, the directed acyclic graph, garbage collection, and packfiles.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="transfer-protocols.md" data-guide="transfer-protocols" data-topic="Git">
+<span class="topic-card__number">11</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Transfer Protocols and Plumbing</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--advanced">Advanced</span>
+<span class="meta-time">40 min</span>
+</div>
+<p class="topic-card__description">How fetch and push work at the protocol level. Covers SSH, smart HTTP, pack negotiation, shallow clones, and git bundle.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<h3>Platform Collaboration</h3>
+<a class="topic-card" href="collaboration-workflows.md" data-guide="collaboration-workflows" data-topic="Git">
+<span class="topic-card__number">12</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Collaboration Workflows</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Choosing how your team works with Git. Covers centralized, feature branch, Gitflow, trunk-based, and forking workflows.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="platforms.md" data-guide="platforms" data-topic="Git">
+<span class="topic-card__number">13</span>
+<div class="topic-card__body">
+<div class="topic-card__title">GitHub, GitLab, and Bitbucket</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Platform-specific features and tooling. Covers PRs vs MRs, CI/CD configuration, CLIs, code owners, and platform migration.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<h3>Advanced Operations</h3>
+<a class="topic-card" href="hooks-and-automation.md" data-guide="hooks-and-automation" data-topic="Git">
+<span class="topic-card__number">14</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Git Hooks and Automation</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--advanced">Advanced</span>
+<span class="meta-time">40 min</span>
+</div>
+<p class="topic-card__description">Automating quality checks and workflows. Covers every hook type, hook frameworks, git bisect, git blame, and smudge/clean filters.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="security.md" data-guide="security" data-topic="Git">
+<span class="topic-card__number">15</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Git Security</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--advanced">Advanced</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Signing, credentials, and secret management. Covers GPG and SSH signing, credential helpers, secret scanning, and git filter-repo.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="monorepos-and-scaling.md" data-guide="monorepos-and-scaling" data-topic="Git">
+<span class="topic-card__number">16</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Monorepos and Scaling Git</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--advanced">Advanced</span>
+<span class="meta-time">40 min</span>
+</div>
+<p class="topic-card__description">Git at enterprise scale. Covers sparse checkout, partial clones, commit graphs, Scalar, submodules vs subtrees, and build system integration.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="troubleshooting-and-recovery.md" data-guide="troubleshooting-and-recovery" data-topic="Git">
+<span class="topic-card__number">17</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Troubleshooting and Recovery</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--advanced">Advanced</span>
+<span class="meta-time">40 min</span>
+</div>
+<p class="topic-card__description">The recovery playbook. Covers reflog recovery, undoing common mistakes, Git LFS, performance diagnosis, and repository corruption repair.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+</div>

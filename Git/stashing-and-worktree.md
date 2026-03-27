@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - branches-and-merging
+learning_outcomes:
+  - "Use git stash to save and restore in-progress work"
+  - "Manage multiple working trees with git worktree"
+  - "Clean untracked files safely with git clean"
+tags:
+  - git
+  - version-control
+  - branching
+---
+
 # Stashing and the Worktree
 
 You're halfway through a feature when an urgent bug comes in. Your working directory has uncommitted changes that aren't ready for a commit. You need to switch context, fix the bug, and come back to where you left off. Git provides two tools for this: **stashing** saves changes temporarily and restores them later, and **worktrees** let you work on multiple branches simultaneously in separate directories.

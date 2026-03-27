@@ -1,3 +1,18 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - object-model
+learning_outcomes:
+  - "Configure sparse checkout and partial clones for large repositories"
+  - "Use Scalar, commit graphs, and filesystem monitors to improve performance"
+  - "Compare submodules and subtrees for multi-project repository strategies"
+tags:
+  - git
+  - performance
+  - internals
+---
+
 # Monorepos and Scaling Git
 
 Git was designed for the Linux kernel - a large project, but one with a relatively straightforward directory structure. When organizations put hundreds of projects, millions of files, and decades of history into a single repository, Git's default behavior starts to struggle. Clone times balloon, `git status` takes seconds, and CI builds trigger unnecessarily. This guide covers the tools and strategies for making Git perform at scale.

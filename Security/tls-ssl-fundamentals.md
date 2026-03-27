@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites: []
+learning_outcomes:
+  - "Explain symmetric and asymmetric encryption and how TLS uses both during a handshake"
+  - "Describe PKI trust chains from root CAs through intermediates to end-entity certificates"
+  - "Use OpenSSL to inspect certificates, verify chains, and debug TLS connections"
+tags:
+  - security
+  - tls
+  - ssl
+  - certificates
+  - pki
+---
 # TLS/SSL Fundamentals
 
 Understanding Transport Layer Security (TLS) is critical for any systems administrator. TLS encrypts communication between clients and servers, preventing eavesdropping, tampering, and impersonation. Every HTTPS connection, email relay, database connection, and API call you secure depends on these fundamentals.

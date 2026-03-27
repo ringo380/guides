@@ -1,3 +1,17 @@
+---
+difficulty: beginner
+time_estimate: "20 min"
+prerequisites:
+  - shell-basics
+learning_outcomes:
+  - "Create and extract tar archives with common compression formats"
+  - "Compare gzip, bzip2, xz, and zstd compression tradeoffs"
+  - "Use zip and unzip for cross-platform archive compatibility"
+tags:
+  - cli
+  - compression
+  - filesystem
+---
 # Archiving and Compression
 
 **Archiving** and **compression** are two different operations that are often combined. Archiving bundles multiple files and directories into a single file, preserving directory structure, permissions, timestamps, and ownership - but without reducing size. Compression reduces file size by encoding redundant data more efficiently, but operates on a single file. On Linux, these are usually separate steps (unlike zip, which does both at once): `tar` creates the archive, then a compression tool like `gzip` or `xz` shrinks it. The `tar` command can invoke compression tools in a single command for convenience.

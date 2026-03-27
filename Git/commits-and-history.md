@@ -1,3 +1,18 @@
+---
+difficulty: beginner
+time_estimate: "40 min"
+prerequisites:
+  - three-trees
+learning_outcomes:
+  - "Describe the anatomy of a Git commit object"
+  - "Write effective commit messages following conventional formats"
+  - "Navigate and filter project history with git log and git diff"
+tags:
+  - git
+  - version-control
+  - fundamentals
+---
+
 # Commits and History
 
 A **commit** is Git's fundamental unit of work - a permanent snapshot of your entire project at a specific point in time. Understanding what commits contain, how to write good commit messages, and how to navigate history with `git log` and `git diff` are essential skills you'll use every day.

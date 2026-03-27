@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - branches-and-merging
+learning_outcomes:
+  - "Configure remotes and tracking branches"
+  - "Distinguish between fetch, pull, and push operations"
+  - "Set up SSH and HTTPS authentication for remote access"
+tags:
+  - git
+  - collaboration
+  - version-control
+---
+
 # Remote Repositories
 
 So far, everything has been local - one repository on your machine. In practice, you work with code that lives on a server, collaborate with other developers, and synchronize changes between multiple copies of the same repository. **Remotes** are Git's mechanism for connecting these repositories together.

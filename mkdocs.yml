@@ -52,6 +52,7 @@ plugins:
 
 hooks:
   - hooks/interactive.py
+  - hooks/metadata.py
 
 markdown_extensions:
   - toc:
@@ -81,6 +82,7 @@ extra_css:
   - assets/stylesheets/extra.css
   - assets/stylesheets/interactive.css
   - assets/stylesheets/lightbox.css
+  - assets/stylesheets/metadata.css
 
 extra_javascript:
   - assets/javascripts/interactive.js

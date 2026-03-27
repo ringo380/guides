@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "45 min"
+prerequisites:
+  - zone-files-and-records
+learning_outcomes:
+  - "Configure BIND as a caching resolver and authoritative server"
+  - "Set up primary/secondary replication with TSIG authentication"
+  - "Implement split-horizon views and security hardening"
+tags:
+  - dns
+  - nameserver
+  - server-administration
+---
+
 # BIND
 
 This guide covers BIND - the reference implementation of DNS and the most widely deployed DNS server software in the world. You'll learn to configure it as a caching recursive resolver, an authoritative server, and in primary/secondary configurations with TSIG authentication.

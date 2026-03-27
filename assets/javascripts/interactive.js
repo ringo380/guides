@@ -26,6 +26,7 @@
     exercise: "assets/javascripts/components/exercise.js",
     "code-walkthrough": "assets/javascripts/components/code-walkthrough.js",
     progress: "assets/javascripts/components/progress.js",
+    "topic-cards": "assets/javascripts/components/topic-cards.js",
   };
 
   const loadedScripts = new Set();
@@ -88,6 +89,8 @@
 
         // Always load progress tracker
         loadScript(COMPONENT_SCRIPTS.progress).catch(() => {});
+        // Always load topic cards (self-initializes on topic README pages)
+        loadScript(COMPONENT_SCRIPTS["topic-cards"]).catch(() => {});
       })
       .catch(() => {
         // Storage failed to load - initialize components without it

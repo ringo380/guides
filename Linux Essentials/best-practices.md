@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - scripting-fundamentals
+learning_outcomes:
+  - "Apply defensive coding patterns with set -euo pipefail and shellcheck"
+  - "Write portable scripts that handle quoting, variables, and subshells correctly"
+  - "Structure scripts with functions, logging, and consistent exit codes"
+tags:
+  - cli
+  - scripting
+  - shell
+---
 # Shell Scripting Best Practices
 
 A collection of conventions and patterns that make shell scripts more reliable, portable, and maintainable. These aren't opinions - they prevent real bugs.

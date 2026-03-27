@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "35 min"
+prerequisites:
+  - python_dev0_introduction
+learning_outcomes:
+  - "Use lists, dictionaries, tuples, and sets for data organization"
+  - "Control program flow with loops, conditionals, and comprehensions"
+tags:
+  - python
+  - programming
+  - scripting
+---
 # Data Structures and Logic (Python)
 
 **Version:** 0.2

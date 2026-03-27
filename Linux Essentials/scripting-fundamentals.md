@@ -1,3 +1,19 @@
+---
+difficulty: intermediate
+time_estimate: "45 min"
+prerequisites:
+  - shell-basics
+  - streams-and-redirection
+learning_outcomes:
+  - "Use exit codes, conditionals, and loops for script control flow"
+  - "Write functions with local variables and return values"
+  - "Apply set -euo pipefail and trap for robust error handling"
+  - "Parse command-line arguments with getopts and positional parameters"
+tags:
+  - cli
+  - scripting
+  - shell
+---
 # Scripting Fundamentals
 
 [Bash](https://www.gnu.org/software/bash/manual/) scripts automate sequences of commands. This guide covers the control structures, functions, and error handling patterns that form the backbone of reliable shell scripts.

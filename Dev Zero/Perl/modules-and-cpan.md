@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - subroutines-references
+learning_outcomes:
+  - "Organize code into modules with use, require, and Exporter"
+  - "Navigate @INC and manage module paths and namespaces"
+  - "Find, evaluate, and install CPAN modules with cpanm"
+tags:
+  - perl
+  - programming
+  - scripting
+---
 # Modules and CPAN
 
 ## Code Organization and the Perl Ecosystem

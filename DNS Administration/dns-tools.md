@@ -1,3 +1,18 @@
+---
+difficulty: beginner
+time_estimate: "25 min"
+prerequisites:
+  - dns-fundamentals
+learning_outcomes:
+  - "Read and interpret full dig output including all response sections"
+  - "Trace the DNS resolution path with dig +trace"
+  - "Apply systematic troubleshooting playbooks to common DNS failures"
+tags:
+  - dns
+  - networking
+  - server-administration
+---
+
 # DNS Tools and Troubleshooting
 
 This guide covers the essential tools for querying, diagnosing, and debugging DNS. You'll learn to read `dig` output fluently, trace the full resolution path, and work through systematic troubleshooting playbooks for the most common DNS failures.

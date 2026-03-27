@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - files-and-apis
+learning_outcomes:
+  - "Use os, subprocess, and shutil to automate system tasks"
+  - "Replace shell scripts with structured Python automation"
+tags:
+  - python
+  - programming
+  - automation
+---
 # System Automation with Python
 
 **Version:** 0.2

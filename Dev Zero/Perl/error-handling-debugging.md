@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - subroutines-references
+learning_outcomes:
+  - "Handle errors with die, warn, eval, and Try::Tiny"
+  - "Use strict, warnings, and the Perl debugger to find bugs"
+  - "Apply logging strategies and Devel:: modules for diagnostics"
+tags:
+  - perl
+  - programming
+  - scripting
+---
 # Error Handling and Debugging
 
 ## Writing Resilient Code and Finding Bugs

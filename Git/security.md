@@ -1,3 +1,18 @@
+---
+difficulty: advanced
+time_estimate: "35 min"
+prerequisites:
+  - remote-repositories
+learning_outcomes:
+  - "Configure GPG and SSH commit signing for verified authorship"
+  - "Manage credentials safely with credential helpers"
+  - "Detect and remove secrets from repository history"
+tags:
+  - git
+  - security
+  - collaboration
+---
+
 # Git Security
 
 Git's cryptographic design provides integrity (every object is hashed), but it doesn't provide authentication or secrecy on its own. This guide covers signing commits to prove authorship, managing credentials safely, detecting and removing secrets from repositories, and securing your Git workflow end to end.

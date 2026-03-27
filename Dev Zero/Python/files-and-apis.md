@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - data-structures-and-logic
+learning_outcomes:
+  - "Read and write files, parse JSON, and handle CSV data"
+  - "Make HTTP requests and interact with REST APIs"
+tags:
+  - python
+  - programming
+  - apis
+---
 # Working with Files and APIs (Python)
 
 **Version:** 0.2

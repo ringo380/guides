@@ -1,3 +1,19 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - rewriting-history
+  - refs-reflog-dag
+learning_outcomes:
+  - "Recover lost commits using the reflog and git fsck"
+  - "Debug common Git mistakes with the recovery decision tree"
+  - "Diagnose and repair repository corruption"
+tags:
+  - git
+  - version-control
+  - internals
+---
+
 # Troubleshooting and Recovery
 
 Things go wrong with Git. Commits end up on the wrong branch, force pushes destroy history, secrets get committed, merge conflicts spiral out of control, and sometimes the repository itself gets corrupted. This guide is your recovery playbook - a reference for undoing every common mistake and diagnosing problems when Git behaves unexpectedly.

@@ -1,3 +1,17 @@
+---
+difficulty: beginner
+time_estimate: "40 min"
+prerequisites:
+  - scalars-strings-numbers
+learning_outcomes:
+  - "Create and manipulate arrays and hashes"
+  - "Use list operations, slices, and iteration patterns"
+  - "Apply map, grep, join, and split for data transformation"
+tags:
+  - perl
+  - programming
+  - scripting
+---
 # Arrays, Hashes, and Lists
 
 ## Collecting and Organizing Data

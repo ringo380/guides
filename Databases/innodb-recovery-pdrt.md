@@ -1,3 +1,16 @@
+---
+difficulty: advanced
+time_estimate: "35 min"
+prerequisites:
+  - mysql-administration
+learning_outcomes:
+  - "Understand InnoDB file architecture including ibdata1 and per-table .ibd files"
+  - "Execute the Percona Data Recovery Tool workflow with constraints_parser and page_parser"
+  - "Perform first-response triage and manual recovery from dropped tables or corruption"
+tags:
+  - databases
+  - mysql
+---
 # InnoDB Recovery with PDRT
 
 !!! danger "Active Data Loss?"

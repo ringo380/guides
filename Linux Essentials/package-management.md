@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - shell-basics
+learning_outcomes:
+  - "Explain how package managers resolve dependencies and manage installed software"
+  - "Use apt and dnf/yum to install, update, and remove packages"
+  - "Query package metadata and list installed files"
+  - "Configure package repositories and handle GPG key verification"
+tags:
+  - cli
+  - packages
+---
 # Package Management
 
 Every Linux distribution ships with a package manager - the tool responsible for installing, updating, and removing software. Understanding how packages work is fundamental to system administration because nearly everything on a Linux box, from the kernel to the smallest utility, arrived as a package.

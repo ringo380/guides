@@ -2,24 +2,72 @@
 
 This roadmap provides a structured path for system administrators and developers to learn Python, focusing on practical automation and system integration.
 
-## Learning Path
+Python is the "second best language for everything." While it may not be the fastest at runtime or as expressive as Perl for one-liners, its readability and vast library ecosystem make it the industry standard for system automation, data engineering, web development, and security tooling.
 
-1. [**Introduction to Python**](python_dev0_introduction.md)  
-   Setting up your environment, virtual environments, and basic syntax for sysadmins.
-2. [**Data Structures and Logic**](data-structures-and-logic.md)  
-   Lists, dictionaries, and controlling flow with loops and conditionals.
-3. [**Working with Files and APIs**](files-and-apis.md)  
-   Reading/writing files, parsing JSON, and making HTTP requests.
-4. [**System Automation**](system-automation.md)  
-   Using `os`, `subprocess`, and `shutil` to replace shell scripts.
-5. [**Testing and Tooling**](testing-and-tooling.md)  
-   Writing tests with `pytest` and managing dependencies with `pip` and `poetry`.
+---
 
-## Why Python?
+## Guides
 
-Python is the "second best language for everything." While it may not be the fastest at runtime or as expressive as Perl for one-liners, its readability and vast library ecosystem make it the industry standard for:
-
-- **System Automation**: Managing servers and infrastructure (Ansible, SaltStack).
-- **Data Engineering**: Processing large datasets.
-- **Web Development**: Building APIs and management consoles (Django, Flask, FastAPI).
-- **Security**: Scripting vulnerability scanners and analysis tools.
+<div class="topic-progression">
+<a class="topic-card" href="python_dev0_introduction.md" data-guide="python_dev0_introduction" data-topic="Dev Zero/Python">
+<span class="topic-card__number">1</span>
+<span class="topic-card__badge">Start Here</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Introduction to Python</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--beginner">Beginner</span>
+<span class="meta-time">30 min</span>
+</div>
+<p class="topic-card__description">Setting up your environment, virtual environments, and basic syntax for sysadmins.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="data-structures-and-logic.md" data-guide="data-structures-and-logic" data-topic="Dev Zero/Python">
+<span class="topic-card__number">2</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Data Structures and Logic</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--beginner">Beginner</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Lists, dictionaries, and controlling flow with loops and conditionals.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="files-and-apis.md" data-guide="files-and-apis" data-topic="Dev Zero/Python">
+<span class="topic-card__number">3</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Working with Files and APIs</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Reading/writing files, parsing JSON, and making HTTP requests.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="system-automation.md" data-guide="system-automation" data-topic="Dev Zero/Python">
+<span class="topic-card__number">4</span>
+<div class="topic-card__body">
+<div class="topic-card__title">System Automation</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Using os, subprocess, and shutil to replace shell scripts with Python.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="testing-and-tooling.md" data-guide="testing-and-tooling" data-topic="Dev Zero/Python">
+<span class="topic-card__number">5</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Testing and Tooling</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">30 min</span>
+</div>
+<p class="topic-card__description">Writing tests with pytest and managing dependencies with pip and poetry.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+</div>

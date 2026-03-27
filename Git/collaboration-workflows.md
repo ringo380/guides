@@ -1,3 +1,19 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - remote-repositories
+  - branches-and-merging
+learning_outcomes:
+  - "Compare centralized, feature branch, Gitflow, and trunk-based workflows"
+  - "Implement pull request best practices and branch protection"
+  - "Choose the right workflow for a given team size and release cadence"
+tags:
+  - git
+  - collaboration
+  - branching
+---
+
 # Collaboration Workflows
 
 Git is flexible enough to support many collaboration models. The right workflow depends on your team size, release cadence, and how much process you want. This guide covers the major workflow patterns, how pull requests fit in, and how to choose the right model for your situation.

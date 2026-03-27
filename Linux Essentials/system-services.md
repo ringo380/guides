@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - shell-basics
+  - package-management
+learning_outcomes:
+  - "Manage services with systemctl: start, stop, enable, and check status"
+  - "Write and modify systemd unit files for custom services"
+  - "Use journalctl to query and filter systemd journal logs"
+  - "Debug boot problems using systemd targets and dependency analysis"
+tags:
+  - cli
+  - systemd
+---
 # System Services and systemd
 
 On nearly every modern Linux distribution, **systemd** is the first process that starts after the kernel boots. It manages services, handles logging, mounts filesystems, and coordinates the entire startup sequence. If you administer a Linux server, you interact with systemd daily - starting services, reading logs, and troubleshooting boot problems all go through it.

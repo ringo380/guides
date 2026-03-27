@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - mysql-installation-and-configuration
+learning_outcomes:
+  - "Use the mysql CLI for interactive queries and scripted operations"
+  - "Manage users, privileges, and roles in MySQL 8.0+"
+  - "Configure and interpret MySQL log types and perform table maintenance"
+tags:
+  - databases
+  - mysql
+---
 # MySQL Administration
 
 Managing a MySQL server goes beyond writing queries. Day-to-day administration means connecting efficiently from the command line, controlling who can access what, understanding where MySQL logs its activity, and keeping tables healthy. This guide covers the core tools and techniques you will use regularly as a MySQL administrator.
