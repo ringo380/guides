@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - regular-expressions
+learning_outcomes:
+  - "Use Perl's -n, -p, -l, -a, and -e flags for command-line processing"
+  - "Parse logs, manipulate CSV/TSV data, and edit files in-place"
+  - "Build complex one-liners incrementally for text transformation"
+tags:
+  - perl
+  - programming
+  - text-processing
+  - unix
+---
 # Text Processing and One-Liners
 
 ## Perl on the Command Line

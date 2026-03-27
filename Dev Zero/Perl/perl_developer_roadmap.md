@@ -1,3 +1,14 @@
+---
+difficulty: beginner
+time_estimate: "15 min"
+prerequisites: []
+learning_outcomes:
+  - "Map out a phase-by-phase learning path from Unix fundamentals to professional Perl"
+  - "Identify key books, community resources, and career milestones"
+tags:
+  - perl
+  - programming
+---
 # Perl Developer Career Roadmap
 
 ## The Road to Perl Developer Mastery

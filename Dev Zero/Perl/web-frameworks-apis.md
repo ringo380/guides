@@ -1,3 +1,18 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - modules-and-cpan
+  - object-oriented-perl
+learning_outcomes:
+  - "Build web applications with Mojolicious and Dancer2"
+  - "Design RESTful APIs with JSON handling and middleware"
+  - "Implement authentication patterns and deploy Perl web apps"
+tags:
+  - perl
+  - programming
+  - web
+---
 # Web Frameworks and APIs
 
 ## Modern Perl Web Development

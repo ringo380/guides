@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - subroutines-references
+learning_outcomes:
+  - "Read and write files using open, close, and the diamond operator"
+  - "Perform directory operations and file tests (-e, -f, -d)"
+  - "Interact with the OS using system, backticks, and fork/exec"
+tags:
+  - perl
+  - programming
+  - unix
+---
 # File I/O and System Interaction
 
 ## Reading, Writing, and Talking to the OS

@@ -1,3 +1,17 @@
+---
+difficulty: beginner
+time_estimate: "35 min"
+prerequisites:
+  - perl_dev0_introduction
+learning_outcomes:
+  - "Work with scalar variables using the $ sigil"
+  - "Use string interpolation, heredocs, and manipulation functions"
+  - "Understand scalar context, undef, and special variables like $_ and $!"
+tags:
+  - perl
+  - programming
+  - scripting
+---
 # Scalars, Strings, and Numbers
 
 ## Perl's Building Blocks: One Thing at a Time

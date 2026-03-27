@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - modules-and-cpan
+learning_outcomes:
+  - "Write tests with Test::More and run them with prove"
+  - "Understand the TAP protocol and organize test suites"
+  - "Use Test2::Suite, mocking, and Devel::Cover for coverage"
+tags:
+  - perl
+  - programming
+  - testing
+---
 # Testing
 
 ## Perl's Testing Culture

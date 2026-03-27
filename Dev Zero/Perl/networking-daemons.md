@@ -1,3 +1,19 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - file-io-and-system
+  - modules-and-cpan
+learning_outcomes:
+  - "Build network clients and servers with IO::Socket"
+  - "Make HTTP requests using HTTP::Tiny, LWP, and Mojolicious::UserAgent"
+  - "Write daemons with PID management, signal handling, and process supervision"
+tags:
+  - perl
+  - programming
+  - networking
+  - unix
+---
 # Networking and Daemons
 
 ## System Programming with Perl

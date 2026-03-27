@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - arrays-hashes-lists
+  - control-flow
+learning_outcomes:
+  - "Define subroutines with argument handling and return values"
+  - "Create and dereference references to build complex data structures"
+  - "Use closures and anonymous data structures"
+tags:
+  - perl
+  - programming
+  - scripting
+---
 # Subroutines and References
 
 ## Building Reusable Code and Complex Data
