@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "45 min"
+prerequisites: []
+learning_outcomes:
+  - "Configure Nginx server blocks, reverse proxying, and load balancing"
+  - "Set up SSL/TLS termination with modern security defaults"
+  - "Implement rate limiting and access controls for production deployments"
+tags:
+  - nginx
+  - web-server
+  - reverse-proxy
+  - configuration
+---
 # Nginx Configuration
 
 [**Nginx**](https://nginx.org/) is a high-performance HTTP server, reverse proxy, and load balancer. Its event-driven architecture handles thousands of concurrent connections with minimal memory overhead, making it the industry standard for serving static content, terminating TLS, and proxying to application servers.
