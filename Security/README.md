@@ -4,10 +4,33 @@ This section covers essential security practices for system administrators, focu
 
 ## Guides
 
-- [**TLS/SSL Fundamentals**](tls-ssl-fundamentals.md)  
-  Learn about public key infrastructure (PKI), certificate chains, and how to use OpenSSL for common tasks.
-- [**Certificate Management**](certificate-management.md)  
-  A practical guide to obtaining and managing certificates with Let's Encrypt, Certbot, and common troubleshooting steps.
+<div class="topic-progression">
+<a class="topic-card" href="tls-ssl-fundamentals.md" data-guide="tls-ssl-fundamentals" data-topic="Security">
+<span class="topic-card__number">1</span>
+<span class="topic-card__badge">Start Here</span>
+<div class="topic-card__body">
+<div class="topic-card__title">TLS/SSL Fundamentals</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">40 min</span>
+</div>
+<p class="topic-card__description">Public key infrastructure, certificate chains, the TLS handshake, and using OpenSSL for common tasks.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+<a class="topic-card" href="certificate-management.md" data-guide="certificate-management" data-topic="Security">
+<span class="topic-card__number">2</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Certificate Management</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">35 min</span>
+</div>
+<p class="topic-card__description">Obtaining and renewing certificates with Let's Encrypt and Certbot, building internal CAs, and troubleshooting failures.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
+</div>
 
 ## Introduction
 

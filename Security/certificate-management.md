@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - tls-ssl-fundamentals
+learning_outcomes:
+  - "Obtain and renew certificates with Let's Encrypt and Certbot using ACME challenges"
+  - "Build and manage an internal certificate authority for private infrastructure"
+  - "Troubleshoot certificate expiry, chain issues, and common TLS configuration failures"
+tags:
+  - security
+  - tls
+  - ssl
+  - certificates
+---
 # Certificate Management
 
 Managing TLS certificates is one of the most operationally critical tasks in systems administration. An expired or misconfigured certificate takes down your site, breaks API integrations, and erodes user trust. This guide covers the full lifecycle: obtaining certificates, automating renewal, building internal CAs, and troubleshooting the most common failures.
