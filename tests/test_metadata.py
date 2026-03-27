@@ -107,3 +107,41 @@ class TestBuildBannerHtml:
         assert html.startswith('<div class="guide-metadata"')
         assert 'role="region"' in html
         assert html.strip().endswith("</div>")
+
+
+class TestOnPageMarkdown:
+    """MkDocs hook injects banner after first heading."""
+
+    def _make_page(self, meta=None):
+        """Create a mock MkDocs page object."""
+        page = MagicMock()
+        page.meta = meta or {}
+        page.is_homepage = False
+        return page
+
+    def test_banner_injected_after_first_h1(self):
+        md = "# Shell Basics\n\nSome content here."
+        page = self._make_page({"difficulty": "beginner"})
+        result = on_page_markdown(md, page=page)
+        assert result.startswith("# Shell Basics\n")
+        assert '<div class="guide-metadata"' in result
+        assert "Some content here." in result
+
+    def test_no_metadata_returns_unchanged(self):
+        md = "# Shell Basics\n\nSome content here."
+        page = self._make_page({})
+        result = on_page_markdown(md, page=page)
+        assert result == md
+
+    def test_homepage_skipped(self):
+        md = "# Home\n\nWelcome."
+        page = self._make_page({"difficulty": "beginner"})
+        page.is_homepage = True
+        result = on_page_markdown(md, page=page)
+        assert result == md
+
+    def test_no_h1_still_injects_at_top(self):
+        md = "Some content without heading."
+        page = self._make_page({"difficulty": "advanced"})
+        result = on_page_markdown(md, page=page)
+        assert result.startswith('<div class="guide-metadata"')

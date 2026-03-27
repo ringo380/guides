@@ -8,6 +8,7 @@ from page metadata and renders a banner div below the page title.
 """
 
 import html as html_mod
+import re
 
 METADATA_FIELDS = ("difficulty", "time_estimate", "prerequisites", "learning_outcomes", "tags")
 LIST_FIELDS = ("prerequisites", "learning_outcomes", "tags")
@@ -92,9 +93,29 @@ def build_banner_html(meta: dict) -> str:
     )
 
 
-def on_page_markdown(markdown: str, *, page, config, files) -> str:
-    """MkDocs hook entry point: inject metadata banner into page markdown.
+_H1_RE = re.compile(r"^(# .+\n)", re.MULTILINE)
 
-    Stub — will be implemented in Task 3.
-    """
-    raise NotImplementedError("on_page_markdown is not yet implemented")
+
+def on_page_markdown(markdown: str, *, page=None, **kwargs) -> str:
+    """MkDocs hook entry point: inject metadata banner below first h1."""
+    if page is None:
+        return markdown
+
+    if getattr(page, "is_homepage", False):
+        return markdown
+
+    meta = getattr(page, "meta", {})
+    extracted = extract_metadata(meta)
+    banner = build_banner_html(extracted)
+
+    if not banner:
+        return markdown
+
+    # Insert banner after first h1 heading
+    match = _H1_RE.search(markdown)
+    if match:
+        insert_pos = match.end()
+        return markdown[:insert_pos] + "\n" + banner + "\n" + markdown[insert_pos:]
+
+    # No h1 found - insert at top
+    return banner + "\n\n" + markdown

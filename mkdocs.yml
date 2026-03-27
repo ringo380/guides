@@ -52,6 +52,7 @@ plugins:
 
 hooks:
   - hooks/interactive.py
+  - hooks/metadata.py
 
 markdown_extensions:
   - toc:
