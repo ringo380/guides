@@ -1,6 +1,5 @@
 """Tests for hooks/metadata.py — guide metadata banner injection."""
 
-import json
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock
