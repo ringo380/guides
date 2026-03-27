@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "30 min"
+prerequisites: []
+learning_outcomes:
+  - "Set up a Python development environment with virtual environments"
+  - "Understand basic Python syntax and data types for system administration"
+tags:
+  - python
+  - programming
+  - scripting
+  - automation
+---
 # Introduction to Python for Sysadmins
 
 **Version:** 0.2
