@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - sql-essentials
+learning_outcomes:
+  - "Install PostgreSQL and configure postgresql.conf and pg_hba.conf"
+  - "Use psql meta-commands and understand the schema/database hierarchy"
+  - "Explain MVCC snapshot isolation and PostgreSQL's object-relational design"
+tags:
+  - databases
+  - postgresql
+---
 # PostgreSQL Fundamentals
 
 [**PostgreSQL**](https://www.postgresql.org/docs/current/) began in 1986 as the POSTGRES project at UC Berkeley, led by Michael Stonebraker. The original goal was to push beyond the limitations of existing relational databases by adding support for complex data types, user-defined functions, and extensible type systems. In 1996, the project adopted SQL as its query language and was renamed PostgreSQL to reflect that change. The project has been community-driven ever since, with no single corporate owner.

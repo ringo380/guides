@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - sql-essentials
+learning_outcomes:
+  - "Model entities and relationships using ER diagrams with correct cardinality"
+  - "Normalize schemas through Boyce-Codd normal form and decide when to denormalize"
+  - "Select appropriate data types, constraints, and index strategies for production schemas"
+tags:
+  - databases
+  - sql
+---
 # Database Design & Modeling
 
 Good schema design is the foundation that everything else rests on - query performance, data integrity, application complexity, and operational burden. A poorly designed schema creates problems that no amount of indexing or hardware can fix. A well-designed one makes queries obvious, constraints enforceable, and future changes manageable.

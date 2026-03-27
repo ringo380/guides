@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - nosql-concepts
+learning_outcomes:
+  - "Use Redis data structures: strings, hashes, lists, sets, sorted sets, and streams"
+  - "Implement caching patterns with TTL, eviction policies, and pub/sub messaging"
+  - "Configure persistence with RDB and AOF, and deploy Sentinel or Cluster for high availability"
+tags:
+  - databases
+  - nosql
+  - redis
+---
 # Redis
 
 [**Redis**](https://redis.io/docs/) is an in-memory data structure store that operates as a database, cache, message broker, and streaming engine. Unlike disk-based databases that optimize for storage capacity, Redis keeps all data in RAM and uses a **single-threaded event loop** to process commands sequentially - eliminating the need for locks and delivering sub-millisecond latency at hundreds of thousands of operations per second.

@@ -1,3 +1,15 @@
+---
+difficulty: beginner
+time_estimate: "35 min"
+prerequisites: []
+learning_outcomes:
+  - "Trace the evolution of data management from flat files through hierarchical, network, and relational models"
+  - "Explain the relational model, ACID properties, and CAP theorem"
+  - "Compare storage engine architectures and choose between RDBMS and NoSQL systems"
+tags:
+  - databases
+  - sql
+---
 # Database Fundamentals
 
 Every application you use - from the banking app on your phone to the search engine returning this page - depends on a database. But databases did not spring into existence fully formed. They evolved over decades, shaped by real engineering failures, shifting hardware constraints, and a few landmark academic papers. Understanding that evolution gives you a vocabulary and mental model that makes every subsequent guide in this course easier to absorb.

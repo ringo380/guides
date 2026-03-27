@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - sql-essentials
+learning_outcomes:
+  - "Install MySQL on major platforms and verify the running service"
+  - "Configure my.cnf settings including buffer pool sizing, character sets, and storage engines"
+  - "Harden a MySQL installation for production use"
+tags:
+  - databases
+  - mysql
+---
 # MySQL Installation & Configuration
 
 Getting a database server running is the easy part. Getting it configured correctly - so it performs well, stores your data safely, and doesn't fall over under load - takes understanding. This guide covers installing [**MySQL**](https://dev.mysql.com/doc/refman/8.0/en/) on every major platform, understanding the configuration file that controls its behavior, choosing between storage engines, sizing the buffer pool, getting character sets right, and locking down the installation before anything touches production.

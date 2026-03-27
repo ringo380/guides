@@ -1,3 +1,17 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - mysql-administration
+learning_outcomes:
+  - "Configure binary log replication and GTID-based topologies"
+  - "Set up semi-synchronous replication and Group Replication for automatic failover"
+  - "Monitor replication lag and implement connection routing with ProxySQL"
+tags:
+  - databases
+  - mysql
+  - replication
+---
 # MySQL Replication & High Availability
 
 A single MySQL server is a single point of failure. Every production database needs a plan for scaling reads, surviving hardware failures, and minimizing downtime during maintenance. MySQL provides several replication mechanisms - from basic binary log replication to fully automated clustering - and the right choice depends on your availability requirements, data consistency needs, and operational complexity budget.

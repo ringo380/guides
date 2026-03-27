@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - sql-essentials
+learning_outcomes:
+  - "Configure authentication methods and TLS/SSL for encrypted database connections"
+  - "Prevent SQL injection with parameterized queries and input validation"
+  - "Implement audit logging, privilege hardening, and encryption at rest"
+tags:
+  - databases
+  - security
+---
 # Database Security
 
 A database is only as secure as its weakest access path. Misconfigurations, default credentials, unencrypted connections, and injectable queries have been behind the majority of data breaches for decades. This guide covers the full security surface of production database systems - authentication, encryption, injection prevention, auditing, and privilege hardening - across both MySQL and PostgreSQL.

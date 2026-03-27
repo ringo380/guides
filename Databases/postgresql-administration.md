@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - postgresql-fundamentals
+learning_outcomes:
+  - "Manage roles, privileges, and row-level security policies"
+  - "Configure VACUUM, ANALYZE, and autovacuum for dead tuple management"
+  - "Monitor performance with pg_stat views and manage WAL for crash recovery"
+tags:
+  - databases
+  - postgresql
+---
 # PostgreSQL Administration
 
 PostgreSQL gives you more control over your database than almost any other RDBMS - but that control comes with responsibilities. You need to understand how roles and privileges work, how to manage the storage layer with tablespaces, why dead tuples accumulate and how VACUUM reclaims them, what the `pg_stat_*` views are telling you, which extensions are worth installing, and how WAL keeps your data safe through crashes. This guide covers the daily administration tasks that keep a PostgreSQL instance running well in production.

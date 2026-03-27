@@ -1,3 +1,17 @@
+---
+difficulty: advanced
+time_estimate: "45 min"
+prerequisites:
+  - mysql-administration
+learning_outcomes:
+  - "Interpret EXPLAIN output to identify missing indexes and inefficient query plans"
+  - "Build covering and composite indexes matched to query patterns"
+  - "Tune buffer pool, analyze slow query logs, and eliminate common performance anti-patterns"
+tags:
+  - databases
+  - mysql
+  - performance
+---
 # MySQL Performance & Optimization
 
 Performance problems in MySQL almost always trace back to one of three causes: missing or misused indexes, queries that scan more rows than necessary, or server settings mismatched to the workload. This guide covers the tools and techniques for finding and fixing those problems - from reading `EXPLAIN` output and building the right indexes, to tuning the buffer pool and analyzing the slow query log.

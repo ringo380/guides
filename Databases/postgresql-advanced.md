@@ -1,3 +1,16 @@
+---
+difficulty: advanced
+time_estimate: "45 min"
+prerequisites:
+  - postgresql-administration
+learning_outcomes:
+  - "Write recursive CTEs and window functions for complex analytical queries"
+  - "Use JSONB operators with GIN indexing and implement table partitioning"
+  - "Configure full-text search, connection pooling with PgBouncer, and foreign data wrappers"
+tags:
+  - databases
+  - postgresql
+---
 # PostgreSQL Advanced Features
 
 PostgreSQL extends well beyond standard SQL. Features like recursive CTEs, window functions, native JSON support, and built-in full-text search let you solve problems at the database layer that would otherwise require application code, external search engines, or additional infrastructure. This guide covers the capabilities that make PostgreSQL a practical choice for complex workloads.

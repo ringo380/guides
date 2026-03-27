@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "40 min"
+prerequisites:
+  - database-fundamentals
+learning_outcomes:
+  - "Write DDL statements to define tables, constraints, and indexes"
+  - "Query and manipulate data with SELECT, INSERT, UPDATE, DELETE, and JOIN operations"
+  - "Control transactions with COMMIT, ROLLBACK, and SAVEPOINT"
+tags:
+  - databases
+  - sql
+---
 # SQL Essentials
 
 [**SQL**](https://en.wikipedia.org/wiki/SQL) (Structured Query Language) is the standard language for communicating with relational databases. Whether you are running MySQL, PostgreSQL, SQLite, or SQL Server, the core syntax is the same. This guide covers the statements you will use every day - defining tables, querying data, joining tables, aggregating results, and controlling transactions.
