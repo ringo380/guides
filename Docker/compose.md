@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - fundamentals
+learning_outcomes:
+  - "Define multi-container applications in compose.yml with services, networks, and volumes"
+  - "Manage full-stack environments with docker compose up, down, and build commands"
+  - "Configure service dependencies, environment variables, and health checks"
+tags:
+  - docker
+  - containers
+  - orchestration
+  - devops
+---
 # Docker Compose
 
 [**Docker Compose**](https://docs.docker.com/compose/) is a tool for defining and running multi-container Docker applications. Instead of managing each container with separate `docker run` commands - each with its own flags for ports, volumes, networks, and environment variables - you declare everything in a single YAML file and bring the entire stack up or down with one command.
