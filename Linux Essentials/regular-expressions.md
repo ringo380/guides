@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - text-processing
+learning_outcomes:
+  - "Distinguish between basic, extended, and Perl-compatible regex flavors"
+  - "Construct patterns using metacharacters, quantifiers, and character classes"
+  - "Use capture groups and backreferences for matching and substitution"
+  - "Apply anchors and lookaround assertions for precise pattern matching"
+tags:
+  - cli
+  - regex
+  - text-processing
+---
 # Regular Expressions
 
 Regular expressions are pattern-matching rules used to search, match, and manipulate text. On Linux, they're everywhere - `grep` uses them to search files, `sed` uses them for substitutions, `awk` uses them for pattern matching, `find` uses them for filename matching, and bash's `[[ ]]` supports them natively. The [Text Processing guide](text-processing.md) uses regex patterns throughout; this guide teaches the language itself.

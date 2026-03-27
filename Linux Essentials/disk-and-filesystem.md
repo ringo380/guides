@@ -1,3 +1,19 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - shell-basics
+  - file-permissions
+learning_outcomes:
+  - "Monitor disk usage and filesystem capacity with df and du"
+  - "Create partitions and filesystems using fdisk and mkfs"
+  - "Configure persistent mounts in /etc/fstab"
+  - "Debug filesystem issues with fsck and manage inodes"
+tags:
+  - cli
+  - storage
+  - filesystem
+---
 # Disk and Filesystem
 
 Understanding disk usage, partitions, and filesystem management is a core sysadmin skill. These tools help you monitor space, mount storage, and maintain filesystem health.

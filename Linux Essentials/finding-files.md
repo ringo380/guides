@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "25 min"
+prerequisites:
+  - shell-basics
+learning_outcomes:
+  - "Use find to locate files by name, type, size, and modification time"
+  - "Combine find with xargs for batch file operations"
+  - "Apply locate and which for fast file and command lookups"
+tags:
+  - cli
+  - filesystem
+---
 # Finding Files
 
 The [`find`](https://www.gnu.org/software/findutils/manual/) command searches directory trees for files matching specified criteria. Combined with `xargs`, it forms a powerful pattern for batch operations on files.

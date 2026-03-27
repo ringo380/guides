@@ -1,3 +1,20 @@
+---
+difficulty: advanced
+time_estimate: "45 min"
+prerequisites:
+  - shell-basics
+  - networking
+learning_outcomes:
+  - "Generate and manage SSH key pairs with ssh-keygen"
+  - "Configure per-host SSH settings in ~/.ssh/config"
+  - "Set up SSH agent forwarding and multi-hop connections with ProxyJump"
+  - "Harden sshd_config for production server security"
+tags:
+  - cli
+  - ssh
+  - security
+  - networking
+---
 # SSH Configuration and Key Management
 
 SSH is the backbone of remote Linux administration. Every server you manage, every Git push over SSH, and every secure tunnel between machines flows through [**OpenSSH**](https://www.openssh.com/). The basics are simple - `ssh user@host` and you're in - but SSH's configuration system is powerful enough to handle complex multi-hop environments, automated deployments, and security hardening that goes well beyond password authentication.

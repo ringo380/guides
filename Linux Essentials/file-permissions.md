@@ -1,3 +1,18 @@
+---
+difficulty: beginner
+time_estimate: "30 min"
+prerequisites:
+  - shell-basics
+learning_outcomes:
+  - "Interpret permission strings and octal notation for files and directories"
+  - "Configure ownership and permissions with chmod, chown, and chgrp"
+  - "Explain special permission bits: setuid, setgid, and sticky bit"
+  - "Apply umask to control default permissions for new files"
+tags:
+  - cli
+  - permissions
+  - security
+---
 # File Permissions
 
 Every file and directory on a Linux system has an owner, a group, and a set of permission bits that control who can read, write, and execute it. Understanding this model is essential for system administration and security.

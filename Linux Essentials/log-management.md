@@ -1,3 +1,19 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - shell-basics
+  - text-processing
+learning_outcomes:
+  - "Navigate /var/log and identify common log files by purpose"
+  - "Query and filter the systemd journal with journalctl"
+  - "Configure rsyslog rules for log routing and remote collection"
+  - "Set up logrotate to manage log file size and retention"
+tags:
+  - cli
+  - logs
+  - systemd
+---
 # Log Management
 
 When something breaks on a Linux system - a service crashes, a login fails, a disk fills up - the first place you look is the logs. Every significant event on a Linux machine is recorded somewhere, and knowing how to find, filter, and manage those logs is one of the most practical skills a sysadmin can have.

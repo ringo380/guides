@@ -1,3 +1,17 @@
+---
+difficulty: beginner
+time_estimate: "45 min"
+prerequisites: []
+learning_outcomes:
+  - "Identify common shell types and understand shell startup sequences"
+  - "Use shell expansions including brace, tilde, parameter, arithmetic, and command substitution"
+  - "Apply quoting rules to control word splitting and expansion"
+  - "Configure PATH and understand how the shell locates commands"
+tags:
+  - cli
+  - shell
+  - fundamentals
+---
 # Shell Basics
 
 This guide covers how the shell works under the hood - what it is, how it starts up, how it finds commands, and how it processes what you type before anything runs.
