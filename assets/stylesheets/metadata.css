@@ -1,0 +1,267 @@
+/* SPDX-License-Identifier: MIT */
+/* Copyright (c) 2025-2026 Robworks Software LLC */
+
+/* --- Guide Metadata Banner --- */
+
+.guide-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0 1.5rem;
+  border-radius: 0.5rem;
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  font-size: 0.85rem;
+}
+
+/* Difficulty badges */
+.meta-difficulty {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.meta-difficulty--beginner {
+  background: color-mix(in srgb, #4caf50 20%, transparent);
+  color: #2e7d32;
+}
+
+.meta-difficulty--intermediate {
+  background: color-mix(in srgb, #ff9800 20%, transparent);
+  color: #e65100;
+}
+
+.meta-difficulty--advanced {
+  background: color-mix(in srgb, #f44336 20%, transparent);
+  color: #c62828;
+}
+
+[data-md-color-scheme="slate"] .meta-difficulty--beginner {
+  background: color-mix(in srgb, #66bb6a 20%, transparent);
+  color: #81c784;
+}
+
+[data-md-color-scheme="slate"] .meta-difficulty--intermediate {
+  background: color-mix(in srgb, #ffb74d 20%, transparent);
+  color: #ffcc80;
+}
+
+[data-md-color-scheme="slate"] .meta-difficulty--advanced {
+  background: color-mix(in srgb, #ef5350 20%, transparent);
+  color: #ef9a9a;
+}
+
+/* Time estimate */
+.meta-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.meta-time::before {
+  content: "\23F1";
+}
+
+/* Prerequisites */
+.meta-prerequisites {
+  color: var(--md-default-fg-color--light);
+}
+
+.meta-prereq-link {
+  color: var(--md-accent-fg-color);
+  text-decoration: none;
+}
+
+.meta-prereq-link:hover {
+  text-decoration: underline;
+}
+
+/* Tags */
+.meta-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.meta-tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 0.75rem;
+  background: var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color--light);
+  font-size: 0.75rem;
+}
+
+/* Learning outcomes (collapsible) */
+.meta-outcomes {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.meta-outcomes summary {
+  cursor: pointer;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.85rem;
+}
+
+.meta-outcomes ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.5rem;
+}
+
+.meta-outcomes li {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+/* --- Topic Progression Cards --- */
+
+.topic-progression {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-left: 2rem;
+}
+
+/* Vertical connector line */
+.topic-progression::before {
+  content: "";
+  position: absolute;
+  left: 0.9rem;
+  top: 1.5rem;
+  bottom: 1.5rem;
+  width: 2px;
+  background: var(--md-default-fg-color--lightest);
+}
+
+.topic-card {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin: 0.25rem 0;
+  border-radius: 0.5rem;
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.topic-card:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--md-accent-fg-color) 15%, transparent);
+}
+
+/* Step number circle */
+.topic-card__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  border-radius: 50%;
+  background: var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color--light);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.topic-card--completed .topic-card__number {
+  background: color-mix(in srgb, #4caf50 20%, transparent);
+  color: #2e7d32;
+}
+
+[data-md-color-scheme="slate"] .topic-card--completed .topic-card__number {
+  background: color-mix(in srgb, #66bb6a 20%, transparent);
+  color: #81c784;
+}
+
+.topic-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.topic-card__title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+
+.topic-card__meta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.topic-card__description {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--md-default-fg-color--light);
+  line-height: 1.5;
+}
+
+/* Start Here badge */
+.topic-card__badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 0.75rem;
+  background: var(--md-accent-fg-color);
+  color: var(--md-accent-bg-color, #fff);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Completion checkmark */
+.topic-card__check {
+  display: none;
+  align-items: center;
+  color: #2e7d32;
+  font-size: 1.2rem;
+}
+
+[data-md-color-scheme="slate"] .topic-card__check {
+  color: #81c784;
+}
+
+.topic-card--completed .topic-card__check {
+  display: flex;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .topic-progression {
+    padding-left: 1.5rem;
+  }
+
+  .topic-card {
+    padding: 0.75rem 1rem;
+  }
+
+  .topic-card__description {
+    display: none;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .topic-card {
+    transition: none;
+  }
+}
