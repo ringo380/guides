@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "35 min"
+prerequisites: []
+learning_outcomes:
+  - "Explain how DNS resolution works from root servers to your browser"
+  - "Distinguish between authoritative and recursive DNS servers"
+  - "Describe the DNS hierarchy, caching, TTLs, and glue records"
+tags:
+  - dns
+  - networking
+---
+
 # DNS Fundamentals
 
 This guide covers what DNS actually is, how it evolved from a single text file into the largest distributed database on Earth, and how every name resolution works from root servers down to the answer your browser needs.

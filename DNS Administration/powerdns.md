@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - zone-files-and-records
+learning_outcomes:
+  - "Configure PowerDNS with MySQL and SQLite backends"
+  - "Manage zones and records through the PowerDNS REST API"
+  - "Set up the PowerDNS recursor for recursive resolution"
+tags:
+  - dns
+  - nameserver
+  - server-administration
+---
+
 # PowerDNS
 
 This guide covers PowerDNS - a DNS server that stores zone data in databases instead of flat files, and exposes a full HTTP API for automation. You'll learn to set up the authoritative server with MySQL and SQLite backends, manage zones through the API, and configure the recursor.

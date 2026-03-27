@@ -1,3 +1,19 @@
+---
+difficulty: advanced
+time_estimate: "45 min"
+prerequisites:
+  - dns-fundamentals
+  - zone-files-and-records
+learning_outcomes:
+  - "Explain how the DNSSEC trust chain works from root to individual records"
+  - "Sign zones with BIND, NSD, and PowerDNS"
+  - "Debug DNSSEC validation failures"
+tags:
+  - dns
+  - security
+  - networking
+---
+
 # DNSSEC
 
 This guide covers DNSSEC - the system that adds cryptographic authentication to DNS. You'll learn why it was created, how the trust chain works from the root zone down to individual records, how to sign zones with BIND, NSD, and PowerDNS, and how to debug validation failures.

@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - zone-files-and-records
+learning_outcomes:
+  - "Configure NSD as an authoritative DNS server"
+  - "Set up Unbound as a validating recursive resolver"
+  - "Run NSD and Unbound together for separated authority and recursion"
+tags:
+  - dns
+  - nameserver
+  - server-administration
+---
+
 # NSD and Unbound
 
 This guide covers NLnet Labs' approach to DNS - purpose-built software for each role. NSD handles authoritative serving, Unbound handles recursive resolution, and splitting them eliminates an entire class of configuration mistakes and security vulnerabilities.

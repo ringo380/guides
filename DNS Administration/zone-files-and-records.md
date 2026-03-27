@@ -1,3 +1,18 @@
+---
+difficulty: beginner
+time_estimate: "35 min"
+prerequisites:
+  - dns-fundamentals
+learning_outcomes:
+  - "Write complete zone files with correct SOA, NS, and resource records"
+  - "Identify when to use each DNS record type in practice"
+  - "Configure both forward and reverse DNS zones"
+tags:
+  - dns
+  - networking
+  - server-administration
+---
+
 # Zone Files and Records
 
 This guide covers the anatomy of DNS zone files - the files that define what your domain actually does. You'll learn every record type you'll encounter in practice, the syntax that trips up even experienced administrators, and how to write complete zone files for both forward and reverse zones.
