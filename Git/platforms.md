@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - collaboration-workflows
+learning_outcomes:
+  - "Compare platform-specific features across GitHub, GitLab, and Bitbucket"
+  - "Configure CI/CD pipelines with Actions, GitLab CI, and Pipelines"
+  - "Use gh and glab CLIs for common platform operations"
+tags:
+  - git
+  - collaboration
+  - automation
+---
+
 # GitHub, GitLab, and Bitbucket
 
 Git is a distributed version control system. GitHub, GitLab, and Bitbucket are platforms built around Git that add collaboration features: pull/merge requests, CI/CD pipelines, issue tracking, code review, and project management. This guide covers the platform-specific features, CLIs, and CI/CD configuration for each.

@@ -1,3 +1,18 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - configuring-git
+learning_outcomes:
+  - "Implement client-side and server-side hooks for quality enforcement"
+  - "Configure hook frameworks like Husky, pre-commit, and Lefthook"
+  - "Use git bisect to binary-search for bug-introducing commits"
+tags:
+  - git
+  - automation
+  - configuration
+---
+
 # Git Hooks and Automation
 
 Git hooks are scripts that run automatically at specific points in the Git workflow - before a commit, after a merge, before a push. They let you enforce coding standards, run tests, validate commit messages, and automate repetitive tasks. This guide covers every hook, how to write them, hook management frameworks, and Git's built-in tools for debugging and forensic investigation.

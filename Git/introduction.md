@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "30 min"
+prerequisites: []
+learning_outcomes:
+  - "Explain why distributed version control replaced centralized systems"
+  - "Install and configure Git for first use"
+  - "Describe Git's content-addressable storage model at a high level"
+tags:
+  - git
+  - version-control
+---
+
 # Introduction: Why Git, and Why Version Control
 
 Before you type your first `git` command, it helps to understand the problem Git solves and the decades of tools that failed to solve it as well. Version control is one of those ideas that sounds obvious in hindsight - of course you should track changes to your code - but the path from "save a backup copy" to a distributed system that manages the Linux kernel involved some hard lessons and a few legendary arguments.

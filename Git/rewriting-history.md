@@ -1,3 +1,19 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - commits-and-history
+  - branches-and-merging
+learning_outcomes:
+  - "Apply the golden rule of when history rewriting is safe"
+  - "Use interactive rebase to squash, reorder, and edit commits"
+  - "Distinguish between revert and reset for undoing changes"
+tags:
+  - git
+  - version-control
+  - branching
+---
+
 # Rewriting History
 
 Git's commit history is immutable in a cryptographic sense - every commit is identified by a hash of its contents, parents, and metadata. But Git gives you tools to create *new* commits that replace old ones, effectively rewriting the visible history. This is one of Git's most powerful capabilities and one of its most dangerous. Understanding when rewriting is safe, what tools are available, and how to recover from mistakes is essential.

@@ -1,3 +1,19 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - object-model
+  - remote-repositories
+learning_outcomes:
+  - "Describe how Git negotiates and transfers objects between repositories"
+  - "Compare SSH, smart HTTP, and native Git transport protocols"
+  - "Configure shallow clones, partial clones, and git bundle for large repos"
+tags:
+  - git
+  - internals
+  - performance
+---
+
 # Transfer Protocols and Plumbing
 
 When you run `git fetch` or `git push`, Git negotiates with a remote server to figure out which objects need to be transferred, packages them efficiently, and sends them over the wire. This guide covers how that transfer works at the protocol level, the different transport mechanisms, and clone strategies for large repositories.

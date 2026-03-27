@@ -1,3 +1,18 @@
+---
+difficulty: advanced
+time_estimate: "45 min"
+prerequisites:
+  - commits-and-history
+learning_outcomes:
+  - "Explain Git's content-addressable storage and SHA-1 hashing"
+  - "Identify the four object types: blobs, trees, commits, and tags"
+  - "Inspect repository internals with plumbing commands"
+tags:
+  - git
+  - internals
+  - version-control
+---
+
 # The Object Model
 
 Everything you've learned so far - commits, branches, staging, merging - is built on top of a surprisingly simple storage system. Git is, at its core, a **content-addressable filesystem**: a key-value store where the key is a SHA-1 hash of the content and the value is the content itself. Understanding this layer explains why Git behaves the way it does and gives you the tools to inspect and repair repositories at the lowest level.

@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - introduction
+learning_outcomes:
+  - "Explain Git's configuration levels and precedence rules"
+  - "Configure aliases, diff tools, and merge tools"
+  - "Use conditional includes to manage work and personal settings"
+tags:
+  - git
+  - configuration
+  - version-control
+---
+
 # Configuring Git
 
 Git is deeply configurable. Every aspect of its behavior - from how it displays output to how it handles line endings - can be tuned through configuration. Understanding the configuration system lets you build a Git setup that matches your workflow, your editor, and your team's conventions.
