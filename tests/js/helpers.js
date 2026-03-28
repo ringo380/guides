@@ -102,6 +102,70 @@ export function createContainer(type, config) {
 }
 
 /**
+ * Set up mock Supabase client on window.
+ */
+export function mockSupabase() {
+  const authCallbacks = [];
+  const mockClient = {
+    auth: {
+      getSession: vi.fn(async () => ({ data: { session: null } })),
+      signInWithOAuth: vi.fn(async () => ({})),
+      signOut: vi.fn(async () => ({})),
+      onAuthStateChange: vi.fn((cb) => {
+        authCallbacks.push(cb);
+        return { data: { subscription: { unsubscribe: vi.fn() } } };
+      }),
+    },
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn(async () => ({
+            data: null,
+            error: { code: "PGRST116" },
+          })),
+        })),
+      })),
+      upsert: vi.fn(async () => ({ error: null })),
+    })),
+  };
+  window.supabase = {
+    createClient: vi.fn(() => mockClient),
+  };
+  return {
+    client: mockClient,
+    triggerAuthChange: (event, session) =>
+      authCallbacks.forEach((cb) => cb(event, session)),
+  };
+}
+
+/**
+ * Set up mock RunbookAuth on window.
+ */
+export function mockAuth(user) {
+  const mock = {
+    init: vi.fn(async () => {}),
+    signIn: vi.fn(async () => {}),
+    signOut: vi.fn(async () => {}),
+    getUser: vi.fn(() => user || null),
+    getClient: vi.fn(() => null),
+  };
+  window.RunbookAuth = mock;
+  return mock;
+}
+
+/**
+ * Set up mock RunbookSync on window.
+ */
+export function mockSync() {
+  const mock = {
+    pullAndMerge: vi.fn(async () => {}),
+    schedulePush: vi.fn(),
+  };
+  window.RunbookSync = mock;
+  return mock;
+}
+
+/**
  * Clean up DOM between tests.
  */
 export function cleanup() {
