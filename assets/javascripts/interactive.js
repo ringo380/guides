@@ -27,6 +27,7 @@
     "code-walkthrough": "assets/javascripts/components/code-walkthrough.js",
     progress: "assets/javascripts/components/progress.js",
     "topic-cards": "assets/javascripts/components/topic-cards.js",
+    "auth-ui": "assets/javascripts/components/auth-ui.js",
   };
 
   const loadedScripts = new Set();
@@ -48,6 +49,22 @@
     });
   }
 
+  function loadExternalScript(url) {
+    if (loadedScripts.has(url)) {
+      return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = url;
+      script.onload = () => {
+        loadedScripts.add(url);
+        resolve();
+      };
+      script.onerror = () => reject(new Error(`Failed to load ${url}`));
+      document.head.appendChild(script);
+    });
+  }
+
   function initComponents() {
     // Load storage first - components depend on window.RunbookStorage
     loadScript("assets/javascripts/lib/storage.js")
@@ -55,6 +72,22 @@
       .then(() => loadScript("assets/javascripts/lib/analytics-observers.js"))
       .then(() => loadScript("assets/javascripts/lib/topics.js"))
       .then(() => loadScript("assets/javascripts/lib/analytics-journey.js"))
+      .then(() =>
+        // Load auth chain (graceful degradation - if any step fails, site works without auth)
+        loadScript("assets/javascripts/lib/supabase-config.js")
+          .then(() => {
+            const cdnUrl = window.RunbookSupabaseConfig && window.RunbookSupabaseConfig.cdnUrl;
+            return cdnUrl ? loadExternalScript(cdnUrl) : Promise.reject(new Error("No CDN URL"));
+          })
+          .then(() => loadScript("assets/javascripts/lib/auth.js"))
+          .then(() => loadScript("assets/javascripts/lib/sync.js"))
+          .then(() => {
+            if (window.RunbookAuth) return window.RunbookAuth.init();
+          })
+          .catch((err) => {
+            console.warn("[Runbook] Auth unavailable:", err.message || err);
+          })
+      )
       .then(() => {
         // Find all interactive divs on the page
         const types = Object.keys(COMPONENT_SCRIPTS);
@@ -91,6 +124,8 @@
         loadScript(COMPONENT_SCRIPTS.progress).catch(() => {});
         // Always load topic cards (self-initializes on topic README pages)
         loadScript(COMPONENT_SCRIPTS["topic-cards"]).catch(() => {});
+        // Always load auth UI (self-initializes in header)
+        loadScript(COMPONENT_SCRIPTS["auth-ui"]).catch(() => {});
       })
       .catch(() => {
         // Storage failed to load - initialize components without it

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { loadLib, cleanup } from "./helpers.js";
 
 describe("RunbookStorage", () => {
@@ -52,6 +52,24 @@ describe("RunbookStorage", () => {
     s.saveQuizScore("q1", 1, 1);
     s.resetAll();
     expect(s.getAllProgress()).toEqual({});
+  });
+
+  it("calls RunbookSync.schedulePush on write when available", () => {
+    const s = window.RunbookStorage;
+    const mockPush = vi.fn();
+    window.RunbookSync = { schedulePush: mockPush };
+
+    s.saveQuizScore("q1", 1, 1);
+    expect(mockPush).toHaveBeenCalled();
+
+    delete window.RunbookSync;
+  });
+
+  it("does not error when RunbookSync is not available", () => {
+    delete window.RunbookSync;
+    const s = window.RunbookStorage;
+    // Should not throw
+    s.saveQuizScore("q1", 1, 1);
   });
 
   it("handles localStorage errors gracefully", () => {

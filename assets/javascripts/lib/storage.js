@@ -31,6 +31,7 @@ const RunbookStorage = {
   _write(data) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (window.RunbookSync) window.RunbookSync.schedulePush();
     } catch {
       // localStorage full or unavailable - silently ignore
     }
