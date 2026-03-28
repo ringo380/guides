@@ -31,10 +31,13 @@ const RunbookStorage = {
   _write(data) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      if (window.RunbookSync) window.RunbookSync.schedulePush();
     } catch {
       // localStorage full or unavailable - silently ignore
     }
+  },
+
+  _notifySync() {
+    if (window.RunbookSync) window.RunbookSync.schedulePush();
   },
 
   _pagePath() {
@@ -59,6 +62,7 @@ const RunbookStorage = {
     if (!page.sections_read.includes(sectionId)) {
       page.sections_read.push(sectionId);
       this._write(data);
+      this._notifySync();
     }
   },
 
@@ -73,6 +77,7 @@ const RunbookStorage = {
     const { data, page } = this._getPage();
     page.quizzes[quizId] = { score, attempts };
     this._write(data);
+    this._notifySync();
   },
 
   getQuizScore(quizId) {
@@ -86,6 +91,7 @@ const RunbookStorage = {
     const { data, page } = this._getPage();
     page.exercises[exerciseId] = { completed: true };
     this._write(data);
+    this._notifySync();
   },
 
   isExerciseComplete(exerciseId) {
@@ -109,6 +115,7 @@ const RunbookStorage = {
     const key = path || this._pagePath();
     delete data[key];
     this._write(data);
+    this._notifySync();
   },
 
   resetAll() {

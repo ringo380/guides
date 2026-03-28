@@ -54,13 +54,33 @@ describe("RunbookStorage", () => {
     expect(s.getAllProgress()).toEqual({});
   });
 
-  it("calls RunbookSync.schedulePush on write when available", () => {
+  it("calls RunbookSync.schedulePush on user-facing writes", () => {
     const s = window.RunbookStorage;
     const mockPush = vi.fn();
     window.RunbookSync = { schedulePush: mockPush };
 
     s.saveQuizScore("q1", 1, 1);
-    expect(mockPush).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledTimes(1);
+
+    s.markSectionRead("s1");
+    expect(mockPush).toHaveBeenCalledTimes(2);
+
+    s.markExerciseComplete("e1");
+    expect(mockPush).toHaveBeenCalledTimes(3);
+
+    delete window.RunbookSync;
+  });
+
+  it("does not call schedulePush on read-path page initialization", () => {
+    const s = window.RunbookStorage;
+    const mockPush = vi.fn();
+    window.RunbookSync = { schedulePush: mockPush };
+
+    // Reading triggers _getPage which may _write an empty page, but should not sync
+    s.getQuizScore("q1");
+    s.isExerciseComplete("e1");
+    s.getSectionsRead();
+    expect(mockPush).not.toHaveBeenCalled();
 
     delete window.RunbookSync;
   });

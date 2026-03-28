@@ -171,12 +171,9 @@
         var localProgress = storage.getAllProgress();
         var merged = mergeProgress(localProgress, cloudProgress);
 
-        // Write merged result to localStorage (bypass sync hook to avoid loop)
-        try {
-          localStorage.setItem("runbook_progress", JSON.stringify(merged));
-        } catch (e) {
-          // localStorage full or unavailable
-        }
+        // Write merged result to localStorage via _write (no sync loop since
+        // _notifySync is only called from user-facing write methods, not _write)
+        storage._write(merged);
 
         // Push merged result to cloud
         await pushToCloud(merged);
