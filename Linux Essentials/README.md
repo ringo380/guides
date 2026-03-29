@@ -13,7 +13,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 ## Guides
 
 <div class="topic-progression">
-<a class="topic-card" href="shell-basics.md" data-guide="shell-basics" data-topic="Linux Essentials">
+<a class="topic-card" href="shell-basics/" data-guide="shell-basics" data-topic="Linux Essentials">
 <span class="topic-card__number">1</span>
 <span class="topic-card__badge">Start Here</span>
 <div class="topic-card__body">
@@ -26,7 +26,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="streams-and-redirection.md" data-guide="streams-and-redirection" data-topic="Linux Essentials">
+<a class="topic-card" href="streams-and-redirection/" data-guide="streams-and-redirection" data-topic="Linux Essentials">
 <span class="topic-card__number">2</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Streams and Redirection</div>
@@ -38,7 +38,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="text-processing.md" data-guide="text-processing" data-topic="Linux Essentials">
+<a class="topic-card" href="text-processing/" data-guide="text-processing" data-topic="Linux Essentials">
 <span class="topic-card__number">3</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Text Processing</div>
@@ -50,7 +50,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="regular-expressions.md" data-guide="regular-expressions" data-topic="Linux Essentials">
+<a class="topic-card" href="regular-expressions/" data-guide="regular-expressions" data-topic="Linux Essentials">
 <span class="topic-card__number">4</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Regular Expressions</div>
@@ -62,7 +62,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="finding-files.md" data-guide="finding-files" data-topic="Linux Essentials">
+<a class="topic-card" href="finding-files/" data-guide="finding-files" data-topic="Linux Essentials">
 <span class="topic-card__number">5</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Finding Files</div>
@@ -74,7 +74,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="file-permissions.md" data-guide="file-permissions" data-topic="Linux Essentials">
+<a class="topic-card" href="file-permissions/" data-guide="file-permissions" data-topic="Linux Essentials">
 <span class="topic-card__number">6</span>
 <div class="topic-card__body">
 <div class="topic-card__title">File Permissions</div>
@@ -86,7 +86,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="job-control.md" data-guide="job-control" data-topic="Linux Essentials">
+<a class="topic-card" href="job-control/" data-guide="job-control" data-topic="Linux Essentials">
 <span class="topic-card__number">7</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Job Control</div>
@@ -98,7 +98,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="scripting-fundamentals.md" data-guide="scripting-fundamentals" data-topic="Linux Essentials">
+<a class="topic-card" href="scripting-fundamentals/" data-guide="scripting-fundamentals" data-topic="Linux Essentials">
 <span class="topic-card__number">8</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Scripting Fundamentals</div>
@@ -110,7 +110,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="disk-and-filesystem.md" data-guide="disk-and-filesystem" data-topic="Linux Essentials">
+<a class="topic-card" href="disk-and-filesystem/" data-guide="disk-and-filesystem" data-topic="Linux Essentials">
 <span class="topic-card__number">9</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Disk and Filesystem</div>
@@ -122,7 +122,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="package-management.md" data-guide="package-management" data-topic="Linux Essentials">
+<a class="topic-card" href="package-management/" data-guide="package-management" data-topic="Linux Essentials">
 <span class="topic-card__number">10</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Package Management</div>
@@ -134,7 +134,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="system-services.md" data-guide="system-services" data-topic="Linux Essentials">
+<a class="topic-card" href="system-services/" data-guide="system-services" data-topic="Linux Essentials">
 <span class="topic-card__number">11</span>
 <div class="topic-card__body">
 <div class="topic-card__title">System Services</div>
@@ -146,7 +146,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="user-and-group-management.md" data-guide="user-and-group-management" data-topic="Linux Essentials">
+<a class="topic-card" href="user-and-group-management/" data-guide="user-and-group-management" data-topic="Linux Essentials">
 <span class="topic-card__number">12</span>
 <div class="topic-card__body">
 <div class="topic-card__title">User and Group Management</div>
@@ -158,7 +158,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="ssh-configuration.md" data-guide="ssh-configuration" data-topic="Linux Essentials">
+<a class="topic-card" href="ssh-configuration/" data-guide="ssh-configuration" data-topic="Linux Essentials">
 <span class="topic-card__number">13</span>
 <div class="topic-card__body">
 <div class="topic-card__title">SSH Configuration</div>
@@ -170,7 +170,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="log-management.md" data-guide="log-management" data-topic="Linux Essentials">
+<a class="topic-card" href="log-management/" data-guide="log-management" data-topic="Linux Essentials">
 <span class="topic-card__number">14</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Log Management</div>
@@ -182,7 +182,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="networking.md" data-guide="networking" data-topic="Linux Essentials">
+<a class="topic-card" href="networking/" data-guide="networking" data-topic="Linux Essentials">
 <span class="topic-card__number">15</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Networking</div>
@@ -194,7 +194,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="system-information.md" data-guide="system-information" data-topic="Linux Essentials">
+<a class="topic-card" href="system-information/" data-guide="system-information" data-topic="Linux Essentials">
 <span class="topic-card__number">16</span>
 <div class="topic-card__body">
 <div class="topic-card__title">System Information</div>
@@ -206,7 +206,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="archiving-and-compression.md" data-guide="archiving-and-compression" data-topic="Linux Essentials">
+<a class="topic-card" href="archiving-and-compression/" data-guide="archiving-and-compression" data-topic="Linux Essentials">
 <span class="topic-card__number">17</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Archiving and Compression</div>
@@ -218,7 +218,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="best-practices.md" data-guide="best-practices" data-topic="Linux Essentials">
+<a class="topic-card" href="best-practices/" data-guide="best-practices" data-topic="Linux Essentials">
 <span class="topic-card__number">18</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Best Practices</div>
@@ -230,7 +230,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="cron-and-scheduled-tasks.md" data-guide="cron-and-scheduled-tasks" data-topic="Linux Essentials">
+<a class="topic-card" href="cron-and-scheduled-tasks/" data-guide="cron-and-scheduled-tasks" data-topic="Linux Essentials">
 <span class="topic-card__number">19</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Cron and Scheduled Tasks</div>
@@ -242,7 +242,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="firewall-fundamentals.md" data-guide="firewall-fundamentals" data-topic="Linux Essentials">
+<a class="topic-card" href="firewall-fundamentals/" data-guide="firewall-fundamentals" data-topic="Linux Essentials">
 <span class="topic-card__number">20</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Firewall and Networking Security</div>

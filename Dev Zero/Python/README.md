@@ -9,7 +9,7 @@ Python is the "second best language for everything." While it may not be the fas
 ## Guides
 
 <div class="topic-progression">
-<a class="topic-card" href="python_dev0_introduction.md" data-guide="python_dev0_introduction" data-topic="Dev Zero/Python">
+<a class="topic-card" href="python_dev0_introduction/" data-guide="python_dev0_introduction" data-topic="Dev Zero/Python">
 <span class="topic-card__number">1</span>
 <span class="topic-card__badge">Start Here</span>
 <div class="topic-card__body">
@@ -22,7 +22,7 @@ Python is the "second best language for everything." While it may not be the fas
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="data-structures-and-logic.md" data-guide="data-structures-and-logic" data-topic="Dev Zero/Python">
+<a class="topic-card" href="data-structures-and-logic/" data-guide="data-structures-and-logic" data-topic="Dev Zero/Python">
 <span class="topic-card__number">2</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Data Structures and Logic</div>
@@ -34,7 +34,7 @@ Python is the "second best language for everything." While it may not be the fas
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="files-and-apis.md" data-guide="files-and-apis" data-topic="Dev Zero/Python">
+<a class="topic-card" href="files-and-apis/" data-guide="files-and-apis" data-topic="Dev Zero/Python">
 <span class="topic-card__number">3</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Working with Files and APIs</div>
@@ -46,7 +46,7 @@ Python is the "second best language for everything." While it may not be the fas
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="system-automation.md" data-guide="system-automation" data-topic="Dev Zero/Python">
+<a class="topic-card" href="system-automation/" data-guide="system-automation" data-topic="Dev Zero/Python">
 <span class="topic-card__number">4</span>
 <div class="topic-card__body">
 <div class="topic-card__title">System Automation</div>
@@ -58,7 +58,7 @@ Python is the "second best language for everything." While it may not be the fas
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="testing-and-tooling.md" data-guide="testing-and-tooling" data-topic="Dev Zero/Python">
+<a class="topic-card" href="testing-and-tooling/" data-guide="testing-and-tooling" data-topic="Dev Zero/Python">
 <span class="topic-card__number">5</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Testing and Tooling</div>

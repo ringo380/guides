@@ -10,7 +10,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 
 <div class="topic-progression">
 <h3>Foundations</h3>
-<a class="topic-card" href="database-fundamentals.md" data-guide="database-fundamentals" data-topic="Databases">
+<a class="topic-card" href="database-fundamentals/" data-guide="database-fundamentals" data-topic="Databases">
 <span class="topic-card__number">1</span>
 <span class="topic-card__badge">Start Here</span>
 <div class="topic-card__body">
@@ -23,7 +23,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="sql-essentials.md" data-guide="sql-essentials" data-topic="Databases">
+<a class="topic-card" href="sql-essentials/" data-guide="sql-essentials" data-topic="Databases">
 <span class="topic-card__number">2</span>
 <div class="topic-card__body">
 <div class="topic-card__title">SQL Essentials</div>
@@ -35,7 +35,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="database-design.md" data-guide="database-design" data-topic="Databases">
+<a class="topic-card" href="database-design/" data-guide="database-design" data-topic="Databases">
 <span class="topic-card__number">3</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Database Design &amp; Modeling</div>
@@ -48,7 +48,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
 <h3>MySQL &amp; MariaDB</h3>
-<a class="topic-card" href="mysql-installation-and-configuration.md" data-guide="mysql-installation-and-configuration" data-topic="Databases">
+<a class="topic-card" href="mysql-installation-and-configuration/" data-guide="mysql-installation-and-configuration" data-topic="Databases">
 <span class="topic-card__number">4</span>
 <div class="topic-card__body">
 <div class="topic-card__title">MySQL Installation &amp; Configuration</div>
@@ -60,7 +60,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="mysql-administration.md" data-guide="mysql-administration" data-topic="Databases">
+<a class="topic-card" href="mysql-administration/" data-guide="mysql-administration" data-topic="Databases">
 <span class="topic-card__number">5</span>
 <div class="topic-card__body">
 <div class="topic-card__title">MySQL Administration</div>
@@ -72,7 +72,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="mysql-performance.md" data-guide="mysql-performance" data-topic="Databases">
+<a class="topic-card" href="mysql-performance/" data-guide="mysql-performance" data-topic="Databases">
 <span class="topic-card__number">6</span>
 <div class="topic-card__body">
 <div class="topic-card__title">MySQL Performance &amp; Optimization</div>
@@ -84,7 +84,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="mysql-replication.md" data-guide="mysql-replication" data-topic="Databases">
+<a class="topic-card" href="mysql-replication/" data-guide="mysql-replication" data-topic="Databases">
 <span class="topic-card__number">7</span>
 <div class="topic-card__body">
 <div class="topic-card__title">MySQL Replication &amp; High Availability</div>
@@ -97,7 +97,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
 <h3>PostgreSQL</h3>
-<a class="topic-card" href="postgresql-fundamentals.md" data-guide="postgresql-fundamentals" data-topic="Databases">
+<a class="topic-card" href="postgresql-fundamentals/" data-guide="postgresql-fundamentals" data-topic="Databases">
 <span class="topic-card__number">8</span>
 <div class="topic-card__body">
 <div class="topic-card__title">PostgreSQL Fundamentals</div>
@@ -109,7 +109,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="postgresql-administration.md" data-guide="postgresql-administration" data-topic="Databases">
+<a class="topic-card" href="postgresql-administration/" data-guide="postgresql-administration" data-topic="Databases">
 <span class="topic-card__number">9</span>
 <div class="topic-card__body">
 <div class="topic-card__title">PostgreSQL Administration</div>
@@ -121,7 +121,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="postgresql-advanced.md" data-guide="postgresql-advanced" data-topic="Databases">
+<a class="topic-card" href="postgresql-advanced/" data-guide="postgresql-advanced" data-topic="Databases">
 <span class="topic-card__number">10</span>
 <div class="topic-card__body">
 <div class="topic-card__title">PostgreSQL Advanced Features</div>
@@ -134,7 +134,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
 <h3>NoSQL</h3>
-<a class="topic-card" href="nosql-concepts.md" data-guide="nosql-concepts" data-topic="Databases">
+<a class="topic-card" href="nosql-concepts/" data-guide="nosql-concepts" data-topic="Databases">
 <span class="topic-card__number">11</span>
 <div class="topic-card__body">
 <div class="topic-card__title">NoSQL Concepts &amp; Architecture</div>
@@ -146,7 +146,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="mongodb.md" data-guide="mongodb" data-topic="Databases">
+<a class="topic-card" href="mongodb/" data-guide="mongodb" data-topic="Databases">
 <span class="topic-card__number">12</span>
 <div class="topic-card__body">
 <div class="topic-card__title">MongoDB</div>
@@ -158,7 +158,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="redis.md" data-guide="redis" data-topic="Databases">
+<a class="topic-card" href="redis/" data-guide="redis" data-topic="Databases">
 <span class="topic-card__number">13</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Redis</div>
@@ -171,7 +171,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
 <h3>Operations</h3>
-<a class="topic-card" href="backup-and-recovery.md" data-guide="backup-and-recovery" data-topic="Databases">
+<a class="topic-card" href="backup-and-recovery/" data-guide="backup-and-recovery" data-topic="Databases">
 <span class="topic-card__number">14</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Backup &amp; Recovery Strategies</div>
@@ -183,7 +183,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="database-security.md" data-guide="database-security" data-topic="Databases">
+<a class="topic-card" href="database-security/" data-guide="database-security" data-topic="Databases">
 <span class="topic-card__number">15</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Database Security</div>
@@ -195,7 +195,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="scaling-and-architecture.md" data-guide="scaling-and-architecture" data-topic="Databases">
+<a class="topic-card" href="scaling-and-architecture/" data-guide="scaling-and-architecture" data-topic="Databases">
 <span class="topic-card__number">16</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Scaling &amp; Architecture Patterns</div>
@@ -207,7 +207,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="innodb-recovery-pdrt.md" data-guide="innodb-recovery-pdrt" data-topic="Databases">
+<a class="topic-card" href="innodb-recovery-pdrt/" data-guide="innodb-recovery-pdrt" data-topic="Databases">
 <span class="topic-card__number">17</span>
 <div class="topic-card__body">
 <div class="topic-card__title">InnoDB Recovery with PDRT</div>

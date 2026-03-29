@@ -9,7 +9,7 @@ Each topic is covered in its own guide. Start with the configuration fundamental
 ## Guides
 
 <div class="topic-progression">
-<a class="topic-card" href="configuration.md" data-guide="configuration" data-topic="Nginx">
+<a class="topic-card" href="configuration/" data-guide="configuration" data-topic="Nginx">
 <span class="topic-card__number">1</span>
 <span class="topic-card__badge">Start Here</span>
 <div class="topic-card__body">

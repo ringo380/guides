@@ -10,7 +10,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 
 <div class="topic-progression">
 <h3>Foundations</h3>
-<a class="topic-card" href="introduction.md" data-guide="introduction" data-topic="Git">
+<a class="topic-card" href="introduction/" data-guide="introduction" data-topic="Git">
 <span class="topic-card__number">1</span>
 <span class="topic-card__badge">Start Here</span>
 <div class="topic-card__body">
@@ -23,7 +23,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="three-trees.md" data-guide="three-trees" data-topic="Git">
+<a class="topic-card" href="three-trees/" data-guide="three-trees" data-topic="Git">
 <span class="topic-card__number">2</span>
 <div class="topic-card__body">
 <div class="topic-card__title">The Three Trees: Working Directory, Index, and Repository</div>
@@ -35,7 +35,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="commits-and-history.md" data-guide="commits-and-history" data-topic="Git">
+<a class="topic-card" href="commits-and-history/" data-guide="commits-and-history" data-topic="Git">
 <span class="topic-card__number">3</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Commits and History</div>
@@ -47,7 +47,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="branches-and-merging.md" data-guide="branches-and-merging" data-topic="Git">
+<a class="topic-card" href="branches-and-merging/" data-guide="branches-and-merging" data-topic="Git">
 <span class="topic-card__number">4</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Branches and Merging</div>
@@ -60,7 +60,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
 <h3>Core Workflows</h3>
-<a class="topic-card" href="remote-repositories.md" data-guide="remote-repositories" data-topic="Git">
+<a class="topic-card" href="remote-repositories/" data-guide="remote-repositories" data-topic="Git">
 <span class="topic-card__number">5</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Remote Repositories</div>
@@ -72,7 +72,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="rewriting-history.md" data-guide="rewriting-history" data-topic="Git">
+<a class="topic-card" href="rewriting-history/" data-guide="rewriting-history" data-topic="Git">
 <span class="topic-card__number">6</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Rewriting History</div>
@@ -84,7 +84,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="stashing-and-worktree.md" data-guide="stashing-and-worktree" data-topic="Git">
+<a class="topic-card" href="stashing-and-worktree/" data-guide="stashing-and-worktree" data-topic="Git">
 <span class="topic-card__number">7</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Stashing and the Worktree</div>
@@ -96,7 +96,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="configuring-git.md" data-guide="configuring-git" data-topic="Git">
+<a class="topic-card" href="configuring-git/" data-guide="configuring-git" data-topic="Git">
 <span class="topic-card__number">8</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Configuring Git</div>
@@ -109,7 +109,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
 <h3>Git Internals</h3>
-<a class="topic-card" href="object-model.md" data-guide="object-model" data-topic="Git">
+<a class="topic-card" href="object-model/" data-guide="object-model" data-topic="Git">
 <span class="topic-card__number">9</span>
 <div class="topic-card__body">
 <div class="topic-card__title">The Object Model</div>
@@ -121,7 +121,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="refs-reflog-dag.md" data-guide="refs-reflog-dag" data-topic="Git">
+<a class="topic-card" href="refs-reflog-dag/" data-guide="refs-reflog-dag" data-topic="Git">
 <span class="topic-card__number">10</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Refs, the Reflog, and the DAG</div>
@@ -133,7 +133,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="transfer-protocols.md" data-guide="transfer-protocols" data-topic="Git">
+<a class="topic-card" href="transfer-protocols/" data-guide="transfer-protocols" data-topic="Git">
 <span class="topic-card__number">11</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Transfer Protocols and Plumbing</div>
@@ -146,7 +146,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
 <h3>Platform Collaboration</h3>
-<a class="topic-card" href="collaboration-workflows.md" data-guide="collaboration-workflows" data-topic="Git">
+<a class="topic-card" href="collaboration-workflows/" data-guide="collaboration-workflows" data-topic="Git">
 <span class="topic-card__number">12</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Collaboration Workflows</div>
@@ -158,7 +158,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="platforms.md" data-guide="platforms" data-topic="Git">
+<a class="topic-card" href="platforms/" data-guide="platforms" data-topic="Git">
 <span class="topic-card__number">13</span>
 <div class="topic-card__body">
 <div class="topic-card__title">GitHub, GitLab, and Bitbucket</div>
@@ -171,7 +171,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
 <h3>Advanced Operations</h3>
-<a class="topic-card" href="hooks-and-automation.md" data-guide="hooks-and-automation" data-topic="Git">
+<a class="topic-card" href="hooks-and-automation/" data-guide="hooks-and-automation" data-topic="Git">
 <span class="topic-card__number">14</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Git Hooks and Automation</div>
@@ -183,7 +183,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="security.md" data-guide="security" data-topic="Git">
+<a class="topic-card" href="security/" data-guide="security" data-topic="Git">
 <span class="topic-card__number">15</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Git Security</div>
@@ -195,7 +195,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="monorepos-and-scaling.md" data-guide="monorepos-and-scaling" data-topic="Git">
+<a class="topic-card" href="monorepos-and-scaling/" data-guide="monorepos-and-scaling" data-topic="Git">
 <span class="topic-card__number">16</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Monorepos and Scaling Git</div>
@@ -207,7 +207,7 @@ Each guide is self-contained, but the order below follows a natural learning pat
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="troubleshooting-and-recovery.md" data-guide="troubleshooting-and-recovery" data-topic="Git">
+<a class="topic-card" href="troubleshooting-and-recovery/" data-guide="troubleshooting-and-recovery" data-topic="Git">
 <span class="topic-card__number">17</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Troubleshooting and Recovery</div>

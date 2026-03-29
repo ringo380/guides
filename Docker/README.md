@@ -5,7 +5,7 @@ Docker is a platform for developing, shipping, and running applications in isola
 ## Guides
 
 <div class="topic-progression">
-<a class="topic-card" href="fundamentals.md" data-guide="fundamentals" data-topic="Docker">
+<a class="topic-card" href="fundamentals/" data-guide="fundamentals" data-topic="Docker">
 <span class="topic-card__number">1</span>
 <span class="topic-card__badge">Start Here</span>
 <div class="topic-card__body">
@@ -18,7 +18,7 @@ Docker is a platform for developing, shipping, and running applications in isola
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="compose.md" data-guide="compose" data-topic="Docker">
+<a class="topic-card" href="compose/" data-guide="compose" data-topic="Docker">
 <span class="topic-card__number">2</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Docker Compose</div>
