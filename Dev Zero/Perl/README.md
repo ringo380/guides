@@ -7,7 +7,7 @@ A comprehensive course that takes you from Unix foundations through professional
 ## Guides
 
 <div class="topic-progression">
-<a class="topic-card" href="perl_dev0_introduction.md" data-guide="perl_dev0_introduction" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="perl_dev0_introduction/" data-guide="perl_dev0_introduction" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">1</span>
 <span class="topic-card__badge">Start Here</span>
 <div class="topic-card__body">
@@ -20,7 +20,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="scalars-strings-numbers.md" data-guide="scalars-strings-numbers" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="scalars-strings-numbers/" data-guide="scalars-strings-numbers" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">2</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Scalars, Strings, and Numbers</div>
@@ -32,7 +32,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="arrays-hashes-lists.md" data-guide="arrays-hashes-lists" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="arrays-hashes-lists/" data-guide="arrays-hashes-lists" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">3</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Arrays, Hashes, and Lists</div>
@@ -44,7 +44,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="control-flow.md" data-guide="control-flow" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="control-flow/" data-guide="control-flow" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">4</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Control Flow</div>
@@ -56,7 +56,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="regular-expressions.md" data-guide="regular-expressions" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="regular-expressions/" data-guide="regular-expressions" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">5</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Regular Expressions</div>
@@ -68,7 +68,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="subroutines-references.md" data-guide="subroutines-references" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="subroutines-references/" data-guide="subroutines-references" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">6</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Subroutines and References</div>
@@ -80,7 +80,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="file-io-and-system.md" data-guide="file-io-and-system" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="file-io-and-system/" data-guide="file-io-and-system" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">7</span>
 <div class="topic-card__body">
 <div class="topic-card__title">File I/O and System Interaction</div>
@@ -92,7 +92,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="modules-and-cpan.md" data-guide="modules-and-cpan" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="modules-and-cpan/" data-guide="modules-and-cpan" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">8</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Modules and CPAN</div>
@@ -104,7 +104,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="object-oriented-perl.md" data-guide="object-oriented-perl" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="object-oriented-perl/" data-guide="object-oriented-perl" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">9</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Object-Oriented Perl</div>
@@ -116,7 +116,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="error-handling-debugging.md" data-guide="error-handling-debugging" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="error-handling-debugging/" data-guide="error-handling-debugging" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">10</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Error Handling and Debugging</div>
@@ -128,7 +128,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="testing.md" data-guide="testing" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="testing/" data-guide="testing" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">11</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Testing</div>
@@ -140,7 +140,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="text-processing-oneliners.md" data-guide="text-processing-oneliners" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="text-processing-oneliners/" data-guide="text-processing-oneliners" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">12</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Text Processing and One-Liners</div>
@@ -152,7 +152,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="networking-daemons.md" data-guide="networking-daemons" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="networking-daemons/" data-guide="networking-daemons" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">13</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Networking and Daemons</div>
@@ -164,7 +164,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="web-frameworks-apis.md" data-guide="web-frameworks-apis" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="web-frameworks-apis/" data-guide="web-frameworks-apis" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">14</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Web Frameworks and APIs</div>
@@ -176,7 +176,7 @@ A comprehensive course that takes you from Unix foundations through professional
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="perl_developer_roadmap.md" data-guide="perl_developer_roadmap" data-topic="Dev Zero/Perl">
+<a class="topic-card" href="perl_developer_roadmap/" data-guide="perl_developer_roadmap" data-topic="Dev Zero/Perl">
 <span class="topic-card__number">15</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Developer Roadmap</div>

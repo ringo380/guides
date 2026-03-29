@@ -5,7 +5,7 @@ This section covers essential security practices for system administrators, focu
 ## Guides
 
 <div class="topic-progression">
-<a class="topic-card" href="tls-ssl-fundamentals.md" data-guide="tls-ssl-fundamentals" data-topic="Security">
+<a class="topic-card" href="tls-ssl-fundamentals/" data-guide="tls-ssl-fundamentals" data-topic="Security">
 <span class="topic-card__number">1</span>
 <span class="topic-card__badge">Start Here</span>
 <div class="topic-card__body">
@@ -18,7 +18,7 @@ This section covers essential security practices for system administrators, focu
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="certificate-management.md" data-guide="certificate-management" data-topic="Security">
+<a class="topic-card" href="certificate-management/" data-guide="certificate-management" data-topic="Security">
 <span class="topic-card__number">2</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Certificate Management</div>

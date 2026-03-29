@@ -9,7 +9,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 ## Guides
 
 <div class="topic-progression">
-<a class="topic-card" href="dns-fundamentals.md" data-guide="dns-fundamentals" data-topic="DNS Administration">
+<a class="topic-card" href="dns-fundamentals/" data-guide="dns-fundamentals" data-topic="DNS Administration">
 <span class="topic-card__number">1</span>
 <span class="topic-card__badge">Start Here</span>
 <div class="topic-card__body">
@@ -22,7 +22,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="zone-files-and-records.md" data-guide="zone-files-and-records" data-topic="DNS Administration">
+<a class="topic-card" href="zone-files-and-records/" data-guide="zone-files-and-records" data-topic="DNS Administration">
 <span class="topic-card__number">2</span>
 <div class="topic-card__body">
 <div class="topic-card__title">Zone Files and Records</div>
@@ -34,7 +34,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="dns-tools.md" data-guide="dns-tools" data-topic="DNS Administration">
+<a class="topic-card" href="dns-tools/" data-guide="dns-tools" data-topic="DNS Administration">
 <span class="topic-card__number">3</span>
 <div class="topic-card__body">
 <div class="topic-card__title">DNS Tools and Troubleshooting</div>
@@ -46,7 +46,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="bind.md" data-guide="bind" data-topic="DNS Administration">
+<a class="topic-card" href="bind/" data-guide="bind" data-topic="DNS Administration">
 <span class="topic-card__number">4</span>
 <div class="topic-card__body">
 <div class="topic-card__title">BIND</div>
@@ -58,7 +58,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="nsd-and-unbound.md" data-guide="nsd-and-unbound" data-topic="DNS Administration">
+<a class="topic-card" href="nsd-and-unbound/" data-guide="nsd-and-unbound" data-topic="DNS Administration">
 <span class="topic-card__number">5</span>
 <div class="topic-card__body">
 <div class="topic-card__title">NSD and Unbound</div>
@@ -70,7 +70,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="powerdns.md" data-guide="powerdns" data-topic="DNS Administration">
+<a class="topic-card" href="powerdns/" data-guide="powerdns" data-topic="DNS Administration">
 <span class="topic-card__number">6</span>
 <div class="topic-card__body">
 <div class="topic-card__title">PowerDNS</div>
@@ -82,7 +82,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="dnssec.md" data-guide="dnssec" data-topic="DNS Administration">
+<a class="topic-card" href="dnssec/" data-guide="dnssec" data-topic="DNS Administration">
 <span class="topic-card__number">7</span>
 <div class="topic-card__body">
 <div class="topic-card__title">DNSSEC</div>
@@ -94,7 +94,7 @@ Each topic is covered in its own guide. Start anywhere - they're self-contained,
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
-<a class="topic-card" href="dns-architecture.md" data-guide="dns-architecture" data-topic="DNS Administration">
+<a class="topic-card" href="dns-architecture/" data-guide="dns-architecture" data-topic="DNS Administration">
 <span class="topic-card__number">8</span>
 <div class="topic-card__body">
 <div class="topic-card__title">DNS Architecture and Operations</div>
