@@ -70,4 +70,16 @@ Python is the "second best language for everything." While it may not be the fas
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
+<a class="topic-card" href="object-oriented-programming/" data-guide="object-oriented-programming" data-topic="Dev Zero/Python">
+<span class="topic-card__number">6</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Object-Oriented Programming</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">45 min</span>
+</div>
+<p class="topic-card__description">Classes, inheritance, dataclasses, protocols, and practical OOP patterns.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
 </div>
