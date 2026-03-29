@@ -134,9 +134,9 @@ annotations:
       text: "Instance attributes are set on self. Each Server gets its own hostname."
     - line: 10
       text: "Methods are functions defined inside the class. self is always the first parameter."
-    - line: 13
+    - line: 14
       text: "Methods can modify instance state. self.checks_run += 1 updates this specific server."
-    - line: 17
+    - line: 18
       text: "__repr__ returns a developer-friendly string. The !r format spec adds quotes around strings."
 ```
 
@@ -234,8 +234,8 @@ title: Dunder Methods in Action
 scenario: "Explore how __repr__, __str__, __eq__, and __hash__ behave in the Python REPL."
 steps:
     - command: "python3 -c \"\nclass Server:\n    def __init__(self, hostname, port=22):\n        self.hostname = hostname\n        self.port = port\n    def __repr__(self):\n        return f'Server({self.hostname!r}, port={self.port})'\n    def __str__(self):\n        return f'{self.hostname}:{self.port}'\n    def __eq__(self, other):\n        if not isinstance(other, Server):\n            return NotImplemented\n        return self.hostname == other.hostname and self.port == other.port\n    def __hash__(self):\n        return hash((self.hostname, self.port))\n\nweb1 = Server('web-01.prod', 443)\nweb2 = Server('web-01.prod', 443)\nweb3 = Server('db-01.prod', 5432)\nprint('repr:', repr(web1))\nprint('str: ', str(web1))\nprint('eq:  ', web1 == web2)\nprint('ne:  ', web1 == web3)\nprint('set: ', {web1, web2, web3})\n\""
-      output: "repr: Server('web-01.prod', port=443)\nstr:  web-01.prod:443\neq:   True\nne:   False\nset:  {Server('web-01.prod', port=443), Server('db-01.prod', port=5432)}"
-      narration: "web1 and web2 are equal (same hostname and port), so the set deduplicates them down to one entry. The repr shows the developer-friendly format while str shows the human-readable one."
+      output: "repr: Server('web-01.prod', port=443)\nstr:  web-01.prod:443\neq:   True\nne:   False\nset:  2 unique servers (web1 and web2 deduplicated)"
+      narration: "web1 and web2 are equal (same hostname and port), so the set deduplicates them down to two unique entries. The repr shows the developer-friendly format while str shows the human-readable one. Set display order varies between Python runs due to hash randomization."
 ```
 
 ---
@@ -437,11 +437,11 @@ annotations:
       text: "Server is also standalone. It knows nothing about deployments or configs."
     - line: 23
       text: "Deployment composes Server and Config. It holds references to them, not inheritance."
-    - line: 28
+    - line: 29
       text: "healthy_servers filters using each server's own check method - delegation, not inheritance."
-    - line: 31
+    - line: 32
       text: "The deployment reads config through the Config object's interface. If you swap Config for a YAMLConfig or EnvConfig, Deployment doesn't change."
-    - line: 35
+    - line: 38
       text: "Assembly happens at the call site. You can mix and match any servers with any config."
 ```
 
@@ -455,6 +455,7 @@ An **abstract base class** (ABC) defines a contract: subclasses must implement c
 
 ```python
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 
 class StorageBackend(ABC):
@@ -476,7 +477,7 @@ class StorageBackend(ABC):
 
 
 class FileStorage(StorageBackend):
-    def __init__(self, base_dir):
+    def __init__(self, base_dir: Path):
         self.base_dir = base_dir
 
     def read(self, key):
@@ -558,7 +559,7 @@ steps:
       output: "repr: HealthResult(server='web-01', status='healthy', response_ms=12.5, checks=[])\neq:   True\nne:   False"
       narration: "__repr__ shows all fields with their values. __eq__ compares field-by-field, so r1 and r2 are equal (same server, status, and response_ms). No manual __init__, __repr__, or __eq__ needed."
     - command: "python3 -c \"\nfrom dataclasses import dataclass\n\n@dataclass(frozen=True)\nclass Endpoint:\n    host: str\n    port: int\n    protocol: str = 'https'\n\ne = Endpoint('api.example.com', 443)\nprint(repr(e))\nprint('hash:', hash(e))\ntry:\n    e.port = 8080\nexcept Exception as err:\n    print(f'error: {type(err).__name__}: {err}')\n\""
-      output: "Endpoint(host='api.example.com', port=443, protocol='https')\nhash: -5765727394089908789\nerror: FrozenInstanceError: cannot assign to field 'port'"
+      output: "Endpoint(host='api.example.com', port=443, protocol='https')\nhash: <integer - varies per Python session>\nerror: FrozenInstanceError: cannot assign to field 'port'"
       narration: "Frozen dataclasses are immutable and hashable. Trying to change a field after creation raises FrozenInstanceError. This makes them safe to use as dictionary keys."
 ```
 
@@ -800,7 +801,6 @@ hints:
     - "For check_all(), iterate over self.servers and create a HealthResult for each one."
 solution: |
     from dataclasses import dataclass
-    import random
 
 
     class Server:
@@ -852,8 +852,7 @@ solution: |
             results = []
             for server in self.servers:
                 healthy = server.check()
-                ms = random.uniform(1, 20) if healthy else 0.0
-                results.append(HealthResult(server.address(), healthy, round(ms, 1)))
+                results.append(HealthResult(server.address(), healthy, 0.0))
             return results
 
         def __len__(self):
@@ -883,74 +882,81 @@ solution: |
 ---
 
 ```exercise
-title: Notification Plugin System
+title: Configuration Registry with Protocols
 difficulty: intermediate
 scenario: |
-    Build a pluggable alert system using protocols and composition:
+    Build a typed configuration system using protocols and frozen dataclasses:
 
-    1. Define a `Notifier` protocol with a `send(message: str) -> bool` method.
+    1. Create a `ConfigSource` protocol with a `load() -> dict` method.
 
-    2. Implement two notifiers:
-       - `LogNotifier` that prints messages to stdout with a `[LOG]` prefix and always returns `True`.
-       - `FileNotifier` that appends messages to a list (simulating file writes) and returns `True`. Store messages in a `self.messages` list attribute.
+    2. Implement two config sources:
+       - `DictConfig` that wraps a plain dictionary and returns it from `load()`.
+       - `EnvConfig` that takes a prefix string and builds a dict from `os.environ` entries matching that prefix (strip the prefix from keys, lowercase them). For example, prefix `"APP_"` with `APP_DEBUG=1` and `APP_PORT=8080` produces `{"debug": "1", "port": "8080"}`.
 
-    3. Create an `AlertManager` class that accepts a list of notifiers in its constructor. Add a `send_alert(message: str) -> dict` method that sends the message through all notifiers and returns a summary dict: `{"sent": count_of_successful, "failed": count_of_failed}`.
+    3. Create a `@dataclass(frozen=True)` called `AppSettings` with fields: `debug` (bool), `port` (int), and `name` (str, default `"app"`). Add a `@classmethod` called `from_dict(cls, data: dict)` that creates an `AppSettings` from a dictionary, coercing types (`"1"`, `"true"`, `"yes"` map to `True` for bool; string digits map to int).
 
-    4. Test your system: create an AlertManager with both notifier types, send an alert, and verify the results. Check that FileNotifier captured the message.
+    4. Test your system: create an `AppSettings` from a `DictConfig`, print it, and verify it is immutable.
 hints:
     - "The Protocol class comes from typing: from typing import Protocol"
-    - "LogNotifier and FileNotifier don't inherit from Notifier. They just implement the send() method."
-    - "AlertManager iterates over its notifiers list, calling send() on each. Count successes and failures."
-    - "Wrap each send() call in try/except to handle notifiers that raise exceptions."
+    - "EnvConfig and DictConfig don't inherit from ConfigSource. They just implement load()."
+    - "For the @classmethod, use cls(...) to create the instance. Parse bool with value.lower() in ('1', 'true', 'yes')."
+    - "Frozen dataclasses raise FrozenInstanceError on attribute assignment - use this to verify immutability."
 solution: |
+    import os
+    from dataclasses import dataclass
     from typing import Protocol
 
 
-    class Notifier(Protocol):
-        def send(self, message: str) -> bool: ...
+    class ConfigSource(Protocol):
+        def load(self) -> dict: ...
 
 
-    class LogNotifier:
-        def send(self, message: str) -> bool:
-            print(f"[LOG] {message}")
-            return True
+    class DictConfig:
+        def __init__(self, data: dict):
+            self._data = data
+
+        def load(self) -> dict:
+            return dict(self._data)
 
 
-    class FileNotifier:
-        def __init__(self):
-            self.messages = []
+    class EnvConfig:
+        def __init__(self, prefix: str):
+            self.prefix = prefix
 
-        def send(self, message: str) -> bool:
-            self.messages.append(message)
-            return True
+        def load(self) -> dict:
+            result = {}
+            for key, value in os.environ.items():
+                if key.startswith(self.prefix):
+                    clean_key = key[len(self.prefix):].lower()
+                    result[clean_key] = value
+            return result
 
 
-    class AlertManager:
-        def __init__(self, notifiers: list[Notifier]):
-            self.notifiers = notifiers
+    @dataclass(frozen=True)
+    class AppSettings:
+        debug: bool
+        port: int
+        name: str = "app"
 
-        def send_alert(self, message: str) -> dict:
-            sent = 0
-            failed = 0
-            for notifier in self.notifiers:
-                try:
-                    if notifier.send(message):
-                        sent += 1
-                    else:
-                        failed += 1
-                except Exception:
-                    failed += 1
-            return {"sent": sent, "failed": failed}
+        @classmethod
+        def from_dict(cls, data: dict) -> "AppSettings":
+            raw_debug = str(data.get("debug", "false"))
+            debug = raw_debug.lower() in ("1", "true", "yes")
+            port = int(data.get("port", 8080))
+            name = str(data.get("name", "app"))
+            return cls(debug=debug, port=port, name=name)
 
 
     # Test the system
-    log = LogNotifier()
-    file_notifier = FileNotifier()
-    manager = AlertManager([log, file_notifier])
+    source = DictConfig({"debug": "true", "port": "3000", "name": "web"})
+    settings = AppSettings.from_dict(source.load())
+    print(settings)
+    print(f"debug={settings.debug}, port={settings.port}, name={settings.name}")
 
-    result = manager.send_alert("CPU usage above 90% on web-01")
-    print(f"Alert result: {result}")
-    print(f"FileNotifier captured: {file_notifier.messages}")
+    try:
+        settings.port = 9999
+    except AttributeError as e:
+        print(f"Immutable: {e}")
 ```
 
 ---
