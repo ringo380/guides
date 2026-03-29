@@ -95,6 +95,7 @@ body:
         - "Python: Working with Files and APIs"
         - "Python: System Automation"
         - "Python: Testing and Tooling"
+        - "Python: Object-Oriented Programming"
         - "Python: Developer Roadmap"
     validations:
       required: true
