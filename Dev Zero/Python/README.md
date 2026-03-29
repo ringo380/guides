@@ -82,4 +82,16 @@ Python is the "second best language for everything." While it may not be the fas
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
+<a class="topic-card" href="functions-and-modules/" data-guide="functions-and-modules" data-topic="Dev Zero/Python">
+<span class="topic-card__number">7</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Functions and Modules</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">50 min</span>
+</div>
+<p class="topic-card__description">Closures, decorators, generators, the import system, and package management.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
 </div>
