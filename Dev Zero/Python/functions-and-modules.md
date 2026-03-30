@@ -793,7 +793,7 @@ scenario: |
     The `__init__.py` should re-export `disk_usage`, `ping`, and `format_bytes`. The `__main__.py` should call `disk_usage("/")` and `ping("localhost")`, format the results, and print them.
 hints:
     - "Use `shutil.disk_usage(path)` to get disk statistics - it returns a named tuple with `total`, `used`, and `free` attributes."
-    - "Use `subprocess.run(['ping', '-c', '1', '-W', '2', host])` to check reachability. A return code of 0 means success. On macOS/Linux, parse the output for round-trip time, or just report reachability."
+    - "Use `subprocess.run(['ping', '-c', '1', host], timeout=5)` to check reachability. A return code of 0 means success. Wrap the call in a try/except to catch `subprocess.TimeoutExpired` for unreachable hosts."
     - "For format_bytes, divide by 1024 repeatedly to find the right unit (B, KB, MB, GB, TB). Use an f-string with one decimal place."
     - "In __main__.py, import from the package with relative imports: `from .disk import disk_usage`"
 solution: |
@@ -821,14 +821,14 @@ solution: |
     import subprocess
 
     def ping(host):
-        result = subprocess.run(
-            ["ping", "-c", "1", "-W", "2", host],
-            capture_output=True, text=True
-        )
-        return {
-            "host": host,
-            "reachable": result.returncode == 0,
-        }
+        try:
+            result = subprocess.run(
+                ["ping", "-c", "1", host],
+                capture_output=True, text=True, timeout=5
+            )
+            return {"host": host, "reachable": result.returncode == 0}
+        except subprocess.TimeoutExpired:
+            return {"host": host, "reachable": False}
 
     # syskit/formatting.py
     def format_bytes(n):
@@ -1181,8 +1181,8 @@ solution: |
         for py_file in sorted(plugin_path.glob("*.py")):
             if py_file.name == "__init__.py":
                 continue
-            # Convert path to module name: monitor/plugins/disk.py -> monitor.plugins.disk
-            module_name = str(py_file.with_suffix("")).replace("/", ".")
+            # Convert path to dotted module name: monitor/plugins/disk.py -> monitor.plugins.disk
+            module_name = ".".join(py_file.with_suffix("").parts)
             importlib.import_module(module_name)
 
     # monitor/plugins/disk.py
