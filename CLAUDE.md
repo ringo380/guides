@@ -86,7 +86,7 @@ Each topic directory contains one or more `.md` files.
 - `assets/javascripts/interactive.js` discovers divs and lazy-loads component scripts from `assets/javascripts/components/`
 - `assets/javascripts/lib/storage.js` wraps localStorage for progress/quiz/exercise tracking
 - `assets/javascripts/lib/analytics.js` wraps GA4 `gtag()` for event tracking — all interactive components call `RunbookAnalytics.track(eventName, params)` at interaction points; new components must add tracking calls
-- `interactive.js` load chain: `storage.js` → `analytics.js` → component scripts — analytics must load before components
+- `interactive.js` load chain: `storage.js` → `supabase-config.js` → `analytics.js` → `analytics-observers.js` → `topics.js` → `analytics-journey.js` → [CDN supabase-js] → `auth.js` → `sync.js` → `auth.init()` → component scripts + `auth-ui.js` — auth chain wrapped in `.catch()` so failures don't block components
 - `window.__md_scope` (set by MkDocs Material per page) resolves to the site root URL; use it as the base for `new URL()` asset resolution — `document.baseURI` returns the current page URL (no `<base>` tag is set) and breaks on nested pages
 - MkDocs Material 9.x copy buttons use `.md-code__button[data-md-type="copy"]`, **not** the legacy `.md-clipboard` class
 - `assets/javascripts/components/topic-cards.js` enhances topic README cards with completion overlays from localStorage; loaded unconditionally by `interactive.js` (like `progress.js`)
@@ -102,9 +102,11 @@ Each topic directory contains one or more `.md` files.
 - Quizzes/exercises must be placed after the content they test, not in stub files lacking educational material
 - Exercises in the same guide should test distinct skills — avoid adjacent exercises that follow the same pattern (e.g., two "read config, call API, save results" exercises); vary the file I/O, data processing, or output format
 - Factual accuracy is critical in quiz answers, terminal narration, and exercise solutions — verify technical claims (permissions, DNS behavior, command flags) before writing
+- Exercise solutions must only use imports and techniques described in (or inferable from) the scenario and hints — undescribed dependencies confuse readers who implement to spec
 - Command examples and interactive components must note platform/distro constraints: GNU-only flags (e.g., `grep -P`), version-gated features (e.g., `ssh -J` requires OpenSSH 7.3+), and legacy alternatives (e.g., `iptables -m state` vs `-m conntrack`)
 - Terminal blocks must be consistent with any static code blocks or command output already on the same page — match scripts, filenames, flags, and tool output exactly; if the terminal's scenario differs, it must use distinct filenames to avoid contradicting established examples
 - Terminal blocks with hardcoded dates (certificate expiry, log timestamps) should use dates at least 1 year in the future to avoid appearing expired in rendered guides
+- Terminal blocks must not hardcode Python `hash()` values or `set`/`dict` display order — these are non-deterministic due to hash randomization (PYTHONHASHSEED, default since Python 3.3); use placeholders like `<integer - varies per session>` or describe the output instead
 - ARIA accessibility: quiz options use `role="radiogroup"`/`role="radio"` with `aria-checked` (not `aria-pressed`, which is for toggles); `role="log"` implicitly carries `aria-live="polite"` (don't add both); `aria-live` regions must not be updated multiple times per user action to avoid duplicate screen reader announcements
 - ARIA accessibility (continued): all interactive components use `role="region"` + `aria-label` as landmark wrapper; toggle buttons (hints, solutions) use `aria-expanded` + `aria-controls`; disabled buttons must sync both `disabled` property and `aria-disabled` attribute
 - Lightbox modal uses `role="dialog"` + `aria-modal="true"` with focus trap and return-focus; lightbox-ready images have `tabindex="0"` + `role="button"` for keyboard access
@@ -114,6 +116,20 @@ Each topic directory contains one or more `.md` files.
 - `@media (prefers-reduced-motion: reduce)` blocks in `interactive.css`, `lightbox.css`, `extra.css`, and `metadata.css` disable all animations and transitions
 - Focus styles: all interactive buttons must have `:focus-visible` rules using `outline: 2px solid var(--md-accent-fg-color); outline-offset: -1px`
 - Keyboard handlers: `preventDefault()` on arrow keys must be inside the navigation guard (not outside) to avoid blocking page scroll when no action occurs
+- Components that register `document.addEventListener` inside `render()` or re-callable functions must store handler references in module-level variables and call `removeEventListener` before re-adding — otherwise listeners accumulate on each re-render
+
+## Supabase Backend
+
+- Supabase project `robworks-software` (ref: `uhnymifvdauzlmaogjfj`) — shared with other apps; `runbook_progress` table is namespaced
+- GitHub OAuth via Supabase Auth; OAuth app "The Runbook" (ID: 3492570) on ringo380's GitHub
+- `assets/javascripts/lib/supabase-config.js` holds public anon key + project URL (safe to commit, RLS enforces access)
+- `assets/javascripts/lib/auth.js` exposes `window.RunbookAuth` — fires `runbook:auth-changed` CustomEvent on state changes
+- `assets/javascripts/lib/sync.js` exposes `window.RunbookSync` — additive merge (progress only increases), debounced cloud push
+- `assets/javascripts/components/auth-ui.js` renders sign-in/avatar in Material header — self-initializing like `progress.js`
+- `storage.js` calls `_notifySync()` only from user-facing write methods (`markSectionRead`, `saveQuizScore`, `markExerciseComplete`, `resetPage`) — never from `_write()` directly, to avoid spurious pushes on read-path page initialization
+- `sync.js` uses `RunbookStorage._write()` for merged progress — do not hardcode the localStorage key
+- Auth is purely additive: anonymous localStorage experience is unchanged; if Supabase CDN or API is unreachable, site works without auth
+- `supabase-js` loaded from CDN via `loadExternalScript()` in `interactive.js` — wrapped in `.catch()` for graceful degradation
 
 ## Testing
 
@@ -130,10 +146,11 @@ Each topic directory contains one or more `.md` files.
 - Guides use informative, educational tone aimed at practitioners (sysadmins, developers)
 - Callouts use Material admonitions (`!!! tip`, `!!! warning`, `!!! danger`, etc.) — not blockquote-with-emoji style; never place admonitions consecutively (2-3 paragraphs apart minimum); never in opening paragraph
 - Perl guides have `**Version:**` / `**Year:**` metadata below the subtitle — bump version on content changes, keep year current
+- Dev Zero guides include a `## Copyright Notice` section after the Version/Year metadata, with CC BY-NC-ND 4.0 license reference and attribution to Ryan Thomas Robson / Robworks Software LLC
 - Do not use trailing `\` for Markdown line breaks — Python-Markdown renders them as literal backslashes; use `<br>` or separate paragraphs instead
 - Do not indent children of HTML block elements (`<figure>`, `<div>`) in Markdown — Python-Markdown treats indented HTML children as code blocks, causing them to vanish from rendered output
 - Prefer creating content over removing it — if a guide is a stub, write educational material rather than deleting components that reference missing content
-- Topic README pages use `<div class="topic-progression">` with `<a class="topic-card" data-guide="slug" data-topic="Topic Name">` HTML cards — not flat `### [Title](file.md)` link lists
+- Topic README pages use `<div class="topic-progression">` with `<a class="topic-card" href="slug/" data-guide="slug" data-topic="Topic Name">` HTML cards — not flat `### [Title](file.md)` link lists; `href` must use directory URLs (`slug/`), not `.md` references (same raw-HTML rule as metadata links)
 
 ## Writing Style
 
