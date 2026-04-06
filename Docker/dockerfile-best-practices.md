@@ -442,11 +442,11 @@ annotations:
     text: "The production stage starts fresh from node:22-slim - no compilers, no TypeScript, no test frameworks. Only ~240 MB of base image instead of 1.1 GB."
   - line: 17
     text: "A dedicated non-root user and group. Created with explicit UID/GID for consistency across container restarts and orchestrators."
-  - line: 21
-    text: "npm prune --omit=dev removes devDependencies from the copied node_modules, shrinking it significantly. Only production dependencies remain."
   - line: 22
+    text: "npm prune --omit=dev removes devDependencies from the copied node_modules, shrinking it significantly. Only production dependencies remain."
+  - line: 23
     text: "USER switches to the non-root user. Every command after this line runs as appuser, including CMD."
-  - line: 24
+  - line: 25
     text: "HEALTHCHECK tells Docker (and orchestrators like Kubernetes) how to verify the container is serving traffic. The --retries flag allows brief transient failures."
 ```
 
