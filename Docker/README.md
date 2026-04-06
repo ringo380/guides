@@ -30,6 +30,18 @@ Docker is a platform for developing, shipping, and running applications in isola
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
+<a class="topic-card" href="dockerfile-best-practices/" data-guide="dockerfile-best-practices" data-topic="Docker">
+<span class="topic-card__number">3</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Dockerfile Best Practices</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">45 min</span>
+</div>
+<p class="topic-card__description">Multi-stage builds, layer caching, security hardening, image minimization, and production-ready Dockerfile patterns.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
 </div>
 
 ## Introduction

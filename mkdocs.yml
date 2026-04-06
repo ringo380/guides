@@ -215,6 +215,7 @@ nav:
       - Index: Docker/README.md
       - Fundamentals: Docker/fundamentals.md
       - Compose: Docker/compose.md
+      - Dockerfile Best Practices: Docker/dockerfile-best-practices.md
   - Dev Zero:
       - Perl:
           - Index: Dev Zero/Perl/README.md

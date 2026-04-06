@@ -104,7 +104,7 @@
     },
     Docker: {
       prefix: "Docker/",
-      guides: ["fundamentals", "compose"],
+      guides: ["fundamentals", "compose", "dockerfile-best-practices"],
     },
     Git: {
       prefix: "Git/",
