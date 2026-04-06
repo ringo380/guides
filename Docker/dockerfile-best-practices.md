@@ -609,7 +609,7 @@ steps:
     narration: "1.18 GB. The full node:22 image alone is over 1 GB, and npm install adds hundreds of megabytes of dependencies including devDependencies."
   - command: "sed -i 's/FROM node:22/FROM node:22-slim/' Dockerfile && docker build -t myapp:slim . 2>&1 | tail -1"
     output: "myapp:slim    latest   b2c3d4e5f6a7   3 seconds ago   350MB"
-    narration: "Switching to node:22-slim drops 830 MB. The slim variant includes the Node.js runtime without compilers, build tools, or development libraries."
+    narration: "Switching to node:22-slim drops 830 MB. The slim variant includes the Node.js runtime without compilers, build tools, or development libraries. (Note: sed -i syntax is GNU/Linux-specific. On macOS, use sed -i '' instead.)"
   - command: cat .dockerignore
     output: |
       node_modules
@@ -742,19 +742,19 @@ The secret file is mounted into the build container for that single `RUN` instru
 
 Even a well-written Dockerfile can inherit vulnerabilities from base image packages. Scanning tools check every package against CVE databases:
 
-**[Docker Scout](https://docs.docker.com/scout/)** (built into Docker Desktop and CLI):
+[**Docker Scout**](https://docs.docker.com/scout/) (built into Docker Desktop and CLI):
 
 ```bash
 docker scout cves myapp:latest
 ```
 
-**[Trivy](https://trivy.dev/)** (open source, CI-friendly):
+[**Trivy**](https://trivy.dev/) (open source, CI-friendly):
 
 ```bash
 trivy image myapp:latest
 ```
 
-**[Grype](https://github.com/anchore/grype)** (open source, fast):
+[**Grype**](https://github.com/anchore/grype) (open source, fast):
 
 ```bash
 grype myapp:latest
