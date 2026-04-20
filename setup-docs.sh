@@ -14,6 +14,7 @@ rm -rf "$REPO_ROOT/docs"
 mkdir -p "$REPO_ROOT/docs"
 
 ln -s "$REPO_ROOT/README.md" "$REPO_ROOT/docs/README.md"
+ln -s "$REPO_ROOT/CNAME" "$REPO_ROOT/docs/CNAME"
 ln -s "$REPO_ROOT/Linux Essentials" "$REPO_ROOT/docs/Linux Essentials"
 ln -s "$REPO_ROOT/DNS Administration" "$REPO_ROOT/docs/DNS Administration"
 ln -s "$REPO_ROOT/Git" "$REPO_ROOT/docs/Git"
