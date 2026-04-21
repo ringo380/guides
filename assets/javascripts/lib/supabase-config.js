@@ -9,9 +9,9 @@
  */
 
 window.RunbookSupabaseConfig = {
-  url: "https://uhnymifvdauzlmaogjfj.supabase.co",
+  url: "https://smulobzymizulakvaito.supabase.co",
   anonKey:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVobnltaWZ2ZGF1emxtYW9namZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwMTc1NTEsImV4cCI6MjA3NDU5MzU1MX0.891Tkpu62WIf0nsfG9Jq-GyIldQJunjDLiABjadh3z0",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtdWxvYnp5bWl6dWxha3ZhaXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MzU0MTgsImV4cCI6MjA5MjMxMTQxOH0.vpPyS_Zh6otHfg-AFWx4QVIiQ57GjnabD3lhLEsu4Hs",
   cdnUrl:
     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js",
 };
