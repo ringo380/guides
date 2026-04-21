@@ -1,13 +1,11 @@
 .DS_Store
 
-# Claude Code
+# Local tool configs
 CLAUDE.md
 CLAUDE.local.md
 .claude/
 .claude-dev-helper/
 .plugin-config/
-
-# Junie
 .junie/
 AGENTS.md
 
