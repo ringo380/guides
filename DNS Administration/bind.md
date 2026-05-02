@@ -189,7 +189,7 @@ steps:
     narration: "Reload applies the new configuration without dropping existing connections. Use reload after config changes; reserve restart for major changes like listen-address modifications."
   - command: "sudo rndc status"
     output: |
-      version: BIND 9.16.23-RH
+      version: BIND 9.18.27-RH
       running on linux: Linux 5.14.0-362.el9.x86_64
       boot time: Fri, 21 Feb 2026 10:00:00 GMT
       server is up and running

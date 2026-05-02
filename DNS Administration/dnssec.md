@@ -28,7 +28,7 @@ DNS was designed in 1983 with no authentication whatsoever. When a resolver rece
 
 DNS cache poisoning attacks had been known for years, but in 2008, security researcher Dan Kaminsky discovered a technique that made them devastatingly practical. The attack exploited the way resolvers handle referrals to flood a resolver with forged responses, each trying a different transaction ID. Because the transaction ID was only 16 bits (65,536 possibilities), a high-speed attacker could guess the right ID within seconds and inject a poisoned cache entry.
 
-Kaminsky recognized the severity and did something unusual - instead of publishing immediately, he coordinated a massive multi-vendor patching effort through the Department of Homeland Security's US-CERT. DNS software vendors quietly developed and deployed source port randomization patches (adding ~16 bits of entropy) before the vulnerability was publicly disclosed. Kaminsky presented the full details at Black Hat 2008, famously wearing rollerskates on stage.
+Kaminsky recognized the severity and did something unusual - instead of publishing immediately, he coordinated a massive multi-vendor patching effort through CERT/CC at Carnegie Mellon. DNS software vendors quietly developed and deployed source port randomization patches (adding ~16 bits of entropy) before the vulnerability was publicly disclosed. Kaminsky presented the full details at Black Hat 2008, famously wearing rollerskates on stage.
 
 The Kaminsky attack was mitigated but not eliminated by source port randomization. DNSSEC is the real fix - it makes forged responses cryptographically detectable, regardless of how clever the spoofing technique is.
 
@@ -54,7 +54,7 @@ DNSSEC works by creating a chain of cryptographic trust from the root zone down 
 
 The root zone was fully signed with DNSSEC on **July 15, 2010**. The signing ceremony was (and continues to be) one of the most carefully controlled processes in internet governance.
 
-The ICANN **root KSK ceremony** requires approximately 12-14 people from around the world to physically assemble at one of two secure facilities (in Culver City, California or El Segundo, Virginia). Trusted Community Representatives unlock safe deposit boxes containing smart cards. Multiple HSMs (Hardware Security Modules) are involved. The ceremony follows a rigid script, is livestreamed, and typically takes 3-8 hours. A complete audit trail is published. The entire point is that no single person or organization can sign the root zone alone.
+The ICANN **root KSK ceremony** requires approximately 12-14 people from around the world to physically assemble at one of two secure facilities (in El Segundo, California or Culpeper, Virginia). Trusted Community Representatives unlock safe deposit boxes containing smart cards. Multiple HSMs (Hardware Security Modules) are involved. The ceremony follows a rigid script, is livestreamed, and typically takes 3-8 hours. A complete audit trail is published. The entire point is that no single person or organization can sign the root zone alone.
 
 ### How the Chain Works
 
@@ -175,7 +175,7 @@ example.com.    86400   IN  RRSIG   A 13 2 86400 20250215000000 20250201000000 3
 
 The RRSIG fields include the algorithm (13 = ECDSAP256SHA256), the number of labels (2), the original TTL, signature expiration and inception timestamps, the key tag (identifying which DNSKEY made the signature), and the signature itself.
 
-**RRSIG signatures have expiration dates.** If signatures expire and aren't refreshed, DNSSEC validation fails and the domain stops resolving for validating resolvers. This is the most common DNSSEC operational failure. In October 2023, Cloudflare experienced a 3-hour outage for some domains due to expired DNSSEC signatures that went undetected.
+**RRSIG signatures have expiration dates.** If signatures expire and aren't refreshed, DNSSEC validation fails and the domain stops resolving for validating resolvers. This is the most common DNSSEC operational failure. Notable real-world examples include the 2010 NASA.gov expiry and Slack's 2021 DNSSEC outage, both of which broke resolution for validating clients until signatures were refreshed.
 
 ### DS
 
@@ -186,7 +186,7 @@ dig DS example.com +short
 ```
 
 ```
-31406 13 2 abc123def456789...
+31406 13 2 abc123def456789012345678901234567890123456789012345678901234
 ```
 
 The fields are: key tag, algorithm, digest type (2 = SHA-256), and the digest.

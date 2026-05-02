@@ -516,7 +516,7 @@ The AUTHORITY section says "these are the nameservers." The ADDITIONAL section s
 
 DNS traditionally uses **UDP on port 53** for queries under 512 bytes and **TCP on port 53** for larger responses and zone transfers. The 512-byte UDP limit was a practical constraint from the 1980s when network reliability was poor and UDP was faster.
 
-The **Extension Mechanisms for DNS ([EDNS0](https://datatracker.ietf.org/doc/html/rfc6891))** specification raised the effective UDP message size. Modern resolvers advertise a buffer size of 1232-4096 bytes, allowing larger responses (like DNSSEC-signed answers) to travel over UDP.
+The **Extension Mechanisms for DNS ([EDNS0](https://datatracker.ietf.org/doc/html/rfc6891))** specification raised the effective UDP message size. Modern resolvers advertise a buffer size of 1232 bytes (the DNS Flag Day 2020 recommendation, chosen to fit the smallest common path MTU after IPv6 and tunneling overhead), with older defaults reaching up to 4096 bytes. The larger window lets DNSSEC-signed answers travel over UDP.
 
 Newer transport protocols are emerging for privacy:
 
