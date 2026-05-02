@@ -38,9 +38,9 @@ Copyright (c) 2025-2026 Ryan Thomas Robson / Robworks Software LLC. Licensed und
 
 ### In it for the Long Haul
 
-Feynman's "computer disease" metaphor illustrates the irresistible drive some people have to solve problems. It's a certain itch—one that refuses to be ignored—and if you've ever felt compelled to keep tinkering until something finally clicks, you may already be halfway down this road. This document exists for people like you.
+Feynman's "computer disease" metaphor illustrates the irresistible drive some people have to solve problems. It's a certain itch-one that refuses to be ignored-and if you've ever felt compelled to keep tinkering until something finally clicks, you may already be halfway down this road. This document exists for people like you.
 
-The journey to mastering Perl isn't just about syntax and tools—it's about cultivating a mindset of curiosity, experimentation, and resilience. Whether you're brand new to programming or transitioning from another language, this roadmap is designed to guide you not just through the how, but the why behind the skills, practices, and philosophies that define great Perl developers.
+The journey to mastering Perl isn't just about syntax and tools-it's about cultivating a mindset of curiosity, experimentation, and resilience. Whether you're brand new to programming or transitioning from another language, this roadmap is designed to guide you not just through the how, but the why behind the skills, practices, and philosophies that define great Perl developers.
 
 If that resonates, you might be the right kind of person to become a Perl developer.
 
@@ -68,11 +68,11 @@ If that resonates, you might be the right kind of person to become a Perl develo
 
 A strong understanding of Unix concepts is essential for mastering Perl. Here's why:
 
-- **Shared Philosophy**: Perl was designed with Unix in mind—embracing small, composable utilities; pipelines; and powerful text processing. These principles align closely with the way Unix works.
-- **Direct Mappings**: Key system-level features in Unix—such as file descriptors, piping, and process control—are directly accessible and controllable via Perl.
+- **Shared Philosophy**: Perl was designed with Unix in mind-embracing small, composable utilities; pipelines; and powerful text processing. These principles align closely with the way Unix works.
+- **Direct Mappings**: Key system-level features in Unix-such as file descriptors, piping, and process control-are directly accessible and controllable via Perl.
 - **Practical Impact**: Knowing how Unix handles processes, permissions, input/output streams, and the file system empowers you to write code that is not only functional, but idiomatic, efficient, and maintainable.
 
-Mastering these concepts isn't just helpful—it's fundamental to becoming an effective Perl developer in any Unix-like environment.
+Mastering these concepts isn't just helpful-it's fundamental to becoming an effective Perl developer in any Unix-like environment.
 
 ```quiz
 question: "Why does this roadmap start with Unix fundamentals before any Perl syntax?"
@@ -93,7 +93,7 @@ options:
 
 **Understand the Linux Stack**
 
-Linux is not a complete operating system by itself—it's just the **kernel**, the core part responsible for hardware interaction, memory management, scheduling, and system calls. Everything that sits above the kernel and interacts with users is known as **userland** or **user space**.
+Linux is not a complete operating system by itself-it's just the **kernel**, the core part responsible for hardware interaction, memory management, scheduling, and system calls. Everything that sits above the kernel and interacts with users is known as **userland** or **user space**.
 
 - The **Linux kernel** handles low-level tasks such as managing CPU, RAM, I/O devices, and filesystems.
 - **Userland tools**, typically provided by the GNU project, include utilities like `ls`, `cp`, `grep`, `bash`, and more. These tools allow users to interact with the system via the command line or scripts.
@@ -107,7 +107,7 @@ Understanding the boundary and cooperation between kernel and userland tools is 
 - **[AlmaLinux](https://almalinux.org)**: Another CentOS alternative, AlmaLinux is governed by a community foundation and backed by major cloud vendors.
 - **[Debian](https://www.debian.org)**: Known for its stability and commitment to free software, Debian serves as the foundation for many other distributions, including Ubuntu.
 - **[Fedora](https://getfedora.org)**: Sponsored by Red Hat, Fedora is a cutting-edge distribution that features the latest in open-source software and innovations.
-- **[openSUSE](https://www.opensuse.org)**: Offers two main editions—Leap (stable) and Tumbleweed (rolling release). It includes YaST, a powerful configuration tool.
+- **[openSUSE](https://www.opensuse.org)**: Offers two main editions-Leap (stable) and Tumbleweed (rolling release). It includes YaST, a powerful configuration tool.
 - **[Arch Linux](https://archlinux.org)**: A minimalist, rolling-release distro aimed at advanced users who prefer full control and manual configuration. Its Arch Wiki is considered one of the most comprehensive Linux documentation sources available.
 
 #### Creating a Linux/Unix Learning Lab
@@ -138,11 +138,11 @@ Here are some curated resources to help build your command-line proficiency, whe
 
 #### Recommended Books
 
-- *[The Linux Command Line, 2nd Edition](https://nostarch.com/tlcl2)* by William Shotts – A comprehensive and beginner-friendly guide to mastering the Linux terminal.
-- *[How Linux Works, 3rd Edition](https://nostarch.com/howlinuxworks3)* by Brian Ward – Understand what's happening under the hood of a Linux system, from processes and permissions to networking and filesystems.
-- *[Linux Pocket Guide](https://www.oreilly.com/library/view/linux-pocket-guide/9781491927571/)* by Daniel J. Barrett – A concise and portable reference, ideal for quick lookups and essential commands.
-- *[Learning the Bash Shell, 3rd Edition](https://www.oreilly.com/library/view/learning-the-bash/0596009658/)* by Cameron Newham – A solid introduction to bash scripting and command-line navigation.
-- *[UNIX and Linux System Administration Handbook, 5th Edition](https://www.pearson.com/en-us/subject-catalog/p/unix-and-linux-system-administration-handbook/P200000003496)* by Evi Nemeth et al. – A must-have for anyone managing or working with Linux systems at scale.
+- *[The Linux Command Line, 2nd Edition](https://nostarch.com/tlcl2)* by William Shotts - A comprehensive and beginner-friendly guide to mastering the Linux terminal.
+- *[How Linux Works, 3rd Edition](https://nostarch.com/howlinuxworks3)* by Brian Ward - Understand what's happening under the hood of a Linux system, from processes and permissions to networking and filesystems.
+- *[Linux Pocket Guide](https://www.oreilly.com/library/view/linux-pocket-guide/9781491927571/)* by Daniel J. Barrett - A concise and portable reference, ideal for quick lookups and essential commands.
+- *[Learning the Bash Shell, 3rd Edition](https://www.oreilly.com/library/view/learning-the-bash/0596009658/)* by Cameron Newham - A solid introduction to bash scripting and command-line navigation.
+- *[UNIX and Linux System Administration Handbook, 5th Edition](https://www.pearson.com/en-us/subject-catalog/p/unix-and-linux-system-administration-handbook/P200000003496)* by Evi Nemeth et al. - A must-have for anyone managing or working with Linux systems at scale.
 
 ### Finding the Right \$EDITOR
 
@@ -154,12 +154,12 @@ Here are some curated resources to help build your command-line proficiency, whe
 - **Efficiency**: Enables fast navigation and editing with minimal hand movement.
 - **Modal Editing**: Operates in distinct modes (e.g., *insert*, *normal*, *visual*) for precise, powerful actions without leaving the keyboard.
 
-While Vim's learning curve is steep, it pays off. Once mastered, Vim becomes a tool that dramatically boosts speed, productivity, and editing comfort—especially for developers who live in the terminal.
+While Vim's learning curve is steep, it pays off. Once mastered, Vim becomes a tool that dramatically boosts speed, productivity, and editing comfort-especially for developers who live in the terminal.
 
 To help with the learning process, here are some engaging and helpful resources:
 
-- [Vim Adventures](https://vim-adventures.com) – a game-based way to learn Vim
-- [Vimcasts](http://vimcasts.org) – screencasts teaching practical Vim usage
+- [Vim Adventures](https://vim-adventures.com) - a game-based way to learn Vim
+- [Vimcasts](http://vimcasts.org) - screencasts teaching practical Vim usage
 - [Learn-Vim on GitHub](https://github.com/iggredible/Learn-Vim)
 
 Practice regularly, and you'll soon find Vim indispensable.
@@ -206,7 +206,7 @@ Being fluent in these topics enables more effective scripting, safer automation,
 
 **User Interaction**
 
-Understanding how users interact with Unix systems is crucial for developing intuitive tools and scripts. Interaction typically occurs through the shell—whether graphical or command-line—and involves interpreting environment variables, configuring startup files (like `.bashrc` or `.profile`), and handling user input in real-time. For Perl developers, this means writing programs that gracefully accept arguments, produce meaningful output, and respect user environments.
+Understanding how users interact with Unix systems is crucial for developing intuitive tools and scripts. Interaction typically occurs through the shell-whether graphical or command-line-and involves interpreting environment variables, configuring startup files (like `.bashrc` or `.profile`), and handling user input in real-time. For Perl developers, this means writing programs that gracefully accept arguments, produce meaningful output, and respect user environments.
 
 Key areas include:
 
@@ -282,21 +282,21 @@ solution: |
 
 **LAMP Stack and Core Web Services**
 
-A strong Perl developer should have a working knowledge of the services that power modern web applications. While Perl's role has evolved—often found in automation, infrastructure tooling, or legacy applications—its integration with these services remains highly relevant. Mastery of web stack components ensures you're equipped to handle both greenfield and legacy projects with confidence.
+A strong Perl developer should have a working knowledge of the services that power modern web applications. While Perl's role has evolved-often found in automation, infrastructure tooling, or legacy applications-its integration with these services remains highly relevant. Mastery of web stack components ensures you're equipped to handle both greenfield and legacy projects with confidence.
 
 Key technologies to understand:
 
 - **[Nginx](https://nginx.org)**: A modern, high-performance web server and reverse proxy widely adopted in today's infrastructure, favored for its scalability, load balancing, and efficiency under high traffic.
 - **[Apache](https://httpd.apache.org/)**: Still commonly used in shared hosting and legacy applications. Its extensive module ecosystem and compatibility with `.htaccess` make it a valuable technology to understand.
 - **[LiteSpeed](https://www.litespeedtech.com/)**: A commercial alternative to Apache, often used in performance-focused hosting. Supports .htaccess and Apache configuration syntax.
-- **[PHP](https://www.php.net/)**: Although not a Perl-centric language, understanding PHP remains important in environments where both are deployed side by side—especially in shared hosting and cPanel-based systems.
+- **[PHP](https://www.php.net/)**: Although not a Perl-centric language, understanding PHP remains important in environments where both are deployed side by side-especially in shared hosting and cPanel-based systems.
 - **[MariaDB](https://mariadb.org/)** and **[PostgreSQL](https://www.postgresql.org/)**: The modern standards in relational databases. MariaDB is a MySQL-compatible drop-in replacement, while PostgreSQL is increasingly preferred for new applications due to its compliance and features.
 - **[SQLite](https://www.sqlite.org/)**: A serverless, embedded database engine ideal for development, automation tools, and standalone utilities.
 - **[Bind](https://www.isc.org/bind/)**: The classic authoritative DNS server, still widely used for managing zones and nameservers.
 - **[PowerDNS](https://www.powerdns.com/)**: A dynamic DNS solution with API and database integration, popular in cloud-scale and provider environments.
 - **[CoreDNS](https://coredns.io/)**: The default DNS service in Kubernetes and cloud-native environments, vital for understanding service discovery and internal networking in containerized applications.
 
-Familiarity with these services will not only support your scripting and automation tasks but also help you thrive in today's hybrid infrastructure environments—from legacy systems to modern DevOps ecosystems.
+Familiarity with these services will not only support your scripting and automation tasks but also help you thrive in today's hybrid infrastructure environments-from legacy systems to modern DevOps ecosystems.
 
 ### Perl Skills & Milestones
 
@@ -313,7 +313,7 @@ Developing fluency in Perl starts with a clear understanding of its foundational
 - **Built-in Functions**: Leverage Perl's rich library of built-in functions for data manipulation, text processing, and file I/O.
 - **Code Style**: Perl's expressiveness allows multiple ways to solve problems, making it essential to develop good habits around clarity, consistency, and maintainability.
 
-The goal is not just to write functional code, but to write code that is efficient, idiomatic, and easy to understand—hallmarks of an experienced Perl developer.
+The goal is not just to write functional code, but to write code that is efficient, idiomatic, and easy to understand-hallmarks of an experienced Perl developer.
 
 ```code-walkthrough
 title: "A First Perl Script: Log Summary"
@@ -394,7 +394,7 @@ Object-oriented programming (OOP) is a key capability of Perl and is frequently 
 Key resources:
 
 - [Object-Oriented Perl by Damian Conway](https://www.manning.com/books/object-oriented-perl)
-- [Modern Perl's Moose framework](https://metacpan.org/pod/Moose) – a postmodern object system for Perl 5.
+- [Modern Perl's Moose framework](https://metacpan.org/pod/Moose) - a postmodern object system for Perl 5.
 
 **System Interaction (fork, exec, file I/O, permissions)**
 
@@ -428,7 +428,7 @@ Tools and resources:
 
 **Engaging with the Perl Community**
 
-Getting involved with the Perl community is not only encouraged—it's essential. Community interaction can accelerate your learning, expose you to real-world problem solving, and keep you current with modern Perl practices.
+Getting involved with the Perl community is not only encouraged-it's essential. Community interaction can accelerate your learning, expose you to real-world problem solving, and keep you current with modern Perl practices.
 
 1. **[PerlMonks](https://www.perlmonks.org)**: A long-established and active community focused entirely on Perl. It remains relevant in 2025 as a place to get answers, learn idioms, and participate in thoughtful programming discussions. Users post questions, tutorials, and code snippets, and receive feedback from veteran developers.
 2. **[Perl Mongers](https://www.pm.org/)**: A global network of local Perl user groups that still hold in-person and virtual meetups. While not as active as in past decades, many chapters remain valuable for community support and professional networking. Check the PM.org website or join forums like [https://perl.community](https://perl.community) for modern community hubs.
@@ -459,7 +459,7 @@ Updated benefits as of 2025:
 - Pre-release validation (e.g., changelog enforcement, dependency resolution) using community plugins.
 - Seamless publishing to PAUSE and GitHub with `dzil release`, integrating test suites, version bumps, and tagging workflows.
 
-For developers looking to streamline and standardize their release cycle while avoiding boilerplate, Dist::Zilla remains an invaluable tool—especially when paired with a modern CI/CD pipeline.
+For developers looking to streamline and standardize their release cycle while avoiding boilerplate, Dist::Zilla remains an invaluable tool-especially when paired with a modern CI/CD pipeline.
 
 ```quiz
 question: "What is CPAN and why is it significant for Perl development?"
@@ -500,7 +500,7 @@ Resources:
 
 Perl has deep historical and technical ties to Unix, Bash, and other scripting languages. Its design was heavily inspired by Unix philosophy: small, modular tools working together with powerful text processing and system integration capabilities.
 
-- **Unix**: Perl was born in the Unix environment, and its syntax and idioms reflect Unix traditions—everything from regular expressions to filehandles and process management. Perl scripts are often used for Unix system administration, automation, and report generation.
+- **Unix**: Perl was born in the Unix environment, and its syntax and idioms reflect Unix traditions-everything from regular expressions to filehandles and process management. Perl scripts are often used for Unix system administration, automation, and report generation.
 
 - **Bash**: Bash and Perl frequently work together. Bash is great for quick shell automation, while Perl is better suited for complex logic, structured data handling, and modular design. Many developers use Bash to orchestrate and Perl to perform the heavy lifting.
 
@@ -537,7 +537,7 @@ Familiarity with modern, high-utility Perl modules is critical for writing robus
 - **[perltidy](https://metacpan.org/pod/perltidy)**: Formats Perl code according to customizable style rules.
 - **[Perl::Critic](https://metacpan.org/pod/Perl::Critic)**: Analyzes Perl code for maintainability, enforcing best practices based on Damian Conway's *Perl Best Practices*.
 
-Mastering these modules—and understanding when to apply each—will greatly improve your productivity, confidence, and code quality.
+Mastering these modules-and understanding when to apply each-will greatly improve your productivity, confidence, and code quality.
 
 ### Additional Learning
 
@@ -554,7 +554,7 @@ Key mechanisms include:
 **Recommended Resources**:
 
 - [perlipc documentation](https://perldoc.perl.org/perlipc.html)
-- [IPC::Run](https://metacpan.org/pod/IPC::Run) – For launching and interacting with external processes
+- [IPC::Run](https://metacpan.org/pod/IPC::Run) - For launching and interacting with external processes
 
 **Daemon Creation**
 
@@ -602,9 +602,9 @@ Effective testing is the backbone of sustainable Perl development. It ensures re
 **Core Practices**:
 
 - **Unit Testing**: The most fundamental type of test, verifying the behavior of individual components in isolation. This is typically done using:
-  - **[Test::More](https://metacpan.org/pod/Test::More)** – the de facto standard and part of the Perl core.
-  - **[Test::Simple](https://metacpan.org/pod/Test::Simple)** – a minimalistic base layer.
-  - **[Test2::Suite](https://metacpan.org/pod/Test2::Suite)** – a modern, extensible replacement that powers new testing ecosystems.
+  - **[Test::More](https://metacpan.org/pod/Test::More)** - the de facto standard and part of the Perl core.
+  - **[Test::Simple](https://metacpan.org/pod/Test::Simple)** - a minimalistic base layer.
+  - **[Test2::Suite](https://metacpan.org/pod/Test2::Suite)** - a modern, extensible replacement that powers new testing ecosystems.
 
 **Advanced Testing Techniques**:
 
@@ -627,7 +627,7 @@ Effective testing is the backbone of sustainable Perl development. It ensures re
 - Use descriptive test names and group related tests into subtests.
 - Ensure your tests are repeatable and deterministic.
 
-Testing isn't just about proving correctness—it's about building trust in your code, now and in the future.
+Testing isn't just about proving correctness-it's about building trust in your code, now and in the future.
 
 ```quiz
 question: "Why does the roadmap emphasize testing (Phase 2) before advanced topics?"
@@ -648,7 +648,7 @@ options:
 
 A modern Perl developer must understand not just the language, but how it integrates with full-stack application architecture. Perl is frequently used for building backend services, consuming APIs, and even serving as glue code between microservices or distributed systems.
 
-**Services**: Services refer to standalone applications or daemons that perform a specific task—like authentication, data processing, or email delivery. These are often exposed over HTTP/HTTPS and must be built to handle concurrency, error resilience, and observability (e.g., logging and metrics).
+**Services**: Services refer to standalone applications or daemons that perform a specific task-like authentication, data processing, or email delivery. These are often exposed over HTTP/HTTPS and must be built to handle concurrency, error resilience, and observability (e.g., logging and metrics).
 
 **APIs**: APIs (Application Programming Interfaces) are the primary interface by which modern services communicate. Perl can both expose APIs (e.g., via frameworks like Mojolicious or Dancer2) and consume them (via LWP::UserAgent or HTTP::Tiny). Understanding RESTful principles and HTTP status codes is key.
 
@@ -677,7 +677,7 @@ To emulate this experience today:
 - Integrate with continuous integration tools like GitHub Actions or Travis CI to automatically run your test suite and lint your code before submission.
 - Familiarize yourself with the [CPAN Pull Request Guide](https://github.com/CPAN-PRC/resources) for additional resources and etiquette.
 
-This modernized process helps you build fluency in CPAN tooling, Git workflows, CI/CD integration, and collaborative open-source development—all essential skills for contributing to the contemporary Perl ecosystem.
+This modernized process helps you build fluency in CPAN tooling, Git workflows, CI/CD integration, and collaborative open-source development-all essential skills for contributing to the contemporary Perl ecosystem.
 
 **GitHub Collaboration**
 
@@ -689,7 +689,7 @@ GitHub remains the dominant platform for hosting and contributing to Perl projec
 - Using CI integrations (GitHub Actions, Travis CI) to validate code.
 - Keeping up with upstream changes through rebase/merge workflows.
 
-GitHub collaboration not only builds your technical skills—it builds your reputation. Active contributors are more likely to be recognized and recruited for freelance, contract, and full-time roles.
+GitHub collaboration not only builds your technical skills-it builds your reputation. Active contributors are more likely to be recognized and recruited for freelance, contract, and full-time roles.
 
 #### Using Version Control
 
@@ -702,9 +702,9 @@ Version control is an essential part of modern software development, enabling te
 
 **Modern Learning Resources**:
 
-- **[GitHub Learning Lab](https://lab.github.com/)** – Offers interactive tutorials on real GitHub repositories.
-- **[Pro Git Book](https://git-scm.com/book/en/v2)** – A comprehensive and freely available guide for all levels.
-- **[Git Handbook](https://guides.github.com/introduction/git-handbook/)** – A high-level overview of Git and GitHub best practices.
+- **[GitHub Learning Lab](https://lab.github.com/)** - Offers interactive tutorials on real GitHub repositories.
+- **[Pro Git Book](https://git-scm.com/book/en/v2)** - A comprehensive and freely available guide for all levels.
+- **[Git Handbook](https://guides.github.com/introduction/git-handbook/)** - A high-level overview of Git and GitHub best practices.
 
 **Tooling & Extensions**:
 
@@ -712,7 +712,7 @@ Version control is an essential part of modern software development, enabling te
 - Explore visual Git clients like Sourcetree or GitKraken if you prefer a GUI.
 - Integrate version control with CI/CD systems to trigger builds, tests, and deployments automatically on code changes.
 
-Staying fluent in Git and GitHub workflows will make you a stronger collaborator, contributor, and maintainer—skills that transcend Perl and apply across nearly every software development ecosystem.
+Staying fluent in Git and GitHub workflows will make you a stronger collaborator, contributor, and maintainer-skills that transcend Perl and apply across nearly every software development ecosystem.
 
 ### Debugging Methods
 

@@ -804,7 +804,7 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 ```
 
-The [**`with`**](https://metacpan.org/pod/Moose#with) keyword composes one or more roles into the class. If a role has a `requires` declaration, the consuming class must provide that method - Moose enforces this at compile time.
+The [**`with`**](https://metacpan.org/pod/Moose#with) keyword composes one or more roles into the class. If a role has a `requires` declaration, the consuming class must provide that method - Moose enforces this at role composition time (when `with` runs, typically as the consuming class is loaded).
 
 ```perl
 my $p = Person->new(name => 'Alice', age => 30);
