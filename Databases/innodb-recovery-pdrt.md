@@ -39,7 +39,7 @@ The **system tablespace** (`ibdata1`) is InnoDB's central file. It always exists
 - The **data dictionary** - metadata about every InnoDB table, index, and column
 - The **doublewrite buffer** - a crash-recovery mechanism that prevents partial page writes
 - The **change buffer** - cached changes to secondary indexes
-- **Undo logs** - records needed to roll back uncommitted transactions
+- **Undo logs** - records needed to roll back uncommitted transactions (these moved to separate `undo_NNN` undo tablespaces by default in MySQL 8.0; older MySQL versions kept them inside `ibdata1`)
 
 When `innodb_file_per_table` is disabled (the pre-MySQL 5.6 default), `ibdata1` also stores all table data and indexes. This makes it the single target for recovery - but also means it grows indefinitely and cannot be shrunk without rebuilding.
 
@@ -54,7 +54,7 @@ This per-table layout simplifies some recovery scenarios because each table's da
 
 ### InnoDB Log Files: `ib_logfile*`
 
-The **redo logs** (`ib_logfile0`, `ib_logfile1`) record every change before it reaches the data files. InnoDB replays these logs after a crash to bring the data files up to date. Deleting these files without understanding the server's state can cause permanent data loss if uncommitted transactions needed for recovery are still in the logs.
+The **redo logs** (historically `ib_logfile0`, `ib_logfile1`; redesigned in MySQL 8.0.30 to live under `#innodb_redo/` with a dynamically managed pool of files sized by `innodb_redo_log_capacity`) record every change before it reaches the data files. InnoDB replays these logs after a crash to bring the data files up to date. Deleting these files without understanding the server's state can cause permanent data loss if uncommitted transactions needed for recovery are still in the logs.
 
 ```quiz
 question: "What is the relationship between ibdata1 and .ibd files in InnoDB?"
@@ -82,14 +82,13 @@ PDRT includes three core utilities. If you are in an active data-loss scenario, 
 The primary recovery tool. It scans raw InnoDB data files (either `ibdata1` or individual `.ibd` files) and extracts rows that match a defined table structure.
 
 ```bash
-constraints_parser -4|-5|-6 [-dDV] -f <InnoDB page or dir> [-T N:M] [-b <external pages dir>]
+constraints_parser -4|-5 [-dDV] -f <InnoDB page or dir> [-T N:M] [-b <external pages dir>]
 ```
 
 | Flag | Purpose |
 |------|---------|
 | `-4` | REDUNDANT row format (MySQL 4.x) |
-| `-5` | COMPACT row format (MySQL 5.0+) |
-| `-6` | MySQL 5.6+ format |
+| `-5` | COMPACT row format (MySQL 5.0+, including 5.6/5.7/8.0 tables created with `ROW_FORMAT=COMPACT`) |
 | `-f` | Path to the InnoDB data file or directory of pages |
 | `-d` | Process only pages that may contain deleted records |
 | `-D` | Recover deleted rows only |
@@ -252,8 +251,9 @@ mysql -V
 | Version | Format Flag |
 |---------|-------------|
 | MySQL 4.x (REDUNDANT format) | `-4` |
-| MySQL 5.0 - 5.5 (COMPACT format) | `-5` |
-| MySQL 5.6+ / MariaDB 10.x+ | `-6` |
+| MySQL 5.0+ (COMPACT format) | `-5` |
+
+PDRT predates the BARRACUDA / DYNAMIC / COMPRESSED row formats introduced in MySQL 5.6. Tables created with `ROW_FORMAT=DYNAMIC` (the default since 5.7.9) cannot be recovered with PDRT directly; the table must have been created with `ROW_FORMAT=COMPACT` for `-5` to work, or you must migrate the data through a different recovery path.
 
 ---
 

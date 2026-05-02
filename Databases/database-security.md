@@ -681,7 +681,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 ```
 
 !!! tip "ALTER DEFAULT PRIVILEGES matters"
-    `GRANT SELECT ON ALL TABLES` only applies to tables that exist right now. When new tables are created later, the role will not have access. `ALTER DEFAULT PRIVILEGES` sets the permissions that future tables inherit automatically.
+    `GRANT SELECT ON ALL TABLES` only applies to tables that exist right now. When new tables are created later, the role will not have access. `ALTER DEFAULT PRIVILEGES` sets the permissions that future tables inherit automatically. The defaults only apply to tables created by the role that ran the `ALTER` statement; if migrations run as a different role, add `FOR ROLE migrator` (or include each creator role explicitly) so all future tables are covered.
 
 ### Avoiding GRANT ALL
 

@@ -469,11 +469,13 @@ chown -R postgres:postgres /var/lib/postgresql/16/main
 systemctl start postgresql
 ```
 
-PostgreSQL replays archived WAL segments using `restore_command` until it reaches `recovery_target_time`, then pauses. You verify the data and promote to normal operation:
+PostgreSQL replays archived WAL segments using `restore_command` until it reaches `recovery_target_time`, then pauses (because `recovery_target_action = pause` is the default). After verifying the data, promote the cluster out of recovery into normal read-write operation:
 
 ```sql
-SELECT pg_wal_replay_resume();
+SELECT pg_promote();
 ```
+
+`pg_wal_replay_resume()` only un-pauses replay during recovery; it does not exit recovery. Use it if you set an earlier target than intended and want to resume replaying through more WAL before promoting.
 
 ```terminal
 title: Point-in-Time Recovery with MySQL Binary Logs
