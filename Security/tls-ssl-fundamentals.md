@@ -92,7 +92,7 @@ sequenceDiagram
 | Feature | TLS 1.2 | TLS 1.3 |
 |---------|---------|---------|
 | Handshake round trips | 2 | 1 |
-| Cipher suites | Many (including weak ones) | 5 strong suites only |
+| Cipher suites | Many (including weak ones) | 5 AEAD-only suites |
 | Forward secrecy | Optional | Mandatory |
 | RSA key exchange | Supported | Removed |
 | 0-RTT resumption | No | Yes (with caveats) |
@@ -276,7 +276,7 @@ steps:
     output: "CONNECTED(00000003)\n---\nCertificate chain\n 0 s:C = US, ST = California, L = San Francisco, O = GitHub, Inc., CN = github.com\n   i:C = US, O = DigiCert Inc, CN = DigiCert TLS Hybrid ECC SHA384 2020 CA1\n 1 s:C = US, O = DigiCert Inc, CN = DigiCert TLS Hybrid ECC SHA384 2020 CA1\n   i:C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA\n---"
     narration: "Connect to GitHub's server and display the certificate chain. You can see two certificates: the end-entity cert for github.com (signed by DigiCert's intermediate CA) and the intermediate CA cert (signed by DigiCert's root CA)."
   - command: "echo | openssl s_client -connect github.com:443 2>/dev/null | openssl x509 -noout -subject -issuer -dates"
-    output: "subject=C = US, ST = California, L = San Francisco, O = GitHub, Inc., CN = github.com\nissuer=C = US, O = DigiCert Inc, CN = DigiCert TLS Hybrid ECC SHA384 2020 CA1\nnotBefore=Mar 15 00:00:00 2026 GMT\nnotAfter=Mar 15 23:59:59 2027 GMT"
+    output: "subject=C = US, ST = California, L = San Francisco, O = GitHub, Inc., CN = github.com\nissuer=C = US, O = DigiCert Inc, CN = DigiCert TLS Hybrid ECC SHA384 2020 CA1\nnotBefore=Mar 15 00:00:00 2027 GMT\nnotAfter=Mar 15 23:59:59 2028 GMT"
     narration: "Extract the subject (who the certificate is for), issuer (who signed it), and validity dates. This certificate is valid for one year."
   - command: "echo | openssl s_client -connect github.com:443 2>/dev/null | openssl x509 -noout -text | grep -A 3 'Subject Alternative Name'"
     output: "            X509v3 Subject Alternative Name:\n                DNS:github.com, DNS:www.github.com"
@@ -284,7 +284,7 @@ steps:
   - command: "openssl s_client -connect github.com:443 -tls1_3 < /dev/null 2>&1 | grep 'Protocol\\|Cipher'"
     output: "    Protocol  : TLSv1.3\n    Cipher    : TLS_AES_128_GCM_SHA256"
     narration: "Verify that the server supports TLS 1.3. The negotiated cipher suite is TLS_AES_128_GCM_SHA256 - AES-128 in GCM mode with SHA-256."
-  - command: "openssl genrsa -out test.key 2048 2>/dev/null && openssl req -new -x509 -key test.key -out test.crt -days 365 -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1'"
+  - command: "openssl genrsa -out test.key 4096 2>/dev/null && openssl req -new -x509 -key test.key -out test.crt -days 365 -subj '/CN=localhost' -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1'"
     output: ""
     narration: "Generate a self-signed certificate for local testing. The -x509 flag skips the CSR step and produces a certificate directly. This cert includes SANs for both 'localhost' and 127.0.0.1."
   - command: "openssl x509 -in test.crt -noout -text | grep -A 2 'Subject Alternative'"
