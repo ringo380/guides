@@ -199,6 +199,8 @@ openssl req -new -key server.key -out server.csr \
   -addext "subjectAltName=DNS:api.internal,DNS:api.staging.internal"
 
 # Sign it with your CA (valid 1 year)
+# -copy_extensions requires OpenSSL 3.0+; on older versions, use
+# `-extfile <(printf "subjectAltName=DNS:api.internal,DNS:api.staging.internal")`
 openssl x509 -req -in server.csr \
   -CA ca.crt -CAkey ca.key -CAcreateserial \
   -out server.crt -days 365 -sha256 \
@@ -270,8 +272,8 @@ openssl rsa -noout -modulus -in server.key | openssl md5
 Symptom: Desktop browsers work (they cache intermediates), but mobile devices, API clients, or `curl` report trust errors.
 
 ```bash
-# Test the chain
-openssl s_client -connect example.com:443 -servername example.com
+# Test the chain (closing stdin with </dev/null prevents s_client from hanging)
+openssl s_client -connect example.com:443 -servername example.com </dev/null
 
 # Look for this in the output:
 # Verify return code: 21 (unable to verify the first certificate)
@@ -415,7 +417,8 @@ solution: |
       exit 2
   fi
 
-  EXPIRY_EPOCH=$(date -d "$EXPIRY" +%s 2>/dev/null || date -j -f "%b %d %T %Y %Z" "$EXPIRY" +%s)
+  # BSD date uses %e (space-padded day) to handle OpenSSL's "Jun  3" format
+  EXPIRY_EPOCH=$(date -d "$EXPIRY" +%s 2>/dev/null || date -j -f "%b %e %T %Y %Z" "$EXPIRY" +%s)
   NOW_EPOCH=$(date +%s)
   DAYS_LEFT=$(( (EXPIRY_EPOCH - NOW_EPOCH) / 86400 ))
 
