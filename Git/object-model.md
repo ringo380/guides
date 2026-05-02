@@ -155,7 +155,7 @@ All objects are stored in `.git/objects/`. Git uses the first two characters of 
 
 Individual objects are called **loose objects**. As a repository grows, Git periodically packs loose objects into **packfiles** (`.pack` with an `.idx` index) for efficiency. Packfiles use delta compression - storing only the differences between similar objects. The [Refs, the Reflog, and the DAG](refs-reflog-dag.md) guide covers packfiles in depth.
 
-Each loose object is stored as: `type size\0content`, compressed with zlib.
+Each loose object is stored as: `<type> <size>\0<content>` (a type word, a single space, the content size in bytes, a NUL byte, then the raw content), compressed with zlib.
 
 ---
 
