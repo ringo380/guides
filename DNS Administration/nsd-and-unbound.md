@@ -342,7 +342,7 @@ solution: |
   zone:
       name: "example.com"
       zonefile: "example.com.zone"
-      request-xfr: AXFR 192.168.1.10 transfer-key
+      request-xfr: 192.168.1.10 transfer-key
       allow-notify: 192.168.1.10 NOKEY
   ```
 

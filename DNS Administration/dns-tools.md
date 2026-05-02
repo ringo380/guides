@@ -270,7 +270,7 @@ drill -S example.com
 example.com. (A)
 |---example.com. (DNSKEY keytag: 31406 alg: 13 flags: 256)
     |---example.com. (DS keytag: 31406 digest type: 2)
-        |---com. (DNSKEY keytag: 19718 alg: 13 flags: 256)
+        |---com. (DNSKEY keytag: 19718 alg: 8 flags: 256)
             |---com. (DS keytag: 19718 digest type: 2)
                 |---. (DNSKEY keytag: 20326 alg: 8 flags: 257)
 ;; Chase successful
