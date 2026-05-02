@@ -538,7 +538,7 @@ The first entry is typically the directory containing the script being run (or a
 
 ### Circular Imports
 
-A circular import happens when module A imports module B, and module B imports module A. Python does not raise an error immediately - it returns the partially initialized module from `sys.modules` - but you may get `ImportError` or `AttributeError` if you try to use a name that has not been defined yet.
+A circular import happens when module A imports module B, and module B imports module A. Python keeps the partially initialized module in `sys.modules`, so a plain `import X` inside the cycle succeeds with a half-built module object. The trouble shows up with `from X import name`: if `name` has not yet been bound, Python raises `ImportError`. Attribute access on the partial module later in execution can also raise `AttributeError`.
 
 ```python
 # models.py

@@ -118,7 +118,7 @@ all_servers = [s for group in groups for s in group]
 
 ## Dictionaries
 
-A [**dictionary**](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) maps keys to values. Keys must be unique and immutable (strings, numbers, tuples). Dictionaries are Python's answer to hash maps, associative arrays, and lookup tables.
+A [**dictionary**](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) maps keys to values. Keys must be unique and hashable (strings, numbers, tuples of hashable values). Dictionaries are Python's answer to hash maps, associative arrays, and lookup tables.
 
 ```python
 # Server configuration
@@ -274,7 +274,7 @@ steps:
     narration: "Counter takes any iterable and tallies occurrences. most_common(n) returns the top n elements as (value, count) tuples, sorted by frequency."
   - command: "python3 -c \"allowed = {'10.0.0.1', '10.0.0.2', '10.0.0.3'}; active = {'10.0.0.2', '10.0.0.4', '10.0.0.5'}; print('Authorized:', allowed & active); print('Unauthorized:', active - allowed)\""
     output: "Authorized: {'10.0.0.2'}\nUnauthorized: {'10.0.0.4', '10.0.0.5'}"
-    narration: "Set intersection (&) finds IPs that appear in both sets. Set difference (-) finds IPs in active that are not in allowed. These operations run in O(min(len(a), len(b))) time."
+    narration: "Set intersection (&) finds IPs that appear in both sets and runs in O(min(len(a), len(b))). Set difference (-) finds IPs in active that are not in allowed and runs in O(len(a)). Both rely on average O(1) hash lookups."
   - command: "python3 -c \"config = {'hostname': 'app01', 'port': 8080}; print(config.get('port')); print(config.get('timeout', 30)); print(config.get('debug'))\""
     output: "8080\n30\nNone"
     narration: "dict.get() returns the value for a key if it exists. With a second argument, it returns that default instead of None. This avoids KeyError exceptions when accessing optional configuration keys."
