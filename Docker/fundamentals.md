@@ -345,7 +345,7 @@ Docker creates isolated networks so containers can communicate with each other w
 
 | Driver | Description |
 |--------|-------------|
-| `bridge` | Default. Containers on the same bridge network can reach each other by container name. |
+| `bridge` | Default driver. On user-defined bridge networks, containers reach each other by container name; the built-in `bridge` network does not provide name resolution. |
 | `host` | Removes network isolation - the container shares the host's network stack. |
 | `none` | Disables networking entirely. |
 | `overlay` | Spans multiple Docker hosts. Used with Docker Swarm for multi-node clusters. |
