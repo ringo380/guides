@@ -719,7 +719,7 @@ scenario: |
 hints:
   - "Service units go in /etc/systemd/system/ with a .service extension"
   - "Use Type=oneshot for scripts that run and exit rather than long-running daemons"
-  - "After=network-online.target ensures the network is fully up, not just that the network stack loaded"
+  - "After=network-online.target orders the unit relative to the target, but does not pull it in. Add Wants=network-online.target so systemd actually starts the target before this service."
   - "Timer files must have the same base name as the service they trigger"
   - "Use systemctl list-timers to verify your timer is scheduled"
 solution: |

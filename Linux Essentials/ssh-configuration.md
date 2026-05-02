@@ -91,9 +91,9 @@ type: multiple-choice
 options:
   - text: "RSA with 4096 bits - Ed25519 may not be supported on older systems"
     correct: true
-    feedback: "Correct. RHEL 7 ships with OpenSSH 7.4, which supports Ed25519, but some organizations run even older patch levels or have FIPS mode enabled (which disables Ed25519). RSA 4096 is the safest bet for broad compatibility."
+    feedback: "Correct. RHEL 7 ships with OpenSSH 7.4, which supports Ed25519, but legacy infrastructure may still hand you a system running an even older OpenSSH where Ed25519 isn't recognized. RSA 4096 is the safest bet for broad compatibility. (Ed25519 was added to FIPS 186-5 in 2023 and is permitted by FIPS-validated OpenSSH on RHEL 9+, so the older 'FIPS disables Ed25519' rationale is no longer accurate.)"
   - text: "Ed25519 - it's always the right choice"
-    feedback: "Ed25519 is the best default, but older systems or FIPS-mode environments may not support it. RSA 4096 is the safe fallback."
+    feedback: "Ed25519 is the best default, but older OpenSSH versions on legacy systems may not recognize it. RSA 4096 is the safe fallback when targeting unknown legacy infrastructure."
   - text: "DSA - it's the most widely supported"
     feedback: "DSA keys are limited to 1024 bits and are considered insecure. OpenSSH 7.0+ disabled DSA by default."
   - text: "ECDSA 521 - larger key means more security"
@@ -402,8 +402,9 @@ ClientAliveCountMax 2
 MaxSessions 10
 X11Forwarding no
 
-# Security
-Protocol 2
+# Security (the legacy `Protocol 2` directive was removed in OpenSSH 7.6;
+# SSHv1 is gone, so the directive is no longer needed and modern sshd
+# emits a warning if it appears.)
 PermitUserEnvironment no
 Banner /etc/ssh/banner
 ```
@@ -411,7 +412,10 @@ Banner /etc/ssh/banner
 After editing, validate the config and restart:
 
 ```bash
-# Check for syntax errors without restarting
+# Check the config for syntax errors (does not start the daemon)
+sudo sshd -t
+
+# Or print the effective configuration after parsing
 sudo sshd -T
 
 # Restart sshd to apply changes
