@@ -217,7 +217,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name example.com;
 
     ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
@@ -225,7 +226,7 @@ server {
 
     # Modern TLS configuration (Mozilla Intermediate)
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
 
     # HSTS - tell browsers to always use HTTPS
@@ -387,7 +388,8 @@ code: |
   }
 
   server {
-      listen 443 ssl http2;
+      listen 443 ssl;
+      http2 on;
       server_name example.com;
 
       ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
@@ -436,18 +438,20 @@ annotations:
   - line: 12
     text: "HTTP server block that redirects everything to HTTPS. The 301 tells browsers to remember the redirect permanently."
   - line: 18
-    text: "The main HTTPS server block. http2 enables HTTP/2 for better performance (multiplexing, header compression)."
-  - line: 24
+    text: "The main HTTPS server block."
+  - line: 20
+    text: "Enables HTTP/2 for better performance (multiplexing, header compression). Since Nginx 1.25.1, http2 is its own directive instead of a listen parameter."
+  - line: 25
     text: "Modern TLS: only TLSv1.2 and 1.3. Older protocols (SSLv3, TLSv1.0, TLSv1.1) have known vulnerabilities."
-  - line: 26
+  - line: 27
     text: "HSTS tells browsers to always use HTTPS for this domain. max-age is in seconds (63072000 = 2 years)."
-  - line: 30
+  - line: 31
     text: "API routes get the general rate limit with a burst of 20. nodelay processes burst requests immediately instead of queuing."
-  - line: 39
+  - line: 40
     text: "Login gets an aggressive rate limit (1/s, burst 3) to slow brute-force attacks. Returns 429 instead of the default 503."
-  - line: 47
+  - line: 48
     text: "Static files served directly from disk with a 30-day cache. 'immutable' tells browsers not to revalidate during the cache period."
-  - line: 53
+  - line: 54
     text: "Health check endpoint for load balancers. access_log off prevents it from flooding logs with noise."
 ```
 
@@ -558,7 +562,8 @@ solution: |
   }
 
   server {
-      listen 443 ssl http2;
+      listen 443 ssl;
+      http2 on;
       server_name example.com;
 
       ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
