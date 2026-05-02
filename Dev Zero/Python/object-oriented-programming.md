@@ -903,7 +903,7 @@ hints:
     - "Frozen dataclasses raise FrozenInstanceError on attribute assignment - use this to verify immutability."
 solution: |
     import os
-    from dataclasses import dataclass
+    from dataclasses import dataclass, FrozenInstanceError
     from typing import Protocol
 
 
@@ -955,7 +955,7 @@ solution: |
 
     try:
         settings.port = 9999
-    except AttributeError as e:
+    except FrozenInstanceError as e:
         print(f"Immutable: {e}")
 ```
 

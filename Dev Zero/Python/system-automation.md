@@ -395,13 +395,14 @@ def check_service(name):
     )
     return result.stdout.strip() == "active"
 
-def check_port(host, port):
+def check_port(host, port, timeout=3):
     """Check if a TCP port is reachable."""
-    result = subprocess.run(
-        ["timeout", "3", "bash", "-c", f"echo > /dev/tcp/{host}/{port}"],
-        capture_output=True
-    )
-    return result.returncode == 0
+    import socket
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
 
 def main():
     parser = argparse.ArgumentParser(description="Service health checker")
