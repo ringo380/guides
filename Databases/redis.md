@@ -742,48 +742,53 @@ SLOWLOG GET 10
     `KEYS` blocks the server while it iterates every key in the database. On a production instance with millions of keys, this can freeze Redis for seconds. Always use `SCAN` with a cursor instead - it returns results incrementally without blocking.
 
 ```command-builder
-title: "redis-cli Command Builder"
-description: "Build a redis-cli command for connecting and running diagnostics."
-base: "redis-cli"
-groups:
-  - name: "Connection"
-    options:
-      - flag: "-h <hostname>"
-        description: "Server hostname (default: 127.0.0.1)"
-      - flag: "-p <port>"
-        description: "Server port (default: 6379)"
-      - flag: "-a <password>"
-        description: "Authentication password"
-      - flag: "-n <db>"
-        description: "Database number (0-15)"
-      - flag: "-c"
-        description: "Cluster mode (follow MOVED/ASK redirects)"
-      - flag: "--tls"
-        description: "Enable TLS/SSL connection"
-  - name: "Diagnostics"
-    options:
-      - flag: "--stat"
-        description: "Live stats: ops/sec, memory, connected clients"
-      - flag: "--latency"
-        description: "Continuous latency measurement"
-      - flag: "--latency-history"
-        description: "Latency samples over time (default 15s intervals)"
-      - flag: "--bigkeys"
-        description: "Scan for largest keys by type"
-      - flag: "--memkeys"
-        description: "Scan for keys using the most memory"
-  - name: "Commands"
-    options:
-      - flag: "INFO"
-        description: "Server information and statistics"
-      - flag: "INFO memory"
-        description: "Memory usage breakdown"
-      - flag: "MONITOR"
-        description: "Real-time stream of all commands processed"
-      - flag: "SLOWLOG GET 10"
-        description: "Show 10 slowest recent queries"
-      - flag: "DBSIZE"
-        description: "Count of keys in the current database"
+base: redis-cli
+description: Build a redis-cli command for connecting and running diagnostics.
+options:
+- flag: ''
+  type: select
+  label: Connection
+  choices:
+  - - -h <hostname>
+    - 'Server hostname (default: 127.0.0.1)'
+  - - -p <port>
+    - 'Server port (default: 6379)'
+  - - -a <password>
+    - Authentication password
+  - - -n <db>
+    - Database number (0-15)
+  - - -c
+    - Cluster mode (follow MOVED/ASK redirects)
+  - - --tls
+    - Enable TLS/SSL connection
+- flag: ''
+  type: select
+  label: Diagnostics
+  choices:
+  - - --stat
+    - 'Live stats: ops/sec, memory, connected clients'
+  - - --latency
+    - Continuous latency measurement
+  - - --latency-history
+    - Latency samples over time (default 15s intervals)
+  - - --bigkeys
+    - Scan for largest keys by type
+  - - --memkeys
+    - Scan for keys using the most memory
+- flag: ''
+  type: select
+  label: Commands
+  choices:
+  - - INFO
+    - Server information and statistics
+  - - INFO memory
+    - Memory usage breakdown
+  - - MONITOR
+    - Real-time stream of all commands processed
+  - - SLOWLOG GET 10
+    - Show 10 slowest recent queries
+  - - DBSIZE
+    - Count of keys in the current database
 ```
 
 ---

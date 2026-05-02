@@ -259,36 +259,43 @@ options:
 ```
 
 ```command-builder
-title: "Clone Strategies for Large Repositories"
-description: "Build a git clone command optimized for large repositories."
-base: "git clone"
-groups:
-  - name: "History Depth"
-    options:
-      - flag: "--depth 1"
-        description: "Shallow clone: only the most recent commit"
-      - flag: "--depth 10"
-        description: "Shallow clone: last 10 commits"
-  - name: "Partial Clone"
-    options:
-      - flag: "--filter=blob:none"
-        description: "Skip all blobs, download on demand"
-      - flag: "--filter=blob:limit=1m"
-        description: "Skip blobs larger than 1MB"
-      - flag: "--filter=tree:0"
-        description: "Skip trees too (ultra-minimal)"
-  - name: "Branch Scope"
-    options:
-      - flag: "--single-branch"
-        description: "Only download the default branch"
-      - flag: "--single-branch --branch develop"
-        description: "Only download the develop branch"
-  - name: "Checkout"
-    options:
-      - flag: "--sparse"
-        description: "Enable sparse checkout (combine with --filter)"
-      - flag: "--no-checkout"
-        description: "Clone without checking out files"
+base: git clone
+description: Build a git clone command optimized for large repositories.
+options:
+- flag: ''
+  type: select
+  label: History Depth
+  choices:
+  - - --depth 1
+    - 'Shallow clone: only the most recent commit'
+  - - --depth 10
+    - 'Shallow clone: last 10 commits'
+- flag: ''
+  type: select
+  label: Partial Clone
+  choices:
+  - - --filter=blob:none
+    - Skip all blobs, download on demand
+  - - --filter=blob:limit=1m
+    - Skip blobs larger than 1MB
+  - - --filter=tree:0
+    - Skip trees too (ultra-minimal)
+- flag: ''
+  type: select
+  label: Branch Scope
+  choices:
+  - - --single-branch
+    - Only download the default branch
+  - - --single-branch --branch develop
+    - Only download the develop branch
+- flag: ''
+  type: select
+  label: Checkout
+  choices:
+  - - --sparse
+    - Enable sparse checkout (combine with --filter)
+  - - --no-checkout
+    - Clone without checking out files
 ```
 
 ---

@@ -332,42 +332,47 @@ steps:
 ```
 
 ```command-builder
-title: "git log Command Builder"
-description: "Build a git log command with formatting and filtering options."
-base: "git log"
-groups:
-  - name: "Display Format"
-    options:
-      - flag: "--oneline"
-        description: "Compact one-line format (short hash + subject)"
-      - flag: "--graph"
-        description: "Draw branch/merge graph with ASCII art"
-      - flag: "--all"
-        description: "Show all branches, not just the current one"
-      - flag: "--decorate"
-        description: "Show branch and tag names next to commits"
-      - flag: "--stat"
-        description: "Show file change statistics per commit"
-      - flag: "-p"
-        description: "Show the full diff (patch) for each commit"
-  - name: "Filtering"
-    options:
-      - flag: "-5"
-        description: "Limit to last 5 commits"
-      - flag: "--since='1 week ago'"
-        description: "Only commits from the last week"
-      - flag: "--author='name'"
-        description: "Filter by author name (partial match)"
-      - flag: "--grep='search term'"
-        description: "Search commit messages"
-      - flag: "-S 'string'"
-        description: "Pickaxe: find commits that add/remove a string"
-  - name: "File Scope"
-    options:
-      - flag: "-- path/to/file"
-        description: "Show only commits affecting this file"
-      - flag: "--follow -- path/to/file"
-        description: "Track file through renames"
+base: git log
+description: Build a git log command with formatting and filtering options.
+options:
+- flag: ''
+  type: select
+  label: Display Format
+  choices:
+  - - --oneline
+    - Compact one-line format (short hash + subject)
+  - - --graph
+    - Draw branch/merge graph with ASCII art
+  - - --all
+    - Show all branches, not just the current one
+  - - --decorate
+    - Show branch and tag names next to commits
+  - - --stat
+    - Show file change statistics per commit
+  - - -p
+    - Show the full diff (patch) for each commit
+- flag: ''
+  type: select
+  label: Filtering
+  choices:
+  - - '-5'
+    - Limit to last 5 commits
+  - - --since='1 week ago'
+    - Only commits from the last week
+  - - --author='name'
+    - Filter by author name (partial match)
+  - - --grep='search term'
+    - Search commit messages
+  - - -S 'string'
+    - 'Pickaxe: find commits that add/remove a string'
+- flag: ''
+  type: select
+  label: File Scope
+  choices:
+  - - -- path/to/file
+    - Show only commits affecting this file
+  - - --follow -- path/to/file
+    - Track file through renames
 ```
 
 ---
