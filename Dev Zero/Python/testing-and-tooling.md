@@ -481,7 +481,7 @@ scenario: |
   4. Includes at least 5 test cases covering normal, warning, critical, error, and edge cases (exactly 80%)
   5. Verifies both the status string and exit code for each case
 hints:
-  - "Mock shutil.disk_usage to return a named tuple: MagicMock(total=100, used=X, free=100-X)"
+  - "Mock shutil.disk_usage with a MagicMock(total=100, used=X, free=100-X). The real function returns a named tuple, but a MagicMock with matching attributes is enough for attribute-access call sites."
   - "Use @pytest.mark.parametrize('used,expected_status,expected_code', [...]) for multiple thresholds"
   - "For the error case, make the mock raise OSError"
   - "Edge case: 80% exactly should trigger WARNING (test boundary conditions)"

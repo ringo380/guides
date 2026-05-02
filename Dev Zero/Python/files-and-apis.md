@@ -230,7 +230,7 @@ response = requests.post(
     json=alert                      # Automatically serializes and sets Content-Type
 )
 
-if response.ok:                     # True for any 2xx status
+if response.ok:                     # True for any status code below 400
     print("Alert sent successfully.")
 ```
 
