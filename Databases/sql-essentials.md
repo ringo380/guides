@@ -848,56 +848,67 @@ SELECT * FROM employees WHERE manager_id IS NULL;
 Build a `SELECT` statement by combining clauses. Each group represents a part of the query you can customize.
 
 ```command-builder
-title: "SELECT Statement Builder"
-description: "Construct a SELECT query by choosing columns, filtering, grouping, and sorting options."
-base: "SELECT"
-groups:
-  - name: "Columns"
-    flags:
-      - flag: " *"
-        description: "All columns"
-      - flag: " id, name, price"
-        description: "Specific columns"
-      - flag: " department, COUNT(*) AS count"
-        description: "Aggregation with alias"
-      - flag: " DISTINCT category"
-        description: "Unique values only"
-  - name: "Source"
-    flags:
-      - flag: " FROM products"
-        description: "Single table"
-      - flag: " FROM orders o JOIN customers c ON o.customer_id = c.id"
-        description: "Joined tables"
-  - name: "Filter"
-    flags:
-      - flag: " WHERE price > 50"
-        description: "Comparison filter"
-      - flag: " WHERE category IN ('Electronics', 'Books')"
-        description: "IN list filter"
-      - flag: " WHERE name LIKE '%widget%'"
-        description: "Pattern matching"
-      - flag: " WHERE created_at BETWEEN '2025-01-01' AND '2025-12-31'"
-        description: "Date range filter"
-  - name: "Grouping"
-    flags:
-      - flag: " GROUP BY department"
-        description: "Group results"
-      - flag: " GROUP BY department HAVING COUNT(*) > 3"
-        description: "Group with minimum count"
-  - name: "Ordering"
-    flags:
-      - flag: " ORDER BY price ASC"
-        description: "Sort ascending"
-      - flag: " ORDER BY price DESC"
-        description: "Sort descending"
-      - flag: " ORDER BY department, name"
-        description: "Sort by multiple columns"
-  - name: "Limit"
-    flags:
-      - flag: " LIMIT 10"
-        description: "First 10 rows"
-      - flag: " LIMIT 10 OFFSET 20"
-        description: "Rows 21-30 (pagination)"
+base: SELECT
+description: Construct a SELECT query by choosing columns, filtering, grouping, and sorting options.
+options:
+- flag: ''
+  type: select
+  label: Columns
+  choices:
+  - - ' *'
+    - All columns
+  - - ' id, name, price'
+    - Specific columns
+  - - ' department, COUNT(*) AS count'
+    - Aggregation with alias
+  - - ' DISTINCT category'
+    - Unique values only
+- flag: ''
+  type: select
+  label: Source
+  choices:
+  - - ' FROM products'
+    - Single table
+  - - ' FROM orders o JOIN customers c ON o.customer_id = c.id'
+    - Joined tables
+- flag: ''
+  type: select
+  label: Filter
+  choices:
+  - - ' WHERE price > 50'
+    - Comparison filter
+  - - ' WHERE category IN (''Electronics'', ''Books'')'
+    - IN list filter
+  - - ' WHERE name LIKE ''%widget%'''
+    - Pattern matching
+  - - ' WHERE created_at BETWEEN ''2025-01-01'' AND ''2025-12-31'''
+    - Date range filter
+- flag: ''
+  type: select
+  label: Grouping
+  choices:
+  - - ' GROUP BY department'
+    - Group results
+  - - ' GROUP BY department HAVING COUNT(*) > 3'
+    - Group with minimum count
+- flag: ''
+  type: select
+  label: Ordering
+  choices:
+  - - ' ORDER BY price ASC'
+    - Sort ascending
+  - - ' ORDER BY price DESC'
+    - Sort descending
+  - - ' ORDER BY department, name'
+    - Sort by multiple columns
+- flag: ''
+  type: select
+  label: Limit
+  choices:
+  - - ' LIMIT 10'
+    - First 10 rows
+  - - ' LIMIT 10 OFFSET 20'
+    - Rows 21-30 (pagination)
 ```
 
 ---

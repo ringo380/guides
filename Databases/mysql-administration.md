@@ -101,55 +101,32 @@ nopager
     `pager less -S` combined with `\G` output gives you a scrollable, searchable view of wide result sets. This is the fastest way to browse `SHOW ENGINE INNODB STATUS` output.
 
 ```command-builder
-title: MySQL CLI Connection Builder
-base: "mysql"
-groups:
-  - name: "Connection"
-    flags:
-      - flag: "-u"
-        description: "Username"
-        options:
-          - value: "root"
-            label: "root"
-          - value: "app_user"
-            label: "Application user"
-      - flag: "-h"
-        description: "Host"
-        options:
-          - value: "localhost"
-            label: "Local"
-          - value: "db.example.com"
-            label: "Remote"
-      - flag: "-P"
-        description: "Port"
-        options:
-          - value: "3306"
-            label: "Default (3306)"
-          - value: "3307"
-            label: "Custom (3307)"
-  - name: "Authentication"
-    flags:
-      - flag: "-p"
-        description: "Prompt for password"
-        options:
-          - value: ""
-            label: "Prompt at connect"
-  - name: "Target"
-    flags:
-      - flag: "-D"
-        description: "Database"
-        options:
-          - value: "myapp"
-            label: "myapp"
-          - value: "mysql"
-            label: "mysql (system)"
-      - flag: "-e"
-        description: "Execute query and exit"
-        options:
-          - value: "\"SHOW DATABASES\""
-            label: "List databases"
-          - value: "\"SHOW PROCESSLIST\""
-            label: "Show connections"
+base: mysql
+options:
+- flag: ''
+  type: select
+  label: Connection
+  choices:
+  - - -u
+    - Username
+  - - -h
+    - Host
+  - - -P
+    - Port
+- flag: ''
+  type: select
+  label: Authentication
+  choices:
+  - - -p
+    - Prompt for password
+- flag: ''
+  type: select
+  label: Target
+  choices:
+  - - -D
+    - Database
+  - - -e
+    - Execute query and exit
 ```
 
 ```quiz

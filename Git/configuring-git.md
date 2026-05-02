@@ -102,40 +102,45 @@ git config --global --edit
 ```
 
 ```command-builder
-title: "git config Command Builder"
-description: "Build a git config command for reading and writing settings."
-base: "git config"
-groups:
-  - name: "Scope"
-    options:
-      - flag: "--global"
-        description: "User-level config (~/.gitconfig)"
-      - flag: "--local"
-        description: "Repository-level config (.git/config)"
-      - flag: "--system"
-        description: "System-wide config (/etc/gitconfig)"
-  - name: "Action"
-    options:
-      - flag: "--list"
-        description: "List all settings at this scope"
-      - flag: "--show-origin"
-        description: "Show which file each setting comes from"
-      - flag: "--get <key>"
-        description: "Read a specific setting"
-      - flag: "--unset <key>"
-        description: "Remove a specific setting"
-      - flag: "--edit"
-        description: "Open the config file in your editor"
-  - name: "Common Settings"
-    options:
-      - flag: "user.name 'Your Name'"
-        description: "Set your name for commits"
-      - flag: "user.email 'you@example.com'"
-        description: "Set your email for commits"
-      - flag: "core.editor 'vim'"
-        description: "Set the default text editor"
-      - flag: "init.defaultBranch main"
-        description: "Set the default branch name for new repos"
+base: git config
+description: Build a git config command for reading and writing settings.
+options:
+- flag: ''
+  type: select
+  label: Scope
+  choices:
+  - - --global
+    - User-level config (~/.gitconfig)
+  - - --local
+    - Repository-level config (.git/config)
+  - - --system
+    - System-wide config (/etc/gitconfig)
+- flag: ''
+  type: select
+  label: Action
+  choices:
+  - - --list
+    - List all settings at this scope
+  - - --show-origin
+    - Show which file each setting comes from
+  - - --get <key>
+    - Read a specific setting
+  - - --unset <key>
+    - Remove a specific setting
+  - - --edit
+    - Open the config file in your editor
+- flag: ''
+  type: select
+  label: Common Settings
+  choices:
+  - - user.name 'Your Name'
+    - Set your name for commits
+  - - user.email 'you@example.com'
+    - Set your email for commits
+  - - core.editor 'vim'
+    - Set the default text editor
+  - - init.defaultBranch main
+    - Set the default branch name for new repos
 ```
 
 ---

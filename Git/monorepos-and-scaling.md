@@ -352,30 +352,35 @@ Large monorepos need build systems that understand which projects are affected b
 These tools use the Git commit graph to determine which packages changed and only build/test those, making CI feasible for large monorepos.
 
 ```command-builder
-title: "Clone Strategies for Large Repos"
-description: "Build an optimized clone command for a large repository."
-base: "git clone"
-groups:
-  - name: "Object Filtering"
-    options:
-      - flag: "--filter=blob:none"
-        description: "Blobless: skip file content, fetch on demand"
-      - flag: "--filter=blob:limit=1m"
-        description: "Skip blobs larger than 1MB"
-      - flag: "--filter=tree:0"
-        description: "Treeless: skip trees too (ultra minimal)"
-  - name: "Checkout Scope"
-    options:
-      - flag: "--sparse"
-        description: "Only check out root files (use sparse-checkout to add dirs)"
-      - flag: "--no-checkout"
-        description: "Don't check out any files"
-  - name: "History Depth"
-    options:
-      - flag: "--depth 1"
-        description: "Shallow: only latest commit"
-      - flag: "--single-branch"
-        description: "Only the default branch"
+base: git clone
+description: Build an optimized clone command for a large repository.
+options:
+- flag: ''
+  type: select
+  label: Object Filtering
+  choices:
+  - - --filter=blob:none
+    - 'Blobless: skip file content, fetch on demand'
+  - - --filter=blob:limit=1m
+    - Skip blobs larger than 1MB
+  - - --filter=tree:0
+    - 'Treeless: skip trees too (ultra minimal)'
+- flag: ''
+  type: select
+  label: Checkout Scope
+  choices:
+  - - --sparse
+    - Only check out root files (use sparse-checkout to add dirs)
+  - - --no-checkout
+    - Don't check out any files
+- flag: ''
+  type: select
+  label: History Depth
+  choices:
+  - - --depth 1
+    - 'Shallow: only latest commit'
+  - - --single-branch
+    - Only the default branch
 ```
 
 ---
