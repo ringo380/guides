@@ -46,7 +46,7 @@ Docker is a platform for developing, shipping, and running applications in isola
 
 ## Introduction
 
-Containers allow you to package an application with all of its dependencies — libraries, configuration files, and runtime — into a single unit. Unlike Virtual Machines (VMs), containers share the host's OS kernel, making them lightweight, fast to start, and efficient in resource usage.
+Containers allow you to package an application with all of its dependencies (libraries, configuration files, and runtime) into a single unit. Unlike Virtual Machines (VMs), containers share the host's OS kernel, making them lightweight, fast to start, and efficient in resource usage.
 
 ### Key Concepts
 

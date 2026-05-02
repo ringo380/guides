@@ -195,8 +195,10 @@ COPY Cargo.toml Cargo.lock ./
 RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 COPY . .
-RUN cargo build --release
+RUN rm -f target/release/deps/myapp* && cargo build --release
 ```
+
+The `rm` step is required: without it Cargo sees the dummy artifact in `target/` and may skip rebuilding even after the real source is copied. Replace `myapp` with your crate name.
 
 **Java (Gradle):**
 
@@ -371,7 +373,7 @@ COPY Cargo.toml Cargo.lock ./
 RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 COPY src ./src
-RUN touch src/main.rs && cargo build --release
+RUN rm -f target/release/deps/myapp* && cargo build --release
 
 FROM debian:bookworm-slim
 COPY --from=build /app/target/release/myapp /usr/local/bin/
@@ -470,7 +472,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 ```
 
-The `--no-install-recommends` flag skips suggested and recommended packages, which often include documentation, man pages, and utilities you do not need.
+The `--no-install-recommends` flag skips packages marked as Recommends, which often include documentation, man pages, and utilities you do not need. APT does not install Suggests by default, so they are already excluded.
 
 **apk (Alpine):**
 
@@ -768,7 +770,7 @@ The `HEALTHCHECK` directive tells Docker how to verify a container is functionin
 
 ```dockerfile
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD ["curl", "-f", "http://localhost:3000/health" ]
+    CMD ["curl", "-f", "http://localhost:3000/health"]
 ```
 
 Without a health check, Docker considers a container "healthy" as long as the process is running - even if it is deadlocked, out of memory, or returning errors. Orchestrators like Kubernetes and Docker Swarm use health checks to restart failing containers automatically.

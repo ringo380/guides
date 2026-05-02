@@ -34,7 +34,7 @@ The benefits go beyond convenience:
 
 ## The Compose File
 
-The core of Docker Compose is a YAML file named `compose.yml` (or `docker-compose.yml` for backward compatibility). It defines services, networks, and volumes.
+The core of Docker Compose is a YAML file. Compose v2 looks for `compose.yaml` (the canonical name), `compose.yml`, `docker-compose.yaml`, or `docker-compose.yml` in that order. It defines services, networks, and volumes.
 
 ### A Production-Style Example
 
@@ -264,7 +264,7 @@ steps:
     output: "[+] Building 8.2s\n[+] Running 4/4\n ✔ Network myproject_default  Created\n ✔ Volume myproject_pgdata    Created\n ✔ Container myproject-db-1    Healthy\n ✔ Container myproject-cache-1 Started\n ✔ Container myproject-web-1   Started"
     narration: "Compose builds the web image, creates a bridge network and a named volume, then starts containers in dependency order. The web container waits until the db health check passes."
   - command: "docker compose ps"
-    output: "NAME                 SERVICE   STATUS    PORTS\nmyproject-cache-1    cache     running   6379/tcp\nmyproject-db-1       db        running   5432/tcp\nmyproject-web-1      web       running   0.0.0.0:8000->8000/tcp"
+    output: "NAME                 SERVICE   STATUS              PORTS\nmyproject-cache-1    cache     Up 8 seconds        6379/tcp\nmyproject-db-1       db        Up 9 seconds (healthy)  5432/tcp\nmyproject-web-1      web       Up 7 seconds        0.0.0.0:8000->8000/tcp"
     narration: "All three services are running. Only the web service has a published port (8000). The cache and database ports are accessible to other containers on the network but not from the host."
   - command: "docker compose exec web python -c \"import redis; r = redis.Redis(host='cache'); print(r.ping())\""
     output: "True"
@@ -397,7 +397,7 @@ scenario: |
   6. Use a `.env` file for the database password instead of hardcoding it
   7. Add a bind mount on the `web` service for live code reloading in development
 hints:
-  - "The healthcheck test for PostgreSQL is: [\"CMD-SHELL\", \"pg_isready -U postgres\"]"
+  - "The healthcheck test for PostgreSQL is: [\"CMD-SHELL\", \"pg_isready -U postgres -d myapp\"]"
   - "Use ${DB_PASSWORD} syntax in compose.yml and define DB_PASSWORD in a .env file"
   - "For the bind mount, use .:/app for the source code, but add /app/node_modules as an anonymous volume to prevent host modules from overriding container modules"
   - "Named volumes are declared both under the service (as a mount) and at the top level under 'volumes:'"
