@@ -224,8 +224,11 @@ git cherry-pick a1b2c3d
 # Cherry-pick without committing (stage the changes instead)
 git cherry-pick --no-commit a1b2c3d
 
-# Cherry-pick a range of commits
+# Cherry-pick a range of commits (start is exclusive)
 git cherry-pick a1b2c3d..d4e5f6a
+
+# Same range, but include a1b2c3d itself
+git cherry-pick a1b2c3d^..d4e5f6a
 ```
 
 Cherry-pick is useful when you need a specific fix from another branch but don't want to merge the entire branch. But use it sparingly - duplicated commits (same changes, different hashes) can cause confusion when the branches are eventually merged.
@@ -493,7 +496,7 @@ solution: |
   echo "auth v1" > auth.py && git add auth.py && git commit -m "WIP: start auth module"
   echo "login" > auth.py && git add auth.py && git commit -m "Add login endpoint"
   echo "logn" > auth.py && git add auth.py && git commit -m "fix typo"
-  echo "login\nlogout" > auth.py && git add auth.py && git commit -m "Add logout endpoint"
+  printf 'login\nlogout\n' > auth.py && git add auth.py && git commit -m "Add logout endpoint"
   echo "test" > test_auth.py && git add test_auth.py && git commit -m "forgot to add test file"
   echo "tests complete" > test_auth.py && git add test_auth.py && git commit -m "Add auth tests"
 

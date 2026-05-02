@@ -333,13 +333,13 @@ repos:
 brew install gitleaks  # macOS
 
 # Scan the current repo
-gitleaks detect
+gitleaks git
 
 # Scan with verbose output
-gitleaks detect -v
+gitleaks git -v
 
 # Scan specific commits
-gitleaks detect --log-opts="HEAD~10..HEAD"
+gitleaks git --log-opts="HEAD~10..HEAD"
 ```
 
 [**TruffleHog**](https://github.com/trufflesecurity/trufflehog) performs deep scanning including entropy analysis:
