@@ -117,7 +117,7 @@ CHANGE REPLICATION SOURCE TO
 START REPLICA;
 ```
 
-The `SOURCE_LOG_FILE` and `SOURCE_LOG_POS` values come from `SHOW MASTER STATUS` on the source (or from a backup's metadata). Getting these wrong means the replica starts reading from the wrong position - it will either skip transactions or try to replay events that have already been applied.
+The `SOURCE_LOG_FILE` and `SOURCE_LOG_POS` values come from `SHOW BINARY LOG STATUS` on the source (also available as the deprecated alias `SHOW MASTER STATUS`, which was removed in MySQL 8.4) or from a backup's metadata. Getting these wrong means the replica starts reading from the wrong position - it will either skip transactions or try to replay events that have already been applied.
 
 !!! warning "File-and-position pitfalls"
     Binary log file names and positions are fragile. They change after log rotation, are specific to a single source, and make it difficult to re-point a replica to a new source after failover. GTID replication (covered next) eliminates these problems.
@@ -377,8 +377,9 @@ enforce-gtid-consistency           = ON
 log-bin                            = mysql-bin
 log-replica-updates                = ON
 binlog-checksum                    = NONE
-relay-log-info-repository          = TABLE
-transaction-write-set-extraction   = XXHASH64
+# relay-log-info-repository and transaction-write-set-extraction were
+# the historical defaults but were deprecated in 8.0.23/8.0.26 and
+# removed in 8.3 - omit them on modern MySQL.
 
 # Group Replication settings
 plugin-load-add                    = group_replication.so

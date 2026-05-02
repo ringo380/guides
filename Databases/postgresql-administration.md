@@ -497,10 +497,15 @@ Unused indexes waste disk space and slow down writes (every INSERT, UPDATE, and 
 The **background writer** and **checkpointer** flush dirty buffers to disk. This view shows how that work is distributed:
 
 ```sql
+-- PostgreSQL 16 and earlier: all columns live on pg_stat_bgwriter.
+-- PostgreSQL 17+: checkpoint columns moved to pg_stat_checkpointer.
 SELECT
     checkpoints_timed,
     checkpoints_req,
-    buffers_checkpoint,
+    buffers_checkpoint
+FROM pg_stat_checkpointer;  -- on PG 17+; use pg_stat_bgwriter on <=16
+
+SELECT
     buffers_clean,
     buffers_backend,
     buffers_alloc
