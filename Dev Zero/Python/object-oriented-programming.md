@@ -2,7 +2,7 @@
 difficulty: intermediate
 time_estimate: "45 min"
 prerequisites:
-  - data-structures-and-logic
+  - testing-and-tooling
 learning_outcomes:
   - "Define classes with attributes, methods, and dunder methods"
   - "Use inheritance, composition, and abstract base classes to structure code"
@@ -234,8 +234,8 @@ title: Dunder Methods in Action
 scenario: "Explore how __repr__, __str__, __eq__, and __hash__ behave in the Python REPL."
 steps:
     - command: "python3 -c \"\nclass Server:\n    def __init__(self, hostname, port=22):\n        self.hostname = hostname\n        self.port = port\n    def __repr__(self):\n        return f'Server({self.hostname!r}, port={self.port})'\n    def __str__(self):\n        return f'{self.hostname}:{self.port}'\n    def __eq__(self, other):\n        if not isinstance(other, Server):\n            return NotImplemented\n        return self.hostname == other.hostname and self.port == other.port\n    def __hash__(self):\n        return hash((self.hostname, self.port))\n\nweb1 = Server('web-01.prod', 443)\nweb2 = Server('web-01.prod', 443)\nweb3 = Server('db-01.prod', 5432)\nprint('repr:', repr(web1))\nprint('str: ', str(web1))\nprint('eq:  ', web1 == web2)\nprint('ne:  ', web1 == web3)\nprint('set: ', {web1, web2, web3})\n\""
-      output: "repr: Server('web-01.prod', port=443)\nstr:  web-01.prod:443\neq:   True\nne:   False\nset:  2 unique servers (web1 and web2 deduplicated)"
-      narration: "web1 and web2 are equal (same hostname and port), so the set deduplicates them down to two unique entries. The repr shows the developer-friendly format while str shows the human-readable one. Set display order varies between Python runs due to hash randomization."
+      output: "repr: Server('web-01.prod', port=443)\nstr:  web-01.prod:443\neq:   True\nne:   False\nset:  {<Server objects - order varies per run>}"
+      narration: "web1 and web2 are equal (same hostname and port), so the set deduplicates them down to two unique entries: db-01.prod and one copy of web-01.prod. The repr shows the developer-friendly format while str shows the human-readable one. Set display order varies between Python runs due to hash randomization."
 ```
 
 ---
@@ -903,7 +903,7 @@ hints:
     - "Frozen dataclasses raise FrozenInstanceError on attribute assignment - use this to verify immutability."
 solution: |
     import os
-    from dataclasses import dataclass, FrozenInstanceError
+    from dataclasses import dataclass
     from typing import Protocol
 
 
@@ -955,8 +955,8 @@ solution: |
 
     try:
         settings.port = 9999
-    except FrozenInstanceError as e:
-        print(f"Immutable: {e}")
+    except Exception as e:
+        print(f"Immutable: {type(e).__name__}: {e}")
 ```
 
 ---

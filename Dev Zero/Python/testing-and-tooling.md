@@ -2,7 +2,7 @@
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:
-  - python_dev0_introduction
+  - system-automation
 learning_outcomes:
   - "Write and run tests with pytest"
   - "Manage dependencies with pip and poetry"
