@@ -423,6 +423,49 @@ options:
     feedback: "It's roughly the opposite. The recursive server follows the chain. In iterative mode, the client receives referrals and must follow them itself."
 ```
 
+```command-builder
+base: dig
+description: Build a dig query to inspect DNS records and resolution behavior
+options:
+  - flag: ""
+    type: text
+    label: "Domain"
+    placeholder: "example.com"
+    explanation: "The domain name to query"
+  - flag: ""
+    type: select
+    label: "Record type"
+    explanation: "The DNS record type to request"
+    choices:
+      - ["A", "A - IPv4 address"]
+      - ["AAAA", "AAAA - IPv6 address"]
+      - ["MX", "MX - mail exchange servers"]
+      - ["NS", "NS - authoritative nameservers"]
+      - ["TXT", "TXT - text records (SPF, DKIM, DMARC)"]
+      - ["SOA", "SOA - start of authority (zone metadata)"]
+      - ["CNAME", "CNAME - canonical name alias"]
+      - ["CAA", "CAA - certificate authority authorization"]
+  - flag: ""
+    type: select
+    label: "Output options"
+    explanation: "Control how much output dig returns"
+    choices:
+      - ["", "Default (full output)"]
+      - ["+short", "+short - answer section only"]
+      - ["+noall +answer", "+noall +answer - clean answer section"]
+      - ["+trace", "+trace - full iterative resolution from root"]
+  - flag: ""
+    type: select
+    label: "Nameserver"
+    explanation: "Query a specific nameserver instead of your system default"
+    choices:
+      - ["", "System default resolver"]
+      - ["@1.1.1.1", "Cloudflare (1.1.1.1)"]
+      - ["@8.8.8.8", "Google (8.8.8.8)"]
+      - ["@9.9.9.9", "Quad9 (9.9.9.9)"]
+      - ["@a.root-servers.net", "Root server (iterative)"]
+```
+
 ---
 
 ## Registrars, Registries, and Glue Records
