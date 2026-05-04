@@ -70,6 +70,19 @@ git://github.com/user/repo.git
 
 The `git://` protocol is unauthenticated and unencrypted. It was used for fast, read-only access to public repositories. Most platforms no longer support it due to security concerns.
 
+### Protocol Comparison
+
+| | SSH | Smart HTTP | Dumb HTTP | Native Git |
+|---|---|---|---|---|
+| **Authentication** | SSH keys or password | HTTP tokens, Basic auth, OAuth | None (read-only) | None |
+| **Encryption** | Always (SSH channel) | TLS (HTTPS only) | None | None |
+| **Push support** | Yes | Yes | No | No |
+| **Firewall/proxy** | Port 22 (may be blocked) | Port 443 (almost never blocked) | Port 80/443 | Port 9418 (usually blocked) |
+| **Setup complexity** | SSH key required | Just a URL and token | Just a URL | Server daemon required |
+| **Common use** | Developer workstations, CI with deploy keys | Hosted platforms (GitHub, GitLab, Bitbucket) | Static web servers (legacy) | Deprecated, rarely used |
+
+**Choose SSH** for developer machines where you control the environment - key-based authentication is seamless once configured. **Choose Smart HTTP** for CI/CD pipelines, tokens you can rotate, and anywhere port 22 may be blocked (corporate networks, restricted cloud environments).
+
 ---
 
 ## Pack Negotiation

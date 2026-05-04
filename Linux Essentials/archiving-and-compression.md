@@ -38,6 +38,7 @@ Add a compression flag:
 tar -czf archive.tar.gz directory/          # gzip compression
 tar -cjf archive.tar.bz2 directory/         # bzip2 compression
 tar -cJf archive.tar.xz directory/          # xz compression
+tar --zstd -cf archive.tar.zst directory/   # zstd compression
 ```
 
 | Flag | Compression | Extension | Speed | Ratio |
@@ -45,6 +46,7 @@ tar -cJf archive.tar.xz directory/          # xz compression
 | `-z` | gzip | `.tar.gz` or `.tgz` | Fast | Good |
 | `-j` | bzip2 | `.tar.bz2` | Slow | Better |
 | `-J` | xz | `.tar.xz` | Slowest | Best |
+| `--zstd` | zstd | `.tar.zst` | Very Fast | Excellent |
 
 ```quiz
 question: "What is the difference between tar -czf and tar -cJf?"
@@ -194,6 +196,7 @@ options:
     explanation: "Compression algorithm to use"
     choices:
       - ["-z", "gzip (.tar.gz) - fast, good compression"]
+      - ["--zstd", "zstd (.tar.zst) - very fast, excellent compression"]
       - ["-j", "bzip2 (.tar.bz2) - slower, better compression"]
       - ["-J", "xz (.tar.xz) - slowest, best compression"]
       - ["", "None (.tar) - no compression"]
@@ -325,6 +328,42 @@ xzcat file.txt.xz
 
 ---
 
+## zstd / unzstd
+
+[**`zstd`**](https://facebook.github.io/zstd/) (Zstandard) is a modern compression algorithm from Meta that delivers near-xz compression ratios at near-gzip speeds. It has become the default compression format for many Linux distributions (Arch, Fedora, Ubuntu 22.04+) and package managers.
+
+```bash
+zstd file.txt                  # creates file.txt.zst, keeps original by default
+zstd -k file.txt               # explicit keep (original preserved anyway)
+zstd -19 file.txt              # maximum compression (levels 1-19)
+zstd -1 file.txt               # fastest compression
+zstd -T0 file.txt              # use all CPU cores
+zstd -d file.txt.zst           # decompress (same as unzstd)
+```
+
+!!! tip "zstd keeps the original file by default"
+
+    Unlike **`gzip`** and **`bzip2`**, **`zstd`** preserves the original file when compressing. This is the opposite default behavior, so you don't need `-k` to avoid losing the source. Use **`--rm`** if you explicitly want to delete the original after compression.
+
+**`unzstd`** decompresses:
+
+```bash
+unzstd file.txt.zst
+```
+
+**`zstdcat`** reads compressed files without decompressing:
+
+```bash
+zstdcat file.txt.zst
+zstdcat file.txt.zst | grep "error"
+```
+
+### Why zstd matters
+
+zstd occupies the sweet spot that bzip2 and xz never quite achieved - it compresses nearly as well as xz but decompresses as fast as gzip. This makes it ideal for scenarios where you compress once but decompress frequently (package managers, container images, backups you restore). The `-T0` multithreaded flag (which xz also supports as `-T 0`) is enabled by default in many distributions' package builds.
+
+---
+
 ## zip / unzip
 
 [**`zip`**](https://infozip.sourceforge.net/) creates archives compatible with Windows and macOS. It handles both archiving and compression in one step.
@@ -364,16 +403,17 @@ Classic zip has a few limitations to be aware of. It doesn't preserve Unix file 
 | Format | Use When |
 |--------|----------|
 | `.tar.gz` | General purpose. Fast, good compression, universally supported on Linux. Default choice for most things. |
-| `.tar.bz2` | You need better compression and can wait longer. Less common now that xz exists. |
-| `.tar.xz` | Maximum compression matters (distributing software, long-term storage). Standard for Linux distro packages. |
+| `.tar.zst` | Modern systems where zstd is available. Excellent compression, very fast decompression. Default for many distro packages (Arch, Fedora, Ubuntu 22.04+). |
+| `.tar.bz2` | You need better compression and can wait longer. Less common now that xz and zstd exist. |
+| `.tar.xz` | Maximum compression matters (distributing software, long-term storage). Standard for Linux distro source tarballs. |
 | `.zip` | Sharing with Windows/macOS users, or when recipients might not have tar. |
 | `.gz` (no tar) | Compressing a single file (like log rotation). |
 
 **Concrete scenarios:**
 
-- **Distributing software** - `.tar.xz` is the standard. Users download once, the slow compression time is paid by the developer, and the small size saves bandwidth.
+- **Distributing software** - `.tar.xz` is the traditional standard for source tarballs; `.tar.zst` is increasingly used for binary packages (Arch Linux `pacman`, Fedora RPMs). Users download once, the slow compression time is paid by the developer, and the small size saves bandwidth.
 - **Log rotation** - `.gz` (single file, no tar needed). logrotate uses gzip by default because the fast compression/decompression cycle matters when rotating logs on a busy server.
-- **Backups** - `.tar.gz` balances compression with speed. For large backup jobs, the time difference between gzip and xz can be hours.
+- **Backups** - `.tar.zst` or `.tar.gz` balance compression with speed. For large backup jobs where you may need to restore frequently, zstd's fast decompression is a practical advantage over xz.
 - **Sharing with non-Linux users** - `.zip` is universally supported on Windows and macOS without extra software.
 - **Archiving for long-term storage** - `.tar.xz` gives the best size reduction. If the data won't be accessed frequently, the slow compression is worth it.
 
@@ -384,11 +424,12 @@ Approximate results for a typical 100MB text file (actual results vary with cont
 | Format | Compressed Size | Compression Time | Decompression Time |
 |--------|----------------|------------------|--------------------|
 | gzip | ~30MB (~70% reduction) | ~2 seconds | ~1 second |
+| zstd (default) | ~25MB (~75% reduction) | ~1.5 seconds | ~0.5 seconds |
 | bzip2 | ~25MB (~75% reduction) | ~8 seconds | ~4 seconds |
 | xz | ~20MB (~80% reduction) | ~30 seconds | ~2 seconds |
 | zip | ~30MB (~70% reduction) | ~2 seconds | ~1 second |
 
-Notable: xz decompresses much faster than it compresses, making it a good choice when you compress once and decompress many times (like software distribution). Binary files and already-compressed data (images, video) will see much smaller reductions.
+Notable: zstd matches bzip2's compression ratio at gzip's speed, and decompresses faster than any of them. xz still achieves the smallest output for maximum compression, but at the cost of compression time. Binary files and already-compressed data (images, video) will see much smaller reductions across all formats.
 
 ```terminal
 title: Compression Algorithm Comparison
@@ -421,6 +462,7 @@ steps:
 - [GNU Gzip Manual](https://www.gnu.org/software/gzip/manual/) - compression utility reference
 - [bzip2](https://sourceware.org/bzip2/) - block-sorting file compressor
 - [XZ Utils](https://tukaani.org/xz/) - LZMA/LZMA2 compression tools
+- [Zstandard](https://facebook.github.io/zstd/) - fast real-time compression algorithm
 - [Info-ZIP](https://infozip.sourceforge.net/) - zip and unzip utilities
 
 ---
