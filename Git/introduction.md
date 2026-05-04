@@ -488,6 +488,36 @@ solution: |
   with `git commit --amend --reset-author`.
 ```
 
+```command-builder
+base: git init
+description: Initialize a new Git repository with optional settings
+options:
+  - flag: ""
+    type: text
+    label: "Directory (optional)"
+    placeholder: "my-project"
+    explanation: "Initialize in this directory (created if it doesn't exist). Leave blank to initialize the current directory."
+  - flag: "-b"
+    type: text
+    label: "Initial branch name"
+    placeholder: "main"
+    explanation: "Set the name for the initial branch. Defaults to 'master' unless init.defaultBranch is configured globally."
+  - flag: ""
+    type: select
+    label: "Repository type"
+    explanation: "Bare repositories have no working directory - used for shared repos on servers"
+    choices:
+      - ["", "Standard (with working directory)"]
+      - ["--bare", "Bare (no working directory, for server use)"]
+  - flag: ""
+    type: select
+    label: "Verbosity"
+    explanation: "Control how much output git init produces"
+    choices:
+      - ["", "Default"]
+      - ["-q", "Quiet (suppress informational messages)"]
+```
+
 ---
 
 ## What's Ahead

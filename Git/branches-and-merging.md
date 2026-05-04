@@ -616,6 +616,38 @@ solution: |
   ```
 ```
 
+```command-builder
+base: git merge
+description: Integrate changes from one branch into the current branch
+options:
+  - flag: ""
+    type: text
+    label: "Branch to merge"
+    placeholder: "feature/my-branch"
+    explanation: "The branch whose commits you want to integrate into the current branch"
+  - flag: ""
+    type: select
+    label: "Merge strategy"
+    explanation: "Controls how Git creates (or avoids) a merge commit"
+    choices:
+      - ["", "Default (fast-forward if possible)"]
+      - ["--no-ff", "--no-ff (always create a merge commit)"]
+      - ["--ff-only", "--ff-only (fail if fast-forward is not possible)"]
+      - ["--squash", "--squash (collapse all commits into working tree, then commit manually)"]
+  - flag: ""
+    type: select
+    label: "Commit behavior"
+    explanation: "Whether to immediately commit the result or leave it staged"
+    choices:
+      - ["", "Default (commit immediately)"]
+      - ["--no-commit", "--no-commit (stage the merge but do not commit)"]
+  - flag: "-m"
+    type: text
+    label: "Merge commit message"
+    placeholder: "Merge feature/my-branch"
+    explanation: "Custom message for the merge commit (only used when a merge commit is created)"
+```
+
 ---
 
 ## Further Reading
