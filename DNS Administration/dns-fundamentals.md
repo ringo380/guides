@@ -38,7 +38,7 @@ Paul Mockapetris, inventor of DNS, at a conference in Barcelona.
 </figcaption>
 </figure>
 
-In 1983, Paul Mockapetris at USC's Information Sciences Institute published [RFC 882](https://datatracker.ietf.org/doc/html/rfc882) and [RFC 883](https://datatracker.ietf.org/doc/html/rfc883), proposing a distributed, hierarchical naming system. His first implementation was called "Jeeves." Two years later, he refined the design into [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034) and [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) - the specifications that still define DNS today.
+In 1983, Paul Mockapetris at USC's Information Sciences Institute published [RFC 882](https://datatracker.ietf.org/doc/html/rfc882) and [RFC 883](https://datatracker.ietf.org/doc/html/rfc883), proposing a distributed, hierarchical naming system. His first implementation was called "Jeeves." Four years later, in 1987, he refined the design into [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034) and [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) - the specifications that still define DNS today.
 
 ---
 

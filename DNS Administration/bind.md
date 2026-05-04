@@ -194,7 +194,7 @@ steps:
       boot time: Fri, 21 Feb 2026 10:00:00 GMT
       server is up and running
       number of zones: 6 (3 automatic)
-    narration: "The status confirms BIND is running and shows 6 zones: the 3 automatic zones (localhost, localhost reverse, root hints) plus the 3 from named.rfc1912.zones and our new internal.example.com zone."
+    narration: "The status confirms BIND is running and shows 6 zones total, 3 of which are built-in automatic zones. The remaining 3 include our new internal.example.com zone and zones loaded from named.rfc1912.zones."
 ```
 
 ---
