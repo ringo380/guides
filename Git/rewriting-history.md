@@ -106,6 +106,25 @@ pick b2c3d4e Add user controller
 pick d4e5f6a Add user tests
 ```
 
+```code-walkthrough
+title: "Reading a Rebase TODO File"
+description: "What each line in the interactive rebase editor means, and why this particular edit squashes the typo fix cleanly."
+code: |
+  pick a1b2c3d Add user model
+  fixup c3d4e5f Fix typo in user model
+  pick b2c3d4e Add user controller
+  pick d4e5f6a Add user tests
+annotations:
+  - line: 1
+    text: "'pick' means keep this commit exactly as-is. It was the original first commit and stays in position - nothing changes for it."
+  - line: 2
+    text: "'fixup' squashes this commit into the one directly above it and discards this commit's message. This line was also manually moved here from its original position (after line 3) so that it sits immediately below the commit it fixes. Order matters: fixup always targets the line above."
+  - line: 3
+    text: "'pick' again - the controller commit is kept as-is. After the rebase, it will have a new hash (because its ancestor changed), but its content and message are preserved."
+  - line: 4
+    text: "'pick' for the tests commit. Like all commits after the squash point, it gets a new hash even though its content is unchanged - every commit in a rebase is replayed from scratch."
+```
+
 Notice the reordering: the typo fix is moved directly below the commit it fixes, then marked as `fixup` so its message is discarded. The result is three clean commits instead of four.
 
 ### Example: Editing a Commit

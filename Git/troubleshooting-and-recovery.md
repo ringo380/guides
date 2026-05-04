@@ -95,6 +95,28 @@ git fsck --lost-found
 ls .git/lost-found/commit/
 ```
 
+```code-walkthrough
+title: "Reading git reflog Output"
+description: "How to interpret each field in reflog output to find the commit you need to recover."
+code: |
+  a1b2c3d HEAD@{0}: checkout: moving from feature/important-work to main
+  c3d4e5f HEAD@{1}: commit: Expand critical feature
+  b2c3d4e HEAD@{2}: commit: Add critical feature
+  a1b2c3d HEAD@{3}: checkout: moving from main to feature/important-work
+  a1b2c3d HEAD@{4}: commit (initial): Initial commit
+annotations:
+  - line: 1
+    text: "Most recent entry (HEAD@{0} = current HEAD). This records the checkout that moved us from the feature branch to main - the last action before the accidental branch deletion."
+  - line: 2
+    text: "HEAD@{1} - the tip of the deleted branch. Hash c3d4e5f is the commit we want to recover. Use this hash with 'git branch recovery c3d4e5f' to recreate the branch pointer."
+  - line: 3
+    text: "HEAD@{2} - the parent of the deleted branch tip. You don't need to recover this separately: pointing a new branch at c3d4e5f (line 2) automatically includes b2c3d4e as an ancestor."
+  - line: 4
+    text: "The checkout that first moved HEAD onto the feature branch. Same hash as line 5 (a1b2c3d) because no commits had been made on main - the feature branch started at the same point."
+  - line: 5
+    text: "The initial commit, also on main. The HEAD@{N} notation lets you reference any of these positions directly in git commands, e.g. 'git reset --hard HEAD@{2}' or 'git diff HEAD@{0} HEAD@{2}'."
+```
+
 ```terminal
 title: Recovering a Deleted Branch from the Reflog
 steps:
