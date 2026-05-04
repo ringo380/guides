@@ -150,6 +150,33 @@ CREATE TABLE employees (
 );
 ```
 
+```code-walkthrough
+title: "Anatomy of a CREATE TABLE Statement"
+description: "How data types, constraints, and column definitions work together to define a table's structure."
+code: |
+  CREATE TABLE employees (
+      employee_id   INT PRIMARY KEY,
+      first_name    VARCHAR(50) NOT NULL,
+      last_name     VARCHAR(50) NOT NULL,
+      department_id INT,
+      hire_date     DATE NOT NULL,
+      salary        DECIMAL(10,2)
+  );
+annotations:
+  - line: 1
+    text: "CREATE TABLE followed by the table name. The name must be unique within the database schema. Parentheses enclose the column definitions."
+  - line: 2
+    text: "employee_id is an INT (integer) with the PRIMARY KEY constraint. This guarantees uniqueness across all rows and implicitly adds a NOT NULL constraint. The database creates an index on this column automatically."
+  - line: 3
+    text: "VARCHAR(50) stores variable-length strings up to 50 characters. NOT NULL means the column must have a value - the database rejects any INSERT that omits it or passes NULL. Use NOT NULL for every required field."
+  - line: 5
+    text: "department_id has no NOT NULL constraint, so it is nullable. A NULL here means this employee isn't assigned to any department yet. This column will become a foreign key - nullable foreign keys allow optional relationships."
+  - line: 6
+    text: "DATE stores a calendar date without a time component (YYYY-MM-DD). For timestamps including time, use DATETIME or TIMESTAMP instead."
+  - line: 7
+    text: "DECIMAL(10,2) stores exact fixed-point numbers: up to 10 total digits with 2 after the decimal point (e.g., 99999999.99). Always use DECIMAL for money - FLOAT and DOUBLE are binary approximations that accumulate rounding errors."
+```
+
 Every column has a **data type** that constrains what values it can hold. `INT` stores integers. `VARCHAR(50)` stores variable-length strings up to 50 characters. `DATE` stores calendar dates. `DECIMAL(10,2)` stores numbers with up to 10 digits and 2 decimal places. Choosing the right data type matters for storage efficiency, query performance, and data integrity.
 
 ### Keys

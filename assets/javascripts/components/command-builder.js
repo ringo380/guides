@@ -223,7 +223,7 @@
       inputs.forEach(({ input, opt }) => {
         const val = input.value.trim();
         if (val) {
-          parts.push(opt.flag);
+          if (opt.flag) parts.push(opt.flag);
           parts.push(val);
         }
       });
@@ -238,7 +238,9 @@
       inputs.forEach(({ input, opt }) => {
         const val = input.value.trim();
         if (val) {
-          html += ' <span class="flag">' + escapeHtml(opt.flag) + "</span>";
+          if (opt.flag) {
+            html += ' <span class="flag">' + escapeHtml(opt.flag) + "</span>";
+          }
           html += " " + escapeHtml(val);
           if (opt.explanation) {
             activeExplanations.push({ flag: opt.flag, text: opt.explanation });

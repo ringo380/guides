@@ -99,6 +99,69 @@ volumes:
 | `command` | Override the default CMD from the image. |
 | `profiles` | Assign the service to a profile so it only starts when that profile is active. |
 
+```code-walkthrough
+title: "Production-Style compose.yml Walkthrough"
+description: "How each section of a multi-service Compose file connects the pieces together."
+code: |
+  services:
+    web:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - "8000:8000"
+      environment:
+        DATABASE_URL: postgres://admin:secret@db:5432/myapp
+        REDIS_URL: redis://cache:6379
+      depends_on:
+        db:
+          condition: service_healthy
+        cache:
+          condition: service_started
+      restart: unless-stopped
+
+    db:
+      image: postgres:16
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: myapp
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: secret
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U admin -d myapp"]
+        interval: 5s
+        timeout: 3s
+        retries: 5
+      restart: unless-stopped
+
+    cache:
+      image: redis:7-alpine
+      restart: unless-stopped
+
+  volumes:
+    pgdata:
+annotations:
+  - line: 1
+    text: "Top-level 'services' key. Every named entry beneath it becomes a container. The name (web, db, cache) is also the DNS hostname on the default network - services reach each other by name, not IP address."
+  - line: 3
+    text: "'build' tells Compose to build the image from a local Dockerfile instead of pulling one. 'context' is the directory sent to the Docker daemon as the build context."
+  - line: 7
+    text: "Port mapping in HOST:CONTAINER format. Traffic hitting port 8000 on the host is forwarded to port 8000 inside the web container. Omit the host port to let Docker assign a random one."
+  - line: 9
+    text: "Environment variables injected into the web container at startup. DATABASE_URL uses 'db' as the hostname - Compose's built-in DNS resolves the service name to the container's internal IP automatically."
+  - line: 12
+    text: "'depends_on' controls startup order. 'condition: service_healthy' means web will not start until the db healthcheck passes - critical because PostgreSQL takes several seconds to initialize after the container starts."
+  - line: 19
+    text: "The db service uses a pre-built official image from Docker Hub instead of a local build. ':16' pins to a specific major version - using ':latest' risks silent upgrades breaking your schema."
+  - line: 20
+    text: "Named volumes persist data across container restarts and upgrades. The 'pgdata:/var/lib/postgresql/data' syntax mounts the named volume at the path PostgreSQL uses for its data directory."
+  - line: 26
+    text: "Healthcheck defines how Compose knows the database is ready. pg_isready probes the PostgreSQL socket. Compose runs this command inside the container; exit code 0 = healthy, non-zero = unhealthy."
+  - line: 37
+    text: "The top-level 'volumes' section declares named volumes. A volume listed here but not under any service is still created - it just won't be mounted anywhere. Named volumes outlive containers unless you run 'docker compose down -v'."
+```
+
 ---
 
 ## Environment Variables and `.env` Files

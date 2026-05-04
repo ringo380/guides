@@ -106,6 +106,25 @@ pick b2c3d4e Add user controller
 pick d4e5f6a Add user tests
 ```
 
+```code-walkthrough
+title: "Reading a Rebase TODO File"
+description: "What each line in the interactive rebase editor means, and why this particular edit squashes the typo fix cleanly."
+code: |
+  pick a1b2c3d Add user model
+  fixup c3d4e5f Fix typo in user model
+  pick b2c3d4e Add user controller
+  pick d4e5f6a Add user tests
+annotations:
+  - line: 1
+    text: "'pick' means keep this commit exactly as-is. It was the original first commit and stays in position - nothing changes for it."
+  - line: 2
+    text: "'fixup' squashes this commit into the one directly above it and discards this commit's message. This line was also manually moved here from its original position (after line 3) so that it sits immediately below the commit it fixes. Order matters: fixup always targets the line above."
+  - line: 3
+    text: "'pick' again - the controller commit is kept as-is. After the rebase, it will have a new hash (because its ancestor changed), but its content and message are preserved."
+  - line: 4
+    text: "'pick' for the tests commit. Like all commits after the squash point, it gets a new hash even though its content is unchanged - every commit in a rebase is replayed from scratch."
+```
+
 Notice the reordering: the typo fix is moved directly below the commit it fixes, then marked as `fixup` so its message is discarded. The result is three clean commits instead of four.
 
 ### Example: Editing a Commit
@@ -563,6 +582,33 @@ solution: |
 
   git log --oneline --all --graph
   ```
+```
+
+```command-builder
+base: git rebase
+description: Move or clean up commits by replaying them on a different base
+options:
+  - flag: ""
+    type: text
+    label: "Target branch or commit"
+    placeholder: "main"
+    explanation: "The branch or commit to rebase onto. Leave blank when using --continue or --abort."
+  - flag: ""
+    type: select
+    label: "Mode"
+    explanation: "Interactively edit commits, or manage an in-progress rebase"
+    choices:
+      - ["", "Default (non-interactive)"]
+      - ["-i", "-i (interactive: reorder, squash, edit, or drop commits)"]
+      - ["--continue", "--continue (resume after resolving a conflict)"]
+      - ["--abort", "--abort (cancel and restore the original branch state)"]
+  - flag: ""
+    type: select
+    label: "Autosquash"
+    explanation: "Requires -i mode. Automatically moves fixup! and squash! commits to sit directly below their targets and sets the action to fixup/squash."
+    choices:
+      - ["", "Default"]
+      - ["--autosquash", "--autosquash (process fixup!/squash! commit messages, requires -i)"]
 ```
 
 ---

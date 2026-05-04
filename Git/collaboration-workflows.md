@@ -230,6 +230,35 @@ flowchart LR
 
 This workflow protects the original repository. The maintainer reviews every contribution before it enters the codebase. The contributor doesn't need any special permissions.
 
+```code-walkthrough
+title: "Forking Workflow Shell Commands"
+description: "The complete command sequence from forking a repository to opening a pull request."
+code: |
+  git clone https://github.com/you/project.git
+  cd project
+  git remote add upstream https://github.com/original/project.git
+  git fetch upstream
+  git switch main
+  git merge upstream/main
+  git switch -c feature/my-fix
+  git push origin feature/my-fix
+annotations:
+  - line: 1
+    text: "Clone your fork (not the original). Your fork lives at your username on the platform - you have push access here, not to the upstream."
+  - line: 3
+    text: "Add the original repository as a second remote named 'upstream'. Convention uses 'origin' for your fork and 'upstream' for the original. You can now fetch from upstream without having push access to it."
+  - line: 4
+    text: "Fetch all branches and tags from upstream into your local clone. This doesn't change any local branches - it only updates the remote-tracking refs (upstream/main, upstream/release, etc.)."
+  - line: 5
+    text: "Switch to your local main branch. You'll merge upstream changes here before branching off."
+  - line: 6
+    text: "Merge upstream/main into your local main, bringing your fork up to date with the original. Repeat lines 4-6 before every new feature branch to minimize future merge conflicts."
+  - line: 7
+    text: "Create a feature branch from the now-current main. All work goes here, not on main. This keeps your fork's main clean so you can always sync from upstream without conflict."
+  - line: 8
+    text: "Push to your fork (origin), not to upstream. Then open a pull request on the platform: source is you/project:feature/my-fix, target is original/project:main."
+```
+
 ```quiz
 question: "A 15-person e-commerce team deploys to production several times per day. They have extensive automated test suites and use feature flags to control rollouts. Which workflow is the best fit?"
 type: multiple-choice
