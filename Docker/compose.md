@@ -152,11 +152,11 @@ annotations:
     text: "Environment variables injected into the web container at startup. DATABASE_URL uses 'db' as the hostname - Compose's built-in DNS resolves the service name to the container's internal IP automatically."
   - line: 12
     text: "'depends_on' controls startup order. 'condition: service_healthy' means web will not start until the db healthcheck passes - critical because PostgreSQL takes several seconds to initialize after the container starts."
-  - line: 21
+  - line: 19
     text: "The db service uses a pre-built official image from Docker Hub instead of a local build. ':16' pins to a specific major version - using ':latest' risks silent upgrades breaking your schema."
-  - line: 23
+  - line: 20
     text: "Named volumes persist data across container restarts and upgrades. The 'pgdata:/var/lib/postgresql/data' syntax mounts the named volume at the path PostgreSQL uses for its data directory."
-  - line: 28
+  - line: 26
     text: "Healthcheck defines how Compose knows the database is ready. pg_isready probes the PostgreSQL socket. Compose runs this command inside the container; exit code 0 = healthy, non-zero = unhealthy."
   - line: 37
     text: "The top-level 'volumes' section declares named volumes. A volume listed here but not under any service is still created - it just won't be mounted anywhere. Named volumes outlive containers unless you run 'docker compose down -v'."

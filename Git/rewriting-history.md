@@ -605,15 +605,10 @@ options:
   - flag: ""
     type: select
     label: "Autosquash"
-    explanation: "Automatically arrange fixup! and squash! commits into their targets (use with -i)"
+    explanation: "Requires -i mode. Automatically moves fixup! and squash! commits to sit directly below their targets and sets the action to fixup/squash."
     choices:
       - ["", "Default"]
-      - ["--autosquash", "--autosquash (process fixup!/squash! commit messages)"]
-  - flag: "--onto"
-    type: text
-    label: "Rebase --onto base"
-    placeholder: "v2.0"
-    explanation: "Transplant commits onto this specific commit instead of the default base"
+      - ["--autosquash", "--autosquash (process fixup!/squash! commit messages, requires -i)"]
 ```
 
 ---
