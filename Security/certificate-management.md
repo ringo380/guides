@@ -207,6 +207,31 @@ openssl x509 -req -in server.csr \
   -copy_extensions copyall
 ```
 
+```code-walkthrough
+title: "Internal CA Workflow"
+description: "The complete command sequence for creating a private CA and signing a server certificate, with each step explained."
+code: |
+  openssl genrsa -aes256 -out ca.key 4096
+  openssl req -new -x509 -key ca.key -sha256 -days 3650 -out ca.crt -subj "/CN=Internal Root CA/O=My Company"
+  openssl genrsa -out server.key 2048
+  openssl req -new -key server.key -out server.csr -subj "/CN=api.internal" -addext "subjectAltName=DNS:api.internal"
+  openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -sha256 -copy_extensions copyall
+  openssl verify -CAfile ca.crt server.crt
+annotations:
+  - line: 1
+    text: "Generate the CA private key: 4096-bit RSA encrypted with AES-256. The passphrase protects the key file at rest. Keep ca.key offline after initial setup - it is the crown jewel of your PKI."
+  - line: 2
+    text: "Create the self-signed root certificate (-x509 means self-sign instead of producing a CSR). -days 3650 = 10 years. This cert is what you distribute to clients as a trusted root."
+  - line: 3
+    text: "Generate the server's private key: 2048-bit RSA, no passphrase. Servers need to read this key at startup without human interaction, so it must be unencrypted - protect it with filesystem permissions (chmod 600) instead."
+  - line: 4
+    text: "Create a Certificate Signing Request (CSR) for the server. -addext embeds the Subject Alternative Name (SAN) into the CSR. Modern browsers require SANs - the CN field alone is ignored for hostname validation."
+  - line: 5
+    text: "CA signs the CSR and produces the server certificate. -CAcreateserial creates a serial number file (ca.srl) that increments with each signed cert. -copy_extensions copyall preserves the SANs from the CSR into the final cert (requires OpenSSL 3.0+)."
+  - line: 6
+    text: "Verify the certificate chain: checks that server.crt was signed by ca.crt and the signature is valid. Output 'server.crt: OK' means the chain is intact. Run this before deploying to catch mismatched keys or wrong CA."
+```
+
 ### Distributing the CA Certificate
 
 For clients to trust certificates signed by your internal CA, they need your `ca.crt` installed as a trusted root:
