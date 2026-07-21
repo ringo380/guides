@@ -102,6 +102,9 @@ extra:
       link: https://mastodon.social/@runbook
     - icon: fontawesome/brands/threads
       link: https://threads.net/@robworks_software
+    - icon: fontawesome/solid/life-ring
+      link: https://support.robworks.info/submit?product=runbook
+      name: Support
   consent:
     title: Cookie consent
     description: >-
