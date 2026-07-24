@@ -2,7 +2,14 @@ import { withSupabase } from "npm:@supabase/server@^1";
 import { corsHeaders, resolveCorsOrigin } from "./lib/cors.ts";
 
 /** Look the caller up in admin_users using the service-role client. */
-async function isAdmin(supabaseAdmin: any, userId: string): Promise<boolean> {
+async function isAdmin(
+  supabaseAdmin: any,
+  userId: string | undefined,
+): Promise<boolean> {
+  // Fail closed on a missing id. Passing undefined to .eq() serialises it as the
+  // string "undefined", which Postgres rejects as an invalid uuid (22P02) and
+  // turns a "not an admin" into a 500. Guard before the query.
+  if (!userId) return false;
   const { data, error } = await supabaseAdmin
     .from("admin_users")
     .select("user_id")
@@ -35,9 +42,11 @@ export default {
       return json({ error: "forbidden" }, 403, null);
     }
 
-    // Guaranteed present by the gateway; if it were ever absent, isAdmin would
-    // find no matching row and return 403, so this still fails closed.
-    const userId = ctx.userClaims?.sub;
+    // @supabase/server v1 exposes the caller's identity as ctx.userClaims with
+    // shape { id, email, role } - the uuid is `id`, NOT `sub` (sub lives on the
+    // full ctx.jwtClaims). The gateway guarantees a user JWT is present, but
+    // isAdmin still fails closed if the id is ever missing.
+    const userId = ctx.userClaims?.id;
     if (!(await isAdmin(ctx.supabaseAdmin, userId))) {
       return json({ error: "forbidden" }, 403, origin);
     }

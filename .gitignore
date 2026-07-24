@@ -22,6 +22,7 @@ __pycache__/
 .cache/
 .pytest_cache/
 node_modules/
+deno.lock
 
 # Unused design assets
 assets/images/runbook-logo.png
