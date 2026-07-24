@@ -19,22 +19,25 @@ function json(body: unknown, status: number, origin: string | null): Response {
   });
 }
 
+// The Supabase Edge gateway runs before this handler. Verified against the
+// deployed function with curl:
+//   - OPTIONS preflight is answered by the gateway (204, Access-Control-Allow-
+//     Origin: *), so a handler-level OPTIONS branch would be dead code.
+//   - auth: "user" makes the gateway reject any request without a valid *user*
+//     JWT (a missing token and a bare anon key both get 401 before we run), so
+//     a handler-level "no userId" 401 branch would be dead code too.
+// What is left to us is the two checks the gateway does not do: origin
+// allowlisting (it returns a wildcard) and admin-membership.
 export default {
   fetch: withSupabase({ auth: "user" }, async (req: Request, ctx: any) => {
     const origin = resolveCorsOrigin(req.headers.get("Origin"));
-
-    if (req.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: corsHeaders(origin) });
-    }
     if (origin === null) {
       return json({ error: "forbidden" }, 403, null);
     }
 
+    // Guaranteed present by the gateway; if it were ever absent, isAdmin would
+    // find no matching row and return 403, so this still fails closed.
     const userId = ctx.userClaims?.sub;
-    if (!userId) {
-      return json({ error: "unauthorized" }, 401, origin);
-    }
-
     if (!(await isAdmin(ctx.supabaseAdmin, userId))) {
       return json({ error: "forbidden" }, 403, origin);
     }
