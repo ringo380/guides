@@ -27,17 +27,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-test.txt
 
-      - name: Run Python tests
-        run: python -m pytest tests/ -v
-
       - name: Install JS dependencies
         run: npm ci
 
-      - name: Run JS tests
-        run: npx vitest run
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
 
-      - name: Prepare docs directory
-        run: ./setup-docs.sh
-
-      - name: Build site (strict mode)
-        run: mkdocs build --strict
+      - name: Verify
+        run: ./verify.sh
