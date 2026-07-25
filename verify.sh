@@ -6,7 +6,11 @@
 
 set -euo pipefail
 
-export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+# Trust the caller's PATH first (CI's setup-python/setup-node put the right
+# interpreters there; a local shell has brew Python with pytest). Only append
+# fallback dirs so core tools resolve if PATH is minimal. Prepending /usr/bin
+# here would shadow the CI Python with /usr/bin/python3, which has no pytest.
+export PATH="$PATH:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$REPO_ROOT"
