@@ -1,14 +1,5 @@
 .DS_Store
 
-# Local tool configs
-CLAUDE.md
-CLAUDE.local.md
-.claude/
-.claude-dev-helper/
-.plugin-config/
-.junie/
-AGENTS.md
-
 # Environment
 .env
 
