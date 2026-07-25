@@ -1,5 +1,10 @@
 import { withSupabase } from "npm:@supabase/server@^1";
 import { corsHeaders, resolveCorsOrigin } from "./lib/cors.ts";
+import { parseRange } from "./lib/range.ts";
+import { isFresh, selectPayload } from "./lib/cache.ts";
+import { fetchGa4 } from "./lib/ga4.ts";
+import { fetchProgress } from "./lib/progress.ts";
+import { buildPayload } from "./lib/merge.ts";
 
 /** Look the caller up in admin_users using the service-role client. */
 async function isAdmin(
@@ -56,6 +61,59 @@ export default {
 
     if (route === "health") {
       return json({ admin: true }, 200, origin);
+    }
+
+    if (route === "overview") {
+      let range;
+      try {
+        range = parseRange(url.searchParams.get("range"));
+      } catch {
+        return json({ error: "invalid range" }, 400, origin);
+      }
+
+      const now = new Date();
+      const cacheKey = `overview:${range.key}`;
+
+      const { data: cached } = await ctx.supabaseAdmin
+        .from("admin_metrics_cache")
+        .select("payload, fetched_at")
+        .eq("key", cacheKey)
+        .maybeSingle();
+
+      if (cached && isFresh(cached.fetched_at, now)) {
+        return json({ ...cached.payload, stale: false, ageSeconds: 0 }, 200, origin);
+      }
+
+      const [ga4, progress] = await Promise.all([
+        fetchGa4(range.days),
+        fetchProgress(ctx.supabaseAdmin),
+      ]);
+
+      // Only cache a complete payload. A GA4 failure must not overwrite good
+      // cached data with a half-empty result.
+      const fresh = ga4 === null ? null : buildPayload(range.key, ga4, progress, now);
+      if (fresh !== null) {
+        await ctx.supabaseAdmin.from("admin_metrics_cache").upsert({
+          key: cacheKey,
+          payload: fresh,
+          fetched_at: now.toISOString(),
+        });
+      }
+
+      const chosen = selectPayload(cached ?? null, fresh, now);
+      if (chosen.payload === null) {
+        // No cache and GA4 down: still return the progress half.
+        return json(
+          { ...(buildPayload(range.key, null, progress, now) as object), stale: false, ageSeconds: null },
+          200,
+          origin,
+        );
+      }
+      return json(
+        { ...(chosen.payload as object), stale: chosen.stale, ageSeconds: chosen.ageSeconds },
+        200,
+        origin,
+      );
     }
 
     return json({ error: "not found" }, 404, origin);
