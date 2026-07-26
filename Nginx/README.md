@@ -34,4 +34,16 @@ Each topic is covered in its own guide. Start with the fundamentals - the guides
 </div>
 <span class="topic-card__check" aria-hidden="true">&#10003;</span>
 </a>
+<a class="topic-card" href="reverse-proxy-load-balancing/" data-guide="reverse-proxy-load-balancing" data-topic="Nginx">
+<span class="topic-card__number">3</span>
+<div class="topic-card__body">
+<div class="topic-card__title">Reverse Proxy and Load Balancing</div>
+<div class="topic-card__meta">
+<span class="meta-difficulty meta-difficulty--intermediate">Intermediate</span>
+<span class="meta-time">45 min</span>
+</div>
+<p class="topic-card__description">Upstream pools, proxy headers, buffering, health checks and failover, load balancing algorithms, and WebSocket proxying.</p>
+</div>
+<span class="topic-card__check" aria-hidden="true">&#10003;</span>
+</a>
 </div>

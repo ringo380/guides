@@ -625,4 +625,4 @@ solution: |
 
 ---
 
-**Previous:** [Nginx Fundamentals](fundamentals.md) | [Back to Index](README.md)
+**Previous:** [Nginx Fundamentals](fundamentals.md) | **Next:** [Reverse Proxy and Load Balancing](reverse-proxy-load-balancing.md) | [Back to Index](README.md)
