@@ -1,0 +1,82 @@
+name: Link Check
+
+# External links rot on someone else's schedule, not ours, and the checks are
+# slow and occasionally rate-limited. Running this per-PR would fail builds for
+# reasons unrelated to the change, so it runs unattended and files an issue.
+on:
+  schedule:
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+          cache: 'pip'
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev libffi-dev
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build site
+        run: ./setup-docs.sh && mkdocs build --strict
+
+      - name: Check external links
+        id: check
+        run: |
+          set +e
+          ./check-links.sh 2>&1 | tee link-report.txt
+          echo "status=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: File an issue for broken links
+        if: steps.check.outputs.status != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          TITLE="Broken external links detected"
+          {
+            if grep -q '^Broken links:' link-report.txt; then
+              echo "The weekly link check found broken external links."
+            else
+              # The checker's own preconditions (missing site directory, too few
+              # URLs extracted, unfinished scan) fail before any link report is
+              # produced. Reporting an empty list would hide exactly the
+              # regression those guards exist to catch.
+              echo "The weekly link check failed before it could report on links."
+            fi
+            echo
+            echo "Run: $RUN_URL"
+            echo
+            echo '```'
+            if grep -q '^Broken links:' link-report.txt; then
+              sed -n '/^Broken links:/,$p' link-report.txt
+            else
+              tail -40 link-report.txt
+            fi
+            echo '```'
+          } > body.md
+
+          EXISTING=$(gh issue list --state open --search "$TITLE in:title" \
+            --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)
+
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file body.md
+          else
+            gh issue create --title "$TITLE" --label "type: bug" --body-file body.md
+          fi
+
+      - name: Fail the run when links are broken
+        if: steps.check.outputs.status != '0'
+        run: exit 1

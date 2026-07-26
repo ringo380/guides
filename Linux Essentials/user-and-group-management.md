@@ -443,7 +443,7 @@ Both give you a root shell, but they work differently:
 
 ## PAM Basics
 
-The **Pluggable Authentication Modules** ([**PAM**](https://www.linux-pam.org/)) framework controls how authentication works on Linux. Every program that needs to verify a user's identity - `login`, `sshd`, `sudo`, `su` - goes through PAM.
+The **Pluggable Authentication Modules** ([**PAM**](https://github.com/linux-pam/linux-pam)) framework controls how authentication works on Linux. Every program that needs to verify a user's identity - `login`, `sshd`, `sudo`, `su` - goes through PAM.
 
 ### How PAM Works
 
@@ -659,7 +659,7 @@ solution: |
 - [usermod man page](https://man7.org/linux/man-pages/man8/usermod.8.html) - user account modification reference
 - [shadow(5) man page](https://man7.org/linux/man-pages/man5/shadow.5.html) - /etc/shadow file format
 - [sudoers man page](https://www.sudo.ws/docs/man/sudoers.man/) - sudo configuration reference
-- [Linux-PAM Documentation](https://www.linux-pam.org/) - PAM module reference and guides
+- [Linux-PAM](https://github.com/linux-pam/linux-pam) - upstream PAM source, module documentation, and release notes
 - [Arch Wiki: Users and groups](https://wiki.archlinux.org/title/Users_and_groups) - comprehensive practical reference
 - [NIST Password Guidelines (SP 800-63B)](https://pages.nist.gov/800-63-3/sp800-63b.html) - modern password policy recommendations
 

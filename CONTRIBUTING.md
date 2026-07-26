@@ -309,6 +309,12 @@ annotations:
     ./setup-docs.sh && mkdocs build --strict
     ```
 
+    External links are checked separately by `./check-links.sh`, which runs
+    against the built `site/` directory. It needs network access and takes
+    several minutes, so it is not part of `verify.sh` - a scheduled workflow
+    runs it weekly and opens an issue when links go dead. Run it yourself if
+    you are adding a lot of Further Reading entries.
+
 4. **Open a pull request** against `main` with a clear description of what you changed and why.
 
 ---

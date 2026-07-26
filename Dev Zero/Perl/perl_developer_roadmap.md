@@ -169,7 +169,7 @@ Practice regularly, and you'll soon find Vim indispensable.
 
 **Emacs** is a feature-rich, highly customizable text editor with a deep history in the developer community. While it is less commonly used than Vim in Unix environments, it excels in its extensibility through Emacs Lisp, allowing users to transform it into an IDE, email client, calendar, and more. Once mastered, Emacs offers powerful workflows for programming, writing, and system administration. Notable learning resources include:
 
-- [Absolute Beginner's Guide to Emacs](https://jesshamrick.com/2012/09/10/absolute-beginners-guide-to-emacs/)
+- [GNU Emacs Guided Tour](https://www.gnu.org/software/emacs/tour/)
 - [Emacs Rocks!](https://emacsrocks.com)
 - [Mastering Emacs](https://www.masteringemacs.org)
 
@@ -223,7 +223,7 @@ Recommended reading:
 
 - [The History of Unix](https://en.wikipedia.org/wiki/History_of_Unix)
 - *[A Quarter Century of Unix](https://www.oreilly.com/library/view/a-quarter-century/9780133988906/)* by Peter H. Salus
-- [The Unix Philosophy](http://catb.org/~esr/writings/taoup/html/) by Eric S. Raymond
+- [The Unix Philosophy](https://web.archive.org/web/2024/http://www.catb.org/~esr/writings/taoup/html/) by Eric S. Raymond (archived; catb.org is frequently offline)
 
 ```exercise
 title: Build Your Phase 1 Learning Plan
@@ -432,9 +432,9 @@ Tools and resources:
 Getting involved with the Perl community is not only encouraged-it's essential. Community interaction can accelerate your learning, expose you to real-world problem solving, and keep you current with modern Perl practices.
 
 1. **[PerlMonks](https://www.perlmonks.org)**: A long-established and active community focused entirely on Perl. It remains relevant in 2025 as a place to get answers, learn idioms, and participate in thoughtful programming discussions. Users post questions, tutorials, and code snippets, and receive feedback from veteran developers.
-2. **[Perl Mongers](https://www.pm.org/)**: A global network of local Perl user groups that still hold in-person and virtual meetups. While not as active as in past decades, many chapters remain valuable for community support and professional networking. Check the PM.org website or join forums like [https://perl.community](https://perl.community) for modern community hubs.
+2. **[Perl Mongers](https://www.pm.org/)**: A global network of local Perl user groups that still hold in-person and virtual meetups. While not as active as in past decades, many chapters remain valuable for community support and professional networking. Check the PM.org website or the [perl.org community directory](https://www.perl.org/community.html) for modern community hubs.
 
-**Contributing to CPAN (inspired by the CPAN PRC)**: The original [CPAN Pull Request Challenge](https://www.cpanprc.org) ended in 2018, but its legacy lives on. Today, Perl developers are encouraged to contribute to CPAN via GitHub and MetaCPAN. Identify outdated or under-maintained modules, review open issues, and submit pull requests. Tools like [MetaCPAN](https://metacpan.org/) and GitHub's "good first issue" label make it easier than ever to find a way to contribute.
+**Contributing to CPAN (inspired by the CPAN PRC)**: The original CPAN Pull Request Challenge ended in 2018 and its site is gone, but its legacy lives on. Today, Perl developers are encouraged to contribute to CPAN via GitHub and MetaCPAN. Identify outdated or under-maintained modules, review open issues, and submit pull requests. Tools like [MetaCPAN](https://metacpan.org/) and GitHub's "good first issue" label make it easier than ever to find a way to contribute.
 
 #### Diving Deep
 
@@ -667,7 +667,7 @@ Mastering application architecture ensures that your Perl projects scale well, i
 
 **Contributing to CPAN (Inspired by the CPAN PRC)**
 
-While the original [CPAN Pull Request Challenge (CPAN PRC)](https://www.cpanprc.org) ended in 2018, the concept of monthly contributions to open source Perl modules lives on in spirit. Practicing workflows through regular contribution helps developers gain experience with collaborative development, version control, and best practices in CPAN module structure and testing.
+While the original CPAN Pull Request Challenge (CPAN PRC) ended in 2018, the concept of monthly contributions to open source Perl modules lives on in spirit. Practicing workflows through regular contribution helps developers gain experience with collaborative development, version control, and best practices in CPAN module structure and testing.
 
 To emulate this experience today:
 
@@ -703,7 +703,7 @@ Version control is an essential part of modern software development, enabling te
 
 **Modern Learning Resources**:
 
-- **[GitHub Learning Lab](https://lab.github.com/)** - Offers interactive tutorials on real GitHub repositories.
+- **[GitHub Skills](https://skills.github.com/)** - Offers interactive tutorials on real GitHub repositories. It replaced the retired GitHub Learning Lab.
 - **[Pro Git Book](https://git-scm.com/book/en/v2)** - A comprehensive and freely available guide for all levels.
 - **[Git Handbook](https://guides.github.com/introduction/git-handbook/)** - A high-level overview of Git and GitHub best practices.
 

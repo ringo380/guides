@@ -872,7 +872,7 @@ solution: |
 ## Further Reading
 
 - [Redis Documentation](https://redis.io/docs/) - official reference for all commands, data types, and configuration
-- [Redis Data Types Tutorial](https://redis.io/docs/data-types/tutorial/) - interactive walkthrough of every data structure
+- [Redis Data Types Tutorial](https://redis.io/docs/latest/develop/data-types/) - interactive walkthrough of every data structure
 - [Redis Persistence](https://redis.io/docs/management/persistence/) - in-depth coverage of RDB, AOF, and hybrid persistence
 - [Redis Sentinel Documentation](https://redis.io/docs/management/sentinel/) - complete Sentinel setup and failover configuration
 - [Redis Cluster Specification](https://redis.io/docs/reference/cluster-spec/) - hash slot mechanics, gossip protocol, and resharding details

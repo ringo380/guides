@@ -260,16 +260,21 @@ PDRT predates the BARRACUDA / DYNAMIC / COMPRESSED row formats introduced in MyS
 
 ## Installing PDRT
 
-The PDRT source is available from [Percona's GitHub repository](https://github.com/percona/percona-data-recovery-tool-for-innodb). The original Bazaar/Launchpad repository is no longer maintained.
+PDRT is no longer distributed by Percona. The GitHub repository that hosted it has been removed, and the [Launchpad project](https://launchpad.net/percona-data-recovery-tool-for-innodb) it originally lived in is archived. What remains are unofficial copies of the last release, mirrored by people who were using it when it disappeared.
 
-### Download and Compile
+The best-known descendant is [undrop-for-innodb](https://github.com/twindb/undrop-for-innodb), TwinDB's fork of the same codebase. It is also archived, and it renames the binaries: `page_parser` became `stream_parser` and `constraints_parser` became `c_parser`. The concepts below all transfer, but the commands in the rest of this guide are PDRT's, so translate them if you go that route.
+
+!!! warning
+    Every surviving copy is an unofficial mirror. You are about to point a byte-level parser at damaged production data, so read the source you obtain rather than trusting a fork on reputation. Work on a copy of the ibdata file, never the original.
+
+### Compile
+
+Unpack whatever copy you obtained to `/root/pdrt` - the rest of this guide uses that path - and build it. The build itself is unchanged from the last official release:
 
 ```bash
-cd /root
-git clone https://github.com/percona/percona-data-recovery-tool-for-innodb.git pdrt
-cd pdrt/mysql-source
+cd /root/pdrt/mysql-source
 ./configure
-cd ..
+cd /root/pdrt
 make
 ```
 
@@ -375,7 +380,7 @@ systemctl start mysql
 
 If you have the `.frm` file but MySQL cannot read the table, copy the `.frm` to a working MySQL instance (into a database directory where you have created a placeholder table with the same name), restart MySQL, and run `SHOW CREATE TABLE`.
 
-Alternatively, the [MySQL Utilities](https://dev.mysql.com/doc/mysql-utilities/1.6/en/) package includes `mysqlfrm` for extracting structure directly from `.frm` files.
+Older writeups suggest `mysqlfrm` from the MySQL Utilities package for extracting structure directly from `.frm` files. That package reached end of life in 2018 and its documentation is gone, so treat the copy-and-`SHOW CREATE TABLE` approach above as the supported path.
 
 ---
 
@@ -698,7 +703,7 @@ tasks:
 ## Further Reading
 
 - [MySQL InnoDB Storage Engine Documentation](https://dev.mysql.com/doc/refman/8.0/en/innodb-storage-engine.html) - official InnoDB reference for file formats, recovery, and configuration
-- [Percona Data Recovery Tool (GitHub)](https://github.com/percona/percona-data-recovery-tool-for-innodb) - PDRT source code and documentation
+- [Percona Data Recovery Tool (Launchpad)](https://launchpad.net/percona-data-recovery-tool-for-innodb) - the archived upstream project
 - [InnoDB Recovery with innodb_force_recovery](https://dev.mysql.com/doc/refman/8.0/en/forcing-innodb-recovery.html) - MySQL documentation on the force recovery levels
 - [Percona XtraBackup](https://docs.percona.com/percona-xtrabackup/8.0/) - hot backup tool for InnoDB that avoids the need for PDRT in many scenarios
 - [How to Recover a Single InnoDB Table from a Full Backup](https://www.percona.com/blog/how-to-recover-a-single-innodb-table-from-a-full-backup/) - Percona blog on targeted table recovery

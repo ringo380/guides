@@ -736,7 +736,7 @@ solution: |
 - [perlrun](https://perldoc.perl.org/perlrun) - complete reference for Perl command-line flags and environment variables
 - [perlvar](https://perldoc.perl.org/perlvar) - special variables including `$_`, `@F`, `$.`, and `$/`
 - [Perl One-Liners Cookbook](https://www.oreilly.com/library/view/perl-one-liners/9781457185830/) - Peteris Krumins' collection of practical one-liners with explanations
-- [Minimal Perl](https://www.manning.com/books/minimal-perl-for-unix-and-linux-people) - Tim Maher's guide to Perl as a Unix command-line tool
+- [Minimal Perl](https://www.manning.com/books/minimal-perl) - Tim Maher's guide to Perl as a Unix command-line tool
 - [perlre](https://perldoc.perl.org/perlre) - regex reference for the patterns used throughout one-liners
 - [Text::CSV documentation](https://metacpan.org/pod/Text::CSV) - robust CSV parsing for when simple splitting is not enough
 

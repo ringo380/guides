@@ -656,7 +656,7 @@ solution: |
 
 ## DNS as a Covert Channel
 
-A security note: DNS can be used as a data exfiltration channel. Tools like [**`iodine`**](https://code.kryo.se/iodine/) tunnel IP traffic inside DNS queries, encoding data in subdomain labels. An exfiltration query might look like:
+A security note: DNS can be used as a data exfiltration channel. Tools like [**`iodine`**](https://github.com/yarrick/iodine) tunnel IP traffic inside DNS queries, encoding data in subdomain labels. An exfiltration query might look like:
 
 ```
 dGhpcyBpcyBzZWNyZXQ.tunnel.attacker.com
@@ -672,7 +672,7 @@ If you run a recursive resolver, watch for unusually long query names, high quer
 
 - [ISC BIND / dig](https://www.isc.org/bind/) - dig is distributed with BIND
 - [ldns / drill](https://nlnetlabs.nl/projects/ldns/about/) - DNS library and drill tool from NLnet Labs
-- [iodine](https://code.kryo.se/iodine/) - IP over DNS tunnel
+- [iodine](https://github.com/yarrick/iodine) - IP over DNS tunnel
 - [DNSViz](https://dnsviz.net/) - DNSSEC visualization and analysis
 - [RDAP](https://about.rdap.org/) - modern replacement for WHOIS
 - [Cloudflare Learning Center: DNS Troubleshooting](https://www.cloudflare.com/learning/dns/dns-server-types/) - visual DNS explanations
