@@ -532,7 +532,7 @@ Nginx writes two logs. The **access log** records one line per completed request
 The default access log format is `combined`:
 
 ```
-203.0.113.42 - - [14/Mar/2027:09:31:07 +0000] "GET /assets/site.css HTTP/1.1" 200 4821 "https://example.com/" "Mozilla/5.0 (X11; Linux x86_64)"
+203.0.113.42 - - [14/Sep/2027:09:31:07 +0000] "GET /assets/site.css HTTP/1.1" 200 4821 "https://example.com/" "Mozilla/5.0 (X11; Linux x86_64)"
 ```
 
 Custom formats are defined in the `http` context with `log_format` and referenced by name. Adding request timing is worth doing on day one, because without it you cannot tell a slow backend from a slow client.
@@ -552,7 +552,7 @@ http {
 Error log entries carry a severity and, for request-scoped problems, the client and the resolved filesystem path:
 
 ```
-2027/03/14 09:31:22 [error] 1202#1202: *4821 open() "/var/www/example/missing.css" failed (2: No such file or directory), client: 203.0.113.42, server: example.com, request: "GET /missing.css HTTP/1.1", host: "example.com"
+2027/09/14 09:31:22 [error] 1202#1202: *4821 open() "/var/www/example/missing.css" failed (2: No such file or directory), client: 203.0.113.42, server: example.com, request: "GET /missing.css HTTP/1.1", host: "example.com"
 ```
 
 That single line gives you the exact path Nginx tried to open, which resolves nearly every `root` versus `alias` mistake immediately.
@@ -598,7 +598,7 @@ steps:
     output: "404"
     narration: "The =404 fallback in try_files returns a clean not-found instead of the redirect-cycle 500 that a list ending in $uri/ would produce."
   - command: "sudo tail -2 /var/log/nginx/access.log"
-    output: "127.0.0.1 - - [14/Mar/2027:09:31:07 +0000] \"GET / HTTP/1.1\" 200 18 \"-\" \"curl/8.5.0\"\n127.0.0.1 - - [14/Mar/2027:09:31:12 +0000] \"GET /nope.html HTTP/1.1\" 404 162 \"-\" \"curl/8.5.0\""
+    output: "127.0.0.1 - - [14/Sep/2027:09:31:07 +0000] \"GET / HTTP/1.1\" 200 18 \"-\" \"curl/8.5.0\"\n127.0.0.1 - - [14/Sep/2027:09:31:12 +0000] \"GET /nope.html HTTP/1.1\" 404 162 \"-\" \"curl/8.5.0\""
     narration: "Both requests are logged in combined format: client, timestamp, request line, status, bytes sent, referer, and user agent."
 ```
 

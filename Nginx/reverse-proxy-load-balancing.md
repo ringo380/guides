@@ -81,8 +81,8 @@ The replacement is literal string substitution, which produces doubled or missin
 
 Keep the trailing slashes matched on both sides or on neither side. The last two rows are the ones that reach production and produce a confusing 404 from the application framework rather than from Nginx.
 
-!!! warning "proxy_pass cannot take a URI part inside a regex location"
-    In a `location ~ ^/api/(.*)` block, `proxy_pass http://backend/$1;` is the only form that works - a static URI part is a configuration error, because Nginx has no matched prefix to substitute. The same restriction applies inside `if` blocks and to `proxy_pass` with variables.
+!!! warning "proxy_pass takes no static URI part inside a regex location"
+    A regex location has no matched prefix to substitute, so `proxy_pass http://backend/v2/;` inside `location ~ ^/api/(.*)` is a configuration error. The documented form is `proxy_pass http://backend;` with no URI at all, which forwards the request URI unchanged. When you need to rewrite it, build the URI from a capture: `proxy_pass http://backend/$1;`. The same restriction on static URI parts applies inside named locations, `if` blocks, and `limit_except`.
 
 ### Variables in proxy_pass
 
@@ -304,7 +304,7 @@ server {
 }
 ```
 
-`proxy_http_version 1.1;` is required because Nginx proxies with HTTP/1.0 by default, which has no persistent connections. `proxy_set_header Connection "";` is required because Nginx otherwise forwards a `Connection: close` header that tells the backend to hang up after one response.
+`proxy_http_version 1.1;` matters because HTTP/1.0 has no persistent connections. Nginx used 1.0 for proxying by default until 1.29.7, which changed the default to 1.1. Distribution packages lag mainline by a long way, so set it explicitly rather than assuming the build in front of you has the newer default. `proxy_set_header Connection "";` is required because Nginx otherwise forwards a `Connection: close` header that tells the backend to hang up after one response.
 
 The `keepalive` number is idle connections *per worker*, not a total or a limit on concurrency. With 8 workers and `keepalive 32` you may hold up to 256 idle upstream connections, so the backend's own connection limit needs headroom above that.
 
@@ -447,7 +447,7 @@ annotations:
   - line: 22
     text: "proxy_pass with no URI part passes the client's URI through unchanged. Adding even a trailing slash would strip the matched location prefix."
   - line: 24
-    text: "Nginx proxies with HTTP/1.0 by default, which has no persistent connections. Upstream keepalive requires 1.1."
+    text: "HTTP/1.0 has no persistent connections, and Nginx proxied with 1.0 by default until 1.29.7 changed it to 1.1. Set it explicitly, because distribution packages lag well behind that release."
   - line: 25
     text: "Clears the Connection header Nginx would otherwise forward as 'close', which would make the backend hang up after each response and defeat the keepalive cache."
   - line: 27
@@ -560,10 +560,10 @@ steps:
     output: "backend-8082\nbackend-8082\nbackend-8082\nbackend-8082"
     narration: "Every request is answered. The first attempt on the dead peer failed, proxy_next_upstream retried on 8082, and after two such failures the peer left the rotation for 10 seconds."
   - command: "sudo tail -2 /var/log/nginx/access.log"
-    output: "127.0.0.1 - [14/Mar/2027:11:02:41 +0000] \"GET /whoami HTTP/1.1\" 200 13 upstream=127.0.0.1:8081, 127.0.0.1:8082 up_status=502, 200 rt=0.004 urt=0.001, 0.002\n127.0.0.1 - [14/Mar/2027:11:02:41 +0000] \"GET /whoami HTTP/1.1\" 200 13 upstream=127.0.0.1:8082 up_status=200 rt=0.002 urt=0.002"
+    output: "127.0.0.1 - [14/Sep/2027:11:02:41 +0000] \"GET /whoami HTTP/1.1\" 200 13 upstream=127.0.0.1:8081, 127.0.0.1:8082 up_status=502, 200 rt=0.004 urt=0.001, 0.002\n127.0.0.1 - [14/Sep/2027:11:02:41 +0000] \"GET /whoami HTTP/1.1\" 200 13 upstream=127.0.0.1:8082 up_status=200 rt=0.002 urt=0.002"
     narration: "The first line records both peers and both statuses, which is what a retry looks like in the log. The second shows the dead peer already skipped entirely."
   - command: "sudo tail -1 /var/log/nginx/error.log"
-    output: "2027/03/14 11:02:41 [error] 1202#1202: *17 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: api.example.com, request: \"GET /whoami HTTP/1.1\", upstream: \"http://127.0.0.1:8081/whoami\", host: \"api.example.com\""
+    output: "2027/09/14 11:02:41 [error] 1202#1202: *17 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: api.example.com, request: \"GET /whoami HTTP/1.1\", upstream: \"http://127.0.0.1:8081/whoami\", host: \"api.example.com\""
     narration: "The error log names the exact upstream URL that failed and why. Connection refused means nothing was listening, as opposed to a timeout, which means something accepted but never answered."
   - command: "systemctl start backend@8081 && sleep 12 && for i in 1 2; do curl -s -H 'Host: api.example.com' http://localhost/whoami; done"
     output: "backend-8081\nbackend-8082"
@@ -612,7 +612,7 @@ options:
     feedback: "zone shares load balancing state across workers, which matters for health checks and least_conn. It has no bearing on connection reuse."
   - text: "`proxy_http_version 1.1;` and `proxy_set_header Connection \"\";` in the location."
     correct: true
-    feedback: "Correct! Nginx proxies with HTTP/1.0 by default, which has no persistent connections, and it forwards a Connection: close header that tells the backend to hang up. Both must be set for the keepalive cache to be used."
+    feedback: "Correct! HTTP/1.0 has no persistent connections, and Nginx proxied with 1.0 by default until version 1.29.7. It also forwards a Connection: close header that tells the backend to hang up. Set both explicitly, since distribution packages lag well behind the release that changed the default."
   - text: "A higher `keepalive_timeout` in the http context."
     feedback: "That directive governs client-facing connections. The upstream equivalent is keepalive_timeout inside the upstream block, and it is not the usual cause."
   - text: "`proxy_buffering on;`"
