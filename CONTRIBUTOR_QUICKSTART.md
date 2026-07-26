@@ -38,7 +38,19 @@ touch "Linux Essentials/process-management.md"
 
 Copy this template into your new file:
 
-```markdown
+````markdown
+---
+difficulty: beginner
+time_estimate: 20 minutes
+prerequisites:
+  - Basic command line familiarity
+learning_outcomes:
+  - What the reader will be able to do after reading
+tags:
+  - linux
+  - process-management
+---
+
 # Your Guide Title
 
 Brief introduction - what this guide covers and why it matters (2-3 sentences).
@@ -81,12 +93,15 @@ Address common issues and solutions.
 
 ---
 
-**Previous:** [Previous Guide](previous.md) | **Next:** [Next Guide](next.md) | [Back to Index](README.md)
-```
+**Previous:** [Previous Guide](previous-guide.md) | **Next:** [Next Guide](next-guide.md) | [Back to Index](README.md)
+````
 
-### Step 3: Update Navigation
+### Step 3: Wire It Up
 
-Add your guide to `mkdocs.yml`:
+A new guide needs more than a nav entry. Update all of these, or the guide will
+render without its metadata banner and stay invisible to the topic index:
+
+1. `mkdocs.yml` - add it to `nav`:
 
 ```yaml
 nav:
@@ -94,6 +109,15 @@ nav:
     - ...existing guides...
     - Process Management: Linux Essentials/process-management.md
 ```
+
+2. `assets/javascripts/lib/topics.js` - add it to the topic's guide list.
+3. The section `README.md` - add a topic card with `data-guide` and `data-topic` attributes.
+4. `.github/ISSUE_TEMPLATE/content-improvement.yml` - add it to the guide dropdown.
+5. The previous guide's nav footer - add the **Next:** link pointing at your guide.
+
+!!! tip
+    Inserting a guide *between* two existing ones? Update both neighbours - the
+    previous guide's **Next:** link and the next guide's **Previous:** link.
 
 ### Step 4: Preview and Test
 
@@ -131,9 +155,11 @@ mkdocs serve
 
 ## Add Interactive Components
 
+Place these after the content they test, not before it.
+
 ### Quick Quiz Example
 
-```markdown
+````markdown
 ```quiz
 question: Your question here?
 type: multiple-choice
@@ -144,11 +170,11 @@ options:
     correct: true
     feedback: "Why it's correct."
 ```
-```
+````
 
 ### Terminal Simulation Example
 
-```markdown
+````markdown
 ```terminal
 title: Demo Title
 steps:
@@ -156,15 +182,22 @@ steps:
     output: "expected output"
     narration: "Explain what happened."
 ```
-```
+````
 
 ---
 
 ## Submit Your Guide
 
-1. **Test the build:**
+1. **Run the check:**
    ```bash
-   mkdocs build --strict
+   ./verify.sh
+   ```
+
+   This is the same gate CI runs. For a docs-only change, the build step alone
+   is enough:
+
+   ```bash
+   ./setup-docs.sh && mkdocs build --strict
    ```
 
 2. **Commit with proper prefix:**
@@ -186,17 +219,18 @@ steps:
 
 ## Checklist Before Submitting
 
-- [ ] File follows the guide template
-- [ ] Added to `mkdocs.yml` navigation
+- [ ] File follows the guide template, including the YAML frontmatter
+- [ ] All five wiring steps done (nav, `topics.js`, section README, issue template, neighbour footers)
 - [ ] Code examples tested and working
-- [ ] Links verified (run `mkdocs build --strict`)
+- [ ] `./verify.sh` passes
 - [ ] Commit message starts with `docs:`
 
 ---
 
 ## Need Help?
 
-- Check [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines
+- Check [CONTRIBUTING.md](https://github.com/ringo380/guides/blob/main/CONTRIBUTING.md) for the
+  full style guide, the interactive component reference, and licensing details
 - Open an [issue](https://github.com/ringo380/guides/issues) for questions
 - Review existing guides for examples
 
