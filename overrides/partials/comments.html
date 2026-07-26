@@ -1,6 +1,6 @@
 <!-- SPDX-License-Identifier: MIT | Copyright (c) 2025-2026 Robworks Software LLC -->
 <!-- Giscus comments - GitHub Discussions-backed -->
-{% if not page.is_homepage %}
+{% if not page.is_homepage and page.meta.get("comments", true) %}
   <h2 id="__comments">{{ lang.t("meta.comments") }}</h2>
 
   <script

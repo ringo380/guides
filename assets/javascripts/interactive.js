@@ -28,6 +28,7 @@
     progress: "assets/javascripts/components/progress.js",
     "topic-cards": "assets/javascripts/components/topic-cards.js",
     "auth-ui": "assets/javascripts/components/auth-ui.js",
+    "admin-dashboard": "assets/javascripts/components/admin/dashboard.js",
   };
 
   const loadedScripts = new Set();
@@ -126,6 +127,12 @@
         loadScript(COMPONENT_SCRIPTS["topic-cards"]).catch(() => {});
         // Always load auth UI (self-initializes in header)
         loadScript(COMPONENT_SCRIPTS["auth-ui"]).catch(() => {});
+        // Admin dashboard, only on the admin page. Loaded here rather than
+        // from a script tag in admin.md so it runs after the auth chain has
+        // resolved and window.RunbookAuth exists.
+        if (document.getElementById("admin-root")) {
+          loadScript(COMPONENT_SCRIPTS["admin-dashboard"]).catch(() => {});
+        }
       })
       .catch(() => {
         // Storage failed to load - initialize components without it
@@ -135,6 +142,12 @@
           .then(() => loadScript("assets/javascripts/lib/topics.js"))
           .then(() => loadScript("assets/javascripts/lib/analytics-journey.js"))
           .catch(() => {});
+        // Auth never loads on this path, so the dashboard can only report the
+        // failure. Load it anyway so the page says so instead of sitting on
+        // its "Checking authorization..." placeholder.
+        if (document.getElementById("admin-root")) {
+          loadScript(COMPONENT_SCRIPTS["admin-dashboard"]).catch(() => {});
+        }
         const types = Object.keys(COMPONENT_SCRIPTS);
         types.forEach((type) => {
           const divs = document.querySelectorAll(`.interactive-${type}`);
