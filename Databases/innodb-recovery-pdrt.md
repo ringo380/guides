@@ -260,10 +260,12 @@ PDRT predates the BARRACUDA / DYNAMIC / COMPRESSED row formats introduced in MyS
 
 ## Installing PDRT
 
-PDRT is no longer distributed by Percona. The GitHub repository that hosted it has been removed, and the [Launchpad project](https://launchpad.net/percona-data-recovery-tool-for-innodb) it originally lived in is archived and unmaintained. What remains are community copies of the last release.
+PDRT is no longer distributed by Percona. The GitHub repository that hosted it has been removed, and the [Launchpad project](https://launchpad.net/percona-data-recovery-tool-for-innodb) it originally lived in is archived. What remains are unofficial copies of the last release, mirrored by people who were using it when it disappeared.
+
+The best-known descendant is [undrop-for-innodb](https://github.com/twindb/undrop-for-innodb), TwinDB's fork of the same codebase. It is also archived, and it renames the binaries: `page_parser` became `stream_parser` and `constraints_parser` became `c_parser`. The concepts below all transfer, but the commands in the rest of this guide are PDRT's, so translate them if you go that route.
 
 !!! warning
-    Every surviving copy of PDRT is an unofficial mirror. You are about to point a byte-level parser at damaged production data, so review the source you obtain rather than trusting a fork on reputation. Work on a copy of the ibdata file, never the original.
+    Every surviving copy is an unofficial mirror. You are about to point a byte-level parser at damaged production data, so read the source you obtain rather than trusting a fork on reputation. Work on a copy of the ibdata file, never the original.
 
 ### Compile
 

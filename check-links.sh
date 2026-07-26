@@ -12,10 +12,16 @@
 
 set -uo pipefail
 
+# Resolve the site argument against the caller's directory before moving to the
+# repo root, or a relative path from anywhere else would silently resolve here.
+SITE="${1:-site}"
+case "$SITE" in
+  /*) ;;
+  *)  SITE="$PWD/$SITE" ;;
+esac
+
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$REPO_ROOT"
-
-SITE="${1:-site}"
 JOBS="${LINK_CHECK_JOBS:-8}"
 UA="Mozilla/5.0 (compatible; RunbookLinkCheck/1.0; +https://runbook.fyi/)"
 # Some hosts (gnu.org among them) reject a request with no Accept header
@@ -127,8 +133,11 @@ retry_in=$(mktemp)
 retry_out=$(mktemp)
 trap 'rm -f "${results:?}" "${retry_in:?}" "${retry_out:?}"' EXIT
 
-printf '%s\n' "$urls" \
-  | xargs -P "$JOBS" -I{} bash -c 'check_url "$@"' _ {} \
+# NUL-separate: xargs still treats quotes as special without -0, so a single URL
+# containing an apostrophe (ordinary in article slugs) aborts the whole run with
+# "unterminated quote" and leaves the remaining links unchecked.
+printf '%s\n' "$urls" | tr '\n' '\0' \
+  | xargs -0 -P "$JOBS" -I{} bash -c 'check_url "$@"' _ {} \
   > "$results"
 
 # Hosts that throttle by connection see the parallel pass as a burst and drop
@@ -165,5 +174,13 @@ if [ "$broken" -gt 0 ]; then
 fi
 
 echo "$ok ok, $blocked blocked, $broken broken (of $count checked)"
+
+# Postcondition: every extracted URL must be accounted for. If the scan died
+# partway, the counts above would still read like a clean run.
+if [ "$((ok + blocked + broken))" -ne "$count" ]; then
+  echo
+  echo "FAIL: $((ok + blocked + broken)) results for $count URLs - the scan did not finish" >&2
+  exit 1
+fi
 
 [ "$broken" -eq 0 ]

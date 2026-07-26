@@ -47,12 +47,24 @@ jobs:
         run: |
           TITLE="Broken external links detected"
           {
-            echo "The weekly link check found broken external links."
+            if grep -q '^Broken links:' link-report.txt; then
+              echo "The weekly link check found broken external links."
+            else
+              # The checker's own preconditions (missing site directory, too few
+              # URLs extracted, unfinished scan) fail before any link report is
+              # produced. Reporting an empty list would hide exactly the
+              # regression those guards exist to catch.
+              echo "The weekly link check failed before it could report on links."
+            fi
             echo
             echo "Run: $RUN_URL"
             echo
             echo '```'
-            sed -n '/^Broken links:/,$p' link-report.txt
+            if grep -q '^Broken links:' link-report.txt; then
+              sed -n '/^Broken links:/,$p' link-report.txt
+            else
+              tail -40 link-report.txt
+            fi
             echo '```'
           } > body.md
 
