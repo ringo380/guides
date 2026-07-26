@@ -15,7 +15,7 @@ Practical, open-access technical guides covering Linux, DNS, Git, databases, and
 - **[DNS Administration](DNS Administration/README.md)** - 8 guides from DNS fundamentals to architecture and operations
 - **[Git](Git/README.md)** - 17 guides from version control basics to internals and scaling
 - **[Databases](Databases/README.md)** - 17 guides from relational fundamentals through NoSQL and operations
-- **[Nginx Configuration](Nginx/README.md)** - Essential Nginx for web servers and reverse proxying
+- **[Nginx](Nginx/README.md)** - 2 guides from architecture and static serving to reverse proxying and TLS
 - **[Security and TLS/SSL](Security/README.md)** - PKI, certificate management, and OpenSSL fundamentals
 - **[Docker and Containers](Docker/README.md)** - From fundamentals to multi-container orchestration with Compose
 - **[Python](Dev Zero/Python/README.md)** - Developer introduction and learning roadmap

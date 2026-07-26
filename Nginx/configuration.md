@@ -1,7 +1,8 @@
 ---
 difficulty: intermediate
 time_estimate: "45 min"
-prerequisites: []
+prerequisites:
+  - fundamentals
 learning_outcomes:
   - "Configure Nginx server blocks, reverse proxying, and load balancing"
   - "Set up SSL/TLS termination with modern security defaults"
@@ -624,4 +625,4 @@ solution: |
 
 ---
 
-[Back to Index](README.md)
+**Previous:** [Nginx Fundamentals](fundamentals.md) | [Back to Index](README.md)
