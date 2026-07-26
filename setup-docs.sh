@@ -14,6 +14,7 @@ rm -rf "$REPO_ROOT/docs"
 mkdir -p "$REPO_ROOT/docs"
 
 ln -s "$REPO_ROOT/README.md" "$REPO_ROOT/docs/README.md"
+ln -s "$REPO_ROOT/CONTRIBUTOR_QUICKSTART.md" "$REPO_ROOT/docs/CONTRIBUTOR_QUICKSTART.md"
 ln -s "$REPO_ROOT/admin.md" "$REPO_ROOT/docs/admin.md"
 ln -s "$REPO_ROOT/CNAME" "$REPO_ROOT/docs/CNAME"
 ln -s "$REPO_ROOT/Linux Essentials" "$REPO_ROOT/docs/Linux Essentials"
