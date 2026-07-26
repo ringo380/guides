@@ -58,7 +58,7 @@ This split is what makes a zero-downtime reload possible. On `nginx -s reload`, 
 !!! tip "Set worker_processes to auto"
     `worker_processes auto;` makes Nginx spawn one worker per CPU core, which is almost always the right number. More workers than cores does not increase throughput on an event-driven server; it just adds scheduler churn.
 
-The theoretical connection ceiling is `worker_processes * worker_connections`. With `auto` on an 8-core box and the default `worker_connections 1024;`, that is 8192 simultaneous connections. Note that proxied requests consume two connections (one from the client, one to the upstream), so a pure reverse proxy halves that ceiling.
+The theoretical connection ceiling is `worker_processes * worker_connections`. Check the value you actually have before doing that arithmetic: Nginx's compiled-in default is `512`, Debian and Ubuntu ship `768`, and the RHEL-family package ships `1024`. On an 8-core Ubuntu box that is 8 * 768 = 6144 simultaneous connections. Note that proxied requests consume two connections (one from the client, one to the upstream), so a pure reverse proxy halves that ceiling.
 
 ---
 
@@ -236,13 +236,14 @@ When a request arrives, Nginx runs it through a fixed sequence of phases. Unders
 ```mermaid
 flowchart TD
     A[Connection accepted by worker] --> B[Read request line and headers]
-    B --> C[Select server block by listen and Host]
-    C --> D[Select location block by URI]
-    D --> E[Access phase: allow, deny, auth]
-    E --> F[Rewrite phase: rewrite, try_files]
-    F --> G[Content phase: static file, proxy, or index]
-    G --> H[Filter chain: gzip, add_header, sub_filter]
-    H --> I[Response sent, access log written]
+    B --> C[Server rewrite phase: rewrite at server level]
+    C --> D[Find config: select server block, then location by URI]
+    D --> E[Rewrite phase: rewrite and if inside the location]
+    E --> F[Access phase: allow, deny, auth_basic]
+    F --> G[Precontent phase: try_files]
+    G --> H[Content phase: static file, index, or proxy]
+    H --> I[Filter chain: gzip, add_header, sub_filter]
+    I --> J[Response sent, access log written]
 ```
 
 ### Step 1: Server Block Selection
@@ -266,7 +267,7 @@ Within the selected server block, Nginx picks exactly one `location` to handle t
 | Exact | `location = /health` | Matches the URI exactly. Checked first; wins immediately. |
 | Preferential prefix | `location ^~ /static/` | Prefix match that stops regex evaluation if it is the longest prefix match. |
 | Regex (case-sensitive) | `location ~ \.php$` | Checked in file order after prefixes. First match wins. |
-| Regex (case-insensitive) | `location ~* \.(jpg\|png)$` | Same as above, ignoring case. |
+| Regex (case-insensitive) | `location ~* \.jpe?g$` | Same as above, ignoring case. |
 | Plain prefix | `location /images/` | Longest prefix match. Used only if no regex matches. |
 
 The full algorithm:
@@ -309,7 +310,7 @@ server {
 Given that configuration, `/assets/photo.jpg` matches `^~ /assets/` and gets a 30-day cache header; `/uploads/photo.jpg` falls through to the regex and gets 7 days.
 
 !!! warning "Do not use if inside a location"
-    The `if` directive runs during the rewrite phase, before content handlers are chosen, and its behavior inside a `location` block is genuinely undefined for anything except `return` and `rewrite ... last`. The official guidance is [If Is Evil](https://nginx.org/en/docs/http/converting_rewrite_rules.html). Reach for `try_files`, `map`, or a more specific `location` instead.
+    The `if` directive runs during the rewrite phase, before content handlers are chosen, and its behavior inside a `location` block is genuinely undefined for anything except `return` and `rewrite ... last`. The [**`if`** directive reference](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#if) documents which cases are safe. Reach for `try_files`, `map`, or a more specific `location` instead.
 
 ---
 
@@ -325,17 +326,19 @@ These two directives both point a URI at the filesystem, and confusing them is t
 
 ```nginx
 # Request: /static/css/site.css
+# These two blocks are alternatives - defining both at once is a
+# duplicate location error.
 
 location /static/ {
     root /var/www;
-    # Serves /var/www/static/css/site.css
-    # (root + full URI)
+    # Serves /var/www/static/css/site.css  (root + full URI)
 }
+```
 
+```nginx
 location /static/ {
     alias /var/www/assets/;
-    # Serves /var/www/assets/css/site.css
-    # (alias replaces "/static/")
+    # Serves /var/www/assets/css/site.css  (alias replaces "/static/")
 }
 ```
 
@@ -357,13 +360,22 @@ location / {
     try_files $uri $uri/ /index.html;
 }
 
-# Serve a pre-compressed .br or .gz file if one exists next to the original
+# Versioned asset directory: file, then a 404 rather than a fallback page
 location /assets/ {
-    try_files $uri.br $uri.gz $uri =404;
+    try_files $uri =404;
 }
 ```
 
-The last argument is always the fallback, never a candidate to test. `try_files $uri $uri/;` does not check for a directory and then give up - it checks `$uri`, then internally redirects to `$uri/` regardless of whether that directory exists, which produces a 403 or a redirect cycle instead of a clean 404. Terminate the list with an explicit `=404` or a URI you know resolves.
+Serving pre-compressed files is a job for `gzip_static`, not `try_files`. A `try_files $uri.gz $uri;` list ignores the client's `Accept-Encoding` and never sets `Content-Encoding`, so a browser that did not ask for gzip receives compressed bytes labelled by the `.gz` extension and downloads a binary blob instead of rendering the stylesheet. `gzip_static` does the negotiation and the header for you.
+
+```nginx
+location /assets/ {
+    gzip_static on;    # serves site.css.gz to clients that accept gzip
+    try_files $uri =404;
+}
+```
+
+The last argument is always the fallback, never a candidate to test. `try_files $uri $uri/;` does not check for a directory and then give up - it checks `$uri`, then internally redirects to `$uri/` regardless of whether that directory exists. For a missing path that redirect loops back into the same location and Nginx gives up with a 500 and `rewrite or internal redirection cycle` in the error log. Terminate the list with an explicit `=404` or a URI you know resolves.
 
 ### Directory Listings and Index Files
 
@@ -389,7 +401,7 @@ http {
     gzip_vary on;
     gzip_min_length 1024;
     gzip_types text/plain text/css text/xml application/json
-               application/javascript application/xml+rss image/svg+xml;
+               application/javascript application/rss+xml image/svg+xml;
 
     server {
         listen 80;
@@ -408,10 +420,11 @@ http {
             add_header Cache-Control "public";
         }
 
-        # HTML: always revalidate
+        # HTML: always revalidate. expires -1 emits Cache-Control: no-cache
+        # on its own, and add_header appends rather than replaces, so adding
+        # one here would send the header twice.
         location ~* \.html$ {
             expires -1;
-            add_header Cache-Control "no-cache";
         }
     }
 }
@@ -556,7 +569,7 @@ scenario: "Install Nginx and serve a static site on a fresh Ubuntu server"
 steps:
   - command: "sudo apt update && sudo apt install -y nginx"
     output: "Setting up nginx (1.24.0-2ubuntu7) ...\nCreated symlink /etc/systemd/system/multi-user.target.wants/nginx.service -> /lib/systemd/system/nginx.service."
-    narration: "The package installs Nginx, creates the www-data user, and enables the service so it survives reboots."
+    narration: "The package installs Nginx and enables the service so it survives reboots. It runs as www-data, which already exists on a Debian or Ubuntu system as part of the base install."
   - command: "nginx -v"
     output: "nginx version: nginx/1.24.0 (Ubuntu)"
     narration: "Confirm the version. Distribution builds lag the mainline branch, which matters if you need a recently added directive."
@@ -583,7 +596,7 @@ steps:
     narration: "Sending an explicit Host header selects the new server block without needing DNS. Content-Type comes from mime.types matching the .html extension."
   - command: "curl -s -o /dev/null -w '%{http_code}\\n' -H 'Host: example.com' http://localhost/nope.html"
     output: "404"
-    narration: "The =404 fallback in try_files returns a clean not-found instead of the 500 that a bare try_files list would produce."
+    narration: "The =404 fallback in try_files returns a clean not-found instead of the redirect-cycle 500 that a list ending in $uri/ would produce."
   - command: "sudo tail -2 /var/log/nginx/access.log"
     output: "127.0.0.1 - - [14/Mar/2027:09:31:07 +0000] \"GET / HTTP/1.1\" 200 18 \"-\" \"curl/8.5.0\"\n127.0.0.1 - - [14/Mar/2027:09:31:12 +0000] \"GET /nope.html HTTP/1.1\" 404 162 \"-\" \"curl/8.5.0\""
     narration: "Both requests are logged in combined format: client, timestamp, request line, status, bytes sent, referer, and user agent."
@@ -669,19 +682,25 @@ scenario: |
   4. Give fingerprinted `.css` and `.js` files a one-year immutable cache header and stop logging them
   5. Give images a seven-day cache header
   6. Make sure HTML is always revalidated by the browser
-  7. Enable the three static-serving performance directives in the `http` context
+  7. Confirm the three static-serving performance directives are on in the `http` context, without introducing a duplicate directive error
   8. Activate the site and apply it without dropping any connections
 hints:
   - "A fingerprint is eight hex characters between the name and the extension: use a case-insensitive regex location anchored with $"
   - "Order matters: the regex for fingerprinted assets must appear before any broader regex that would also match .css or .js"
   - "try_files takes a final =404 argument to control the fallback status"
   - "The performance directives are sendfile, tcp_nopush, and tcp_nodelay - the last two only help when the first is on"
+  - "Check the stock /etc/nginx/nginx.conf before adding anything: Ubuntu already sets some of these in the http context, and setting a flag directive twice in the same context is an nginx -t error"
   - "Activation on Debian and Ubuntu means a symlink from sites-available into sites-enabled"
 solution: |
-  # /etc/nginx/conf.d/performance.conf (http context)
-  sendfile on;
-  tcp_nopush on;
-  tcp_nodelay on;
+  # Ubuntu's stock /etc/nginx/nginx.conf already has these in the http
+  # context, and conf.d/*.conf is included from that same context - so a
+  # new file repeating them fails with:
+  #   nginx: [emerg] "sendfile" directive is duplicate
+  # Edit the existing lines in nginx.conf instead of adding a file:
+  #
+  #   sendfile on;      # already present, leave it
+  #   tcp_nopush on;    # already present, leave it
+  #   tcp_nodelay on;   # already present, leave it
 
   # /etc/nginx/sites-available/promo.conf
   server {
@@ -704,10 +723,10 @@ solution: |
           add_header Cache-Control "public";
       }
 
-      # HTML must revalidate so deploys are picked up immediately
+      # HTML must revalidate so deploys are picked up immediately.
+      # expires -1 sends Cache-Control: no-cache by itself.
       location ~* \.html$ {
           expires -1;
-          add_header Cache-Control "no-cache";
       }
 
       location / {
