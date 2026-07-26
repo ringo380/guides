@@ -70,6 +70,7 @@ body:
         - "Databases: Database Security"
         - "Databases: Scaling & Architecture Patterns"
         - "Databases: InnoDB Recovery with PDRT"
+        - "Nginx: Fundamentals"
         - "Nginx: Configuration"
         - "Security: TLS/SSL Fundamentals"
         - "Security: Certificate Management"

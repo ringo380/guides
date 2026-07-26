@@ -211,6 +211,7 @@ nav:
       - InnoDB Recovery with PDRT: Databases/innodb-recovery-pdrt.md
   - Nginx:
       - Index: Nginx/README.md
+      - Nginx Fundamentals: Nginx/fundamentals.md
       - Configuration: Nginx/configuration.md
   - Security:
       - Index: Security/README.md

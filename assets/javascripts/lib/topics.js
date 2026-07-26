@@ -96,7 +96,7 @@
     },
     Nginx: {
       prefix: "Nginx/",
-      guides: ["configuration"],
+      guides: ["fundamentals", "configuration"],
     },
     Security: {
       prefix: "Security/",
