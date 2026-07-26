@@ -89,16 +89,36 @@
     ));
   }
 
+  var inFlight = false;
+
   async function init() {
     var root = document.getElementById("admin-root");
     if (!root) return;
+    if (inFlight) return;
     var status = document.getElementById("admin-status");
 
-    if (!window.RunbookAuth) {
-      if (status) status.textContent = "Authentication unavailable.";
+    // No RunbookAuth, or no client behind it, means the auth chain itself
+    // failed to load. That is distinct from being signed out, which is
+    // something the reader can act on.
+    var client = window.RunbookAuth && window.RunbookAuth.getClient();
+    if (!client) {
+      if (status) {
+        status.textContent =
+          "Sign-in is unavailable right now. Reload the page to try again.";
+      }
       return;
     }
-    var session = await window.RunbookAuth.getClient().auth.getSession();
+
+    inFlight = true;
+    try {
+      await load(root, status, client);
+    } finally {
+      inFlight = false;
+    }
+  }
+
+  async function load(root, status, client) {
+    var session = await client.auth.getSession();
     var token = session.data.session && session.data.session.access_token;
     if (!token) {
       if (status) status.textContent = "Sign in to view this page.";

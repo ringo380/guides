@@ -80,3 +80,70 @@ describe("admin dashboard renderer", () => {
     expect(root.textContent).toContain("7");
   });
 });
+
+describe("admin dashboard auth states", () => {
+  let status;
+
+  function mountAdminRoot() {
+    const el = document.createElement("div");
+    el.id = "admin-root";
+    status = document.createElement("p");
+    status.id = "admin-status";
+    status.textContent = "Checking authorization...";
+    el.appendChild(status);
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function sessionClient(accessToken) {
+    return {
+      auth: {
+        getSession: async () => ({
+          data: { session: accessToken ? { access_token: accessToken } : null },
+        }),
+      },
+    };
+  }
+
+  beforeEach(async () => {
+    mountAdminRoot();
+    await loadComponent("admin/dashboard");
+  });
+
+  afterEach(() => {
+    delete window.RunbookAuth;
+    cleanup();
+  });
+
+  it("tells a signed-out reader to sign in rather than reporting a failure", async () => {
+    window.RunbookAuth = { getClient: () => sessionClient(null) };
+    await window.RunbookAdminDashboard.init();
+    expect(status.textContent).toBe("Sign in to view this page.");
+  });
+
+  it("distinguishes a broken auth chain from being signed out", async () => {
+    // RunbookAuth absent entirely: the chain failed to load.
+    await window.RunbookAdminDashboard.init();
+    expect(status.textContent).toContain("unavailable");
+    expect(status.textContent).not.toBe("Sign in to view this page.");
+  });
+
+  it("treats a present RunbookAuth with no client as a broken chain", async () => {
+    window.RunbookAuth = { getClient: () => null };
+    await window.RunbookAdminDashboard.init();
+    expect(status.textContent).toContain("unavailable");
+  });
+
+  it("reports unauthorized when the edge function rejects an admin check", async () => {
+    window.RunbookAuth = { getClient: () => sessionClient("jwt") };
+    const calls = [];
+    global.fetch = async (url) => {
+      calls.push(url);
+      return { ok: false };
+    };
+    await window.RunbookAdminDashboard.init();
+    expect(calls[0]).toContain("/health");
+    expect(status.textContent).toBe("Not authorized.");
+    delete global.fetch;
+  });
+});

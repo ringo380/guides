@@ -54,10 +54,11 @@
         const {
           data: { session },
         } = await sb.auth.getSession();
-        if (session) {
-          currentUser = session.user;
-          fireAuthChanged(currentUser, "INITIAL_SESSION");
-        }
+        currentUser = session ? session.user : null;
+        // Fire for the signed-out case too. Listeners that registered before
+        // auth finished loading need a resolved state, not silence, or they
+        // sit on their placeholder text forever.
+        fireAuthChanged(currentUser, "INITIAL_SESSION");
       } catch (e) {
         console.warn("[Runbook] Failed to get auth session:", e);
       }
