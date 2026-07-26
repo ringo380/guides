@@ -1,4 +1,5 @@
 ---
+description: "Automate systems with Python: subprocess, os and shutil, scheduling, logging, argument parsing, and turning a script into a usable tool."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

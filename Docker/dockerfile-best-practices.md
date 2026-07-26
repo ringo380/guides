@@ -1,4 +1,5 @@
 ---
+description: "Write better Dockerfiles: multi-stage builds, layer caching, small base images, non-root users, and hardening images for production."
 difficulty: intermediate
 time_estimate: "45 min"
 prerequisites:

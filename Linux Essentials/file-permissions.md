@@ -1,4 +1,5 @@
 ---
+description: "Linux file permissions in depth: read, write, and execute bits, octal notation, ownership, umask, setuid, setgid, the sticky bit, and ACLs."
 difficulty: beginner
 time_estimate: "30 min"
 prerequisites:

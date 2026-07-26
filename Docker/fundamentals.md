@@ -1,4 +1,5 @@
 ---
+description: "Docker from first principles: images versus containers, the daemon and client, the container lifecycle, volumes, networks, and resource limits."
 difficulty: beginner
 time_estimate: "40 min"
 prerequisites: []

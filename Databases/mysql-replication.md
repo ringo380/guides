@@ -1,4 +1,5 @@
 ---
+description: "Set up MySQL replication and high availability: binary logs, GTIDs, asynchronous and semi-synchronous modes, read scaling, and failover."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

@@ -1,4 +1,5 @@
 ---
+description: "Work with files and HTTP APIs in Python: reading and writing text, CSV, and JSON, path handling with pathlib, and requests-based API calls."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

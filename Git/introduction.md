@@ -1,4 +1,5 @@
 ---
+description: "Why version control exists and what Git solved that CVS, Subversion, and their predecessors did not, plus the distributed model in plain terms."
 difficulty: beginner
 time_estimate: "30 min"
 prerequisites: []

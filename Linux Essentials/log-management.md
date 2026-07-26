@@ -1,4 +1,5 @@
 ---
+description: "Find and interpret Linux logs with journalctl, rsyslog, and logrotate, covering log levels, rotation policy, and tracing an incident through them."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

@@ -1,4 +1,5 @@
 ---
+description: "Python functions and modules: arguments and defaults, scope, decorators, imports, packages, and structuring a script into reusable pieces."
 difficulty: intermediate
 time_estimate: "50 min"
 prerequisites:

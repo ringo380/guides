@@ -1,4 +1,5 @@
 ---
+description: "Recover from Git disasters: lost commits, bad rebases, detached HEAD, force-push damage, committed secrets, and corrupted repositories."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

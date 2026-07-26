@@ -1,3 +1,6 @@
+---
+description: "Guides on Docker and containers, from images and the container lifecycle through Compose orchestration and production-ready Dockerfiles."
+---
 # Docker and Containers
 
 Docker is a platform for developing, shipping, and running applications in isolated environments called **containers**. It revolutionized software deployment by ensuring that an application runs the same way regardless of the host environment.

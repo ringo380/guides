@@ -1,0 +1,22 @@
+{#-
+  Overrides the MkDocs core sitemap template to honour a per-page opt-out.
+
+  A page with `sitemap_exclude: true` in its YAML frontmatter is omitted from
+  sitemap.xml. Used by admin.md, which also carries `search.exclude` and a
+  noindex robots meta from overrides/admin.html: submitting a noindex URL in a
+  sitemap is what Search Console reports as "Submitted URL marked noindex".
+
+  Keep this in sync with mkdocs/templates/sitemap.xml when MkDocs is upgraded.
+  The only addition is the `sitemap_exclude` condition.
+-#}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{%- for file in pages -%}
+    {% if not file.page.is_link and (file.page.abs_url or file.page.canonical_url) and not file.page.meta.sitemap_exclude %}
+    <url>
+         <loc>{% if file.page.canonical_url %}{{ file.page.canonical_url|e }}{% else %}{{ file.page.abs_url|e }}{% endif %}</loc>
+         {% if file.page.update_date %}<lastmod>{{file.page.update_date}}</lastmod>{% endif %}
+    </url>
+    {%- endif -%}
+{% endfor %}
+</urlset>

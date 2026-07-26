@@ -1,4 +1,5 @@
 ---
+description: "Perl regular expressions: matching, substitution, capture groups, greediness, modifiers, and the pattern features other languages borrowed."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

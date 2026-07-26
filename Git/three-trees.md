@@ -1,4 +1,5 @@
 ---
+description: "Git's working directory, index, and repository, and how add, commit, checkout, and reset move changes between them. The core mental model."
 difficulty: beginner
 time_estimate: "35 min"
 prerequisites:

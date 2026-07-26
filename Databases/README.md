@@ -1,3 +1,6 @@
+---
+description: "A full database course, from relational fundamentals and SQL through MySQL and PostgreSQL administration, NoSQL systems, and operations."
+---
 # Databases
 
 A comprehensive course on databases - from relational fundamentals and SQL through MySQL administration, PostgreSQL internals, NoSQL systems, and production operations. These guides take you from "I know I need a database" to understanding storage engines, query optimization, replication topologies, and recovery procedures well enough to architect, tune, and operate database systems in production.

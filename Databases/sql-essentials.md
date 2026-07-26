@@ -1,4 +1,5 @@
 ---
+description: "Core SQL that works across MySQL, PostgreSQL, and SQLite: SELECT, joins, grouping, subqueries, and the clause order the engine really applies."
 difficulty: beginner
 time_estimate: "40 min"
 prerequisites:

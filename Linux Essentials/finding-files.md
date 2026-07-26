@@ -1,4 +1,5 @@
 ---
+description: "Locate files on Linux with find and locate, filter by name, size, time, and permission, and pipe results safely into xargs for batch work."
 difficulty: beginner
 time_estimate: "25 min"
 prerequisites:

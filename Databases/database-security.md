@@ -1,4 +1,5 @@
 ---
+description: "Secure a database: least-privilege accounts, network exposure, TLS connections, encryption at rest, SQL injection defense, and auditing."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

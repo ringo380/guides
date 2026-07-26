@@ -1,3 +1,6 @@
+---
+description: "Guides on working effectively at the Linux command line, from how the shell parses a command through scripting, systemd, firewalls, and logs."
+---
 # Linux CLI Essentials
 
 A comprehensive guide to working effectively on the Linux command line. These guides take you from "I can type commands" to understanding how the shell actually works and using it productively.

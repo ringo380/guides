@@ -1,4 +1,5 @@
 ---
+description: "Work with Git remotes: clone, fetch, pull, and push, plus tracking branches, refspecs, and keeping a fork in sync with upstream."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

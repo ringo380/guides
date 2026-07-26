@@ -1,4 +1,5 @@
 ---
+description: "PostgreSQL beyond standard SQL: window functions, recursive CTEs, JSONB, full-text search, and extensions that move work into the database."
 difficulty: advanced
 time_estimate: "45 min"
 prerequisites:

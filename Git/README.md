@@ -1,3 +1,6 @@
+---
+description: "A full Git course, from your first commit through the object model, refs and the reflog, collaboration workflows, security, and scaling."
+---
 # Git
 
 A comprehensive course on Git - from your first commit through the internals of the object model, collaboration workflows across platforms, and advanced operations at scale. These guides take you from "I know I should use version control" to understanding Git deeply enough to debug, optimize, and architect workflows around it.

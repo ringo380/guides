@@ -1,4 +1,5 @@
 ---
+description: "Automate with Git hooks: pre-commit, commit-msg, pre-push, and server-side hooks, plus managing them across a team without friction."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

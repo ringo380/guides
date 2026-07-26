@@ -1,4 +1,5 @@
 ---
+description: "A learning path for Perl developers: what to study in order, which modules matter, and how to build a portfolio of practical automation work."
 difficulty: beginner
 time_estimate: "15 min"
 prerequisites: []

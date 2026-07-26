@@ -1,4 +1,5 @@
 ---
+description: "Build web applications and APIs in Perl with PSGI and Plack, Mojolicious, and Dancer, plus consuming HTTP APIs and handling JSON."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

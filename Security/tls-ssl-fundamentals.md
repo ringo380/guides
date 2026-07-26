@@ -1,4 +1,5 @@
 ---
+description: "How TLS actually protects a connection: the handshake, cipher suites, certificates, chains of trust, and what changed in TLS 1.3."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites: []

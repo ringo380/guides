@@ -1,4 +1,5 @@
 ---
+description: "Configure Git at system, global, and repository scope: aliases, line endings, diff and merge tools, credentials, and conditional includes."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

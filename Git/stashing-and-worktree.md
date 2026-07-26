@@ -1,4 +1,5 @@
 ---
+description: "Set work aside with git stash and run multiple checkouts at once with git worktree, plus when each beats a throwaway branch."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

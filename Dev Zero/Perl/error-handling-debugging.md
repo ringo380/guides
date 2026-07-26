@@ -1,4 +1,5 @@
 ---
+description: "Handle errors in Perl with eval, die, and Try::Tiny, plus warnings, the debugger, and tracing a fault through a running script."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

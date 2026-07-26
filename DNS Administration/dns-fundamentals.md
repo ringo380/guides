@@ -1,4 +1,5 @@
 ---
+description: "How DNS resolution actually works, from root servers and delegation through recursion, caching, TTLs, and the record types every lookup needs."
 difficulty: beginner
 time_estimate: "35 min"
 prerequisites: []

@@ -1,4 +1,5 @@
 ---
+description: "Perl scalars in depth: strings and numbers, context, interpolation, common string functions, and the conversions Perl performs silently."
 difficulty: beginner
 time_estimate: "35 min"
 prerequisites:

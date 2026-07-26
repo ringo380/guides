@@ -1,4 +1,5 @@
 ---
+description: "Python data structures and control flow: lists, dicts, sets, tuples, comprehensions, and the logic patterns that keep scripts readable."
 difficulty: beginner
 time_estimate: "35 min"
 prerequisites:

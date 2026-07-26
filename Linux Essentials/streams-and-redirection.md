@@ -1,4 +1,5 @@
 ---
+description: "Redirect and combine stdin, stdout, and stderr in the Linux shell, with pipes, here-documents, file descriptors, tee, and process substitution."
 difficulty: beginner
 time_estimate: "30 min"
 prerequisites:

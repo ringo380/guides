@@ -1,4 +1,5 @@
 ---
+description: "Compare Git workflows: centralized, feature branch, Git flow, GitHub flow, and trunk-based development, and pick one that fits your team."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

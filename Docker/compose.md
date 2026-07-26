@@ -1,4 +1,5 @@
 ---
+description: "Define multi-container applications with Docker Compose: services, networks, volumes, environment variables, dependencies, and health checks."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

@@ -1,4 +1,5 @@
 ---
+description: "Create and manage Linux users and groups, covering passwd and shadow files, sudo policy, account expiry, and the permission model behind them."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

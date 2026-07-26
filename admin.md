@@ -1,5 +1,6 @@
 ---
 template: admin.html
+sitemap_exclude: true
 search:
   exclude: true
 ---

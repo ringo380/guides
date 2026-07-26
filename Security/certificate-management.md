@@ -1,4 +1,5 @@
 ---
+description: "Issue, renew, and deploy TLS certificates: CSRs, Let's Encrypt and ACME, certificate formats, chain order, and avoiding expiry outages."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

@@ -1,4 +1,5 @@
 ---
+description: "Query and debug DNS with dig, drill, and kdig, read answer sections fluently, trace a full resolution path, and diagnose common failures."
 difficulty: beginner
 time_estimate: "25 min"
 prerequisites:

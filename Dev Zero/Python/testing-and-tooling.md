@@ -1,4 +1,5 @@
 ---
+description: "Test and package Python: pytest, fixtures, virtual environments, dependency management, linting, formatting, and type checking."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

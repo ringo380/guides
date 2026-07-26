@@ -1,4 +1,5 @@
 ---
+description: "Build a database backup strategy that restores: logical versus physical backups, point-in-time recovery, retention, and testing the restore."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

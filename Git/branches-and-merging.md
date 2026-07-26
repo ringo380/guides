@@ -1,4 +1,5 @@
 ---
+description: "Create and merge Git branches, understand fast-forward versus three-way merges, and resolve conflicts without losing work."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

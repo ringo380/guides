@@ -1,4 +1,5 @@
 ---
+description: "Use and write Perl modules: packages, namespaces, exporting, installing from CPAN, and managing dependencies with cpanm and local::lib."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

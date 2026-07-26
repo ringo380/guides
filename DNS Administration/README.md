@@ -1,3 +1,6 @@
+---
+description: "Guides on DNS for administrators, from how resolution works through running BIND, NSD, Unbound, and PowerDNS, signing zones, and operations."
+---
 # DNS Administration
 
 A comprehensive guide to DNS - from how name resolution actually works to running authoritative servers, signing zones with DNSSEC, and designing resilient architectures. These guides take you from "I can query DNS" to understanding the system deeply enough to build and operate it.

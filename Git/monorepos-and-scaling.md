@@ -1,4 +1,5 @@
 ---
+description: "Keep large Git repositories fast with partial clone, sparse checkout, shallow fetch, and LFS, plus monorepo versus many-repo tradeoffs."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

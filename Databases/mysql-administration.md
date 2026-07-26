@@ -1,4 +1,5 @@
 ---
+description: "Run MySQL day to day: the command-line client, user and privilege management, data directory layout, monitoring, and routine maintenance."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

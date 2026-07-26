@@ -1,4 +1,5 @@
 ---
+description: "Open-access technical guides on Linux, DNS, Git, databases, Nginx, Docker, and security, written for working sysadmins and developers."
 template: home.html
 hide:
   - navigation

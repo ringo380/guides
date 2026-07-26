@@ -1,4 +1,5 @@
 ---
+description: "Perl control flow: conditionals, loops, statement modifiers, last and next, and the idioms that make Perl read the way Perl programmers expect."
 difficulty: beginner
 time_estimate: "30 min"
 prerequisites:

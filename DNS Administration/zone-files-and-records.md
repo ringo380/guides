@@ -1,4 +1,5 @@
 ---
+description: "Write and read DNS zone files: SOA, NS, A, AAAA, CNAME, MX, TXT, and SRV records, serial number discipline, and the syntax that causes outages."
 difficulty: beginner
 time_estimate: "35 min"
 prerequisites:

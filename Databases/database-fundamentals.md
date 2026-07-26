@@ -1,4 +1,5 @@
 ---
+description: "How databases evolved and what a relational database actually guarantees: tables, keys, relationships, ACID transactions, and where each fits."
 difficulty: beginner
 time_estimate: "35 min"
 prerequisites: []

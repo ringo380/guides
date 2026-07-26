@@ -110,9 +110,26 @@ Use [Material admonitions](https://squidfunk.github.io/mkdocs-material/reference
 
 ## Guide Structure
 
-Every guide should follow this general template:
+Every guide opens with YAML frontmatter. `description` is required: it becomes the
+page's `<meta name="description">`, which is the snippet search engines show, and
+`./verify.sh` fails the build if any page is missing one. Keep it under 160
+characters and make it specific to that guide.
 
-```markdown
+The remaining fields drive the metadata banner that `hooks/metadata.py` injects
+below the title.
+
+````markdown
+---
+description: "One sentence on what this guide covers, under 160 characters."
+difficulty: beginner
+time_estimate: "30 min"
+prerequisites:
+  - previous-guide-slug
+learning_outcomes:
+  - "What the reader can do after finishing"
+tags:
+  - topic
+---
 # Guide Title
 
 Brief introduction to the topic - what it is and why it matters.
@@ -144,13 +161,16 @@ More content, tables, admonitions as needed.
 ---
 
 **Previous:** [Previous Guide](previous-guide.md) | **Next:** [Next Guide](next-guide.md) | [Back to Index](README.md)
-```
+````
 
 Key points:
 
+- Every page needs a `description` in its frontmatter
 - The `## Further Reading` section goes at the bottom, above the navigation footer
 - Separate Further Reading and navigation footer with `---` horizontal rules
 - Navigation footers are used in multi-guide series (like Linux Essentials)
+- A fenced block that contains another fenced block needs a longer outer fence
+  (four backticks), or the inner block closes it early
 
 ---
 

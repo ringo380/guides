@@ -1,4 +1,5 @@
 ---
+description: "Create and extract archives on Linux with tar, gzip, bzip2, xz, and zip, and choose a compression format that fits the data and the transfer."
 difficulty: beginner
 time_estimate: "20 min"
 prerequisites:

@@ -1,3 +1,6 @@
+---
+description: "Guides on TLS, certificates, and PKI for system administrators, covering how encryption works and how to manage certificates without outages."
+---
 # Security and TLS/SSL
 
 This section covers essential security practices for system administrators, focusing on certificate management, TLS/SSL termination, and secure communication.
