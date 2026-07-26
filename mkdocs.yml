@@ -213,6 +213,7 @@ nav:
       - Index: Nginx/README.md
       - Nginx Fundamentals: Nginx/fundamentals.md
       - Configuration: Nginx/configuration.md
+      - Reverse Proxy and Load Balancing: Nginx/reverse-proxy-load-balancing.md
   - Security:
       - Index: Security/README.md
       - TLS/SSL Fundamentals: Security/tls-ssl-fundamentals.md

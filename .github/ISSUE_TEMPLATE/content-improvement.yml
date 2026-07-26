@@ -72,6 +72,7 @@ body:
         - "Databases: InnoDB Recovery with PDRT"
         - "Nginx: Fundamentals"
         - "Nginx: Configuration"
+        - "Nginx: Reverse Proxy and Load Balancing"
         - "Security: TLS/SSL Fundamentals"
         - "Security: Certificate Management"
         - "Docker: Fundamentals"

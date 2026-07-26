@@ -96,7 +96,11 @@
     },
     Nginx: {
       prefix: "Nginx/",
-      guides: ["fundamentals", "configuration"],
+      guides: [
+        "fundamentals",
+        "configuration",
+        "reverse-proxy-load-balancing",
+      ],
     },
     Security: {
       prefix: "Security/",

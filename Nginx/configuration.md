@@ -156,18 +156,28 @@ server {
 
 ### WebSocket Proxying
 
-WebSocket connections require Nginx to upgrade the HTTP connection:
+WebSocket connections require Nginx to upgrade the HTTP connection. Map the `Upgrade` header to the right `Connection` value rather than hardcoding it, so ordinary requests through the same location are not told to upgrade:
 
 ```nginx
-location /ws/ {
-    proxy_pass http://localhost:3000;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host $host;
-    proxy_read_timeout 3600s;  # Keep alive for up to 1 hour
+# http context, defined once
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+server {
+    location /ws/ {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade    $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host       $host;
+        proxy_read_timeout 3600s;  # Keep alive for up to 1 hour
+    }
 }
 ```
+
+[Reverse Proxy and Load Balancing](reverse-proxy-load-balancing.md) covers why the hardcoded form causes trouble, along with buffering and upstream keepalive.
 
 ---
 
@@ -625,4 +635,4 @@ solution: |
 
 ---
 
-**Previous:** [Nginx Fundamentals](fundamentals.md) | [Back to Index](README.md)
+**Previous:** [Nginx Fundamentals](fundamentals.md) | **Next:** [Reverse Proxy and Load Balancing](reverse-proxy-load-balancing.md) | [Back to Index](README.md)
