@@ -32,6 +32,7 @@ run "js tests"      npx vitest run
 run "deno tests"    deno test --allow-read supabase/functions/admin-api/tests/
 run "docs symlinks" ./setup-docs.sh
 run "mkdocs strict" mkdocs build --strict
+run "site invariants" ./check-site.sh
 
 echo
 if [ "$fail" -ne 0 ]; then

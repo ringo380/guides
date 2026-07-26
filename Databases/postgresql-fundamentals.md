@@ -1,4 +1,5 @@
 ---
+description: "PostgreSQL from the ground up: its data types, MVCC concurrency, extensions, and the design decisions that set it apart from MySQL."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

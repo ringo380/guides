@@ -1,4 +1,5 @@
 ---
+description: "Scale a database past one server: read replicas, connection pooling, caching layers, partitioning, sharding, and the cost of each step."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

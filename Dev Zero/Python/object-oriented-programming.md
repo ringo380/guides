@@ -1,4 +1,5 @@
 ---
+description: "Object-oriented Python: classes, instances, inheritance, dunder methods, properties, dataclasses, and when a class beats a function."
 difficulty: intermediate
 time_estimate: "45 min"
 prerequisites:

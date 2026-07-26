@@ -1,4 +1,5 @@
 ---
+description: "Schedule recurring work on Linux with cron, anacron, and systemd timers, including crontab syntax, environment pitfalls, and failure notification."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

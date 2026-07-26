@@ -1,4 +1,5 @@
 ---
+description: "Start with Perl: what it is good at, how to run it, the interpreter and one-liners, and the mindset the language rewards."
 difficulty: beginner
 time_estimate: "35 min"
 prerequisites: []

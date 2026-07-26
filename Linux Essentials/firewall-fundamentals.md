@@ -1,4 +1,5 @@
 ---
+description: "Filter traffic on a Linux server with iptables and nftables, covering chains, tables, stateful rules, NAT, and the ufw and firewalld front ends."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

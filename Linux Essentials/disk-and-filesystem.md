@@ -1,4 +1,5 @@
 ---
+description: "Monitor and manage Linux storage with df, du, lsblk, and mount, covering partitions, filesystems, swap, and keeping disks healthy."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

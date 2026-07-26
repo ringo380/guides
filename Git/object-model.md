@@ -1,4 +1,5 @@
 ---
+description: "Git as a content-addressable filesystem: blobs, trees, commits, and tags, how object identity works, and what is really inside .git."
 difficulty: advanced
 time_estimate: "45 min"
 prerequisites:

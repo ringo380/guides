@@ -1,4 +1,5 @@
 ---
+description: "How the Linux shell actually works: startup files, command lookup, expansion order, quoting, and what happens before a command ever runs."
 difficulty: beginner
 time_estimate: "45 min"
 prerequisites: []

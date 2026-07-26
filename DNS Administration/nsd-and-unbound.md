@@ -1,4 +1,5 @@
 ---
+description: "Run NLnet Labs' split DNS stack: NSD for authoritative serving and Unbound for validating recursion, with configuration and tuning for each."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

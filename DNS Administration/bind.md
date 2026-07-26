@@ -1,4 +1,5 @@
 ---
+description: "Configure BIND as a caching resolver, an authoritative server, or both, covering named.conf, views, zone transfers, ACLs, logging, and hardening."
 difficulty: intermediate
 time_estimate: "45 min"
 prerequisites:

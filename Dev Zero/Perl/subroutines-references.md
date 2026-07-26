@@ -1,4 +1,5 @@
 ---
+description: "Perl subroutines and references: passing arguments, returning values, anonymous subs, closures, and building nested data structures."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

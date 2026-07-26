@@ -1,4 +1,5 @@
 ---
+description: "Run PowerDNS with database-backed zones and its HTTP API, covering the authoritative server, the recursor, backends, and automation workflows."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

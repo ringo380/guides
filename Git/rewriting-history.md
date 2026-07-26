@@ -1,4 +1,5 @@
 ---
+description: "Rewrite Git history safely with amend, rebase, interactive rebase, and filter-repo, and know when rewriting is and is not appropriate."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

@@ -1,3 +1,6 @@
+---
+description: "Write and submit your first Runbook guide in about 15 minutes: local setup, file layout, style conventions, and the pull request checklist."
+---
 # Contributor Quick-Start Guide
 
 Welcome! This guide will help you write your first guide in 15 minutes.

@@ -1,4 +1,5 @@
 ---
+description: "How DNSSEC signs and validates DNS: the chain of trust, ZSK and KSK roles, key rollover, NSEC and NSEC3, and debugging validation failures."
 difficulty: advanced
 time_estimate: "45 min"
 prerequisites:

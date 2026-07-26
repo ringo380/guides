@@ -1,4 +1,5 @@
 ---
+description: "Regular expressions on Linux: basic, extended, and Perl-compatible syntax, and how grep, sed, and awk each interpret patterns differently."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

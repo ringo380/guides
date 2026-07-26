@@ -1,4 +1,5 @@
 ---
+description: "Manage Linux services with systemd: unit files, targets, dependencies, journalctl logging, timers, and diagnosing a service that will not start."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

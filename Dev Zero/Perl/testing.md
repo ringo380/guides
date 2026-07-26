@@ -1,4 +1,5 @@
 ---
+description: "Test Perl code with Test::More and prove, covering test plans, fixtures, mocking, and coverage as part of a normal development loop."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

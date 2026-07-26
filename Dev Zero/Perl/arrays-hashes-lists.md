@@ -1,4 +1,5 @@
 ---
+description: "Perl arrays, hashes, and lists: slicing, iteration, sorting, and the difference between list and scalar context that trips people up."
 difficulty: beginner
 time_estimate: "40 min"
 prerequisites:

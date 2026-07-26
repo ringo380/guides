@@ -1,4 +1,5 @@
 ---
+description: "Conventions that make shell scripts reliable and portable: strict mode, quoting, trap handlers, input validation, and shellcheck-clean patterns."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

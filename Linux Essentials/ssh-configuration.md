@@ -1,4 +1,5 @@
 ---
+description: "Configure OpenSSH properly: key types and generation, agent forwarding, jump hosts, client config, and hardening a server against brute force."
 difficulty: advanced
 time_estimate: "45 min"
 prerequisites:

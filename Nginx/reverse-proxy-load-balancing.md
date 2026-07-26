@@ -1,4 +1,5 @@
 ---
+description: "Proxy and load balance with Nginx: upstream pools, forwarded headers, buffering, health checks and failover, keepalive, and WebSocket upgrades."
 difficulty: intermediate
 time_estimate: "45 min"
 prerequisites:

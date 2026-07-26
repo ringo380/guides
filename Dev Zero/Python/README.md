@@ -1,3 +1,6 @@
+---
+description: "A Python path for sysadmins and developers, focused on automation, file and API work, testing, and writing tools you will actually reuse."
+---
 # Python Developer Roadmap (Dev Zero)
 
 This roadmap provides a structured path for system administrators and developers to learn Python, focusing on practical automation and system integration.

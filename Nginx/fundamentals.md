@@ -1,4 +1,5 @@
 ---
+description: "How Nginx works and how to run it: the event-driven worker model, installation, configuration contexts, the request lifecycle, and static files."
 difficulty: beginner
 time_estimate: "40 min"
 prerequisites: []

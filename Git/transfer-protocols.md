@@ -1,4 +1,5 @@
 ---
+description: "How git fetch and push negotiate: the wire protocols, packfiles, delta compression, and the plumbing commands underneath the porcelain."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

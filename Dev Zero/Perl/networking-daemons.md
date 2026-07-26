@@ -1,4 +1,5 @@
 ---
+description: "Network programming in Perl: sockets, clients and servers, protocol handling, and writing daemons that behave correctly in the background."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

@@ -1,4 +1,5 @@
 ---
+description: "Sign Git commits and tags with GPG or SSH keys, protect branches, keep secrets out of history, and clean them up when they get in."
 difficulty: advanced
 time_estimate: "35 min"
 prerequisites:

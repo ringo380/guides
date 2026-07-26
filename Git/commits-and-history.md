@@ -1,4 +1,5 @@
 ---
+description: "What a Git commit actually contains, how to write messages worth reading, and how to navigate history with log, show, diff, and blame."
 difficulty: beginner
 time_estimate: "40 min"
 prerequisites:

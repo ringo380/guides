@@ -1,4 +1,5 @@
 ---
+description: "Diagnose and configure Linux networking from the command line with ip, ss, dig, curl, and tcpdump, the tools that replaced ifconfig and netstat."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

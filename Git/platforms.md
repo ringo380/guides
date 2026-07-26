@@ -1,4 +1,5 @@
 ---
+description: "How GitHub, GitLab, and Bitbucket differ in pull requests, CI/CD, permissions, and automation, and what actually transfers between them."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

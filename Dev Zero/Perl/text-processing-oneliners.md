@@ -1,4 +1,5 @@
 ---
+description: "Perl one-liners for text processing: the -n, -p, -a, and -i flags, in-place editing, and replacing chains of sed and awk with one command."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

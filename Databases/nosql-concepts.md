@@ -1,4 +1,5 @@
 ---
+description: "What NoSQL actually trades away: the CAP theorem, eventual consistency, and how document, key-value, column, and graph stores differ."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

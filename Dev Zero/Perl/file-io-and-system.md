@@ -1,4 +1,5 @@
 ---
+description: "Read and write files in Perl, handle directories and file tests, and interact with the system through processes, environment, and exit codes."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

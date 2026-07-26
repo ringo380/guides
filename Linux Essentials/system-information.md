@@ -1,4 +1,5 @@
 ---
+description: "Inspect a running Linux system: CPU, memory, and process state with top, ps, free, and vmstat, plus hardware details for capacity planning."
 difficulty: beginner
 time_estimate: "25 min"
 prerequisites:

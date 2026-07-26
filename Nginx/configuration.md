@@ -1,4 +1,5 @@
 ---
+description: "Configure Nginx for production: server blocks, location matching, reverse proxying, TLS termination, rate limiting, logging, and compression."
 difficulty: intermediate
 time_estimate: "45 min"
 prerequisites:

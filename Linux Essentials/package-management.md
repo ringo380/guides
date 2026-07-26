@@ -1,4 +1,5 @@
 ---
+description: "Install and manage software across Linux distributions with apt, dnf, pacman, and zypper, plus repositories, dependencies, and packaging."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

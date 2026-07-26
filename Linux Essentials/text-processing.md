@@ -1,4 +1,5 @@
 ---
+description: "Search and transform text on the Linux command line with grep, sed, awk, cut, sort, and uniq, composed into pipelines that do real work."
 difficulty: intermediate
 time_estimate: "45 min"
 prerequisites:

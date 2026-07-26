@@ -1,4 +1,5 @@
 ---
+description: "Administer PostgreSQL: roles and privileges, pg_hba.conf authentication, vacuum and autovacuum, WAL, backups, and connection management."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

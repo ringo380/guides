@@ -1,4 +1,5 @@
 ---
+description: "Design and operate resilient DNS: anycast, secondary servers, zone transfers, email records, monitoring, and migrating a domain without downtime."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

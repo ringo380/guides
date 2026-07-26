@@ -1,4 +1,5 @@
 ---
+description: "Recover data from damaged InnoDB tablespaces with Percona Data Recovery Tool, including first response steps that prevent further loss."
 difficulty: advanced
 time_estimate: "35 min"
 prerequisites:

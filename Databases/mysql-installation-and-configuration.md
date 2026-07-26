@@ -1,4 +1,5 @@
 ---
+description: "Install and configure MySQL for production: storage engines, my.cnf tuning, buffer pool sizing, character sets, and a secure initial setup."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:

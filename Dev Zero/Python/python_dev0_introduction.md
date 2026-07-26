@@ -1,4 +1,5 @@
 ---
+description: "Python for system administrators: installation, the interpreter, syntax basics, and why it replaced shell scripting for so much automation."
 difficulty: beginner
 time_estimate: "30 min"
 prerequisites: []

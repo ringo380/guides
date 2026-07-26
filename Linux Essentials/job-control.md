@@ -1,4 +1,5 @@
 ---
+description: "Manage foreground and background jobs in the Linux shell with bg, fg, jobs, and nohup, and understand signals, terminals, and process groups."
 difficulty: intermediate
 time_estimate: "30 min"
 prerequisites:

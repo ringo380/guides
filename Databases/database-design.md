@@ -1,4 +1,5 @@
 ---
+description: "Design schemas that hold up: normalization, keys, relationships, indexing strategy, and denormalization tradeoffs worth making deliberately."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

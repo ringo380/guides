@@ -1,3 +1,6 @@
+---
+description: "Guides on running Nginx as a web server, reverse proxy, and load balancer, from process architecture and static files through TLS and failover."
+---
 # Nginx
 
 Comprehensive guides for managing Nginx as a web server, reverse proxy, and load balancer. These guides cover everything from the process architecture and static file serving to virtual hosts, TLS termination, and security hardening.

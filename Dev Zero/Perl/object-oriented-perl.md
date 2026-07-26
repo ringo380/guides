@@ -1,4 +1,5 @@
 ---
+description: "Object-oriented Perl: packages as classes, bless, inheritance, accessors, and modern approaches with Moose and Moo."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

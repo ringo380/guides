@@ -1,4 +1,5 @@
 ---
+description: "Work with MongoDB: documents and collections, the query and aggregation frameworks, indexing, schema design patterns, and replica sets."
 difficulty: intermediate
 time_estimate: "40 min"
 prerequisites:

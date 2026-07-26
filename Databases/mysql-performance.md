@@ -1,4 +1,5 @@
 ---
+description: "Diagnose and fix MySQL performance: index design, EXPLAIN output, the slow query log, and the server variables that actually move the needle."
 difficulty: advanced
 time_estimate: "45 min"
 prerequisites:

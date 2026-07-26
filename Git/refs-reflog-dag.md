@@ -1,4 +1,5 @@
 ---
+description: "Git refs, HEAD, and the commit DAG, plus using the reflog to recover commits that seem lost after a reset, rebase, or bad checkout."
 difficulty: advanced
 time_estimate: "40 min"
 prerequisites:

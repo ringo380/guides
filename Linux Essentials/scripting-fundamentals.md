@@ -1,4 +1,5 @@
 ---
+description: "Write reliable Bash scripts: conditionals, loops, functions, arguments, exit codes, and the error handling patterns that keep them predictable."
 difficulty: intermediate
 time_estimate: "45 min"
 prerequisites:

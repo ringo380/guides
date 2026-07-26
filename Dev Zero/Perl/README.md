@@ -1,3 +1,6 @@
+---
+description: "A Perl course from Unix foundations to professional development, covering syntax, references, object orientation, testing, and automation."
+---
 # Perl: Zero to Expert
 
 A comprehensive course that takes you from Unix foundations through professional Perl development. Each guide builds on the last, with interactive quizzes, terminal simulations, code walkthroughs, and hands-on exercises throughout.

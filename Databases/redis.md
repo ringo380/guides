@@ -1,4 +1,5 @@
 ---
+description: "Use Redis as a cache, store, and message broker: its data structures, persistence options, eviction policies, key expiry, and clustering."
 difficulty: intermediate
 time_estimate: "35 min"
 prerequisites:
