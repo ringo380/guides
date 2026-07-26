@@ -651,7 +651,7 @@ solution: |
 ## Further Reading
 
 - [journalctl man page](https://www.freedesktop.org/software/systemd/man/journalctl.html) - complete journal query reference
-- [rsyslog Documentation](https://www.rsyslog.com/doc/master/) - rsyslog configuration and module reference
+- [rsyslog Documentation](https://www.rsyslog.com/doc/) - rsyslog configuration and module reference
 - [logrotate man page](https://man7.org/linux/man-pages/man8/logrotate.8.html) - log rotation configuration reference
 - [jq Manual](https://jqlang.github.io/jq/manual/) - JSON processing tool documentation
 - [Arch Wiki: systemd/Journal](https://wiki.archlinux.org/title/Systemd/Journal) - practical journal configuration guide

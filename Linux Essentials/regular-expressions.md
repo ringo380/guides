@@ -668,7 +668,7 @@ solution: |
 - [grep man page](https://man7.org/linux/man-pages/man1/grep.1.html) - grep options and regex support reference
 - [POSIX Regular Expressions](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html) - official BRE and ERE specification
 - [perlre man page](https://perldoc.perl.org/perlre) - Perl regex reference (the basis for PCRE)
-- [Arch Wiki: Regular Expressions](https://wiki.archlinux.org/title/Regular_expression) - practical quick reference
+- [GNU grep Manual: Regular Expressions](https://www.gnu.org/software/grep/manual/html_node/Regular-Expressions.html) - practical quick reference for BRE, ERE, and the GNU extensions
 
 ---
 

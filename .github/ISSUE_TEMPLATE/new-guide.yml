@@ -12,7 +12,12 @@ body:
         - DNS Administration
         - Git
         - Databases
-        - Perl / Dev Zero
+        - Nginx
+        - Security
+        - Docker
+        - Dev Zero (Perl / Python)
+        - Kubernetes (planned)
+        - CI/CD (planned)
         - New Topic Area
     validations:
       required: true

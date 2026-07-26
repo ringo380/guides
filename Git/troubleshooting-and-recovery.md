@@ -345,7 +345,7 @@ git filter-repo --subdirectory-filter services/auth
 
 ### BFG Repo-Cleaner
 
-[**BFG**](https://reclaimtheremote.com/bfg-repo-cleaner/) is simpler for common tasks:
+[**BFG**](https://rtyley.github.io/bfg-repo-cleaner/) is simpler for common tasks:
 
 ```bash
 # Remove all files larger than 100MB from history
@@ -617,7 +617,7 @@ solution: |
 - [Pro Git - Chapter 7: Git Tools](https://git-scm.com/book/en/v2/Git-Tools-Revision-Selection) - stashing, searching, rewriting, debugging
 - [Git LFS Documentation](https://git-lfs.com/) - large file storage setup and usage
 - [git-filter-repo Documentation](https://github.com/newren/git-filter-repo) - history rewriting tool
-- [BFG Repo-Cleaner Documentation](https://reclaimtheremote.com/bfg-repo-cleaner/) - simple history cleaning
+- [BFG Repo-Cleaner Documentation](https://rtyley.github.io/bfg-repo-cleaner/) - simple history cleaning
 - [Official git-fsck documentation](https://git-scm.com/docs/git-fsck) - repository integrity verification
 
 ---

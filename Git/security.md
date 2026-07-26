@@ -433,7 +433,7 @@ steps:
 
 ### BFG Repo-Cleaner
 
-[**BFG**](https://reclaimtheremote.com/bfg-repo-cleaner/) is a simpler tool focused on common cleaning tasks:
+[**BFG**](https://rtyley.github.io/bfg-repo-cleaner/) is a simpler tool focused on common cleaning tasks:
 
 ```bash
 # Remove a file by name

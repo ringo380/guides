@@ -1417,7 +1417,7 @@ options:
 ## Further Reading
 
 - [perlopentut](https://perldoc.perl.org/perlopentut) - Perl open tutorial with examples for every mode
-- [perlio](https://perldoc.perl.org/perlio) - PerlIO layers (encoding, buffering, compression)
+- [perlio](https://perldoc.perl.org/PerlIO) - PerlIO layers (encoding, buffering, compression)
 - [perlfunc](https://perldoc.perl.org/perlfunc) - complete built-in function reference
 - [perlvar](https://perldoc.perl.org/perlvar) - special variables (`$!`, `$?`, `$/`, `$.`, `$_`)
 - [perlipc](https://perldoc.perl.org/perlipc) - interprocess communication (signals, pipes, sockets, fork)

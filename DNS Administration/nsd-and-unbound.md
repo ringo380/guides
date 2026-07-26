@@ -641,7 +641,7 @@ Both are production-quality, well-maintained, and used by major organizations. T
 - [Unbound Documentation](https://unbound.docs.nlnetlabs.nl/en/latest/) - NLnet Labs official Unbound docs
 - [NLnet Labs](https://nlnetlabs.nl/) - organization overview and projects
 - [RFC 5011](https://datatracker.ietf.org/doc/html/rfc5011) - Automated Updates of DNSSEC Trust Anchors
-- [DNS Flag Day](https://dnsflagday.net/) - DNS standards compliance initiative
+- [DNS Flag Day](https://www.dnsflagday.net/) - DNS standards compliance initiative
 
 ---
 

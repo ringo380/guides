@@ -77,7 +77,7 @@ IBM was slow to commercialize Codd's ideas (IMS was a cash cow), but two Berkele
 <img src="../../assets/images/databases/larry-ellison.jpg" alt="Larry Ellison on stage at Oracle OpenWorld">
 <figcaption>
 Larry Ellison, co-founder of Oracle, on stage at Oracle OpenWorld 2009.
-<span class="photo-credit">Photo: <a href="https://www.flickr.com/photos/43156897@N06/4013705452">Oracle Corporate Communications</a>, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></span>
+<span class="photo-credit">Photo: <a href="https://web.archive.org/web/20180622194017/https://www.flickr.com/photos/43156897@N06/4013705452">Oracle Corporate Communications</a>, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a></span>
 </figcaption>
 </figure>
 
