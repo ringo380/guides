@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - branches-and-merging
+learning_outcomes:
+  - "Configure remotes and tracking branches"
+  - "Distinguish between fetch, pull, and push operations"
+  - "Set up SSH and HTTPS authentication for remote access"
+tags:
+  - git
+  - collaboration
+  - version-control
+---
+
 # Remote Repositories
 
 So far, everything has been local - one repository on your machine. In practice, you work with code that lives on a server, collaborate with other developers, and synchronize changes between multiple copies of the same repository. **Remotes** are Git's mechanism for connecting these repositories together.
@@ -313,26 +328,27 @@ git remote show origin
 `git remote show origin` displays useful information: the fetch/push URLs, tracked branches, and whether local branches are ahead or behind.
 
 ```command-builder
-title: "git remote Command Builder"
-description: "Build a git remote command for managing remote connections."
-base: "git remote"
-groups:
-  - name: "Subcommand"
-    options:
-      - flag: "-v"
-        description: "List remotes with fetch/push URLs"
-      - flag: "add <name> <url>"
-        description: "Add a new remote with a short name and URL"
-      - flag: "rename <old> <new>"
-        description: "Rename an existing remote"
-      - flag: "remove <name>"
-        description: "Remove a remote and its tracking branches"
-      - flag: "show <name>"
-        description: "Display details about a specific remote"
-      - flag: "set-url <name> <url>"
-        description: "Change the URL for an existing remote"
-      - flag: "prune <name>"
-        description: "Remove stale remote-tracking branches"
+base: git remote
+description: Build a git remote command for managing remote connections.
+options:
+- flag: ''
+  type: select
+  label: Subcommand
+  choices:
+  - - -v
+    - List remotes with fetch/push URLs
+  - - add <name> <url>
+    - Add a new remote with a short name and URL
+  - - rename <old> <new>
+    - Rename an existing remote
+  - - remove <name>
+    - Remove a remote and its tracking branches
+  - - show <name>
+    - Display details about a specific remote
+  - - set-url <name> <url>
+    - Change the URL for an existing remote
+  - - prune <name>
+    - Remove stale remote-tracking branches
 ```
 
 ---

@@ -1,3 +1,19 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - object-model
+  - remote-repositories
+learning_outcomes:
+  - "Describe how Git negotiates and transfers objects between repositories"
+  - "Compare SSH, smart HTTP, and native Git transport protocols"
+  - "Configure shallow clones, partial clones, and git bundle for large repos"
+tags:
+  - git
+  - internals
+  - performance
+---
+
 # Transfer Protocols and Plumbing
 
 When you run `git fetch` or `git push`, Git negotiates with a remote server to figure out which objects need to be transferred, packages them efficiently, and sends them over the wire. This guide covers how that transfer works at the protocol level, the different transport mechanisms, and clone strategies for large repositories.
@@ -53,6 +69,19 @@ git://github.com/user/repo.git
 ```
 
 The `git://` protocol is unauthenticated and unencrypted. It was used for fast, read-only access to public repositories. Most platforms no longer support it due to security concerns.
+
+### Protocol Comparison
+
+| | SSH | Smart HTTP | Dumb HTTP | Native Git |
+|---|---|---|---|---|
+| **Authentication** | SSH keys or password | HTTP tokens, Basic auth, OAuth | None (read-only) | None |
+| **Encryption** | Always (SSH channel) | TLS (HTTPS only) | None | None |
+| **Push support** | Yes | Yes | No | No |
+| **Firewall/proxy** | Port 22 (may be blocked) | Port 443 (almost never blocked) | Port 80/443 | Port 9418 (usually blocked) |
+| **Setup complexity** | SSH key required | Just a URL and token | Just a URL | Server daemon required |
+| **Common use** | Developer workstations, CI with deploy keys | Hosted platforms (GitHub, GitLab, Bitbucket) | Static web servers (legacy) | Deprecated, rarely used |
+
+**Choose SSH** for developer machines where you control the environment - key-based authentication is seamless once configured. **Choose Smart HTTP** for CI/CD pipelines, tokens you can rotate, and anywhere port 22 may be blocked (corporate networks, restricted cloud environments).
 
 ---
 
@@ -243,36 +272,43 @@ options:
 ```
 
 ```command-builder
-title: "Clone Strategies for Large Repositories"
-description: "Build a git clone command optimized for large repositories."
-base: "git clone"
-groups:
-  - name: "History Depth"
-    options:
-      - flag: "--depth 1"
-        description: "Shallow clone: only the most recent commit"
-      - flag: "--depth 10"
-        description: "Shallow clone: last 10 commits"
-  - name: "Partial Clone"
-    options:
-      - flag: "--filter=blob:none"
-        description: "Skip all blobs, download on demand"
-      - flag: "--filter=blob:limit=1m"
-        description: "Skip blobs larger than 1MB"
-      - flag: "--filter=tree:0"
-        description: "Skip trees too (ultra-minimal)"
-  - name: "Branch Scope"
-    options:
-      - flag: "--single-branch"
-        description: "Only download the default branch"
-      - flag: "--single-branch --branch develop"
-        description: "Only download the develop branch"
-  - name: "Checkout"
-    options:
-      - flag: "--sparse"
-        description: "Enable sparse checkout (combine with --filter)"
-      - flag: "--no-checkout"
-        description: "Clone without checking out files"
+base: git clone
+description: Build a git clone command optimized for large repositories.
+options:
+- flag: ''
+  type: select
+  label: History Depth
+  choices:
+  - - --depth 1
+    - 'Shallow clone: only the most recent commit'
+  - - --depth 10
+    - 'Shallow clone: last 10 commits'
+- flag: ''
+  type: select
+  label: Partial Clone
+  choices:
+  - - --filter=blob:none
+    - Skip all blobs, download on demand
+  - - --filter=blob:limit=1m
+    - Skip blobs larger than 1MB
+  - - --filter=tree:0
+    - Skip trees too (ultra-minimal)
+- flag: ''
+  type: select
+  label: Branch Scope
+  choices:
+  - - --single-branch
+    - Only download the default branch
+  - - --single-branch --branch develop
+    - Only download the develop branch
+- flag: ''
+  type: select
+  label: Checkout
+  choices:
+  - - --sparse
+    - Enable sparse checkout (combine with --filter)
+  - - --no-checkout
+    - Clone without checking out files
 ```
 
 ---

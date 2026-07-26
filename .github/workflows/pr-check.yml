@@ -9,16 +9,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
           cache: 'pip'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
           cache: 'npm'
 
       - name: Install system dependencies
@@ -27,17 +27,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-test.txt
 
-      - name: Run Python tests
-        run: python -m pytest tests/ -v
-
       - name: Install JS dependencies
         run: npm ci
 
-      - name: Run JS tests
-        run: npx vitest run
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
 
-      - name: Prepare docs directory
-        run: ./setup-docs.sh
-
-      - name: Build site (strict mode)
-        run: mkdocs build --strict
+      - name: Verify
+        run: ./verify.sh

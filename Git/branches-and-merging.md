@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - commits-and-history
+learning_outcomes:
+  - "Explain how branches work as movable pointers to commits"
+  - "Distinguish between fast-forward and three-way merges"
+  - "Resolve merge conflicts using structured strategies"
+tags:
+  - git
+  - branching
+  - merging
+---
+
 # Branches and Merging
 
 Branching is where Git's design pays off. In older systems like SVN, creating a branch meant copying the entire directory tree - it was slow, expensive, and merging was painful enough that teams avoided branches. In Git, a branch is a 41-byte file containing a commit hash. Creating one is instant. Merging is a first-class operation. This changes how you work: branches become disposable tools for isolating work, not heavyweight decisions.
@@ -599,6 +614,38 @@ solution: |
   # Find the commit hash where gamma was
   git branch feature/gamma-recovered HEAD~1  # Or use the specific hash
   ```
+```
+
+```command-builder
+base: git merge
+description: Integrate changes from one branch into the current branch
+options:
+  - flag: ""
+    type: text
+    label: "Branch to merge"
+    placeholder: "feature/my-branch"
+    explanation: "The branch whose commits you want to integrate into the current branch"
+  - flag: ""
+    type: select
+    label: "Merge strategy"
+    explanation: "Controls how Git creates (or avoids) a merge commit"
+    choices:
+      - ["", "Default (fast-forward if possible)"]
+      - ["--no-ff", "--no-ff (always create a merge commit)"]
+      - ["--ff-only", "--ff-only (fail if fast-forward is not possible)"]
+      - ["--squash", "--squash (collapse all commits into working tree, then commit manually)"]
+  - flag: ""
+    type: select
+    label: "Commit behavior"
+    explanation: "Whether to immediately commit the result or leave it staged"
+    choices:
+      - ["", "Default (commit immediately)"]
+      - ["--no-commit", "--no-commit (stage the merge but do not commit)"]
+  - flag: "-m"
+    type: text
+    label: "Merge commit message"
+    placeholder: "Merge feature/my-branch"
+    explanation: "Custom message for the merge commit (only used when a merge commit is created)"
 ```
 
 ---

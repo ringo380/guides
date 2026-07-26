@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - modules-and-cpan
+learning_outcomes:
+  - "Build classes using bless, constructors, and methods"
+  - "Implement inheritance with @ISA and use parent"
+  - "Use Moose and Moo for modern OOP with roles and type constraints"
+tags:
+  - perl
+  - programming
+  - oop
+---
 # Object-Oriented Perl
 
 ## From bless to Moose: Building Reusable Abstractions
@@ -790,7 +804,7 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 ```
 
-The [**`with`**](https://metacpan.org/pod/Moose#with) keyword composes one or more roles into the class. If a role has a `requires` declaration, the consuming class must provide that method - Moose enforces this at compile time.
+The [**`with`**](https://metacpan.org/pod/Moose#with) keyword composes one or more roles into the class. If a role has a `requires` declaration, the consuming class must provide that method - Moose enforces this at role composition time (when `with` runs, typically as the consuming class is loaded).
 
 ```perl
 my $p = Person->new(name => 'Alice', age => 30);

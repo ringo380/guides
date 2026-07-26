@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - branches-and-merging
+learning_outcomes:
+  - "Use git stash to save and restore in-progress work"
+  - "Manage multiple working trees with git worktree"
+  - "Clean untracked files safely with git clean"
+tags:
+  - git
+  - version-control
+  - branching
+---
+
 # Stashing and the Worktree
 
 You're halfway through a feature when an urgent bug comes in. Your working directory has uncommitted changes that aren't ready for a commit. You need to switch context, fix the bug, and come back to where you left off. Git provides two tools for this: **stashing** saves changes temporarily and restores them later, and **worktrees** let you work on multiple branches simultaneously in separate directories.
@@ -163,36 +178,39 @@ steps:
 ```
 
 ```command-builder
-title: "git stash Command Builder"
-description: "Build a git stash command for managing work-in-progress."
-base: "git stash"
-groups:
-  - name: "Action"
-    options:
-      - flag: "push"
-        description: "Save changes to a new stash entry (default action)"
-      - flag: "pop"
-        description: "Apply the latest stash and remove it from the stack"
-      - flag: "apply"
-        description: "Apply a stash but keep it in the stack"
-      - flag: "list"
-        description: "List all stash entries"
-      - flag: "show -p"
-        description: "Show the full diff of the latest stash"
-      - flag: "drop"
-        description: "Remove the latest stash from the stack"
-      - flag: "branch <name>"
-        description: "Create a new branch from the stash point and apply"
-  - name: "Options (for push)"
-    options:
-      - flag: "-m 'description'"
-        description: "Add a descriptive message to the stash"
-      - flag: "-u"
-        description: "Include untracked files in the stash"
-      - flag: "-a"
-        description: "Include untracked AND ignored files"
-      - flag: "-p"
-        description: "Interactively select hunks to stash"
+base: git stash
+description: Build a git stash command for managing work-in-progress.
+options:
+- flag: ''
+  type: select
+  label: Action
+  choices:
+  - - push
+    - Save changes to a new stash entry (default action)
+  - - pop
+    - Apply the latest stash and remove it from the stack
+  - - apply
+    - Apply a stash but keep it in the stack
+  - - list
+    - List all stash entries
+  - - show -p
+    - Show the full diff of the latest stash
+  - - drop
+    - Remove the latest stash from the stack
+  - - branch <name>
+    - Create a new branch from the stash point and apply
+- flag: ''
+  type: select
+  label: Options (for push)
+  choices:
+  - - -m 'description'
+    - Add a descriptive message to the stash
+  - - -u
+    - Include untracked files in the stash
+  - - -a
+    - Include untracked AND ignored files
+  - - -p
+    - Interactively select hunks to stash
 ```
 
 ---

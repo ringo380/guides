@@ -1,0 +1,105 @@
+<!--
+  Google Analytics 4 with Consent Mode v2.
+
+  Overrides Material's built-in Google provider partial
+  (partials/integrations/analytics/google.html).
+
+  gtag.js always loads, but starts with analytics_storage denied, so
+  non-consenting visitors are measured via cookieless consent-mode pings
+  (aggregate/modeled data only). When a visitor accepts the analytics
+  cookie in Material's consent banner, we upgrade consent to granted and
+  full first-party measurement begins. This respects the cookie-consent
+  control required by the site's authenticated (Supabase) experience
+  while restoring analytics coverage.
+-->
+<script>
+  (function () {
+    var property = "{{ config.extra.analytics.property }}";
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    window.gtag = gtag;
+
+    // Default everything to denied until the visitor opts in.
+    gtag("consent", "default", {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: "denied",
+      wait_for_update: 500
+    });
+
+    gtag("js", new Date());
+    gtag("config", property);
+
+    // Material stores consent as JSON in localStorage["__consent"], e.g.
+    // {"analytics": true}. The cookie name is defined under
+    // theme.consent.cookies.analytics in mkdocs.yml.
+    var granted = false;
+    function hasAnalyticsConsent() {
+      try {
+        var c = JSON.parse(localStorage.getItem("__consent"));
+        return !!(c && c.analytics);
+      } catch (e) {
+        return false;
+      }
+    }
+    function syncConsent() {
+      if (granted) return;
+      if (hasAnalyticsConsent()) {
+        gtag("consent", "update", { analytics_storage: "granted" });
+        granted = true;
+        if (poll) { clearInterval(poll); poll = null; }
+      }
+    }
+
+    // Returning visitors who accepted previously.
+    syncConsent();
+    // Catch a same-tab "Accept" without a page reload (Material does not
+    // reload on consent change, and the storage event is cross-tab only).
+    var poll = granted ? null : setInterval(syncConsent, 1000);
+  })();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ config.extra.analytics.property }}"></script>
+
+<!-- Page feedback widget event tracking (preserved from Material's default). -->
+{% if config.extra.analytics.feedback %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (document$) {
+        document$.subscribe(function() {
+          var feedback = document.forms.feedback
+          if (typeof feedback === "undefined")
+            return
+
+          /* Set up event handlers for feedback widget */
+          for (var button of feedback.querySelectorAll("[type=submit]")) {
+            button.addEventListener("click", function(e) {
+              e.preventDefault()
+
+              /* Retrieve and send feedback value */
+              var page = document.location.pathname
+              var data = this.getAttribute("data-md-value")
+              gtag("event", "feedback", {
+                "event_category": page,
+                "event_label": data,
+                "value": data
+              })
+
+              /* Disable form and show note, if given */
+              feedback.firstElementChild.disabled = true
+              var note = feedback.querySelector(
+                ".md-feedback__note [data-md-value='" + data + "']"
+              )
+              if (note)
+                note.hidden = false
+            })
+
+            /* Show feedback widget */
+            button.disabled = false
+          }
+        })
+      }
+    })
+  </script>
+{% endif %}

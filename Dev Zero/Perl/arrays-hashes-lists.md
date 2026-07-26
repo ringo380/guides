@@ -1,3 +1,17 @@
+---
+difficulty: beginner
+time_estimate: "40 min"
+prerequisites:
+  - scalars-strings-numbers
+learning_outcomes:
+  - "Create and manipulate arrays and hashes"
+  - "Use list operations, slices, and iteration patterns"
+  - "Apply map, grep, join, and split for data transformation"
+tags:
+  - perl
+  - programming
+  - scripting
+---
 # Arrays, Hashes, and Lists
 
 ## Collecting and Organizing Data
@@ -347,6 +361,8 @@ while (my $item = shift @queue) {
 }
 # @queue is now empty
 ```
+
+The plain `while (my $item = shift @queue)` form stops on any falsy value (`0`, `""`, `"0"`, `undef`), which is rarely what you want. If your queue might contain those values, use `while (@queue) { my $item = shift @queue; ... }` or `while (defined(my $item = shift @queue))`.
 
 This pattern treats the array as a queue: process the front element, then remove it.
 
@@ -812,6 +828,7 @@ Combine `map`, `grep`, `sort`, and `join` to build data pipelines:
 my @raw = qw(banana APPLE cherry apple BANANA Cherry);
 
 # Normalize, deduplicate, sort, and format
+my %seen;
 my @result =
     sort
     grep { !$seen{$_}++ }

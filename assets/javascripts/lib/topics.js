@@ -70,7 +70,7 @@
     },
     "Dev Zero/Python": {
       prefix: "Dev Zero/Python/",
-      guides: ["python_dev0_introduction", "data-structures-and-logic", "files-and-apis", "system-automation", "testing-and-tooling"],
+      guides: ["python_dev0_introduction", "data-structures-and-logic", "files-and-apis", "system-automation", "testing-and-tooling", "object-oriented-programming", "functions-and-modules"],
     },
     Databases: {
       prefix: "Databases/",
@@ -104,7 +104,7 @@
     },
     Docker: {
       prefix: "Docker/",
-      guides: ["fundamentals", "compose"],
+      guides: ["fundamentals", "compose", "dockerfile-best-practices"],
     },
     Git: {
       prefix: "Git/",

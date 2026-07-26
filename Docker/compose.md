@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - fundamentals
+learning_outcomes:
+  - "Define multi-container applications in compose.yml with services, networks, and volumes"
+  - "Manage full-stack environments with docker compose up, down, and build commands"
+  - "Configure service dependencies, environment variables, and health checks"
+tags:
+  - docker
+  - containers
+  - orchestration
+  - devops
+---
 # Docker Compose
 
 [**Docker Compose**](https://docs.docker.com/compose/) is a tool for defining and running multi-container Docker applications. Instead of managing each container with separate `docker run` commands - each with its own flags for ports, volumes, networks, and environment variables - you declare everything in a single YAML file and bring the entire stack up or down with one command.
@@ -19,7 +34,7 @@ The benefits go beyond convenience:
 
 ## The Compose File
 
-The core of Docker Compose is a YAML file named `compose.yml` (or `docker-compose.yml` for backward compatibility). It defines services, networks, and volumes.
+The core of Docker Compose is a YAML file. Compose v2 looks for `compose.yaml` (the canonical name), `compose.yml`, `docker-compose.yaml`, or `docker-compose.yml` in that order. It defines services, networks, and volumes.
 
 ### A Production-Style Example
 
@@ -83,6 +98,69 @@ volumes:
 | `networks` | Attach the service to specific networks. |
 | `command` | Override the default CMD from the image. |
 | `profiles` | Assign the service to a profile so it only starts when that profile is active. |
+
+```code-walkthrough
+title: "Production-Style compose.yml Walkthrough"
+description: "How each section of a multi-service Compose file connects the pieces together."
+code: |
+  services:
+    web:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - "8000:8000"
+      environment:
+        DATABASE_URL: postgres://admin:secret@db:5432/myapp
+        REDIS_URL: redis://cache:6379
+      depends_on:
+        db:
+          condition: service_healthy
+        cache:
+          condition: service_started
+      restart: unless-stopped
+
+    db:
+      image: postgres:16
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: myapp
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: secret
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U admin -d myapp"]
+        interval: 5s
+        timeout: 3s
+        retries: 5
+      restart: unless-stopped
+
+    cache:
+      image: redis:7-alpine
+      restart: unless-stopped
+
+  volumes:
+    pgdata:
+annotations:
+  - line: 1
+    text: "Top-level 'services' key. Every named entry beneath it becomes a container. The name (web, db, cache) is also the DNS hostname on the default network - services reach each other by name, not IP address."
+  - line: 3
+    text: "'build' tells Compose to build the image from a local Dockerfile instead of pulling one. 'context' is the directory sent to the Docker daemon as the build context."
+  - line: 7
+    text: "Port mapping in HOST:CONTAINER format. Traffic hitting port 8000 on the host is forwarded to port 8000 inside the web container. Omit the host port to let Docker assign a random one."
+  - line: 9
+    text: "Environment variables injected into the web container at startup. DATABASE_URL uses 'db' as the hostname - Compose's built-in DNS resolves the service name to the container's internal IP automatically."
+  - line: 12
+    text: "'depends_on' controls startup order. 'condition: service_healthy' means web will not start until the db healthcheck passes - critical because PostgreSQL takes several seconds to initialize after the container starts."
+  - line: 19
+    text: "The db service uses a pre-built official image from Docker Hub instead of a local build. ':16' pins to a specific major version - using ':latest' risks silent upgrades breaking your schema."
+  - line: 20
+    text: "Named volumes persist data across container restarts and upgrades. The 'pgdata:/var/lib/postgresql/data' syntax mounts the named volume at the path PostgreSQL uses for its data directory."
+  - line: 26
+    text: "Healthcheck defines how Compose knows the database is ready. pg_isready probes the PostgreSQL socket. Compose runs this command inside the container; exit code 0 = healthy, non-zero = unhealthy."
+  - line: 37
+    text: "The top-level 'volumes' section declares named volumes. A volume listed here but not under any service is still created - it just won't be mounted anywhere. Named volumes outlive containers unless you run 'docker compose down -v'."
+```
 
 ---
 
@@ -249,7 +327,7 @@ steps:
     output: "[+] Building 8.2s\n[+] Running 4/4\n ✔ Network myproject_default  Created\n ✔ Volume myproject_pgdata    Created\n ✔ Container myproject-db-1    Healthy\n ✔ Container myproject-cache-1 Started\n ✔ Container myproject-web-1   Started"
     narration: "Compose builds the web image, creates a bridge network and a named volume, then starts containers in dependency order. The web container waits until the db health check passes."
   - command: "docker compose ps"
-    output: "NAME                 SERVICE   STATUS    PORTS\nmyproject-cache-1    cache     running   6379/tcp\nmyproject-db-1       db        running   5432/tcp\nmyproject-web-1      web       running   0.0.0.0:8000->8000/tcp"
+    output: "NAME                 SERVICE   STATUS              PORTS\nmyproject-cache-1    cache     Up 8 seconds        6379/tcp\nmyproject-db-1       db        Up 9 seconds (healthy)  5432/tcp\nmyproject-web-1      web       Up 7 seconds        0.0.0.0:8000->8000/tcp"
     narration: "All three services are running. Only the web service has a published port (8000). The cache and database ports are accessible to other containers on the network but not from the host."
   - command: "docker compose exec web python -c \"import redis; r = redis.Redis(host='cache'); print(r.ping())\""
     output: "True"
@@ -382,7 +460,7 @@ scenario: |
   6. Use a `.env` file for the database password instead of hardcoding it
   7. Add a bind mount on the `web` service for live code reloading in development
 hints:
-  - "The healthcheck test for PostgreSQL is: [\"CMD-SHELL\", \"pg_isready -U postgres\"]"
+  - "The healthcheck test for PostgreSQL is: [\"CMD-SHELL\", \"pg_isready -U postgres -d myapp\"]"
   - "Use ${DB_PASSWORD} syntax in compose.yml and define DB_PASSWORD in a .env file"
   - "For the bind mount, use .:/app for the source code, but add /app/node_modules as an anonymous volume to prevent host modules from overriding container modules"
   - "Named volumes are declared both under the service (as a mount) and at the top level under 'volumes:'"
@@ -471,4 +549,4 @@ options:
 
 ---
 
-**Previous:** [Docker Fundamentals](fundamentals.md) | [Back to Index](README.md)
+**Previous:** [Docker Fundamentals](fundamentals.md) | **Next:** [Dockerfile Best Practices](dockerfile-best-practices.md) | [Back to Index](README.md)

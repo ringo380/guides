@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "45 min"
+prerequisites:
+  - zone-files-and-records
+learning_outcomes:
+  - "Configure BIND as a caching resolver and authoritative server"
+  - "Set up primary/secondary replication with TSIG authentication"
+  - "Implement split-horizon views and security hardening"
+tags:
+  - dns
+  - nameserver
+  - server-administration
+---
+
 # BIND
 
 This guide covers BIND - the reference implementation of DNS and the most widely deployed DNS server software in the world. You'll learn to configure it as a caching recursive resolver, an authoritative server, and in primary/secondary configurations with TSIG authentication.
@@ -174,12 +189,12 @@ steps:
     narration: "Reload applies the new configuration without dropping existing connections. Use reload after config changes; reserve restart for major changes like listen-address modifications."
   - command: "sudo rndc status"
     output: |
-      version: BIND 9.16.23-RH
+      version: BIND 9.18.27-RH
       running on linux: Linux 5.14.0-362.el9.x86_64
       boot time: Fri, 21 Feb 2026 10:00:00 GMT
       server is up and running
       number of zones: 6 (3 automatic)
-    narration: "The status confirms BIND is running and shows 6 zones: the 3 automatic zones (localhost, localhost reverse, root hints) plus the 3 from named.rfc1912.zones and our new internal.example.com zone."
+    narration: "The status confirms BIND is running and shows 6 zones total, 3 of which are built-in automatic zones. The remaining 3 include our new internal.example.com zone and zones loaded from named.rfc1912.zones."
 ```
 
 ---

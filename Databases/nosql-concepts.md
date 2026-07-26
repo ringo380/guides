@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - database-fundamentals
+learning_outcomes:
+  - "Categorize NoSQL databases into document, key-value, wide-column, and graph types"
+  - "Apply CAP theorem and consistency models to database selection decisions"
+  - "Design polyglot persistence architectures using the right database for each workload"
+tags:
+  - databases
+  - nosql
+---
 # NoSQL Concepts & Architecture
 
 Relational databases dominated for decades, and for good reason - they provide strong guarantees, a mature query language, and well-understood operational patterns. But the web changed what "normal" looks like for data. Social networks generating billions of events per day, e-commerce catalogs with wildly different product attributes, real-time gaming leaderboards, IoT sensor streams - these workloads pushed relational systems to their limits and created demand for alternatives.

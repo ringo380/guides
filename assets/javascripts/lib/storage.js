@@ -36,6 +36,10 @@ const RunbookStorage = {
     }
   },
 
+  _notifySync() {
+    if (window.RunbookSync) window.RunbookSync.schedulePush();
+  },
+
   _pagePath() {
     // Derive a stable key from the current URL path
     return window.location.pathname.replace(/\/$/, "").replace(/^\/guides\//, "");
@@ -58,6 +62,7 @@ const RunbookStorage = {
     if (!page.sections_read.includes(sectionId)) {
       page.sections_read.push(sectionId);
       this._write(data);
+      this._notifySync();
     }
   },
 
@@ -72,6 +77,7 @@ const RunbookStorage = {
     const { data, page } = this._getPage();
     page.quizzes[quizId] = { score, attempts };
     this._write(data);
+    this._notifySync();
   },
 
   getQuizScore(quizId) {
@@ -85,6 +91,7 @@ const RunbookStorage = {
     const { data, page } = this._getPage();
     page.exercises[exerciseId] = { completed: true };
     this._write(data);
+    this._notifySync();
   },
 
   isExerciseComplete(exerciseId) {
@@ -108,6 +115,7 @@ const RunbookStorage = {
     const key = path || this._pagePath();
     delete data[key];
     this._write(data);
+    this._notifySync();
   },
 
   resetAll() {

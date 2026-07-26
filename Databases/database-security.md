@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - sql-essentials
+learning_outcomes:
+  - "Configure authentication methods and TLS/SSL for encrypted database connections"
+  - "Prevent SQL injection with parameterized queries and input validation"
+  - "Implement audit logging, privilege hardening, and encryption at rest"
+tags:
+  - databases
+  - security
+---
 # Database Security
 
 A database is only as secure as its weakest access path. Misconfigurations, default credentials, unencrypted connections, and injectable queries have been behind the majority of data breaches for decades. This guide covers the full security surface of production database systems - authentication, encryption, injection prevention, auditing, and privilege hardening - across both MySQL and PostgreSQL.
@@ -668,7 +681,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 ```
 
 !!! tip "ALTER DEFAULT PRIVILEGES matters"
-    `GRANT SELECT ON ALL TABLES` only applies to tables that exist right now. When new tables are created later, the role will not have access. `ALTER DEFAULT PRIVILEGES` sets the permissions that future tables inherit automatically.
+    `GRANT SELECT ON ALL TABLES` only applies to tables that exist right now. When new tables are created later, the role will not have access. `ALTER DEFAULT PRIVILEGES` sets the permissions that future tables inherit automatically. The defaults only apply to tables created by the role that ran the `ALTER` statement; if migrations run as a different role, add `FOR ROLE migrator` (or include each creator role explicitly) so all future tables are covered.
 
 ### Avoiding GRANT ALL
 

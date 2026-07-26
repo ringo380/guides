@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - data-structures-and-logic
+learning_outcomes:
+  - "Read and write files, parse JSON, and handle CSV data"
+  - "Make HTTP requests and interact with REST APIs"
+tags:
+  - python
+  - programming
+  - apis
+---
 # Working with Files and APIs (Python)
 
 **Version:** 0.2
@@ -217,7 +230,7 @@ response = requests.post(
     json=alert                      # Automatically serializes and sets Content-Type
 )
 
-if response.ok:                     # True for any 2xx status
+if response.ok:                     # True for any status code below 400
     print("Alert sent successfully.")
 ```
 

@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - postgresql-fundamentals
+learning_outcomes:
+  - "Manage roles, privileges, and row-level security policies"
+  - "Configure VACUUM, ANALYZE, and autovacuum for dead tuple management"
+  - "Monitor performance with pg_stat views and manage WAL for crash recovery"
+tags:
+  - databases
+  - postgresql
+---
 # PostgreSQL Administration
 
 PostgreSQL gives you more control over your database than almost any other RDBMS - but that control comes with responsibilities. You need to understand how roles and privileges work, how to manage the storage layer with tablespaces, why dead tuples accumulate and how VACUUM reclaims them, what the `pg_stat_*` views are telling you, which extensions are worth installing, and how WAL keeps your data safe through crashes. This guide covers the daily administration tasks that keep a PostgreSQL instance running well in production.
@@ -484,10 +497,15 @@ Unused indexes waste disk space and slow down writes (every INSERT, UPDATE, and 
 The **background writer** and **checkpointer** flush dirty buffers to disk. This view shows how that work is distributed:
 
 ```sql
+-- PostgreSQL 16 and earlier: all columns live on pg_stat_bgwriter.
+-- PostgreSQL 17+: checkpoint columns moved to pg_stat_checkpointer.
 SELECT
     checkpoints_timed,
     checkpoints_req,
-    buffers_checkpoint,
+    buffers_checkpoint
+FROM pg_stat_checkpointer;  -- on PG 17+; use pg_stat_bgwriter on <=16
+
+SELECT
     buffers_clean,
     buffers_backend,
     buffers_alloc
@@ -678,38 +696,43 @@ SELECT * FROM products WHERE name ILIKE '%postgres%';
     Use `pg_trgm` for fuzzy matching on short strings (names, titles) and PostgreSQL's built-in full-text search (`tsvector`/`tsquery`) for document-length content. They complement each other well - trigrams catch typos and abbreviations that full-text search misses.
 
 ```command-builder
-title: "PostgreSQL Admin Command Builder"
-description: "Build common psql administration commands for database maintenance and monitoring."
-base: "psql"
-groups:
-  - name: "Connection"
-    options:
-      - flag: "-U postgres"
-        description: "Connect as the postgres superuser"
-      - flag: "-d myapp"
-        description: "Connect to the myapp database"
-      - flag: "-h localhost"
-        description: "Connect to localhost (TCP instead of socket)"
-      - flag: "-p 5432"
-        description: "Specify the port number"
-  - name: "Execution Mode"
-    options:
-      - flag: "-c \"VACUUM VERBOSE tablename;\""
-        description: "Run VACUUM with verbose output on a table"
-      - flag: "-c \"ANALYZE tablename;\""
-        description: "Update planner statistics for a table"
-      - flag: "-c \"SELECT * FROM pg_stat_activity WHERE state != 'idle';\""
-        description: "Show active queries"
-      - flag: "-c \"SELECT * FROM pg_stat_user_tables ORDER BY n_dead_tup DESC LIMIT 10;\""
-        description: "Show tables with most dead tuples"
-  - name: "Output Format"
-    options:
-      - flag: "-x"
-        description: "Expanded (vertical) output for wide rows"
-      - flag: "--csv"
-        description: "CSV output for scripting"
-      - flag: "-t"
-        description: "Tuples only (no headers or footers)"
+base: psql
+description: Build common psql administration commands for database maintenance and monitoring.
+options:
+- flag: ''
+  type: select
+  label: Connection
+  choices:
+  - - -U postgres
+    - Connect as the postgres superuser
+  - - -d myapp
+    - Connect to the myapp database
+  - - -h localhost
+    - Connect to localhost (TCP instead of socket)
+  - - -p 5432
+    - Specify the port number
+- flag: ''
+  type: select
+  label: Execution Mode
+  choices:
+  - - -c "VACUUM VERBOSE tablename;"
+    - Run VACUUM with verbose output on a table
+  - - -c "ANALYZE tablename;"
+    - Update planner statistics for a table
+  - - -c "SELECT * FROM pg_stat_activity WHERE state != 'idle';"
+    - Show active queries
+  - - -c "SELECT * FROM pg_stat_user_tables ORDER BY n_dead_tup DESC LIMIT 10;"
+    - Show tables with most dead tuples
+- flag: ''
+  type: select
+  label: Output Format
+  choices:
+  - - -x
+    - Expanded (vertical) output for wide rows
+  - - --csv
+    - CSV output for scripting
+  - - -t
+    - Tuples only (no headers or footers)
 ```
 
 ---

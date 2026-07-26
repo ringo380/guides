@@ -75,6 +75,7 @@ body:
         - "Security: Certificate Management"
         - "Docker: Fundamentals"
         - "Docker: Compose"
+        - "Docker: Dockerfile Best Practices"
         - "Perl: Introduction"
         - "Perl: Scalars, Strings, and Numbers"
         - "Perl: Arrays, Hashes, and Lists"
@@ -95,6 +96,8 @@ body:
         - "Python: Working with Files and APIs"
         - "Python: System Automation"
         - "Python: Testing and Tooling"
+        - "Python: Object-Oriented Programming"
+        - "Python: Functions and Modules"
         - "Python: Developer Roadmap"
     validations:
       required: true

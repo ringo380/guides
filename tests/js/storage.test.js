@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { loadLib, cleanup } from "./helpers.js";
 
 describe("RunbookStorage", () => {
@@ -52,6 +52,44 @@ describe("RunbookStorage", () => {
     s.saveQuizScore("q1", 1, 1);
     s.resetAll();
     expect(s.getAllProgress()).toEqual({});
+  });
+
+  it("calls RunbookSync.schedulePush on user-facing writes", () => {
+    const s = window.RunbookStorage;
+    const mockPush = vi.fn();
+    window.RunbookSync = { schedulePush: mockPush };
+
+    s.saveQuizScore("q1", 1, 1);
+    expect(mockPush).toHaveBeenCalledTimes(1);
+
+    s.markSectionRead("s1");
+    expect(mockPush).toHaveBeenCalledTimes(2);
+
+    s.markExerciseComplete("e1");
+    expect(mockPush).toHaveBeenCalledTimes(3);
+
+    delete window.RunbookSync;
+  });
+
+  it("does not call schedulePush on read-path page initialization", () => {
+    const s = window.RunbookStorage;
+    const mockPush = vi.fn();
+    window.RunbookSync = { schedulePush: mockPush };
+
+    // Reading triggers _getPage which may _write an empty page, but should not sync
+    s.getQuizScore("q1");
+    s.isExerciseComplete("e1");
+    s.getSectionsRead();
+    expect(mockPush).not.toHaveBeenCalled();
+
+    delete window.RunbookSync;
+  });
+
+  it("does not error when RunbookSync is not available", () => {
+    delete window.RunbookSync;
+    const s = window.RunbookStorage;
+    // Should not throw
+    s.saveQuizScore("q1", 1, 1);
   });
 
   it("handles localStorage errors gracefully", () => {

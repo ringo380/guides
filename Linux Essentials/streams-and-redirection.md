@@ -1,3 +1,18 @@
+---
+difficulty: beginner
+time_estimate: "30 min"
+prerequisites:
+  - shell-basics
+learning_outcomes:
+  - "Explain the three standard streams and their file descriptors"
+  - "Redirect stdout, stderr, and stdin using shell operators"
+  - "Construct pipelines to chain commands together"
+  - "Use tee and process substitution for advanced stream handling"
+tags:
+  - cli
+  - shell
+  - fundamentals
+---
 # Streams and Redirection
 
 Every program in a Unix-like system communicates through streams. Understanding how to redirect, combine, and manipulate these streams is fundamental to working on the command line.

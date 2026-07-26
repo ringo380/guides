@@ -25,6 +25,15 @@ mkdocs serve
 
 3. Open [http://localhost:8000](http://localhost:8000) in your browser. MkDocs will hot-reload as you edit files.
 
+4. If you plan to run the full check (`./verify.sh`), install the test dependencies too:
+
+```bash
+pip install -r requirements-test.txt
+npm ci
+```
+
+`./verify.sh` also runs Deno tests for the Supabase edge function; install [Deno](https://deno.com/) if you are touching `supabase/functions/`.
+
 !!! note
     `setup-docs.sh` creates a `docs/` directory with symlinks to your source content. The `docs/` and `site/` directories are gitignored build artifacts.
 
@@ -264,13 +273,21 @@ annotations:
     docs: fix broken link in README
     ```
 
-3. **Verify the build passes** before pushing:
+3. **Run the full check** before pushing:
+
+    ```bash
+    ./verify.sh
+    ```
+
+    This is the same gate CI runs: Python tests, JavaScript tests, Deno tests,
+    then a strict MkDocs build. Strict mode catches broken links, missing files,
+    and configuration errors.
+
+    For a docs-only change you can run just the build step:
 
     ```bash
     ./setup-docs.sh && mkdocs build --strict
     ```
-
-    Strict mode catches broken links, missing files, and configuration errors.
 
 4. **Open a pull request** against `main` with a clear description of what you changed and why.
 

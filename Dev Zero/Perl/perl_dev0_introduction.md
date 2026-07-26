@@ -1,3 +1,17 @@
+---
+difficulty: beginner
+time_estimate: "35 min"
+prerequisites: []
+learning_outcomes:
+  - "Understand Perl's Unix heritage and why it matters for system programming"
+  - "Set up a Perl development environment and run your first script"
+  - "Identify the basic anatomy of a Perl program"
+tags:
+  - perl
+  - programming
+  - scripting
+  - unix
+---
 # Perl Developer Introduction
 
 ## Why Perl, and Why Unix First

@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - shell-basics
+learning_outcomes:
+  - "Manage foreground and background processes with fg, bg, and jobs"
+  - "Send and handle Unix signals including SIGTERM, SIGKILL, and SIGHUP"
+  - "Use nohup and disown to keep processes running after logout"
+  - "Configure terminal multiplexers like tmux and screen for session persistence"
+tags:
+  - cli
+  - processes
+---
 # Job Control
 
 Job control lets you manage multiple processes from a single terminal - running tasks in the background, pausing them, and switching between them. Combined with knowledge of signals and terminal multiplexers, you can keep long-running processes alive and organized.

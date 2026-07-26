@@ -1,3 +1,17 @@
+---
+difficulty: beginner
+time_estimate: "30 min"
+prerequisites:
+  - scalars-strings-numbers
+learning_outcomes:
+  - "Use conditionals, loops, and statement modifiers"
+  - "Control loop execution with labels, next, last, and redo"
+  - "Apply short-circuit operators for concise logic"
+tags:
+  - perl
+  - programming
+  - scripting
+---
 # Control Flow
 
 ## Directing Program Logic

@@ -1,3 +1,18 @@
+---
+difficulty: beginner
+time_estimate: "35 min"
+prerequisites:
+  - dns-fundamentals
+learning_outcomes:
+  - "Write complete zone files with correct SOA, NS, and resource records"
+  - "Identify when to use each DNS record type in practice"
+  - "Configure both forward and reverse DNS zones"
+tags:
+  - dns
+  - networking
+  - server-administration
+---
+
 # Zone Files and Records
 
 This guide covers the anatomy of DNS zone files - the files that define what your domain actually does. You'll learn every record type you'll encounter in practice, the syntax that trips up even experienced administrators, and how to write complete zone files for both forward and reverse zones.
@@ -288,7 +303,9 @@ NS records at the zone apex tell resolvers where to find authoritative data. NS 
 dev         IN  NS  ns1.dev.example.com.
 dev         IN  NS  ns2.dev.example.com.
 
-; Glue records (needed because the NS names are within the delegated zone)
+; In-bailiwick glue: A records for the delegated nameservers must
+; appear in this parent zone because resolvers cannot look up
+; ns1.dev.example.com without first knowing where dev.example.com lives.
 ns1.dev     IN  A   203.0.113.10
 ns2.dev     IN  A   203.0.113.11
 ```
@@ -522,7 +539,7 @@ annotations:
   - line: 17
     text: "A record at @ points the bare domain (example.com) to an IP. This is the record browsers use when you visit example.com without www."
   - line: 18
-    text: "Glue records: ns1 and ns2 need A records here because they're within the zone they serve. Without these, there's a chicken-and-egg problem."
+    text: "In-zone A records for the authoritative nameservers. (True 'glue' records sit in the parent zone for in-bailiwick names; the records here keep the zone self-consistent.)"
   - line: 21
     text: "CNAME for www pointing to @ (the zone apex). This means www.example.com resolves to wherever example.com points."
 ```

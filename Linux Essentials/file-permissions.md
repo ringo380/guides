@@ -1,3 +1,18 @@
+---
+difficulty: beginner
+time_estimate: "30 min"
+prerequisites:
+  - shell-basics
+learning_outcomes:
+  - "Interpret permission strings and octal notation for files and directories"
+  - "Configure ownership and permissions with chmod, chown, and chgrp"
+  - "Explain special permission bits: setuid, setgid, and sticky bit"
+  - "Apply umask to control default permissions for new files"
+tags:
+  - cli
+  - permissions
+  - security
+---
 # File Permissions
 
 Every file and directory on a Linux system has an owner, a group, and a set of permission bits that control who can read, write, and execute it. Understanding this model is essential for system administration and security.
@@ -192,7 +207,7 @@ chgrp -R developers dir/         # recursive
 
 Only root can change a file's owner. Regular users can change the group to any group they belong to.
 
-The reason only root can change file ownership is to prevent two abuses. First, **quota bypass**: if users could give their files to other users, they could evade disk quotas by assigning large files to someone else's account. Second, **setuid abuse**: if a user could create a program, set the setuid bit, then change ownership to root, they'd have a root-owned setuid binary - an instant privilege escalation. Restricting `chown` to root prevents both scenarios.
+The reason only root can change file ownership is to prevent two abuses. First, **quota bypass**: if users could give their files to other users, they could evade disk quotas by assigning large files to someone else's account. Second, **accountability and audit integrity**: if any user could hand a file off to another user, file ownership would no longer be a reliable signal in audit logs or forensic investigations. (The kernel separately strips setuid/setgid bits on `chown`, so chown-to-root is not itself a privilege-escalation path.) Restricting `chown` to root preserves both guarantees.
 
 ```quiz
 question: "Why can't regular users use chown to change a file's owner?"

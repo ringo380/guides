@@ -1,3 +1,20 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - networking
+  - shell-basics
+learning_outcomes:
+  - "Explain the Netfilter framework and how packets traverse chains and tables"
+  - "Write iptables rules to filter, NAT, and log network traffic"
+  - "Configure nftables rulesets as the modern replacement for iptables"
+  - "Use ufw and firewalld for simplified firewall management"
+tags:
+  - cli
+  - firewall
+  - networking
+  - security
+---
 # Firewall and iptables/nftables
 
 A firewall controls which network traffic is allowed in and out of your system. On a Linux server facing the internet, a properly configured firewall is the first line of defense - it drops malicious traffic before it reaches your applications. Linux implements firewalling through the **Netfilter** framework in the kernel, which you interact with through command-line tools like `iptables`, `nftables`, `ufw`, and `firewalld`.

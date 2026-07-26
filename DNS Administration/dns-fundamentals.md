@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "35 min"
+prerequisites: []
+learning_outcomes:
+  - "Explain how DNS resolution works from root servers to your browser"
+  - "Distinguish between authoritative and recursive DNS servers"
+  - "Describe the DNS hierarchy, caching, TTLs, and glue records"
+tags:
+  - dns
+  - networking
+---
+
 # DNS Fundamentals
 
 This guide covers what DNS actually is, how it evolved from a single text file into the largest distributed database on Earth, and how every name resolution works from root servers down to the answer your browser needs.
@@ -25,7 +38,7 @@ Paul Mockapetris, inventor of DNS, at a conference in Barcelona.
 </figcaption>
 </figure>
 
-In 1983, Paul Mockapetris at USC's Information Sciences Institute published [RFC 882](https://datatracker.ietf.org/doc/html/rfc882) and [RFC 883](https://datatracker.ietf.org/doc/html/rfc883), proposing a distributed, hierarchical naming system. His first implementation was called "Jeeves." Two years later, he refined the design into [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034) and [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) - the specifications that still define DNS today.
+In 1983, Paul Mockapetris at USC's Information Sciences Institute published [RFC 882](https://datatracker.ietf.org/doc/html/rfc882) and [RFC 883](https://datatracker.ietf.org/doc/html/rfc883), proposing a distributed, hierarchical naming system. His first implementation was called "Jeeves." Four years later, in 1987, he refined the design into [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034) and [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) - the specifications that still define DNS today.
 
 ---
 
@@ -410,6 +423,49 @@ options:
     feedback: "It's roughly the opposite. The recursive server follows the chain. In iterative mode, the client receives referrals and must follow them itself."
 ```
 
+```command-builder
+base: dig
+description: Build a dig query to inspect DNS records and resolution behavior
+options:
+  - flag: ""
+    type: text
+    label: "Domain"
+    placeholder: "example.com"
+    explanation: "The domain name to query"
+  - flag: ""
+    type: select
+    label: "Record type"
+    explanation: "The DNS record type to request"
+    choices:
+      - ["A", "A - IPv4 address"]
+      - ["AAAA", "AAAA - IPv6 address"]
+      - ["MX", "MX - mail exchange servers"]
+      - ["NS", "NS - authoritative nameservers"]
+      - ["TXT", "TXT - text records (SPF, DKIM, DMARC)"]
+      - ["SOA", "SOA - start of authority (zone metadata)"]
+      - ["CNAME", "CNAME - canonical name alias"]
+      - ["CAA", "CAA - certificate authority authorization"]
+  - flag: ""
+    type: select
+    label: "Output options"
+    explanation: "Control how much output dig returns"
+    choices:
+      - ["", "Default (full output)"]
+      - ["+short", "+short - answer section only"]
+      - ["+noall +answer", "+noall +answer - clean answer section"]
+      - ["+trace", "+trace - full iterative resolution from root"]
+  - flag: ""
+    type: select
+    label: "Nameserver"
+    explanation: "Query a specific nameserver instead of your system default"
+    choices:
+      - ["", "System default resolver"]
+      - ["@1.1.1.1", "Cloudflare (1.1.1.1)"]
+      - ["@8.8.8.8", "Google (8.8.8.8)"]
+      - ["@9.9.9.9", "Quad9 (9.9.9.9)"]
+      - ["@a.root-servers.net", "Root server (iterative)"]
+```
+
 ---
 
 ## Registrars, Registries, and Glue Records
@@ -503,7 +559,7 @@ The AUTHORITY section says "these are the nameservers." The ADDITIONAL section s
 
 DNS traditionally uses **UDP on port 53** for queries under 512 bytes and **TCP on port 53** for larger responses and zone transfers. The 512-byte UDP limit was a practical constraint from the 1980s when network reliability was poor and UDP was faster.
 
-The **Extension Mechanisms for DNS ([EDNS0](https://datatracker.ietf.org/doc/html/rfc6891))** specification raised the effective UDP message size. Modern resolvers advertise a buffer size of 1232-4096 bytes, allowing larger responses (like DNSSEC-signed answers) to travel over UDP.
+The **Extension Mechanisms for DNS ([EDNS0](https://datatracker.ietf.org/doc/html/rfc6891))** specification raised the effective UDP message size. Modern resolvers advertise a buffer size of 1232 bytes (the DNS Flag Day 2020 recommendation, chosen to fit the smallest common path MTU after IPv6 and tunneling overhead), with older defaults reaching up to 4096 bytes. The larger window lets DNSSEC-signed answers travel over UDP.
 
 Newer transport protocols are emerging for privacy:
 

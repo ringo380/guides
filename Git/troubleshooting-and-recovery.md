@@ -1,3 +1,19 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - rewriting-history
+  - refs-reflog-dag
+learning_outcomes:
+  - "Recover lost commits using the reflog and git fsck"
+  - "Debug common Git mistakes with the recovery decision tree"
+  - "Diagnose and repair repository corruption"
+tags:
+  - git
+  - version-control
+  - internals
+---
+
 # Troubleshooting and Recovery
 
 Things go wrong with Git. Commits end up on the wrong branch, force pushes destroy history, secrets get committed, merge conflicts spiral out of control, and sometimes the repository itself gets corrupted. This guide is your recovery playbook - a reference for undoing every common mistake and diagnosing problems when Git behaves unexpectedly.
@@ -77,6 +93,28 @@ git branch recovery <commit-hash>
 # Or use --lost-found to dump all recoverable objects
 git fsck --lost-found
 ls .git/lost-found/commit/
+```
+
+```code-walkthrough
+title: "Reading git reflog Output"
+description: "How to interpret each field in reflog output to find the commit you need to recover."
+code: |
+  a1b2c3d HEAD@{0}: checkout: moving from feature/important-work to main
+  c3d4e5f HEAD@{1}: commit: Expand critical feature
+  b2c3d4e HEAD@{2}: commit: Add critical feature
+  a1b2c3d HEAD@{3}: checkout: moving from main to feature/important-work
+  a1b2c3d HEAD@{4}: commit (initial): Initial commit
+annotations:
+  - line: 1
+    text: "Most recent entry (HEAD@{0} = current HEAD). This records the checkout that moved us from the feature branch to main - the last action before the accidental branch deletion."
+  - line: 2
+    text: "HEAD@{1} - the tip of the deleted branch. Hash c3d4e5f is the commit we want to recover. Use this hash with 'git branch recovery c3d4e5f' to recreate the branch pointer."
+  - line: 3
+    text: "HEAD@{2} - the parent of the deleted branch tip. You don't need to recover this separately: pointing a new branch at c3d4e5f (line 2) automatically includes b2c3d4e as an ancestor."
+  - line: 4
+    text: "The checkout that first moved HEAD onto the feature branch. Same hash as line 5 (a1b2c3d) because no commits had been made on main - the feature branch started at the same point."
+  - line: 5
+    text: "The initial commit, also on main. The HEAD@{N} notation lets you reference any of these positions directly in git commands, e.g. 'git reset --hard HEAD@{2}' or 'git diff HEAD@{0} HEAD@{2}'."
 ```
 
 ```terminal

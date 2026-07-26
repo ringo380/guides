@@ -1,16 +1,5 @@
 .DS_Store
 
-# Claude Code
-CLAUDE.md
-CLAUDE.local.md
-.claude/
-.claude-dev-helper/
-.plugin-config/
-
-# Junie
-.junie/
-AGENTS.md
-
 # Environment
 .env
 
@@ -24,6 +13,7 @@ __pycache__/
 .cache/
 .pytest_cache/
 node_modules/
+deno.lock
 
 # Unused design assets
 assets/images/runbook-logo.png

@@ -1,3 +1,19 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - shell-basics
+  - file-permissions
+learning_outcomes:
+  - "Create and manage user accounts with useradd, usermod, and userdel"
+  - "Configure group membership and understand primary vs supplementary groups"
+  - "Set up sudo access and manage the sudoers file safely"
+  - "Explain the role of /etc/passwd, /etc/shadow, and /etc/group"
+tags:
+  - cli
+  - users
+  - security
+---
 # User and Group Management
 
 Linux is a multi-user operating system. Every process runs as some user, every file is owned by some user, and access control decisions are made based on user and group identity. Whether you're creating accounts for team members, setting up service accounts for daemons, or configuring sudo access, user and group management is a daily sysadmin task.

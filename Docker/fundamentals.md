@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "40 min"
+prerequisites: []
+learning_outcomes:
+  - "Explain Docker's client-server architecture and the role of images, containers, and registries"
+  - "Build images with Dockerfiles and manage container lifecycle with docker commands"
+  - "Configure volumes and networks for persistent storage and container communication"
+tags:
+  - docker
+  - containers
+  - devops
+---
 # Docker Fundamentals
 
 Docker provides a way to package and run an application in an isolated environment called a **container**. The isolation and security allow you to run many containers simultaneously on a given host. Unlike virtual machines, containers share the host kernel and start in milliseconds rather than minutes - making them the standard unit of deployment for modern applications.
@@ -332,7 +345,7 @@ Docker creates isolated networks so containers can communicate with each other w
 
 | Driver | Description |
 |--------|-------------|
-| `bridge` | Default. Containers on the same bridge network can reach each other by container name. |
+| `bridge` | Default driver. On user-defined bridge networks, containers reach each other by container name; the built-in `bridge` network does not provide name resolution. |
 | `host` | Removes network isolation - the container shares the host's network stack. |
 | `none` | Disables networking entirely. |
 | `overlay` | Spans multiple Docker hosts. Used with Docker Swarm for multi-node clusters. |

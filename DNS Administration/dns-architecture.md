@@ -1,3 +1,18 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - dns-fundamentals
+learning_outcomes:
+  - "Design resilient primary/secondary DNS topologies"
+  - "Configure zone transfers, hidden primaries, and split-horizon DNS"
+  - "Implement DNS for email with SPF, DKIM, and DMARC"
+tags:
+  - dns
+  - networking
+  - server-administration
+---
+
 # DNS Architecture and Operations
 
 This guide covers the operational side of DNS - how to design resilient architectures, transfer zones between servers, get email DNS right, monitor your infrastructure, and migrate records without downtime.

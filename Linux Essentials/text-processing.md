@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "45 min"
+prerequisites:
+  - streams-and-redirection
+learning_outcomes:
+  - "Use grep to search files and streams with pattern matching"
+  - "Transform text with sed substitutions and address ranges"
+  - "Process structured data with awk field splitting and rules"
+  - "Apply cut, sort, uniq, and tr for common text manipulation tasks"
+tags:
+  - cli
+  - text-processing
+---
 # Text Processing
 
 Linux provides a rich set of tools for searching, transforming, and analyzing text. These commands are designed to work with streams and pipelines, making them composable building blocks for data processing.

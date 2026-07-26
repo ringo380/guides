@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "25 min"
+prerequisites:
+  - shell-basics
+learning_outcomes:
+  - "Retrieve kernel and OS details with uname and /etc/os-release"
+  - "Monitor CPU, memory, and process activity using top, htop, and free"
+  - "Inspect hardware information with lscpu, lsblk, and lspci"
+tags:
+  - cli
+  - fundamentals
+---
 # System Information
 
 These tools help you understand what's running on a system - hardware details, resource usage, and what processes are doing. Essential for troubleshooting and capacity planning.

@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - system-automation
+learning_outcomes:
+  - "Write and run tests with pytest"
+  - "Manage dependencies with pip and poetry"
+tags:
+  - python
+  - programming
+  - testing
+---
 # Testing and Tooling in Python
 
 **Version:** 0.2
@@ -406,6 +419,54 @@ steps:
     narration: "ruff checks for style violations, common bugs, and import ordering. A clean result means the code follows Python best practices."
 ```
 
+```command-builder
+base: pytest
+description: Build a pytest command to run and filter your test suite
+options:
+  - flag: ""
+    type: text
+    label: "Test path (optional)"
+    placeholder: "tests/test_utils.py"
+    explanation: "Run a specific file, directory, or test (e.g. tests/test_utils.py::test_format). Leave blank to discover all tests."
+  - flag: ""
+    type: select
+    label: "Verbosity"
+    explanation: "How much detail pytest shows for each test result"
+    choices:
+      - ["", "Default"]
+      - ["-v", "-v (show each test name and result)"]
+      - ["-vv", "-vv (show full assertion details on failure)"]
+  - flag: "-k"
+    type: text
+    label: "Keyword filter"
+    placeholder: "format or parse"
+    explanation: "Run only tests matching this expression. Supports 'and', 'or', 'not' (e.g. 'format and not slow')."
+  - flag: ""
+    type: select
+    label: "On failure"
+    explanation: "What to do when a test fails"
+    choices:
+      - ["", "Default (run all tests)"]
+      - ["-x", "-x (stop on first failure)"]
+      - ["--lf", "--lf (rerun only tests that failed last time)"]
+  - flag: ""
+    type: select
+    label: "Traceback style"
+    explanation: "How much of the traceback to show when a test fails"
+    choices:
+      - ["", "Default"]
+      - ["--tb=short", "--tb=short (trimmed traceback)"]
+      - ["--tb=long", "--tb=long (full traceback)"]
+      - ["--tb=no", "--tb=no (just the failure count)"]
+  - flag: ""
+    type: select
+    label: "Output capture"
+    explanation: "Whether print() calls inside tests are shown immediately or captured"
+    choices:
+      - ["", "Default (captured, shown on failure)"]
+      - ["-s", "-s (show all print() output as it runs)"]
+```
+
 ---
 
 ## Interactive Quizzes
@@ -468,7 +529,7 @@ scenario: |
   4. Includes at least 5 test cases covering normal, warning, critical, error, and edge cases (exactly 80%)
   5. Verifies both the status string and exit code for each case
 hints:
-  - "Mock shutil.disk_usage to return a named tuple: MagicMock(total=100, used=X, free=100-X)"
+  - "Mock shutil.disk_usage with a MagicMock(total=100, used=X, free=100-X). The real function returns a named tuple, but a MagicMock with matching attributes is enough for attribute-access call sites."
   - "Use @pytest.mark.parametrize('used,expected_status,expected_code', [...]) for multiple thresholds"
   - "For the error case, make the mock raise OSError"
   - "Edge case: 80% exactly should trigger WARNING (test boundary conditions)"
@@ -524,4 +585,4 @@ solution: |
 
 ---
 
-**Previous:** [System Automation](system-automation.md) | [Back to Index](README.md)
+**Previous:** [System Automation](system-automation.md) | **Next:** [Object-Oriented Programming](object-oriented-programming.md) | [Back to Index](README.md)

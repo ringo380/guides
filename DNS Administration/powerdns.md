@@ -1,3 +1,18 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - zone-files-and-records
+learning_outcomes:
+  - "Configure PowerDNS with MySQL and SQLite backends"
+  - "Manage zones and records through the PowerDNS REST API"
+  - "Set up the PowerDNS recursor for recursive resolution"
+tags:
+  - dns
+  - nameserver
+  - server-administration
+---
+
 # PowerDNS
 
 This guide covers PowerDNS - a DNS server that stores zone data in databases instead of flat files, and exposes a full HTTP API for automation. You'll learn to set up the authoritative server with MySQL and SQLite backends, manage zones through the API, and configure the recursor.
@@ -100,9 +115,8 @@ gmysql-dnssec=yes
 local-address=0.0.0.0, ::
 local-port=53
 
-# General
-daemon=yes
-guardian=yes
+# General (run in foreground under systemd; `daemon=yes` and `guardian=yes`
+# were removed in PowerDNS Authoritative 4.5+ and break under modern systemd units)
 setuid=pdns
 setgid=pdns
 ```
@@ -217,7 +231,7 @@ steps:
     output: "New rrset:\nexample.com. 3600 IN MX 10 mail.example.com."
     narration: "Add an MX record. The content includes the priority (10) and mail server. Note the trailing dot on the hostname."
   - command: "pdnsutil check-zone example.com"
-    output: "Checked 4 records of 'example.com', 0 errors, 0 warnings."
+    output: "Checked 5 records of 'example.com', 0 errors, 0 warnings."
     narration: "Always check your zone after changes. This validates record syntax, CNAME conflicts, missing glue records, and other common mistakes."
 ```
 

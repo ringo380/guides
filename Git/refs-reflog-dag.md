@@ -1,3 +1,18 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - object-model
+learning_outcomes:
+  - "Explain how references, symbolic refs, and HEAD connect to objects"
+  - "Use the reflog to recover lost commits and track branch changes"
+  - "Describe how the directed acyclic graph structures commit history"
+tags:
+  - git
+  - internals
+  - version-control
+---
+
 # Refs, the Reflog, and the DAG
 
 The [Object Model](object-model.md) guide showed you that everything in Git is stored as objects identified by SHA-1 hashes. But nobody wants to type `e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3` to reference a commit. **References** (refs) are human-readable names that point to objects. They're the layer that makes Git usable. This guide covers how refs work, how the reflog tracks every change, how commits form a directed acyclic graph, and how Git manages storage efficiency with garbage collection and packfiles.

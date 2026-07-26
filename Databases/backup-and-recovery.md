@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - database-fundamentals
+learning_outcomes:
+  - "Choose between logical and physical backup strategies based on RTO and RPO requirements"
+  - "Use mysqldump, pg_dump, pg_basebackup, and Percona XtraBackup for production backups"
+  - "Implement point-in-time recovery with WAL and binary log replay"
+tags:
+  - databases
+  - backup
+---
 # Backup & Recovery Strategies
 
 Your database is only as reliable as your ability to restore it. A backup you have never tested is not a backup - it is a hope. This guide covers the tools, techniques, and strategies for protecting MySQL and PostgreSQL data against every failure mode from accidental `DELETE` to total disk loss.
@@ -456,11 +469,13 @@ chown -R postgres:postgres /var/lib/postgresql/16/main
 systemctl start postgresql
 ```
 
-PostgreSQL replays archived WAL segments using `restore_command` until it reaches `recovery_target_time`, then pauses. You verify the data and promote to normal operation:
+PostgreSQL replays archived WAL segments using `restore_command` until it reaches `recovery_target_time`, then pauses (because `recovery_target_action = pause` is the default). After verifying the data, promote the cluster out of recovery into normal read-write operation:
 
 ```sql
-SELECT pg_wal_replay_resume();
+SELECT pg_promote();
 ```
+
+`pg_wal_replay_resume()` only un-pauses replay during recovery; it does not exit recovery. Use it if you set an earlier target than intended and want to resume replaying through more WAL before promoting.
 
 ```terminal
 title: Point-in-Time Recovery with MySQL Binary Logs

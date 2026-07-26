@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "40 min"
+prerequisites:
+  - nosql-concepts
+learning_outcomes:
+  - "Model data as BSON documents and perform CRUD operations with mongosh"
+  - "Build aggregation pipelines and create compound, text, and geospatial indexes"
+  - "Configure replica sets for availability and understand sharding fundamentals"
+tags:
+  - databases
+  - nosql
+  - mongodb
+---
 # MongoDB
 
 [**MongoDB**](https://www.mongodb.com/docs/manual/) is the most widely adopted document database. Instead of rows and columns, you work with flexible JSON-like documents that map naturally to objects in your application code. No rigid schema, no required joins, no impedance mismatch between your data layer and your programming language.

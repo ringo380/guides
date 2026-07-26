@@ -1,3 +1,19 @@
+---
+difficulty: intermediate
+time_estimate: "30 min"
+prerequisites:
+  - shell-basics
+  - scripting-fundamentals
+learning_outcomes:
+  - "Write crontab entries using the five-field time specification"
+  - "Configure user and system crontabs with proper environment handling"
+  - "Create systemd timer units as a modern alternative to cron"
+  - "Debug scheduled tasks using logging and mail output"
+tags:
+  - cli
+  - cron
+  - scripting
+---
 # Cron and Scheduled Tasks
 
 Automating repetitive tasks is one of the most practical things you can do as a system administrator. Instead of remembering to run backups at midnight, rotate logs every Sunday, or check disk space every hour, you schedule the job once and let the system handle it. Linux provides two main tools for this: **cron** (the traditional scheduler) and **systemd timers** (the modern alternative).

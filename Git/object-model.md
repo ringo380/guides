@@ -1,3 +1,18 @@
+---
+difficulty: advanced
+time_estimate: "45 min"
+prerequisites:
+  - commits-and-history
+learning_outcomes:
+  - "Explain Git's content-addressable storage and SHA-1 hashing"
+  - "Identify the four object types: blobs, trees, commits, and tags"
+  - "Inspect repository internals with plumbing commands"
+tags:
+  - git
+  - internals
+  - version-control
+---
+
 # The Object Model
 
 Everything you've learned so far - commits, branches, staging, merging - is built on top of a surprisingly simple storage system. Git is, at its core, a **content-addressable filesystem**: a key-value store where the key is a SHA-1 hash of the content and the value is the content itself. Understanding this layer explains why Git behaves the way it does and gives you the tools to inspect and repair repositories at the lowest level.
@@ -140,7 +155,7 @@ All objects are stored in `.git/objects/`. Git uses the first two characters of 
 
 Individual objects are called **loose objects**. As a repository grows, Git periodically packs loose objects into **packfiles** (`.pack` with an `.idx` index) for efficiency. Packfiles use delta compression - storing only the differences between similar objects. The [Refs, the Reflog, and the DAG](refs-reflog-dag.md) guide covers packfiles in depth.
 
-Each loose object is stored as: `type size\0content`, compressed with zlib.
+Each loose object is stored as: `<type> <size>\0<content>` (a type word, a single space, the content size in bytes, a NUL byte, then the raw content), compressed with zlib.
 
 ---
 

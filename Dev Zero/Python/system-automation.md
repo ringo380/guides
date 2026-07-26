@@ -1,3 +1,16 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - files-and-apis
+learning_outcomes:
+  - "Use os, subprocess, and shutil to automate system tasks"
+  - "Replace shell scripts with structured Python automation"
+tags:
+  - python
+  - programming
+  - automation
+---
 # System Automation with Python
 
 **Version:** 0.2
@@ -382,13 +395,14 @@ def check_service(name):
     )
     return result.stdout.strip() == "active"
 
-def check_port(host, port):
+def check_port(host, port, timeout=3):
     """Check if a TCP port is reachable."""
-    result = subprocess.run(
-        ["timeout", "3", "bash", "-c", f"echo > /dev/tcp/{host}/{port}"],
-        capture_output=True
-    )
-    return result.returncode == 0
+    import socket
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
 
 def main():
     parser = argparse.ArgumentParser(description="Service health checker")

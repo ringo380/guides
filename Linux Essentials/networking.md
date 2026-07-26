@@ -1,3 +1,17 @@
+---
+difficulty: intermediate
+time_estimate: "35 min"
+prerequisites:
+  - shell-basics
+learning_outcomes:
+  - "Diagnose connectivity issues with ping, traceroute, and dig"
+  - "Inspect network interfaces and routing tables using ip and ss"
+  - "Transfer data with curl and wget from the command line"
+  - "Use netcat and ssh for remote access and network testing"
+tags:
+  - cli
+  - networking
+---
 # Networking
 
 This guide covers the essential networking tools for diagnostics, data transfer, remote access, and network inspection from the command line.

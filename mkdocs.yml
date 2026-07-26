@@ -1,5 +1,5 @@
 site_name: The Runbook
-site_url: https://ringo380.github.io/guides/
+site_url: https://runbook.fyi/
 site_description: Practical technical guides on Linux, DNS, Git, databases, and development
 site_author: Ryan Robson
 repo_url: https://github.com/ringo380/guides
@@ -52,6 +52,7 @@ plugins:
 
 hooks:
   - hooks/interactive.py
+  - hooks/metadata.py
 
 markdown_extensions:
   - toc:
@@ -81,6 +82,9 @@ extra_css:
   - assets/stylesheets/extra.css
   - assets/stylesheets/interactive.css
   - assets/stylesheets/lightbox.css
+  - assets/stylesheets/metadata.css
+  - assets/stylesheets/auth.css
+  - assets/stylesheets/admin.css
 
 extra_javascript:
   - assets/javascripts/interactive.js
@@ -99,6 +103,9 @@ extra:
       link: https://mastodon.social/@runbook
     - icon: fontawesome/brands/threads
       link: https://threads.net/@robworks_software
+    - icon: fontawesome/solid/life-ring
+      link: https://support.robworks.info/submit?product=runbook
+      name: Support
   consent:
     title: Cookie consent
     description: >-
@@ -213,6 +220,7 @@ nav:
       - Index: Docker/README.md
       - Fundamentals: Docker/fundamentals.md
       - Compose: Docker/compose.md
+      - Dockerfile Best Practices: Docker/dockerfile-best-practices.md
   - Dev Zero:
       - Perl:
           - Index: Dev Zero/Perl/README.md
@@ -238,3 +246,5 @@ nav:
           - Working with Files and APIs: Dev Zero/Python/files-and-apis.md
           - System Automation: Dev Zero/Python/system-automation.md
           - Testing and Tooling: Dev Zero/Python/testing-and-tooling.md
+          - Object-Oriented Programming: Dev Zero/Python/object-oriented-programming.md
+          - Functions and Modules: Dev Zero/Python/functions-and-modules.md

@@ -1,0 +1,143 @@
+/* SPDX-License-Identifier: MIT */
+/* Copyright (c) 2025-2026 Robworks Software LLC */
+
+/* ============================================================
+   Auth UI - Sign-in button and user avatar in site header.
+   Uses Material CSS custom properties for theme consistency.
+   ============================================================ */
+
+/* ---- Container ---- */
+
+.runbook-auth {
+  display: flex;
+  align-items: center;
+  margin-left: 0.4rem;
+  position: relative;
+}
+
+/* ---- Sign-in button ---- */
+
+.runbook-auth__sign-in {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 1rem;
+  background: transparent;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.7rem;
+  font-family: var(--md-text-font-family, inherit);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.runbook-auth__sign-in:hover {
+  color: var(--md-default-fg-color);
+  border-color: var(--md-default-fg-color--light);
+}
+
+.runbook-auth__sign-in:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
+.runbook-auth__sign-in svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* ---- User avatar (signed in) ---- */
+
+.runbook-auth__user {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.15rem;
+  border-radius: 50%;
+  transition: box-shadow 0.15s;
+}
+
+.runbook-auth__user:hover {
+  box-shadow: 0 0 0 2px var(--md-accent-fg-color);
+}
+
+.runbook-auth__user:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
+.runbook-auth__avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: block;
+}
+
+/* ---- Dropdown menu ---- */
+
+.runbook-auth__dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.4rem;
+  min-width: 160px;
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  padding: 0.3rem 0;
+}
+
+.runbook-auth__dropdown--open {
+  display: block;
+}
+
+.runbook-auth__dropdown-name {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--md-default-fg-color);
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  margin-bottom: 0.2rem;
+}
+
+.runbook-auth__sign-out {
+  display: block;
+  width: 100%;
+  padding: 0.4rem 0.8rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.72rem;
+  font-family: var(--md-text-font-family, inherit);
+  color: var(--md-default-fg-color--light);
+  cursor: pointer;
+}
+
+.runbook-auth__sign-out:hover {
+  background: var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color);
+}
+
+.runbook-auth__sign-out:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
+/* ---- Reduced motion ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  .runbook-auth__sign-in,
+  .runbook-auth__user {
+    transition: none;
+  }
+}

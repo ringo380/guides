@@ -1,3 +1,16 @@
+---
+difficulty: advanced
+time_estimate: "40 min"
+prerequisites:
+  - database-fundamentals
+learning_outcomes:
+  - "Set up read replicas and connection pooling for horizontal read scaling"
+  - "Design sharding strategies and evaluate horizontal vs vertical scaling trade-offs"
+  - "Apply microservices data patterns including database-per-service and CQRS"
+tags:
+  - databases
+  - performance
+---
 # Scaling & Architecture Patterns
 
 Your single-server database handles the first million users. Then queries slow down, connections pile up, and you start eyeing the credit card limit on your cloud account. Scaling a database is not just about throwing hardware at the problem - it requires understanding which bottleneck you are hitting and choosing the right architectural pattern to address it.

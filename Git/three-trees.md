@@ -1,3 +1,18 @@
+---
+difficulty: beginner
+time_estimate: "35 min"
+prerequisites:
+  - introduction
+learning_outcomes:
+  - "Identify the three areas where file changes live in Git"
+  - "Explain how changes flow from working directory to staging area to repository"
+  - "Configure .gitignore patterns to exclude files from tracking"
+tags:
+  - git
+  - version-control
+  - fundamentals
+---
+
 # The Three Trees: Working Directory, Index, and Repository
 
 Git organizes your work into three distinct areas, commonly called the "three trees." Understanding how changes flow between them is the single most important concept in Git. Every command you run either moves data between these areas, inspects the differences between them, or manipulates what they contain.

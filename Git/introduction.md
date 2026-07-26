@@ -1,3 +1,16 @@
+---
+difficulty: beginner
+time_estimate: "30 min"
+prerequisites: []
+learning_outcomes:
+  - "Explain why distributed version control replaced centralized systems"
+  - "Install and configure Git for first use"
+  - "Describe Git's content-addressable storage model at a high level"
+tags:
+  - git
+  - version-control
+---
+
 # Introduction: Why Git, and Why Version Control
 
 Before you type your first `git` command, it helps to understand the problem Git solves and the decades of tools that failed to solve it as well. Version control is one of those ideas that sounds obvious in hindsight - of course you should track changes to your code - but the path from "save a backup copy" to a distributed system that manages the Linux kernel involved some hard lessons and a few legendary arguments.
@@ -473,6 +486,36 @@ solution: |
   configured. The output shows the commit hash, author, date, and message. If the
   author information is wrong, re-run the `git config` commands and amend the commit
   with `git commit --amend --reset-author`.
+```
+
+```command-builder
+base: git init
+description: Initialize a new Git repository with optional settings
+options:
+  - flag: ""
+    type: text
+    label: "Directory (optional)"
+    placeholder: "my-project"
+    explanation: "Initialize in this directory (created if it doesn't exist). Leave blank to initialize the current directory."
+  - flag: "-b"
+    type: text
+    label: "Initial branch name"
+    placeholder: "main"
+    explanation: "Set the name for the initial branch. Defaults to 'master' unless init.defaultBranch is configured globally."
+  - flag: ""
+    type: select
+    label: "Repository type"
+    explanation: "Bare repositories have no working directory - used for shared repos on servers"
+    choices:
+      - ["", "Standard (with working directory)"]
+      - ["--bare", "Bare (no working directory, for server use)"]
+  - flag: ""
+    type: select
+    label: "Verbosity"
+    explanation: "Control how much output git init produces"
+    choices:
+      - ["", "Default"]
+      - ["-q", "Quiet (suppress informational messages)"]
 ```
 
 ---
