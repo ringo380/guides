@@ -66,29 +66,44 @@
     });
   }
 
+  // Analytics is optional and is a common ad-blocker target: lib/analytics.js
+  // matches filter-list rules for "/analytics.js" and gets blocked outright.
+  // Loading it inside the main .then() chain let one blocked file reject
+  // everything downstream, which took auth down with it. Swallow the failure
+  // here so an optional script can never break a required one. Every
+  // RunbookAnalytics call site is already guarded on the global existing.
+  function loadOptionalScript(src) {
+    return loadScript(src).catch((err) => {
+      console.warn("[Runbook] Optional script unavailable:", src, err.message || err);
+    });
+  }
+
+  // Auth must not depend on analytics or storage having loaded, so it lives in
+  // its own chain that both the normal and storage-failure paths call.
+  function loadAuthChain() {
+    return loadScript("assets/javascripts/lib/supabase-config.js")
+      .then(() => {
+        const cdnUrl = window.RunbookSupabaseConfig && window.RunbookSupabaseConfig.cdnUrl;
+        return cdnUrl ? loadExternalScript(cdnUrl) : Promise.reject(new Error("No CDN URL"));
+      })
+      .then(() => loadScript("assets/javascripts/lib/auth.js"))
+      .then(() => loadScript("assets/javascripts/lib/sync.js"))
+      .then(() => {
+        if (window.RunbookAuth) return window.RunbookAuth.init();
+      })
+      .catch((err) => {
+        console.warn("[Runbook] Auth unavailable:", err.message || err);
+      });
+  }
+
   function initComponents() {
     // Load storage first - components depend on window.RunbookStorage
     loadScript("assets/javascripts/lib/storage.js")
-      .then(() => loadScript("assets/javascripts/lib/analytics.js"))
-      .then(() => loadScript("assets/javascripts/lib/analytics-observers.js"))
-      .then(() => loadScript("assets/javascripts/lib/topics.js"))
-      .then(() => loadScript("assets/javascripts/lib/analytics-journey.js"))
-      .then(() =>
-        // Load auth chain (graceful degradation - if any step fails, site works without auth)
-        loadScript("assets/javascripts/lib/supabase-config.js")
-          .then(() => {
-            const cdnUrl = window.RunbookSupabaseConfig && window.RunbookSupabaseConfig.cdnUrl;
-            return cdnUrl ? loadExternalScript(cdnUrl) : Promise.reject(new Error("No CDN URL"));
-          })
-          .then(() => loadScript("assets/javascripts/lib/auth.js"))
-          .then(() => loadScript("assets/javascripts/lib/sync.js"))
-          .then(() => {
-            if (window.RunbookAuth) return window.RunbookAuth.init();
-          })
-          .catch((err) => {
-            console.warn("[Runbook] Auth unavailable:", err.message || err);
-          })
-      )
+      .then(() => loadOptionalScript("assets/javascripts/lib/analytics.js"))
+      .then(() => loadOptionalScript("assets/javascripts/lib/analytics-observers.js"))
+      .then(() => loadOptionalScript("assets/javascripts/lib/topics.js"))
+      .then(() => loadOptionalScript("assets/javascripts/lib/analytics-journey.js"))
+      .then(() => loadAuthChain())
       .then(() => {
         // Find all interactive divs on the page
         const types = Object.keys(COMPONENT_SCRIPTS);
@@ -135,19 +150,20 @@
         }
       })
       .catch(() => {
-        // Storage failed to load - initialize components without it
+        // Only reachable when storage.js itself failed: every optional step
+        // above swallows its own error now.
         console.warn("[Runbook] Storage unavailable, progress will not persist");
-        loadScript("assets/javascripts/lib/analytics.js")
-          .then(() => loadScript("assets/javascripts/lib/analytics-observers.js"))
-          .then(() => loadScript("assets/javascripts/lib/topics.js"))
-          .then(() => loadScript("assets/javascripts/lib/analytics-journey.js"))
-          .catch(() => {});
-        // Auth never loads on this path, so the dashboard can only report the
-        // failure. Load it anyway so the page says so instead of sitting on
-        // its "Checking authorization..." placeholder.
-        if (document.getElementById("admin-root")) {
-          loadScript(COMPONENT_SCRIPTS["admin-dashboard"]).catch(() => {});
-        }
+        loadOptionalScript("assets/javascripts/lib/analytics.js")
+          .then(() => loadOptionalScript("assets/javascripts/lib/analytics-observers.js"))
+          .then(() => loadOptionalScript("assets/javascripts/lib/topics.js"))
+          .then(() => loadOptionalScript("assets/javascripts/lib/analytics-journey.js"));
+        // Sign-in does not need storage, so still bring up auth here.
+        loadAuthChain().then(() => {
+          loadScript(COMPONENT_SCRIPTS["auth-ui"]).catch(() => {});
+          if (document.getElementById("admin-root")) {
+            loadScript(COMPONENT_SCRIPTS["admin-dashboard"]).catch(() => {});
+          }
+        });
         const types = Object.keys(COMPONENT_SCRIPTS);
         types.forEach((type) => {
           const divs = document.querySelectorAll(`.interactive-${type}`);
