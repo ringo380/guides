@@ -78,7 +78,7 @@ curl_reason() {
 export -f curl_reason
 
 check_url() {
-  local url="$1" req code out rc
+  local url="$1" maxtime="${2:-25}" req code out rc
   # Material's "edit this page" links carry the source path verbatim, so any
   # directory with a space in its name ("Linux Essentials") produces a URL curl
   # cannot request. Encode before asking, report the original.
@@ -86,7 +86,7 @@ check_url() {
 
   # HEAD first: most servers answer it and it costs no body transfer.
   out=$(curl -s -L -o /dev/null -w '%{http_code} %{exitcode}' \
-    --max-time 25 --connect-timeout 10 --retry 1 --retry-delay 2 \
+    --max-time "$maxtime" --connect-timeout 10 --retry 1 --retry-delay 2 \
     -A "$UA" -H "$ACCEPT_HDR" -g -I "$req" 2>/dev/null)
   code="${out%% *}"; rc="${out##* }"
 
@@ -98,7 +98,7 @@ check_url() {
     2*|3*|401|402|418|429|999) ;;
     *)
       out=$(curl -s -L -o /dev/null -w '%{http_code} %{exitcode}' \
-        --max-time 25 --connect-timeout 10 --retry 1 --retry-delay 2 \
+        --max-time "$maxtime" --connect-timeout 10 --retry 1 --retry-delay 2 \
         -A "$UA" -H "$ACCEPT_HDR" -g "$req" 2>/dev/null)
       code="${out%% *}"; rc="${out##* }"
       ;;
@@ -110,9 +110,21 @@ check_url() {
   code="${code:-000}"
   rc="${rc:-99}"
 
-  # No HTTP response at all: report why, since the fix differs by cause.
+  # No HTTP response at all. Separate content rot from a network path this
+  # runner happens not to have.
+  #
+  # A hostname that no longer resolves, or a certificate that does not
+  # validate, is a problem with the link and stays a failure. A connection
+  # that times out is not: gnu.org answers every one of our links with 200
+  # from a normal client and times out for GitHub's runners, so reporting
+  # those as broken filed an issue listing fourteen live pages. An issue that
+  # is mostly false positives trains the reader to close it unread, which
+  # costs more than the check earns.
   if [ "$code" = "000" ]; then
-    printf 'BROKEN\t000\t%s\t%s\n' "$url" "$(curl_reason "$rc")"
+    case "$rc" in
+      6|60) printf 'BROKEN\t000\t%s\t%s\n' "$url" "$(curl_reason "$rc")" ;;
+      *)    printf 'UNREACHABLE\t000\t%s\t%s\n' "$url" "$(curl_reason "$rc")" ;;
+    esac
     return
   fi
 
@@ -142,27 +154,41 @@ printf '%s\n' "$urls" | tr '\n' '\0' \
 
 # Hosts that throttle by connection see the parallel pass as a burst and drop
 # the extra sockets, which looks identical to a dead host (code 000). Recheck
-# every failure serially before believing it.
-grep '^BROKEN' "$results" | cut -f3 > "$retry_in"
+# every failure serially, and with a longer timeout, before believing it.
+grep -E '^(BROKEN|UNREACHABLE)' "$results" | cut -f3 > "$retry_in"
 if [ -s "$retry_in" ]; then
   echo "Rechecking $(wc -l < "$retry_in" | tr -d ' ') failures serially"
   echo
   while IFS= read -r url; do
-    check_url "$url"
-    sleep 1
+    check_url "$url" 45
+    # Spacing the recheck is the point of doing it serially: a host that
+    # dropped us for bursting will do it again if we burst again. Tests drive
+    # a stub curl and set this to 0.
+    sleep "${LINK_CHECK_RETRY_SLEEP:-1}"
   done < "$retry_in" > "$retry_out"
-  grep -v '^BROKEN' "$results" > "$results.keep"
+  grep -Ev '^(BROKEN|UNREACHABLE)' "$results" > "$results.keep"
   cat "$results.keep" "$retry_out" > "$results"
   rm -f "$results.keep"
 fi
 
 blocked=$(grep -c '^BLOCKED' "$results")
 broken=$(grep -c '^BROKEN' "$results")
+unreachable=$(grep -c '^UNREACHABLE' "$results")
 ok=$(grep -c '^OK' "$results")
 
 if [ "$blocked" -gt 0 ]; then
   echo "Blocked by the remote host (not treated as failures):"
   grep '^BLOCKED' "$results" | sort -k3 | awk -F'\t' '{printf "  %s  %s\n", $2, $3}'
+  echo
+fi
+
+if [ "$unreachable" -gt 0 ]; then
+  echo "Unreachable from this runner (not treated as failures):"
+  grep '^UNREACHABLE' "$results" | sort -k3 \
+    | awk -F'\t' '{ printf "  %s  %s%s\n", $2, $3, ($4 == "" ? "" : "  (" $4 ")") }'
+  echo "  These answered nothing over the network but still resolve in DNS."
+  echo "  Confirm one by hand before editing a guide; a host that blocks this"
+  echo "  network commonly serves the same page fine from a browser."
   echo
 fi
 
@@ -173,13 +199,23 @@ if [ "$broken" -gt 0 ]; then
   echo
 fi
 
-echo "$ok ok, $blocked blocked, $broken broken (of $count checked)"
+echo "$ok ok, $blocked blocked, $unreachable unreachable, $broken broken (of $count checked)"
 
 # Postcondition: every extracted URL must be accounted for. If the scan died
 # partway, the counts above would still read like a clean run.
-if [ "$((ok + blocked + broken))" -ne "$count" ]; then
+if [ "$((ok + blocked + unreachable + broken))" -ne "$count" ]; then
   echo
-  echo "FAIL: $((ok + blocked + broken)) results for $count URLs - the scan did not finish" >&2
+  echo "FAIL: $((ok + blocked + unreachable + broken)) results for $count URLs - the scan did not finish" >&2
+  exit 1
+fi
+
+# Not failing on unreachable only holds while unreachable is a fringe. If a
+# large share of the run cannot connect, the runner's network is the problem
+# and the whole result is uninformative - say so rather than reporting a
+# reassuring "0 broken".
+if [ "$count" -gt 0 ] && [ "$((unreachable * 4))" -gt "$count" ]; then
+  echo
+  echo "FAIL: $unreachable of $count URLs unreachable - this run cannot be trusted" >&2
   exit 1
 fi
 
