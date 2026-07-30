@@ -22,7 +22,7 @@ const SOURCE = readFileSync(
  * entry in `blocked` fire onerror, like a blocked request; everything else
  * fires onload. Returns the list of every src the page attempted.
  */
-async function runLoader(blocked = []) {
+async function runLoader(blocked = [], { doubleInit = false, loadDelay = 0 } = {}) {
   const attempted = [];
   const realAppend = document.head.appendChild.bind(document.head);
 
@@ -30,7 +30,11 @@ async function runLoader(blocked = []) {
     if (node.tagName !== "SCRIPT" || !node.src) return realAppend(node);
     attempted.push(node.src);
     const isBlocked = blocked.some((b) => node.src.includes(b));
-    // Async, like a real network response.
+    // Async, like a real network response. loadDelay matters: interactive.js
+    // defers the document$ re-init by 50ms, so with instant loads the first
+    // chain finishes before the second run starts and the two never overlap.
+    // A race test against non-overlapping runs passes no matter what the code
+    // does - it must outlast that 50ms to reproduce anything.
     setTimeout(() => {
       if (isBlocked) {
         if (node.onerror) node.onerror(new Event("error"));
@@ -47,16 +51,33 @@ async function runLoader(blocked = []) {
         };
       }
       if (node.onload) node.onload();
-    }, 0);
+    }, loadDelay);
     return node;
   });
+
+  if (doubleInit) {
+    // Reproduce the real mechanism rather than approximating it. Material's
+    // document$ is a replaying observable: subscribing emits the CURRENT
+    // document straight away. interactive.js has already run initComponents
+    // from the readyState check by then, so the subscribe callback is a second
+    // concurrent run inside the SAME evaluation - sharing one loadedScripts
+    // map. Evaluating the file twice instead would give each run its own map
+    // and could not reproduce this at all.
+    window.document$ = { subscribe: (cb) => cb() };
+  }
 
   // eslint-disable-next-line no-new-func
   new Function(SOURCE)();
 
-  // Let the promise chain drain.
+  // Let the promise chain drain. The document$ callback is deferred by 50ms,
+  // so this must outlast that or the second run would simply never happen and
+  // the test would pass for the wrong reason.
   for (let i = 0; i < 40; i++) {
     await new Promise((r) => setTimeout(r, 0));
+  }
+  // Outlast the 50ms re-init plus a full chain of delayed loads.
+  for (let i = 0; i < 16; i++) {
+    await new Promise((r) => setTimeout(r, loadDelay + 20));
   }
   return attempted;
 }
@@ -71,6 +92,7 @@ describe("interactive.js loading chain", () => {
     vi.restoreAllMocks();
     delete window.__md_scope;
     delete window.RunbookSupabaseConfig;
+    delete window.document$;
   });
 
   it("reaches the auth chain when nothing is blocked", async () => {
@@ -140,5 +162,48 @@ describe("interactive.js loading chain", () => {
     const withRoot = await runLoader();
     expect(withRoot.some((s) => s.includes("admin/dashboard.js"))).toBe(true);
     root.remove();
+  });
+
+  it("injects each script once when the loader runs twice concurrently", async () => {
+    // The production defect. initComponents() runs twice on a first load - once
+    // from DOMContentLoaded and once because Material's document$ emits the
+    // current document immediately on subscribe. The old guard registered a src
+    // only after its load RESOLVED, so both runs passed the check before either
+    // finished and both injected a tag.
+    //
+    // Live consequences: storage.js loaded twice and the second copy threw
+    // "Identifier 'STORAGE_KEY' has already been declared", and collect.js
+    // loaded twice into separate module scopes, so every page view was counted
+    // twice.
+    const attempted = await runLoader([], { doubleInit: true, loadDelay: 60 });
+    const counts = attempted.reduce((acc, src) => {
+      acc[src] = (acc[src] || 0) + 1;
+      return acc;
+    }, {});
+    const duplicated = Object.keys(counts).filter((s) => counts[s] > 1);
+    expect(duplicated).toEqual([]);
+  });
+
+  it("injects storage.js exactly once across concurrent runs", async () => {
+    // Named separately because this one is not merely a duplicate request: the
+    // second copy is a hard SyntaxError on a top-level const redeclaration.
+    const attempted = await runLoader([], { doubleInit: true, loadDelay: 60 });
+    expect(attempted.filter((s) => s.includes("lib/storage.js"))).toHaveLength(1);
+  });
+
+  it("injects the beacon exactly once across concurrent runs", async () => {
+    const attempted = await runLoader([], { doubleInit: true, loadDelay: 60 });
+    expect(attempted.filter((s) => s.includes("lib/collect.js"))).toHaveLength(1);
+  });
+
+  it("allows a retry after a script genuinely failed to load", async () => {
+    // A failure must not be cached as though it were a completed load, or a
+    // script blocked once could never be loaded again in that page session.
+    //
+    // loadDelay 0 on purpose: this is about a SEQUENTIAL retry after the first
+    // attempt failed. With overlapping runs the second caller correctly shares
+    // the first's in-flight promise and no retry is expected at all.
+    const attempted = await runLoader(["lib/topics.js"], { doubleInit: true, loadDelay: 0 });
+    expect(attempted.filter((s) => s.includes("lib/topics.js")).length).toBeGreaterThan(1);
   });
 });

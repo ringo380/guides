@@ -31,39 +31,53 @@
     "admin-dashboard": "assets/javascripts/components/admin/dashboard.js",
   };
 
-  const loadedScripts = new Set();
+  // Keyed by src, holding the in-flight promise rather than a "done" marker.
+  //
+  // This used to be a Set that a src was added to on LOAD, which meant two
+  // concurrent callers both passed the guard before either finished and both
+  // injected a tag. initComponents() runs twice on a first page load - once
+  // from DOMContentLoaded and once because Material's document$ emits the
+  // current document immediately on subscribe - so that race fired on every
+  // visit, not in some rare interleaving.
+  //
+  // The consequences were live: storage.js loaded twice and the second copy
+  // threw "Identifier 'STORAGE_KEY' has already been declared", and collect.js
+  // loaded twice, giving each copy its own module scope so neither could see
+  // that the other had already sent the page view. Every page view was counted
+  // twice - an inflated number that looks entirely plausible.
+  //
+  // Registering the promise BEFORE the load settles is what closes it: the
+  // second caller gets the first caller's promise instead of a second tag.
+  const loadedScripts = new Map();
 
-  function loadScript(src) {
-    if (loadedScripts.has(src)) {
-      return Promise.resolve();
-    }
-    return new Promise((resolve, reject) => {
+  function injectScript(key, href) {
+    const existing = loadedScripts.get(key);
+    if (existing) return existing;
+
+    const pending = new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      // Resolve relative to site root (__md_scope is set by MkDocs Material per page)
-      script.src = new URL(src, window.__md_scope || document.baseURI).href;
-      script.onload = () => {
-        loadedScripts.add(src);
-        resolve();
+      script.src = href;
+      script.onload = () => resolve();
+      script.onerror = () => {
+        // Do not cache a failure as though it were a completed load. A blocked
+        // script that becomes available later should be retryable.
+        loadedScripts.delete(key);
+        reject(new Error(`Failed to load ${key}`));
       };
-      script.onerror = () => reject(new Error(`Failed to load ${src}`));
       document.head.appendChild(script);
     });
+
+    loadedScripts.set(key, pending);
+    return pending;
+  }
+
+  function loadScript(src) {
+    // Resolve relative to site root (__md_scope is set by MkDocs Material per page)
+    return injectScript(src, new URL(src, window.__md_scope || document.baseURI).href);
   }
 
   function loadExternalScript(url) {
-    if (loadedScripts.has(url)) {
-      return Promise.resolve();
-    }
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = url;
-      script.onload = () => {
-        loadedScripts.add(url);
-        resolve();
-      };
-      script.onerror = () => reject(new Error(`Failed to load ${url}`));
-      document.head.appendChild(script);
-    });
+    return injectScript(url, url);
   }
 
   // Analytics is optional and is a common ad-blocker target: lib/analytics.js

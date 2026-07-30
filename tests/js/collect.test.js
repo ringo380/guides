@@ -208,4 +208,26 @@ describe("collect beacon", () => {
     expect(() => window.RunbookCollect.send(null, null)).not.toThrow();
     expect(() => window.RunbookCollect.send("page_view", undefined)).not.toThrow();
   });
+
+  it("does not send a second page view when the file is evaluated twice", () => {
+    // A loader race double-injected this script in production, giving each
+    // copy its own module scope, so the 1s dedupe below could not see the
+    // other copy and every page view was counted twice. The loader is fixed;
+    // this asserts the beacon is independently safe, because a count that
+    // silently doubles looks perfectly plausible.
+    const { sent } = load();
+    expect(sent).toHaveLength(1);
+
+    // eslint-disable-next-line no-new-func
+    new Function(SOURCE)();
+    expect(sent).toHaveLength(1);
+  });
+
+  it("leaves the already-installed API in place on a second evaluation", () => {
+    load();
+    const first = window.RunbookCollect;
+    // eslint-disable-next-line no-new-func
+    new Function(SOURCE)();
+    expect(window.RunbookCollect).toBe(first);
+  });
 });

@@ -23,6 +23,17 @@
 (function () {
   "use strict";
 
+  // Refuse to run twice.
+  //
+  // The dedupe state below is module-local, so a second evaluation of this file
+  // gets a fresh copy that cannot see the first one's page view and sends a
+  // duplicate. That is not hypothetical: a loader race double-injected this
+  // script in production and every page view was counted twice. The loader is
+  // fixed, but the guard stays - a beacon whose count silently doubles when
+  // something upstream loads it twice is worse than one that does not fire,
+  // because the wrong number looks perfectly reasonable.
+  if (window.RunbookCollect) return;
+
   var ENDPOINT =
     "https://smulobzymizulakvaito.supabase.co/functions/v1/collect";
 
