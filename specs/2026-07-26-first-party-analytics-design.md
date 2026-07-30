@@ -18,6 +18,17 @@ visitor accepts analytics cookies in the Material consent banner. GA4 accepts th
 resulting hits (they return `204`) but treats them as cookieless consent-mode pings,
 which feed conversion modelling and never populate standard or realtime reports.
 
+There turned out to be **two independent causes**, each sufficient on its own:
+
+1. **The upgrade never fired.** The partial read `localStorage["__consent"]`, but
+   Material scopes the key by site path, so the real key is `/.__consent`. Visitors
+   who explicitly accepted analytics were treated as having declined, so consent
+   rate was irrelevant: even universal acceptance would have produced zero rows.
+   Filed as #165 and fixed in #167.
+2. **Ad blockers drop `gtag/js` outright.** Consent never enters into it, and no
+   GA4-side change reaches this segment. This is the cause the present design
+   exists to address, and it survives the #165 fix untouched.
+
 Confirmed directly against property `525117219`:
 
 | Check | Result |
