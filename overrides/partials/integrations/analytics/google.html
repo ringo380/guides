@@ -32,32 +32,60 @@
     gtag("js", new Date());
     gtag("config", property);
 
-    // Material stores consent as JSON in localStorage["__consent"], e.g.
-    // {"analytics": true}. The cookie name is defined under
-    // theme.consent.cookies.analytics in mkdocs.yml.
+    // Material stores consent as JSON under a key SCOPED BY SITE PATH, not
+    // under a bare "__consent". On runbook.fyi the real key is "/.__consent"
+    // (the sibling "/.__palette" key is written the same way). Reading the
+    // unscoped name returned null even for visitors who had accepted, so the
+    // "granted" update below was never sent and GA4 only ever saw cookieless
+    // consent-mode pings. Check every key that could hold it rather than
+    // hardcoding one guess about Material's prefix.
     var granted = false;
-    function hasAnalyticsConsent() {
+    function readConsent() {
+      var candidates = ["__consent"];
       try {
-        var c = JSON.parse(localStorage.getItem("__consent"));
-        return !!(c && c.analytics);
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && k !== "__consent" && k.slice(-10) === ".__consent") {
+            candidates.push(k);
+          }
+        }
       } catch (e) {
-        return false;
+        // localStorage can throw outright (Safari private mode, blocked
+        // third-party context). Fall through with what we have.
       }
+      for (var j = 0; j < candidates.length; j++) {
+        try {
+          var c = JSON.parse(localStorage.getItem(candidates[j]));
+          if (c && c.analytics) return true;
+        } catch (e) {
+          // Malformed value under one key must not hide a valid one.
+        }
+      }
+      return false;
     }
     function syncConsent() {
       if (granted) return;
-      if (hasAnalyticsConsent()) {
+      if (readConsent()) {
         gtag("consent", "update", { analytics_storage: "granted" });
         granted = true;
-        if (poll) { clearInterval(poll); poll = null; }
+        stopPolling();
       }
+    }
+    function stopPolling() {
+      if (poll) { clearInterval(poll); poll = null; }
     }
 
     // Returning visitors who accepted previously.
     syncConsent();
     // Catch a same-tab "Accept" without a page reload (Material does not
     // reload on consent change, and the storage event is cross-tab only).
-    var poll = granted ? null : setInterval(syncConsent, 1000);
+    // Bounded: a visitor who has not decided within two minutes is not going
+    // to be caught by a timer that runs for the life of the tab.
+    var ticks = 0;
+    var poll = granted ? null : setInterval(function () {
+      if (++ticks > 120) return stopPolling();
+      syncConsent();
+    }, 1000);
   })();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.extra.analytics.property }}"></script>
