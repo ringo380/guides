@@ -27,9 +27,22 @@ run() {
   fi
 }
 
+# `deno test` over a directory with no matching files exits 0 and reports
+# nothing, which is indistinguishable from a clean run. Refuse that.
+deno_precondition() {
+  local n
+  n=$(find supabase/functions -name '*_test.ts' | wc -l | tr -d ' ')
+  if [ "$n" -lt 1 ]; then
+    echo "FAIL: no *_test.ts files under supabase/functions - the suite is not running" >&2
+    return 1
+  fi
+  echo "found $n Deno test file(s)"
+  deno test --allow-read supabase/functions/
+}
+
 run "python tests"  python3 -m pytest tests/ -q
 run "js tests"      npx vitest run
-run "deno tests"    deno test --allow-read supabase/functions/admin-api/tests/
+run "deno tests"    deno_precondition
 run "docs symlinks" ./setup-docs.sh
 run "mkdocs strict" mkdocs build --strict
 run "site invariants" ./check-site.sh

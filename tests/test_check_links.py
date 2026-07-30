@@ -42,8 +42,10 @@ def write_fake_curl(tmp_path, responses):
 
     Anything not listed answers 200, so a test only has to describe the URLs
     it actually cares about. The special value FLAKY times out for the first
-    two calls (the HEAD and GET of the parallel pass) and succeeds afterwards,
-    which is what a host that throttles by connection looks like.
+    call and succeeds afterwards, which is what a host that throttles by
+    connection looks like. One call, not two: a 000 no longer triggers a GET
+    retry, because there was no HTTP response for a method to have been
+    refused.
     """
     bindir = tmp_path / "bin"
     bindir.mkdir()
@@ -55,7 +57,7 @@ def write_fake_curl(tmp_path, responses):
                 f'  "{url}")\n'
                 f'    n=$(cat "{counter}" 2>/dev/null || echo 0); n=$((n+1));\n'
                 f'    echo "$n" > "{counter}"\n'
-                f'    if [ "$n" -le 2 ]; then echo "000 28"; else echo "200 0"; fi ;;'
+                f'    if [ "$n" -le 1 ]; then echo "000 28"; else echo "200 0"; fi ;;'
             )
         else:
             arms.append(f'  "{url}") echo "{value}" ;;')

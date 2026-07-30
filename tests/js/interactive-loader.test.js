@@ -106,9 +106,22 @@ describe("interactive.js loading chain", () => {
       "lib/analytics-observers.js",
       "lib/analytics-journey.js",
       "lib/topics.js",
+      "lib/collect.js",
     ]);
     expect(attempted.some((s) => s.includes("lib/supabase-config.js"))).toBe(true);
     expect(attempted.some((s) => s.includes("lib/auth.js"))).toBe(true);
+  });
+
+  it("loads the first-party beacon even when analytics.js is blocked", async () => {
+    // These two must stay independent: analytics.js is an ad-blocker filter
+    // target and collect.js is the collection that survives it.
+    const attempted = await runLoader(["lib/analytics.js"]);
+    expect(attempted.some((s) => s.includes("lib/collect.js"))).toBe(true);
+  });
+
+  it("loads the beacon on the storage-failure path too", async () => {
+    const attempted = await runLoader(["lib/storage.js"]);
+    expect(attempted.some((s) => s.includes("lib/collect.js"))).toBe(true);
   });
 
   it("brings up auth even when storage itself is blocked", async () => {

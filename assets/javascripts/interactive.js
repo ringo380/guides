@@ -103,6 +103,11 @@
       .then(() => loadOptionalScript("assets/javascripts/lib/analytics-observers.js"))
       .then(() => loadOptionalScript("assets/javascripts/lib/topics.js"))
       .then(() => loadOptionalScript("assets/javascripts/lib/analytics-journey.js"))
+      // First-party beacon. Loaded after analytics.js so it can mirror the
+      // events components already emit, but it does not depend on it: when
+      // analytics.js is blocked there is simply nothing to mirror and page
+      // views still flow.
+      .then(() => loadOptionalScript("assets/javascripts/lib/collect.js"))
       .then(() => loadAuthChain())
       .then(() => {
         // Find all interactive divs on the page
@@ -156,7 +161,8 @@
         loadOptionalScript("assets/javascripts/lib/analytics.js")
           .then(() => loadOptionalScript("assets/javascripts/lib/analytics-observers.js"))
           .then(() => loadOptionalScript("assets/javascripts/lib/topics.js"))
-          .then(() => loadOptionalScript("assets/javascripts/lib/analytics-journey.js"));
+          .then(() => loadOptionalScript("assets/javascripts/lib/analytics-journey.js"))
+          .then(() => loadOptionalScript("assets/javascripts/lib/collect.js"));
         // Sign-in does not need storage, so still bring up auth here.
         loadAuthChain().then(() => {
           loadScript(COMPONENT_SCRIPTS["auth-ui"]).catch(() => {});
