@@ -94,8 +94,17 @@ check_url() {
   # restriction is not reported as a dead link. A ranged GET would be cheaper
   # but some servers answer one with 415/416, trading one false signal for
   # another, so take the whole body and discard it.
+  #
+  # Code 000 is excluded: it means no HTTP response happened at all, so there
+  # is no method to have been refused and a GET would spend another full
+  # timeout learning the same thing. With sixteen unreachable gnu.org URLs and
+  # a 45s serial timeout that redundant retry alone cost the scheduled run
+  # roughly twenty extra minutes. The trade-off is a server that hangs on HEAD
+  # but would have answered GET; that now reports as unreachable, which is a
+  # printed line rather than a failure, and the serial recheck still gets a
+  # second attempt at it.
   case "$code" in
-    2*|3*|401|402|418|429|999) ;;
+    2*|3*|401|402|418|429|999|000|"") ;;
     *)
       out=$(curl -s -L -o /dev/null -w '%{http_code} %{exitcode}' \
         --max-time "$maxtime" --connect-timeout 10 --retry 1 --retry-delay 2 \
