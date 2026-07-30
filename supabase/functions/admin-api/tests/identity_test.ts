@@ -1,0 +1,73 @@
+import { assertEquals, assertThrows } from "jsr:@std/assert@1";
+import { narrowToExactEmail, parseUserQuery } from "../lib/identity.ts";
+
+Deno.test("parseUserQuery accepts a complete email", () => {
+  assertEquals(parseUserQuery("someone@example.com", null), {
+    kind: "email",
+    email: "someone@example.com",
+  });
+});
+
+Deno.test("parseUserQuery lowercases the email so matching is case-insensitive", () => {
+  assertEquals(parseUserQuery("Someone@Example.COM", null), {
+    kind: "email",
+    email: "someone@example.com",
+  });
+});
+
+Deno.test("parseUserQuery accepts a uuid", () => {
+  const id = "3f2504e0-4f89-11d3-9a0c-0305e82c3301";
+  assertEquals(parseUserQuery(null, id), { kind: "id", id });
+});
+
+Deno.test("parseUserQuery rejects neither identifier", () => {
+  assertThrows(() => parseUserQuery(null, null), RangeError);
+});
+
+Deno.test("parseUserQuery rejects both identifiers at once", () => {
+  // Ambiguous: which one wins would be an invisible policy decision.
+  assertThrows(
+    () => parseUserQuery("a@b.com", "3f2504e0-4f89-11d3-9a0c-0305e82c3301"),
+    RangeError,
+  );
+});
+
+Deno.test("parseUserQuery rejects the wildcards that sweep the user table", () => {
+  // filter=% and filter=@ each return every user. Neither may reach GoTrue.
+  for (const bad of ["%", "@", "%@%", "gmail.com", "ro", ""]) {
+    assertThrows(() => parseUserQuery(bad, null), RangeError, undefined, bad);
+  }
+});
+
+Deno.test("parseUserQuery rejects a malformed uuid", () => {
+  assertThrows(() => parseUserQuery(null, "not-a-uuid"), RangeError);
+  assertThrows(() => parseUserQuery(null, "3f2504e0-4f89-11d3-9a0c"), RangeError);
+});
+
+Deno.test("narrowToExactEmail picks the exact match out of substring noise", () => {
+  // What GoTrue actually returns for filter=someone@example.com
+  const candidates = [
+    { id: "1", email: "xsomeone@example.com" },
+    { id: "2", email: "someone@example.com" },
+  ];
+  assertEquals(narrowToExactEmail(candidates, "someone@example.com")?.id, "2");
+});
+
+Deno.test("narrowToExactEmail is case-insensitive", () => {
+  const candidates = [{ id: "1", email: "Someone@Example.com" }];
+  assertEquals(narrowToExactEmail(candidates, "someone@example.com")?.id, "1");
+});
+
+Deno.test("narrowToExactEmail returns null when only substrings matched", () => {
+  const candidates = [{ id: "1", email: "someone-else@example.com" }];
+  assertEquals(narrowToExactEmail(candidates, "someone@example.com"), null);
+});
+
+Deno.test("narrowToExactEmail tolerates a candidate with no email", () => {
+  const candidates = [{ id: "1", email: null }, { id: "2", email: "a@b.com" }];
+  assertEquals(narrowToExactEmail(candidates, "a@b.com")?.id, "2");
+});
+
+Deno.test("narrowToExactEmail returns null for an empty candidate set", () => {
+  assertEquals(narrowToExactEmail([], "a@b.com"), null);
+});
