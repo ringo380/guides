@@ -385,6 +385,22 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+# The readers being measured are anonymous, so there is no token to require and
+# the gateway must not demand one. Recorded here rather than passed as a deploy
+# flag, so the setting is reproducible and reviewable instead of living in
+# whatever command someone last ran.
+#
+# What protects the table is not authentication: only allowlisted event names
+# are stored, paths and props are bounded, and every response is a bodyless 204
+# so the allowlist cannot be probed.
+[functions.collect]
+verify_jwt = false
+
+# The opposite: the gateway rejects anything without a valid user JWT before
+# the handler runs, and the handler then checks admin membership.
+[functions.admin-api]
+verify_jwt = true
+
 [analytics]
 enabled = true
 port = 54327
