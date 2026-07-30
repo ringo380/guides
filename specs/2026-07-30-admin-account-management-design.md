@@ -99,12 +99,52 @@ cookie, so a cross-site form post carries no credentials. Stated explicitly
 because "first write path" normally implies CSRF work, and here it does not apply.
 
 **Email lookup uses the service-role `auth.admin` API, not a SQL join.**
-`auth.users` is outside the public schema and PostgREST cannot reach it. This is
-the one interface in the design that must be verified against the deployed
-function before it is relied on: Supabase's admin API has changed its filter
-support across versions, and if server-side exact-email filtering is unavailable,
-this needs a different approach rather than paging the whole user table in the
-edge function. See Verification.
+`auth.users` is outside the public schema and PostgREST cannot reach it. The exact
+behavior of that API was probed against the live project before this design was
+finalized; see "GoTrue filter behavior" below, because it does not do what the
+route needs and the route is shaped around that.
+
+### GoTrue filter behavior (probed 2026-07-30, live project)
+
+Probed against `smulobzymizulakvaito` with the service-role key, with **two**
+accounts present. Two accounts matters: with only one user in the table, a query
+param that is silently ignored returns the same count as one that matched
+exactly, and every result is ambiguous. The first probe run had one user and
+produced a false positive; the numbers below are from the two-user run.
+
+| Query | Users returned | Conclusion |
+|---|---|---|
+| `zzz_bogus=<unknown>` (control) | 2 | Unrecognized params are ignored, full list returned |
+| `email=<unknown>` | 2 | **`email=` is not honored** - identical to the control |
+| `email=<exact real>` | 2 | Ignored, not matched |
+| `filter=<exact real email>` | 1 | `filter=` is honored |
+| `filter=<unknown email>` | 0 | Genuinely applied, not a passthrough |
+| `filter=%` | 2 | Full sweep |
+| `filter=@` | 2 | Full sweep |
+| `filter=ro` | 2 | Substring, and see below |
+| `filter=Robson` | 1 | **Matches `user_metadata`, not just email** |
+| `filter=Ryan` | 1 | Same |
+
+The last two rows are the important ones. `Robson` appears nowhere in
+`ringo380@gmail.com`; it exists only in that account's `user_metadata.full_name`.
+GitHub OAuth populates `full_name`, `name`, `user_name`, and
+`preferred_username`, and `filter=` searches across them.
+
+So `filter=` is a **substring search over email and metadata**, not an email
+lookup. Three consequences the implementation must honor:
+
+1. **Exactness is enforced in the edge function, never delegated.** Take the
+   returned set, compare each `email` to the query case-insensitively, and return
+   `404` unless exactly one matches exactly. A `filter=` hit is a candidate, not
+   an answer.
+2. **Raw admin input never reaches `filter=`.** `%` and `@` each return the entire
+   user table. Input is validated as a syntactically complete address first, so a
+   typed `%` is a `400` rather than a roster dump - which is the enumeration the
+   no-enumeration decision exists to prevent.
+3. **A single-row response cannot be assumed.** A full-email filter can still
+   return several accounts, since another user's metadata may contain that string.
+   Request with an explicit `per_page`, narrow to the exact match, and treat "more
+   candidates than one page" as a `409` rather than paging the user table.
 
 ---
 
@@ -245,13 +285,21 @@ mutated file with a `trap ... EXIT INT TERM`, not on the happy path only, and
 1. **The last-admin trigger.** Verified by hand: with two rows, delete one
    (succeeds); with one row, delete it (must raise). Run in a transaction that is
    rolled back, against the real project.
-2. **The `auth.admin` email filter.** Verified with `curl` against the deployed
-   function: a known email returns exactly one user, an unknown email returns
-   `404`, and a partial email returns `404` rather than a fuzzy match.
+2. **The `auth.admin` filter behavior.** Already probed - see "GoTrue filter
+   behavior" above. What remains is verifying the route built on top of it:
+   against the deployed function, a known email returns exactly one user, an
+   unknown email returns `404`, a bare `%` returns `400` and not a roster, and a
+   partial address returns `404` rather than a fuzzy hit.
 
 Both are manual steps in the implementation plan, not something the green gate
 proves. Neither may be reported as verified on the strength of `verify.sh`
 passing.
+
+### Probing precondition
+
+Any future probe of the lookup route needs **at least two accounts** in the
+project. With one, an ignored parameter and a working filter both return one row,
+and the probe cannot fail. Assert the user count before believing any result.
 
 ---
 
