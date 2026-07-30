@@ -89,6 +89,74 @@
     ));
   }
 
+  /**
+   * First-party traffic. Rendered as its own section, never merged into the
+   * GA4 tables above.
+   *
+   * The two measure different populations - GA4 sees only readers who accepted
+   * consent and are not blocking it, this sees everyone - so the numbers will
+   * disagree, sometimes by a lot. A single combined table would imply they are
+   * the same quantity measured twice, which is a worse error than showing two
+   * sections and saying what each one covers.
+   */
+  function renderTraffic(root, traffic) {
+    root.appendChild(el("h2", {}, "Traffic (all readers, first-party)"));
+
+    if (!traffic || traffic.error) {
+      root.appendChild(el("p", { class: "admin-error" },
+        "First-party traffic is unavailable. The Google Analytics section above " +
+        "covers consenting, non-blocking readers only."));
+      return;
+    }
+
+    root.appendChild(el("p", {}, traffic.from + " to " + traffic.to + "."));
+
+    var totals = traffic.totals || {};
+    var perDay = totals.visitorsPerDay || {};
+    root.appendChild(table("Traffic totals", ["Metric", "Value"], [
+      ["Page views", totals.pageviews],
+      ["Visitors per day (average)", perDay.avg],
+      ["Visitors per day (busiest day)", perDay.peak],
+      ["Days with any traffic", totals.daysWithTraffic],
+    ]));
+
+    // There is deliberately no "unique visitors this month" row. Visitor
+    // identity is salted per day and the salt is discarded, so no such number
+    // exists to report - summing the daily column would count one person once
+    // per day they visited. Saying so beats leaving a reader to assume the
+    // omission is an oversight.
+    root.appendChild(el("p", { class: "admin-note" },
+      "There is no total visitor count for the whole range. Visitors are " +
+      "identified per day and that identifier is discarded nightly, so the " +
+      "same person cannot be recognised across two days. Page views add up; " +
+      "visitors do not."));
+
+    root.appendChild(table("Daily traffic", ["Day", "Visitors", "Page views", "Signed in"],
+      (traffic.daily || []).map(function (d) {
+        return [d.day, d.visitors, d.pageviews, d.signedIn];
+      })));
+
+    root.appendChild(table("Top pages by views", ["Page", "Topic", "Views"],
+      (traffic.topPages || []).map(function (p) {
+        return [p.path, p.topic || "", p.views];
+      })));
+
+    root.appendChild(table("Entry pages", ["Page", "Entries"],
+      (traffic.topEntryPages || []).map(function (p) {
+        return [p.path, p.entries];
+      })));
+
+    var referrers = traffic.topReferrers || [];
+    root.appendChild(referrers.length
+      ? table("Referrers", ["Source", "Views"],
+          referrers.map(function (r) { return [r.host, r.views]; }))
+      // An empty referrer table reads as broken collection. It usually means
+      // readers arrived directly or the referrer was stripped, which is a
+      // finding rather than a fault.
+      : el("p", {}, "No external referrers recorded in this range. Readers " +
+          "arrived directly, or their browser sent no referrer."));
+  }
+
   var inFlight = false;
 
   async function init() {
@@ -138,9 +206,26 @@
       return;
     }
     renderPayload(root, await res.json());
+
+    // Fetched after the overview has already rendered, and failure is confined
+    // to its own section: first-party traffic is the newest and least proven
+    // part of this page, and it must not be able to blank the metrics that
+    // were already working.
+    var traffic = null;
+    try {
+      var tres = await fetch(API + "/traffic?range=28d", { headers });
+      if (tres.ok) traffic = await tres.json();
+    } catch (e) {
+      traffic = null;
+    }
+    renderTraffic(root, traffic);
   }
 
-  window.RunbookAdminDashboard = { renderPayload: renderPayload, init: init };
+  window.RunbookAdminDashboard = {
+    renderPayload: renderPayload,
+    renderTraffic: renderTraffic,
+    init: init,
+  };
 
   if (document.getElementById("admin-root")) {
     document.addEventListener("runbook:auth-changed", init);

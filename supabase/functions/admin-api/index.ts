@@ -4,6 +4,7 @@ import { parseRange } from "./lib/range.ts";
 import { isFresh, selectPayload } from "./lib/cache.ts";
 import { fetchGa4 } from "./lib/ga4.ts";
 import { fetchProgress } from "./lib/progress.ts";
+import { fetchTraffic } from "./lib/traffic.ts";
 import { buildPayload } from "./lib/merge.ts";
 
 /** Look the caller up in admin_users using the service-role client. */
@@ -61,6 +62,20 @@ export default {
 
     if (route === "health") {
       return json({ admin: true }, 200, origin);
+    }
+
+    // Deliberately uncached, unlike /overview. That one caches because GA4 is a
+    // rate-limited third party whose failure has to survive as stale data; this
+    // reads local Postgres in one query, so a cache would buy nothing and cost
+    // the freshness that makes the panel worth looking at.
+    if (route === "traffic") {
+      let range;
+      try {
+        range = parseRange(url.searchParams.get("range"));
+      } catch {
+        return json({ error: "invalid range" }, 400, origin);
+      }
+      return json(await fetchTraffic(ctx.supabaseAdmin, range.days), 200, origin);
     }
 
     if (route === "overview") {

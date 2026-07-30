@@ -147,3 +147,119 @@ describe("admin dashboard auth states", () => {
     delete global.fetch;
   });
 });
+
+const TRAFFIC = {
+  from: "2026-07-01",
+  to: "2026-07-03",
+  days: 3,
+  daily: [
+    { day: "2026-07-01", visitors: 4, pageviews: 11, signedIn: 1 },
+    { day: "2026-07-02", visitors: 0, pageviews: 0, signedIn: 0 },
+    { day: "2026-07-03", visitors: 6, pageviews: 19, signedIn: 2 },
+  ],
+  totals: {
+    pageviews: 30,
+    visitorsPerDay: { avg: 3.3, peak: 6 },
+    daysWithTraffic: 2,
+  },
+  topPages: [{ path: "/Git/git-basics/", topic: "Git", views: 12 }],
+  topReferrers: [{ host: "news.ycombinator.com", views: 9 }],
+  topEntryPages: [{ path: "/Git/git-basics/", entries: 5 }],
+};
+
+describe("admin dashboard first-party traffic", () => {
+  let root;
+
+  beforeEach(async () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    await loadComponent("admin/dashboard");
+  });
+
+  afterEach(() => cleanup());
+
+  it("renders every figure as table text, never only as a chart", () => {
+    window.RunbookAdminDashboard.renderTraffic(root, TRAFFIC);
+    const text = root.textContent;
+    expect(text).toContain("30");
+    expect(text).toContain("6");
+    expect(text).toContain("news.ycombinator.com");
+    expect(text).toContain("/Git/git-basics/");
+    // A canvas cannot be voiced by a screen reader, so there must not be one.
+    expect(root.querySelector("canvas")).toBeNull();
+  });
+
+  it("labels the section as covering all readers, not the GA4 population", () => {
+    window.RunbookAdminDashboard.renderTraffic(root, TRAFFIC);
+    expect(root.textContent).toContain("first-party");
+    expect(root.textContent.toLowerCase()).toContain("all readers");
+  });
+
+  it("shows every day in the range, including days with no traffic", () => {
+    window.RunbookAdminDashboard.renderTraffic(root, TRAFFIC);
+    expect(root.textContent).toContain("2026-07-02");
+  });
+
+  it("reports no window-wide visitor total and explains the omission", () => {
+    window.RunbookAdminDashboard.renderTraffic(root, TRAFFIC);
+    const text = root.textContent.toLowerCase();
+    // The absence is the point: a reader who sees per-day visitors but no
+    // total will otherwise assume it was forgotten.
+    expect(text).toContain("no total visitor count");
+    expect(text).toContain("discarded");
+
+    // Also assert the table cannot grow one. The prose alone would still read
+    // correctly next to a row that quietly summed the daily column.
+    const totals = Array.from(root.querySelectorAll("table"))
+      .find((t) => t.querySelector("caption").textContent === "Traffic totals");
+    const labels = Array.from(totals.querySelectorAll("tbody th"))
+      .map((th) => th.textContent.toLowerCase());
+    expect(labels).not.toContain("visitors");
+    expect(labels.some((l) => l === "total visitors" || l === "unique visitors")).toBe(false);
+    expect(labels.length).toBe(4);
+  });
+
+  it("gives every table a caption and scoped headers", () => {
+    window.RunbookAdminDashboard.renderTraffic(root, TRAFFIC);
+    const tables = root.querySelectorAll("table");
+    expect(tables.length).toBeGreaterThan(0);
+    tables.forEach((t) => {
+      expect(t.querySelector("caption")).not.toBeNull();
+      t.querySelectorAll("th").forEach((th) => {
+        expect(th.getAttribute("scope")).toBeTruthy();
+      });
+    });
+  });
+
+  it("says so in words when there are no referrers, rather than showing an empty table", () => {
+    window.RunbookAdminDashboard.renderTraffic(root, { ...TRAFFIC, topReferrers: [] });
+    expect(root.textContent.toLowerCase()).toContain("no external referrers");
+  });
+
+  it("reports unavailable traffic without implying zero traffic", () => {
+    window.RunbookAdminDashboard.renderTraffic(root, null);
+    const text = root.textContent.toLowerCase();
+    expect(text).toContain("unavailable");
+    // "0 page views" would be a claim about the site; this is a claim about
+    // the query. They must not look the same.
+    expect(root.querySelector("table")).toBeNull();
+  });
+
+  it("leaves the GA4 section intact when first-party traffic fails", () => {
+    window.RunbookAdminDashboard.renderPayload(root, PAYLOAD);
+    window.RunbookAdminDashboard.renderTraffic(root, null);
+    expect(root.textContent).toContain("1234");
+    expect(root.textContent).toContain("all visitors");
+  });
+
+  it("keeps the two populations in separate sections", () => {
+    window.RunbookAdminDashboard.renderPayload(root, PAYLOAD);
+    window.RunbookAdminDashboard.renderTraffic(root, TRAFFIC);
+    const headings = Array.from(root.querySelectorAll("h2")).map((h) => h.textContent);
+    // Two distinct traffic headings, each naming its own population. One
+    // merged table would imply the numbers are the same quantity.
+    expect(headings.filter((h) => h.startsWith("Traffic")).length).toBe(2);
+    expect(headings.some((h) => h.includes("all visitors"))).toBe(true);
+    expect(headings.some((h) => h.includes("first-party"))).toBe(true);
+  });
+});
