@@ -54,6 +54,7 @@ Deno.test("checkRevoke checks self before roster size", () => {
 function stubClient(opts: {
   admins?: Array<{ user_id: string; note: string | null; created_at: string }>;
   deleteError?: { code?: string; message: string };
+  insertError?: { code?: string; message: string };
   users?: Array<{ id: string; email: string }>;
 }) {
   const calls: Array<{ table: string; op: string; payload?: unknown }> = [];
@@ -80,7 +81,9 @@ function stubClient(opts: {
         },
         insert(payload: unknown) {
           calls.push({ table, op: "insert", payload });
-          return Promise.resolve({ error: null });
+          return Promise.resolve({
+            error: table === "admin_users" ? (opts.insertError ?? null) : null,
+          });
         },
         delete() {
           calls.push({ table, op: "delete" });
@@ -182,6 +185,21 @@ Deno.test("grantAdmin 409s an existing admin without a second insert", async () 
   assertEquals(c.calls.some((x) => x.op === "insert"), false);
 });
 
+
+Deno.test("grantAdmin maps a unique violation to 409, not 500", async () => {
+  // The roster check is check-then-act: a concurrent grant of the same account
+  // commits in between and the primary key rejects this insert. That is the
+  // same conflict the check reports, so it gets the same status.
+  const c = stubClient({
+    admins: [{ user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" }],
+    insertError: { code: "23505", message: "duplicate key value" },
+  });
+  const { deps } = stubGoTrue({ users: [{ id: "new", email: "new@example.com" }] });
+  const res = await grantAdmin(c as any, deps, "a", "new@example.com");
+  assertEquals(res.status, 409);
+  assertEquals((res.body as any).error, "already an admin");
+  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+});
 
 Deno.test("revokeAdmin maps the trigger's P0001 to a 409", async () => {
   // The API's own rosterSize check and the trigger can disagree under a race.

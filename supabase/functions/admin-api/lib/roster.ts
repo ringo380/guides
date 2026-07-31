@@ -104,7 +104,16 @@ export async function grantAdmin(
   const { error: insErr } = await supabaseAdmin
     .from("admin_users")
     .insert({ user_id: user.id, note: `granted by ${actorId}` });
-  if (insErr) throw insErr;
+  if (insErr) {
+    // The check above is check-then-act: a concurrent grant of the same account
+    // commits between the read and this insert, and the primary key rejects it.
+    // That is the same conflict the check reports, so it gets the same answer
+    // rather than surfacing as a 500. Mirrors the revoke path's P0001 mapping.
+    if ((insErr as { code?: string }).code === "23505") {
+      return { status: 409, body: { error: "already an admin" } };
+    }
+    throw insErr;
+  }
 
   await recordAudit(supabaseAdmin, {
     actorUserId: actorId,
