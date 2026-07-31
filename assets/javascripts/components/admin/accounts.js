@@ -223,6 +223,12 @@
     s.appendChild(el("p", { class: "admin-error", role: "status" }, message));
   }
 
+  /** Replace one section with a single announced message. */
+  function sectionMessage(root, id, message) {
+    var s = section(root, id);
+    s.appendChild(el("p", { class: "admin-error", role: "status" }, message));
+  }
+
   function renderLookupForm(root) {
     var s = section(root, "admin-lookup");
     s.appendChild(el("h3", {}, "Find an account"));
@@ -247,9 +253,18 @@
       var v = input.value.trim();
       if (!v) return;
       var key = v.indexOf("@") === -1 ? "id" : "email";
-      var res = await authedFetch(
-        "/user?" + key + "=" + encodeURIComponent(v), { method: "GET" });
-      renderUser(root, res.ok ? await res.json() : null);
+      try {
+        var res = await authedFetch(
+          "/user?" + key + "=" + encodeURIComponent(v), { method: "GET" });
+        renderUser(root, res.ok ? await res.json() : null);
+      } catch (e) {
+        // "No matching account" and "the request never left the browser" are
+        // different answers. Saying the first when the second happened invites
+        // a retry of whatever comes next, including the destructive part.
+        sectionMessage(root, "admin-user-result",
+          "The lookup request could not be sent. Nothing was searched - " +
+          "check your connection and try again.");
+      }
     });
 
     if (resetSubmitHandler) root.removeEventListener("submit", resetSubmitHandler);
@@ -265,15 +280,27 @@
       // The typed address IS the confirmation. The server independently
       // requires the id and the email to belong to the same account, so this
       // field is the input to that check, not a second check layered on top.
-      var res = await authedFetch("/user/progress/reset", {
-        method: "POST",
-        body: JSON.stringify({ userId: id, confirmEmail: typed }),
-      });
-      var out = section(root, "admin-reset-result");
-      out.appendChild(el("p", { class: res.ok ? "admin-note" : "admin-error" },
-        res.ok
-          ? "Progress reset."
-          : "Reset refused. The address must match the account you looked up."));
+      try {
+        var res = await authedFetch("/user/progress/reset", {
+          method: "POST",
+          body: JSON.stringify({ userId: id, confirmEmail: typed }),
+        });
+        var out = section(root, "admin-reset-result");
+        out.appendChild(el(
+          "p",
+          { class: res.ok ? "admin-note" : "admin-error", role: "status" },
+          res.ok
+            ? "Progress reset."
+            : "Reset refused. The address must match the account you looked up.",
+        ));
+      } catch (e) {
+        // A silent failure on a destructive action is the worst case: the
+        // admin cannot tell a refusal from a request that never left, and the
+        // natural response to that ambiguity is to try the delete again.
+        sectionMessage(root, "admin-reset-result",
+          "The reset request could not be sent. Nothing was deleted - look " +
+          "the account up again before retrying.");
+      }
     };
     root.addEventListener("submit", resetSubmitHandler);
   }

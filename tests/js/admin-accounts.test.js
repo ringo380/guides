@@ -138,6 +138,47 @@ describe("admin accounts reset listener idempotency", () => {
     expect(text).toContain("Could not reach the admin service");
   });
 
+  it("tells the admin a failed lookup never left the browser", async () => {
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      throw new TypeError("Failed to fetch");
+    };
+
+    await window.RunbookAdminAccounts.init();
+    const form = root.querySelector("#admin-lookup-form");
+    form.querySelector("input").value = "someone@example.com";
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // "No matching account" here would be a claim the page cannot support.
+    expect(root.textContent).toContain("could not be sent");
+    expect(root.textContent).not.toContain("No matching account");
+    // The rest of the page keeps working.
+    expect(root.querySelector("#admin-lookup-form")).toBeTruthy();
+  });
+
+  it("tells the admin a failed reset deleted nothing", async () => {
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      throw new TypeError("Failed to fetch");
+    };
+
+    await window.RunbookAdminAccounts.init();
+    window.RunbookAdminAccounts.renderUser(root, USER);
+    const form = root.querySelector(".admin-reset-form");
+    form.querySelector("input").value = USER.user.email;
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const out = root.querySelector("#admin-reset-result");
+    expect(out).toBeTruthy();
+    expect(out.textContent).toContain("Nothing was deleted");
+  });
+
   it("fires the reset handler once even after init() has re-run", async () => {
     const calls = [];
     global.fetch = async (url) => {
