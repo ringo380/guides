@@ -36,6 +36,8 @@ describe("admin accounts renderer", () => {
   });
 
   it("renders a not-found state without throwing", () => {
+    // The exact-match hint belongs to a genuine 404 and nothing else. The
+    // lookup tests below are what pin which responses reach this renderer.
     window.RunbookAdminAccounts.renderUser(root, null);
     expect(root.textContent).toContain("No matching account");
   });
@@ -131,11 +133,66 @@ describe("admin accounts reset listener idempotency", () => {
   it("reports an unreachable API instead of leaving the page checking", async () => {
     global.fetch = async () => { throw new TypeError("Failed to fetch"); };
 
+    // The component auto-init()s as it loads, which already replaced this text
+    // before the test body ran. Without putting it back, the "no longer
+    // checking" half of this test is satisfied by the load, not by the call
+    // under test, and would pass against a handler that does nothing at all.
+    const status = document.getElementById("admin-accounts-status");
+    status.textContent = "Checking authorization...";
+    expect(root.textContent).toContain("Checking authorization");
+
     await window.RunbookAdminAccounts.init();
 
     const text = root.textContent;
     expect(text).not.toContain("Checking authorization");
     expect(text).toContain("Could not reach the admin service");
+  });
+
+  /** init() past the health check, with a scripted answer for the lookup. */
+  async function lookupWith(response) {
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      return response;
+    };
+    await window.RunbookAdminAccounts.init();
+    const form = root.querySelector("#admin-lookup-form");
+    form.querySelector("input").value = "someone@example.com";
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+
+  it("keeps the exact-match hint for a genuine 404", async () => {
+    await lookupWith({ ok: false, status: 404, json: async () => ({ error: "no such user" }) });
+    expect(root.textContent).toContain("No matching account");
+  });
+
+  it("surfaces the server's own message for a 409 rather than claiming no match", async () => {
+    // Past LOOKUP_PAGE_SIZE accounts the server answers 409 for an address it
+    // could not resolve safely. Reporting that as "no matching account" is the
+    // same false negative the server-side fix removed, moved into the UI.
+    await lookupWith({
+      ok: false,
+      status: 409,
+      json: async () => ({
+        error: "too many candidate accounts for that address to resolve it safely",
+      }),
+    });
+    expect(root.textContent).toContain("too many candidate accounts");
+    expect(root.textContent).not.toContain("No matching account");
+  });
+
+  it("says something readable when the error body is not usable", async () => {
+    // A 500 from the platform is plain text, so json() rejects. The page still
+    // must not say "no matching account", which it cannot support.
+    await lookupWith({
+      ok: false,
+      status: 500,
+      json: async () => { throw new SyntaxError("Unexpected token I"); },
+    });
+    expect(root.textContent).toContain("500");
+    expect(root.textContent).not.toContain("No matching account");
   });
 
   it("tells the admin a failed lookup never left the browser", async () => {
@@ -177,6 +234,27 @@ describe("admin accounts reset listener idempotency", () => {
     const out = root.querySelector("#admin-reset-result");
     expect(out).toBeTruthy();
     expect(out.textContent).toContain("Nothing was deleted");
+  });
+
+  it("gives the server's reason when a reset is refused", async () => {
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      return { ok: false, status: 404, json: async () => ({ error: "no such user" }) };
+    };
+
+    await window.RunbookAdminAccounts.init();
+    window.RunbookAdminAccounts.renderUser(root, USER);
+    const form = root.querySelector(".admin-reset-form");
+    form.querySelector("input").value = USER.user.email;
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // A vanished account and a mistyped address are different refusals, and
+    // only one of them is fixed by retyping the address.
+    const out = root.querySelector("#admin-reset-result");
+    expect(out.textContent).toContain("no such user");
   });
 
   it("fires the reset handler once even after init() has re-run", async () => {

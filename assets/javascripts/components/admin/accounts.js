@@ -223,6 +223,22 @@
     s.appendChild(el("p", { class: "admin-error", role: "status" }, message));
   }
 
+  /**
+   * The server's own explanation for a refused request, or a fallback naming
+   * the status. A 500 from the platform is plain text rather than JSON, so
+   * json() rejecting is expected and must not lose the message entirely.
+   */
+  async function serverError(res, fallback) {
+    var detail = "";
+    try {
+      var body = await res.json();
+      if (body && typeof body.error === "string") detail = body.error;
+    } catch (e) {
+      detail = "";
+    }
+    return detail || fallback + " The server answered " + res.status + ".";
+  }
+
   /** Replace one section with a single announced message. */
   function sectionMessage(root, id, message) {
     var s = section(root, id);
@@ -256,7 +272,20 @@
       try {
         var res = await authedFetch(
           "/user?" + key + "=" + encodeURIComponent(v), { method: "GET" });
-        renderUser(root, res.ok ? await res.json() : null);
+        if (res.ok) {
+          renderUser(root, await res.json());
+        } else if (res.status === 404) {
+          // Only a 404 means the address was searched and matched nothing.
+          renderUser(root, null);
+        } else {
+          // Every other status has its own reason, and the server states it.
+          // Collapsing them all into "no matching account" reintroduces, in the
+          // UI, the false negative the server was fixed not to produce: a 409
+          // means the address could not be resolved safely, not that it is
+          // absent.
+          sectionMessage(root, "admin-user-result",
+            await serverError(res, "The lookup was not completed."));
+        }
       } catch (e) {
         // "No matching account" and "the request never left the browser" are
         // different answers. Saying the first when the second happened invites
@@ -285,13 +314,15 @@
           method: "POST",
           body: JSON.stringify({ userId: id, confirmEmail: typed }),
         });
+        // Same reason as the lookup: the server states why it refused, and
+        // "the address must match" is only one of the reasons it might have.
+        var message = res.ok ? "Progress reset." : "Reset refused: " +
+          await serverError(res, "Nothing was deleted.");
         var out = section(root, "admin-reset-result");
         out.appendChild(el(
           "p",
           { class: res.ok ? "admin-note" : "admin-error", role: "status" },
-          res.ok
-            ? "Progress reset."
-            : "Reset refused. The address must match the account you looked up.",
+          message,
         ));
       } catch (e) {
         // A silent failure on a destructive action is the worst case: the
