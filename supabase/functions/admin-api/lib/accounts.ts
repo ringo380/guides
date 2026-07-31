@@ -5,6 +5,7 @@ import {
   type UserQuery,
 } from "./identity.ts";
 import { type GoTrueDeps, listUsersByFilter } from "./gotrue.ts";
+import { recordRefusal, REFUSAL } from "./audit.ts";
 
 export interface AccountUser {
   id: string;
@@ -220,12 +221,35 @@ export async function resetProgress(
   confirmEmail: string,
 ): Promise<{ status: number; body: unknown }> {
   const user = await findUserById(supabaseAdmin, userId);
-  if (user === null) return { status: 404, body: { error: "no such user" } };
+  if (user === null) {
+    await recordRefusal(
+      supabaseAdmin,
+      actorId,
+      "progress.reset",
+      userId,
+      REFUSAL.noSuchUser,
+    );
+    return { status: 404, body: { error: REFUSAL.noSuchUser } };
+  }
 
   if (!confirmsAccount(user.email, confirmEmail)) {
+    // The refusal the issue was opened for. An attempt to wipe an account's
+    // progress with the wrong confirmation is worth more on the record than a
+    // successful one, and it left no trace at all.
+    //
+    // The submitted address is NOT stored. It is the field most likely to hold
+    // the wrong person's email - that is exactly why this refused - and this
+    // table records ids, never addresses.
+    await recordRefusal(
+      supabaseAdmin,
+      actorId,
+      "progress.reset",
+      userId,
+      REFUSAL.confirmationMismatch,
+    );
     return {
       status: 403,
-      body: { error: "confirmation email does not match that user id" },
+      body: { error: REFUSAL.confirmationMismatch },
     };
   }
 
