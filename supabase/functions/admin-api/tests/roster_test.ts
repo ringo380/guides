@@ -175,6 +175,9 @@ Deno.test("grantAdmin 404s when no candidate matches exactly", async () => {
   const { deps } = stubGoTrue({ users: [{ id: "wrong", email: "xnew@example.com" }] });
   const res = await grantAdmin(c as any, deps, "a", "new@example.com");
   assertEquals(res.status, 404);
+  // The status alone would also pass for a grant that wrote the row and then
+  // answered 404, which leaves the account genuinely an admin.
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
 Deno.test("grantAdmin 409s rather than 404s when the candidates span more than one page", async () => {
