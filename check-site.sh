@@ -33,6 +33,24 @@ fi
 sitemap_entries() { [ "$(grep -c '<loc>' "$SITE/sitemap.xml" 2>/dev/null || echo 0)" -gt 50 ]; }
 check "sitemap.xml exists and has >50 entries" sitemap_entries
 
+# Precondition: prove we can actually parse search_index.json and that it has
+# a plausible number of entries, so a passing "page is absent" check below
+# cannot be a false negative against an empty or unparseable index.
+search_index_entries() {
+  python3 -c '
+import json, sys
+site = sys.argv[1]
+try:
+    with open(site + "/search/search_index.json") as f:
+        data = json.load(f)
+except Exception:
+    sys.exit(1)
+docs = data.get("docs", [])
+sys.exit(0 if len(docs) > 1000 else 1)
+' "$SITE"
+}
+check "search_index.json parses and has a plausible number of entries" search_index_entries
+
 # The admin shells are noindex; listing one in the sitemap makes Search Console
 # report "Submitted URL marked noindex".
 #
@@ -44,7 +62,23 @@ ADMIN_PAGES=("admin" "admin-accounts")
 page_built() { [ -f "$SITE/$1/index.html" ]; }
 page_not_in_sitemap() { ! grep -q "<loc>[^<]*/$1/</loc>" "$SITE/sitemap.xml"; }
 page_noindex() { grep -qi 'name="robots" content="noindex' "$SITE/$1/index.html"; }
-page_not_in_search() { ! grep -q "\"location\": \"$1/\"" "$SITE/search/search_index.json"; }
+
+# mkdocs-material emits compact JSON with no space after the colon
+# ("location":"admin/"), so a naive grep for "location": " never matches and
+# silently passes regardless of what is in the index. Parse the JSON for real
+# and compare the location field exactly, so a future formatting change in
+# mkdocs output cannot defeat this check the same way again.
+page_not_in_search() {
+  python3 -c '
+import json, sys
+site, page = sys.argv[1], sys.argv[2]
+with open(site + "/search/search_index.json") as f:
+    data = json.load(f)
+docs = data.get("docs", [])
+target = page + "/"
+sys.exit(1 if any(d.get("location") == target for d in docs) else 0)
+' "$SITE" "$1"
+}
 
 for page in "${ADMIN_PAGES[@]}"; do
   # Precondition: the page must actually be built, or the three checks below
