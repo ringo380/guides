@@ -231,6 +231,10 @@ Deno.test("revokeAdmin maps a lock timeout to a 409, not a 500", async () => {
   });
   const res = await revokeAdmin(c as any, "a", "b");
   assertEquals(res.status, 409);
+  // The status alone would also pass for the last-admin refusal, which tells
+  // the admin the wrong reason and the wrong next step: one is worth retrying,
+  // the other never will be.
+  assertStringIncludes((res.body as any).error, "try again");
   assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
 });
 

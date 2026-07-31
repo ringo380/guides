@@ -184,36 +184,50 @@ describe("admin accounts reset listener idempotency", () => {
 
   const liveRegion = () => document.getElementById("admin-lookup-status");
 
-  it("keeps the exact-match hint for a genuine 404", async () => {
-    await lookupWith({ ok: false, status: 404, json: async () => ({ error: "no such user" }) });
-    expect(root.textContent).toContain("No matching account");
-  });
-
-  it("surfaces the server's own message for a 409 rather than claiming no match", async () => {
-    // Past LOOKUP_PAGE_SIZE accounts the server answers 409 for an address it
-    // could not resolve safely. Reporting that as "no matching account" is the
-    // same false negative the server-side fix removed, moved into the UI.
-    await lookupWith({
-      ok: false,
+  // One table rather than three tests. Asserting the 404 alone is vacuous:
+  // collapsing every status into the not-found branch - the behavior this
+  // guards against - still leaves the 404 looking correct, so the row that
+  // catches the collapse has to live in the same test as the row that would
+  // otherwise pass it.
+  const LOOKUP_OUTCOMES = [
+    {
+      status: 404,
+      // Past LOOKUP_PAGE_SIZE accounts the server answers 409 for an address it
+      // could not resolve safely, and a platform 500 is plain text that json()
+      // rejects on. Neither is "no such account", and the server's raw body is
+      // not the page's copy either.
+      body: async () => ({ error: "no such user" }),
+      shows: "No matching account. The address must match exactly",
+      hides: ["no such user", "The server answered"],
+    },
+    {
       status: 409,
-      json: async () => ({
+      body: async () => ({
         error: "too many candidate accounts for that address to resolve it safely",
       }),
-    });
-    expect(root.textContent).toContain("too many candidate accounts");
-    expect(root.textContent).not.toContain("No matching account");
-  });
-
-  it("says something readable when the error body is not usable", async () => {
-    // A 500 from the platform is plain text, so json() rejects. The page still
-    // must not say "no matching account", which it cannot support.
-    await lookupWith({
-      ok: false,
+      shows: "too many candidate accounts",
+      hides: ["No matching account"],
+    },
+    {
       status: 500,
-      json: async () => { throw new SyntaxError("Unexpected token I"); },
-    });
-    expect(root.textContent).toContain("500");
-    expect(root.textContent).not.toContain("No matching account");
+      body: async () => { throw new SyntaxError("Unexpected token I"); },
+      shows: "500",
+      hides: ["No matching account"],
+    },
+  ];
+
+  it("gives each lookup status its own message, never a collapsed one", async () => {
+    for (const outcome of LOOKUP_OUTCOMES) {
+      cleanup();
+      root = mountAdminAccountsRoot();
+      await lookupWith({ ok: false, status: outcome.status, json: outcome.body });
+
+      const text = root.textContent;
+      expect(text, `status ${outcome.status}`).toContain(outcome.shows);
+      for (const forbidden of outcome.hides) {
+        expect(text, `status ${outcome.status}`).not.toContain(forbidden);
+      }
+    }
   });
 
   it("tells the admin a failed lookup never left the browser", async () => {
