@@ -146,6 +146,14 @@ lookup. Three consequences the implementation must honor:
    Request with an explicit `per_page`, narrow to the exact match, and treat "more
    candidates than one page" as a `409` rather than paging the user table.
 
+**The request cannot go through `supabase.auth.admin.listUsers()`.** That method
+builds its query string from `page` and `per_page` only - `filter` is accepted by
+the type (the admin client is untyped here) and then dropped, which silently turns
+every lookup into "read the newest `per_page` accounts and hope the target is among
+them". A project with more accounts than one page would `404` real users. The
+function therefore issues `GET /auth/v1/admin/users` itself, from `lib/gotrue.ts`,
+with `fetch` injected so tests can assert the request line without a network call.
+
 ---
 
 ## Safety model

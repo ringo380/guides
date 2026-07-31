@@ -1,5 +1,6 @@
 import { recordAudit } from "./audit.ts";
 import { LOOKUP_PAGE_SIZE, narrowToExactEmail } from "./identity.ts";
+import { type GoTrueDeps, listUsersByFilter } from "./gotrue.ts";
 
 export interface AdminRow {
   userId: string;
@@ -67,24 +68,33 @@ export async function listAdmins(supabaseAdmin: any): Promise<AdminRow[]> {
 
 export async function grantAdmin(
   supabaseAdmin: any,
+  deps: GoTrueDeps,
   actorId: string,
   email: string,
 ): Promise<{ status: number; body: unknown }> {
-  const { data, error } = await supabaseAdmin.auth.admin.listUsers({
-    page: 1,
-    perPage: LOOKUP_PAGE_SIZE,
-    filter: email,
-  });
-  if (error) throw error;
+  // Through lib/gotrue.ts, not supabase-js: the admin client drops `filter`.
+  const { users, hasMore } = await listUsersByFilter(
+    deps,
+    email,
+    1,
+    LOOKUP_PAGE_SIZE,
+  );
 
-  // Annotated explicitly: inferring T from `data?.users ?? []` directly falls
-  // back to narrowToExactEmail's bare constraint type (no `id`), since data is
-  // untyped (`supabaseAdmin: any`). Naming the candidate shape here is what
-  // lets `user.id` resolve below.
-  const candidates: Array<{ id: string; email?: string | null }> =
-    data?.users ?? [];
-  const user = narrowToExactEmail(candidates, email);
-  if (user === null) return { status: 404, body: { error: "no such user" } };
+  const user = narrowToExactEmail(users, email);
+  if (user === null) {
+    // An unmatched page-1 with more pages behind it is not "no such user" - the
+    // account may be on a page we never asked for. Say so rather than 404.
+    if (hasMore) {
+      return {
+        status: 409,
+        body: {
+          error:
+            "too many candidate accounts for that address to resolve it safely",
+        },
+      };
+    }
+    return { status: 404, body: { error: "no such user" } };
+  }
 
   const existing = await rosterRows(supabaseAdmin);
   if (existing.some((r) => r.user_id === user.id)) {

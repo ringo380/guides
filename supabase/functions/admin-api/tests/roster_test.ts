@@ -1,5 +1,30 @@
-import { assertEquals } from "jsr:@std/assert@1";
+import { assertEquals, assertStringIncludes } from "jsr:@std/assert@1";
 import { checkRevoke, grantAdmin, revokeAdmin } from "../lib/roster.ts";
+import type { GoTrueDeps } from "../lib/gotrue.ts";
+
+/**
+ * GoTrue stub. fetch is injected, so no test here can reach the network.
+ */
+function stubGoTrue(opts: {
+  users?: Array<{ id: string; email: string }>;
+  headers?: Record<string, string>;
+} = {}) {
+  const urls: string[] = [];
+  const deps: GoTrueDeps = {
+    url: "https://project.supabase.co",
+    serviceKey: "service-role-key",
+    fetch: ((input: any) => {
+      urls.push(String(input));
+      return Promise.resolve(
+        new Response(JSON.stringify({ users: opts.users ?? [] }), {
+          status: 200,
+          headers: opts.headers ?? {},
+        }),
+      );
+    }) as typeof fetch,
+  };
+  return { deps, urls };
+}
 
 Deno.test("checkRevoke refuses self-revoke", () => {
   const r = checkRevoke({ actorId: "a", targetId: "a", rosterSize: 5 });
@@ -37,8 +62,6 @@ function stubClient(opts: {
     calls,
     auth: {
       admin: {
-        listUsers: (_a: unknown) =>
-          Promise.resolve({ data: { users: opts.users ?? [] }, error: null }),
         getUserById: (id: string) =>
           Promise.resolve({
             data: { user: (opts.users ?? []).find((u) => u.id === id) ?? null },
@@ -101,36 +124,64 @@ Deno.test("grantAdmin discards substring-only candidates from the filter", async
   // available outcome of the fuzzy filter, so it gets its own test.
   const c = stubClient({
     admins: [{ user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" }],
+  });
+  const { deps } = stubGoTrue({
     users: [
       { id: "wrong", email: "xnew@example.com" },
       { id: "right", email: "new@example.com" },
     ],
   });
-  const res = await grantAdmin(c as any, "a", "new@example.com");
+  const res = await grantAdmin(c as any, deps, "a", "new@example.com");
   assertEquals(res.status, 200);
   const ins = c.calls.find((x) => x.table === "admin_users" && x.op === "insert");
   assertEquals((ins?.payload as any).user_id, "right");
 });
 
+Deno.test("grantAdmin sends the address as filter=, not as a page read", async () => {
+  const c = stubClient({
+    admins: [{ user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" }],
+  });
+  const { deps, urls } = stubGoTrue({ users: [{ id: "right", email: "new@example.com" }] });
+  await grantAdmin(c as any, deps, "a", "new@example.com");
+  assertStringIncludes(urls[0], "filter=new%40example.com");
+  assertStringIncludes(urls[0], "per_page=100");
+});
+
 Deno.test("grantAdmin 404s when no candidate matches exactly", async () => {
   const c = stubClient({
     admins: [{ user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" }],
-    users: [{ id: "wrong", email: "xnew@example.com" }],
   });
-  const res = await grantAdmin(c as any, "a", "new@example.com");
+  const { deps } = stubGoTrue({ users: [{ id: "wrong", email: "xnew@example.com" }] });
+  const res = await grantAdmin(c as any, deps, "a", "new@example.com");
   assertEquals(res.status, 404);
   assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+});
+
+Deno.test("grantAdmin 409s rather than 404s when the candidates span more than one page", async () => {
+  // The account may be on a page nobody asked for. "No such user" would be a
+  // claim this code cannot support, and it would block granting a real admin.
+  const c = stubClient({
+    admins: [{ user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" }],
+  });
+  const { deps } = stubGoTrue({
+    users: [{ id: "wrong", email: "xnew@example.com" }],
+    headers: { link: '</admin/users?page=2>; rel="next"' },
+  });
+  const res = await grantAdmin(c as any, deps, "a", "new@example.com");
+  assertEquals(res.status, 409);
+  assertEquals(c.calls.some((x) => x.op === "insert"), false);
 });
 
 Deno.test("grantAdmin 409s an existing admin without a second insert", async () => {
   const c = stubClient({
     admins: [{ user_id: "dup", note: null, created_at: "2026-01-01T00:00:00Z" }],
-    users: [{ id: "dup", email: "dup@example.com" }],
   });
-  const res = await grantAdmin(c as any, "a", "dup@example.com");
+  const { deps } = stubGoTrue({ users: [{ id: "dup", email: "dup@example.com" }] });
+  const res = await grantAdmin(c as any, deps, "a", "dup@example.com");
   assertEquals(res.status, 409);
   assertEquals(c.calls.some((x) => x.op === "insert"), false);
 });
+
 
 Deno.test("revokeAdmin maps the trigger's P0001 to a 409", async () => {
   // The API's own rosterSize check and the trigger can disagree under a race.

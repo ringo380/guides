@@ -1,5 +1,6 @@
-import { assertEquals, assertRejects } from "jsr:@std/assert@1";
-import { findUser, resetProgress } from "../lib/accounts.ts";
+import { assertEquals, assertRejects, assertStringIncludes } from "jsr:@std/assert@1";
+import { findUser, lookupAccount, resetProgress } from "../lib/accounts.ts";
+import type { GoTrueDeps } from "../lib/gotrue.ts";
 
 const USER = {
   id: "3f2504e0-4f89-11d3-9a0c-0305e82c3301",
@@ -60,32 +61,106 @@ function stubClient(opts: {
   };
 }
 
+/**
+ * GoTrue stub. The injected fetch is the module's only route to the network,
+ * so a test that forgets to stub it fails rather than dials out.
+ */
+function stubGoTrue(opts: { users?: any[]; headers?: Record<string, string> } = {}) {
+  const urls: string[] = [];
+  const deps: GoTrueDeps = {
+    url: "https://project.supabase.co",
+    serviceKey: "service-role-key",
+    fetch: ((input: any) => {
+      urls.push(String(input));
+      return Promise.resolve(
+        new Response(JSON.stringify({ users: opts.users ?? [] }), {
+          status: 200,
+          headers: opts.headers ?? {},
+        }),
+      );
+    }) as typeof fetch,
+  };
+  return { deps, urls };
+}
+
 Deno.test("findUser by email discards substring-only candidates", async () => {
   // GoTrue returns both for filter=someone@example.com.
-  const c = stubClient({
+  const c = stubClient();
+  const { deps } = stubGoTrue({
     users: [{ ...USER, id: "wrong", email: "xsomeone@example.com" }, USER],
   });
-  const u = await findUser(c as any, {
+  const r = await findUser(c as any, deps, {
     kind: "email",
     email: "someone@example.com",
   });
-  assertEquals(u?.id, USER.id);
+  assertEquals(r.kind === "found" ? r.user.id : null, USER.id);
 });
 
-Deno.test("findUser by email returns null when nothing matches exactly", async () => {
-  const c = stubClient({ users: [{ ...USER, email: "other@example.com" }] });
-  const u = await findUser(c as any, {
+Deno.test("findUser by email sends the address as filter=, not as a page read", async () => {
+  // Without filter= on the wire this is "fetch the newest 100 users and hope",
+  // which 404s any account outside that window.
+  const c = stubClient();
+  const { deps, urls } = stubGoTrue({ users: [USER] });
+  await findUser(c as any, deps, { kind: "email", email: "someone@example.com" });
+  assertStringIncludes(urls[0], "filter=someone%40example.com");
+  assertStringIncludes(urls[0], "per_page=100");
+});
+
+Deno.test("findUser by email returns none when nothing matches exactly", async () => {
+  const c = stubClient();
+  const { deps } = stubGoTrue({ users: [{ ...USER, email: "other@example.com" }] });
+  const r = await findUser(c as any, deps, {
     kind: "email",
     email: "someone@example.com",
   });
-  assertEquals(u, null);
+  assertEquals(r.kind, "none");
 });
 
-Deno.test("findUser by id returns null for an unknown id", async () => {
+Deno.test("findUser reports ambiguous when the candidates span more than one page", async () => {
+  // Dropping the extra pages silently would answer 404 for an account that
+  // exists on page 2.
+  const c = stubClient();
+  const { deps } = stubGoTrue({
+    users: [{ ...USER, id: "other", email: "other@example.com" }],
+    headers: { link: '</admin/users?page=2>; rel="next"' },
+  });
+  const r = await findUser(c as any, deps, {
+    kind: "email",
+    email: "someone@example.com",
+  });
+  assertEquals(r.kind, "ambiguous");
+});
+
+Deno.test("lookupAccount answers 409 for an ambiguous candidate set", async () => {
+  const c = stubClient();
+  const { deps } = stubGoTrue({
+    users: [{ ...USER, id: "other", email: "other@example.com" }],
+    headers: { link: '</admin/users?page=2>; rel="next"' },
+  });
+  const res = await lookupAccount(c as any, deps, {
+    kind: "email",
+    email: "someone@example.com",
+  });
+  assertEquals(res.status, 409);
+});
+
+Deno.test("lookupAccount still answers 404 when page one is the whole set", async () => {
+  const c = stubClient();
+  const { deps } = stubGoTrue({ users: [], headers: { "x-total-count": "0" } });
+  const res = await lookupAccount(c as any, deps, {
+    kind: "email",
+    email: "someone@example.com",
+  });
+  assertEquals(res.status, 404);
+});
+
+Deno.test("findUser by id returns none for an unknown id", async () => {
   const c = stubClient({ byId: null });
-  const u = await findUser(c as any, { kind: "id", id: USER.id });
-  assertEquals(u, null);
+  const { deps } = stubGoTrue();
+  const r = await findUser(c as any, deps, { kind: "id", id: USER.id });
+  assertEquals(r.kind, "none");
 });
+
 
 Deno.test("resetProgress refuses when confirmEmail belongs to another account", async () => {
   // The stale-id case: admin looked up A, then B, and the page still held A's id.

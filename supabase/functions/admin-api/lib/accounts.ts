@@ -1,5 +1,6 @@
 import { recordAudit } from "./audit.ts";
 import { LOOKUP_PAGE_SIZE, narrowToExactEmail, type UserQuery } from "./identity.ts";
+import { type GoTrueDeps, listUsersByFilter } from "./gotrue.ts";
 
 export interface AccountUser {
   id: string;
@@ -7,6 +8,16 @@ export interface AccountUser {
   createdAt: string | null;
   lastSignInAt: string | null;
 }
+
+/**
+ * Outcome of a lookup. "ambiguous" is not an error case to swallow: it means
+ * the filtered candidate set spans more than one page, so an exact match could
+ * be sitting on a page we never fetched. Answering 404 there would be a lie.
+ */
+export type FindResult =
+  | { kind: "found"; user: AccountUser }
+  | { kind: "none" }
+  | { kind: "ambiguous" };
 
 function toAccountUser(u: any): AccountUser {
   return {
@@ -17,33 +28,63 @@ function toAccountUser(u: any): AccountUser {
   };
 }
 
+/** Resolve a uuid to an account, or null. No filter, so nothing to narrow. */
+export async function findUserById(
+  supabaseAdmin: any,
+  id: string,
+): Promise<AccountUser | null> {
+  const { data, error } = await supabaseAdmin.auth.admin.getUserById(id);
+  if (error) throw error;
+  return data?.user ? toAccountUser(data.user) : null;
+}
+
 /**
- * Resolve a query to exactly one account, or null.
+ * Resolve a query to exactly one account.
  *
  * The email path deliberately does NOT trust GoTrue's filter: it is a substring
  * search over email and user_metadata, so its hits are candidates. The exact
- * comparison happens here.
+ * comparison happens here, in narrowToExactEmail.
+ *
+ * The request goes through lib/gotrue.ts rather than the supabase-js admin
+ * client, which drops the filter parameter entirely.
  */
 export async function findUser(
   supabaseAdmin: any,
+  deps: GoTrueDeps,
   query: UserQuery,
-): Promise<AccountUser | null> {
+): Promise<FindResult> {
   if (query.kind === "id") {
-    const { data, error } = await supabaseAdmin.auth.admin.getUserById(query.id);
-    if (error) throw error;
-    return data?.user ? toAccountUser(data.user) : null;
+    const user = await findUserById(supabaseAdmin, query.id);
+    return user === null ? { kind: "none" } : { kind: "found", user };
   }
 
-  const { data, error } = await supabaseAdmin.auth.admin.listUsers({
-    page: 1,
-    perPage: LOOKUP_PAGE_SIZE,
-    filter: query.email,
-  });
-  if (error) throw error;
+  const { users, hasMore } = await listUsersByFilter(
+    deps,
+    query.email,
+    1,
+    LOOKUP_PAGE_SIZE,
+  );
 
-  const candidates: Array<{ id: string; email?: string | null }> = data?.users ?? [];
-  const match = narrowToExactEmail(candidates, query.email);
-  return match ? toAccountUser(match) : null;
+  const match = narrowToExactEmail(users, query.email);
+  if (match) return { kind: "found", user: toAccountUser(match) };
+  // Only ambiguous once this page has been ruled out: an exact hit on page 1 is
+  // the answer, because email is unique in auth.users.
+  if (hasMore) return { kind: "ambiguous" };
+  return { kind: "none" };
+}
+
+/** The 404/409 body for a lookup that resolved to no single account. */
+function notFound(r: FindResult): { status: number; body: unknown } {
+  if (r.kind === "ambiguous") {
+    return {
+      status: 409,
+      body: {
+        error:
+          "too many candidate accounts for that address to resolve it safely",
+      },
+    };
+  }
+  return { status: 404, body: { error: "no such user" } };
 }
 
 async function progressRow(supabaseAdmin: any, userId: string) {
@@ -59,10 +100,12 @@ async function progressRow(supabaseAdmin: any, userId: string) {
 /** Account fields plus a size summary of the progress blob. */
 export async function lookupAccount(
   supabaseAdmin: any,
+  deps: GoTrueDeps,
   query: UserQuery,
 ): Promise<{ status: number; body: unknown }> {
-  const user = await findUser(supabaseAdmin, query);
-  if (user === null) return { status: 404, body: { error: "no such user" } };
+  const found = await findUser(supabaseAdmin, deps, query);
+  if (found.kind !== "found") return notFound(found);
+  const user = found.user;
 
   const row = await progressRow(supabaseAdmin, user.id);
   return {
@@ -80,10 +123,12 @@ export async function lookupAccount(
 /** The full progress blob, verbatim. */
 export async function exportAccount(
   supabaseAdmin: any,
+  deps: GoTrueDeps,
   query: UserQuery,
 ): Promise<{ status: number; body: unknown }> {
-  const user = await findUser(supabaseAdmin, query);
-  if (user === null) return { status: 404, body: { error: "no such user" } };
+  const found = await findUser(supabaseAdmin, deps, query);
+  if (found.kind !== "found") return notFound(found);
+  const user = found.user;
 
   const row = await progressRow(supabaseAdmin, user.id);
   return {
@@ -111,7 +156,7 @@ export async function resetProgress(
   userId: string,
   confirmEmail: string,
 ): Promise<{ status: number; body: unknown }> {
-  const user = await findUser(supabaseAdmin, { kind: "id", id: userId });
+  const user = await findUserById(supabaseAdmin, userId);
   if (user === null) return { status: 404, body: { error: "no such user" } };
 
   const confirm = confirmEmail.trim().toLowerCase();

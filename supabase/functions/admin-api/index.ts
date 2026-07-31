@@ -10,6 +10,16 @@ import { resolveRoute } from "./lib/routes.ts";
 import { parseUserQuery } from "./lib/identity.ts";
 import { exportAccount, lookupAccount, resetProgress } from "./lib/accounts.ts";
 import { grantAdmin, listAdmins, revokeAdmin } from "./lib/roster.ts";
+import type { GoTrueDeps } from "./lib/gotrue.ts";
+
+// Built here, once, rather than inside the lib modules: reading Deno.env in a
+// lib is what would make it untestable, and injecting fetch is what keeps the
+// tests off the network.
+const gotrue: GoTrueDeps = {
+  url: Deno.env.get("SUPABASE_URL") ?? "",
+  serviceKey: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  fetch: (...args) => globalThis.fetch(...args),
+};
 
 /** Look the caller up in admin_users using the service-role client. */
 async function isAdmin(
@@ -158,7 +168,7 @@ export default {
 
     if (route === "user") {
       try {
-        const r = await lookupAccount(ctx.supabaseAdmin, userQuery());
+        const r = await lookupAccount(ctx.supabaseAdmin, gotrue, userQuery());
         return json(r.body, r.status, origin);
       } catch (e) {
         if (e instanceof RangeError) return json({ error: e.message }, 400, origin);
@@ -168,7 +178,7 @@ export default {
 
     if (route === "user.export") {
       try {
-        const r = await exportAccount(ctx.supabaseAdmin, userQuery());
+        const r = await exportAccount(ctx.supabaseAdmin, gotrue, userQuery());
         return json(r.body, r.status, origin);
       } catch (e) {
         if (e instanceof RangeError) return json({ error: e.message }, 400, origin);
@@ -200,7 +210,12 @@ export default {
       } catch (e) {
         return json({ error: (e as Error).message }, 400, origin);
       }
-      const r = await grantAdmin(ctx.supabaseAdmin, actorId, (parsed as { email: string }).email);
+      const r = await grantAdmin(
+        ctx.supabaseAdmin,
+        gotrue,
+        actorId,
+        (parsed as { email: string }).email,
+      );
       return json(r.body, r.status, origin);
     }
 
