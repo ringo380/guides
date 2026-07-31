@@ -1,4 +1,3 @@
-import { recordAudit } from "./audit.ts";
 import { LOOKUP_PAGE_SIZE, narrowToExactEmail, type UserQuery } from "./identity.ts";
 import { type GoTrueDeps, listUsersByFilter } from "./gotrue.ts";
 
@@ -223,16 +222,16 @@ export async function resetProgress(
     };
   }
 
-  const { error } = await supabaseAdmin
-    .from("runbook_progress")
-    .delete()
-    .eq("user_id", userId);
+  // One call, not a delete followed by an audit insert. As two requests, an
+  // audit failure arrived after the delete had already committed: the throw
+  // escaped as a CORS-less 500 and the page told the admin nothing was deleted,
+  // about a row that was gone and had no audit record. The function does both
+  // inside one transaction, so they succeed or fail together.
+  const { error } = await supabaseAdmin.rpc("admin_reset_progress", {
+    p_actor: actorId,
+    p_target: userId,
+  });
   if (error) throw error;
 
-  await recordAudit(supabaseAdmin, {
-    actorUserId: actorId,
-    action: "progress.reset",
-    targetUserId: userId,
-  });
   return { status: 200, body: { userId, reset: true } };
 }

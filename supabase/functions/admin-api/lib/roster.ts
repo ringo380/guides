@@ -1,4 +1,3 @@
-import { recordAudit } from "./audit.ts";
 import { LOOKUP_PAGE_SIZE, narrowToExactEmail } from "./identity.ts";
 import { type GoTrueDeps, listUsersByFilter } from "./gotrue.ts";
 
@@ -101,9 +100,14 @@ export async function grantAdmin(
     return { status: 409, body: { error: "already an admin" } };
   }
 
-  const { error: insErr } = await supabaseAdmin
-    .from("admin_users")
-    .insert({ user_id: user.id, note: `granted by ${actorId}` });
+  // The insert and its audit row go in one transaction. Written as two requests,
+  // a failed audit insert left an admin granted with no record of who granted
+  // them, and answered the caller as though the grant had failed.
+  const { error: insErr } = await supabaseAdmin.rpc("admin_grant_admin", {
+    p_actor: actorId,
+    p_target: user.id,
+    p_note: `granted by ${actorId}`,
+  });
   if (insErr) {
     // The check above is check-then-act: a concurrent grant of the same account
     // commits between the read and this insert, and the primary key rejects it.
@@ -115,11 +119,6 @@ export async function grantAdmin(
     throw insErr;
   }
 
-  await recordAudit(supabaseAdmin, {
-    actorUserId: actorId,
-    action: "admin.grant",
-    targetUserId: user.id,
-  });
   return { status: 200, body: { userId: user.id } };
 }
 
@@ -140,16 +139,25 @@ export async function revokeAdmin(
     return { status: 404, body: { error: "not an admin" } };
   }
 
-  const { error } = await supabaseAdmin
-    .from("admin_users")
-    .delete()
-    .eq("user_id", targetId);
+  // Delete and audit in one transaction, so a failed audit insert can never
+  // leave an admin revoked with no record of it - nor report a completed revoke
+  // as a failure.
+  const { error } = await supabaseAdmin.rpc("admin_revoke_admin", {
+    p_actor: actorId,
+    p_target: targetId,
+  });
 
   if (error) {
     // The trigger fired: this delete would have emptied the roster, even though
     // our own count said otherwise. The trigger is authoritative.
     if (error.code === "P0001") {
       return { status: 409, body: { error: "cannot remove the last admin" } };
+    }
+    // The membership check above is check-then-act too: a concurrent revoke of
+    // the same account commits in between and this delete matches no row. The
+    // function refuses to audit a revoke it did not perform, and says so.
+    if (error.code === "P0002") {
+      return { status: 404, body: { error: "not an admin" } };
     }
     // Two admins revoking each other at the same instant is a lock cycle, and
     // Postgres breaks it by aborting one side (40P01) - or by giving up on the
@@ -168,10 +176,5 @@ export async function revokeAdmin(
     throw error;
   }
 
-  await recordAudit(supabaseAdmin, {
-    actorUserId: actorId,
-    action: "admin.revoke",
-    targetUserId: targetId,
-  });
   return { status: 200, body: { userId: targetId } };
 }

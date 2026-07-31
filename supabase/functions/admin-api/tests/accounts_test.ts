@@ -34,7 +34,7 @@ function stubClient(opts: {
   byIdError?: unknown;
   progress?: any;
   deleted?: string[];
-  deleteError?: unknown;
+  rpcError?: unknown;
 } = {}) {
   const calls: Array<{ table: string; op: string; payload?: unknown }> = [];
   const deleted = opts.deleted ?? [];
@@ -58,6 +58,16 @@ function stubClient(opts: {
           ),
       },
     },
+    // The destructive write goes through one database function, so the stub
+    // records rpc calls the same way it records table calls. `deleted` is
+    // appended by the reset function itself, which is what makes the existing
+    // "nothing was deleted" assertions still mean what they say.
+    rpc(name: string, params: Record<string, unknown>) {
+      calls.push({ table: `rpc:${name}`, op: "rpc", payload: params });
+      if (opts.rpcError) return Promise.resolve({ data: null, error: opts.rpcError });
+      if (name === "admin_reset_progress") deleted.push(params.p_target as string);
+      return Promise.resolve({ data: null, error: null });
+    },
     from(table: string) {
       return {
         select() {
@@ -75,15 +85,7 @@ function stubClient(opts: {
         },
         delete() {
           calls.push({ table, op: "delete" });
-          return {
-            eq: (_c: string, v: string) => {
-              if (opts.deleteError) {
-                return Promise.resolve({ error: opts.deleteError });
-              }
-              deleted.push(v);
-              return Promise.resolve({ error: null });
-            },
-          };
+          return { eq: (_c: string, _v: string) => Promise.resolve({ error: null }) };
         },
       };
     },
@@ -261,7 +263,7 @@ Deno.test("resetProgress refuses when confirmEmail belongs to another account", 
   );
   assertEquals(res.status, 403);
   assertEquals(c.deleted.length, 0);
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
 Deno.test("resetProgress deletes and audits when the pair agrees", async () => {
@@ -269,9 +271,35 @@ Deno.test("resetProgress deletes and audits when the pair agrees", async () => {
   const res = await resetProgress(c as any, "actor", USER.id, USER.email);
   assertEquals(res.status, 200);
   assertEquals(c.deleted, [USER.id]);
-  const audit = c.calls.find((x) => x.table === "admin_audit");
-  assertEquals((audit?.payload as any).action, "progress.reset");
-  assertEquals((audit?.payload as any).target_user_id, USER.id);
+  const write = c.calls.find((x) => x.op === "rpc");
+  assertEquals(write?.table, "rpc:admin_reset_progress");
+  assertEquals((write?.payload as any).p_actor, "actor");
+  assertEquals((write?.payload as any).p_target, USER.id);
+});
+
+Deno.test("resetProgress writes the row and its audit entry in one call", async () => {
+  // The point of the database function. As two round trips, an audit insert
+  // that failed after the delete had committed escaped as a CORS-less 500 and
+  // the page told the admin nothing was deleted - about a row that was gone.
+  // Two separate database calls here would be that bug back.
+  const c = stubClient({ byId: USER });
+  await resetProgress(c as any, "actor", USER.id, USER.email);
+  const writes = c.calls.filter((x) => x.op !== "select");
+  assertEquals(writes.length, 1);
+  assertEquals(writes[0].op, "rpc");
+});
+
+Deno.test("resetProgress reports a failed write as a failure, not a success", async () => {
+  const c = stubClient({
+    byId: USER,
+    rpcError: new Error("delete failed"),
+  });
+  await assertRejects(
+    () => resetProgress(c as any, "actor", USER.id, USER.email),
+    Error,
+    "delete failed",
+  );
+  assertEquals(c.deleted.length, 0);
 });
 
 Deno.test("resetProgress matches confirmEmail case-insensitively", async () => {
@@ -289,11 +317,13 @@ Deno.test("resetProgress 404s an unknown user without deleting", async () => {
   assertEquals(c.deleted.length, 0);
 });
 
-Deno.test("resetProgress never puts an email in the audit detail", async () => {
+Deno.test("resetProgress never sends an email to the audit write", async () => {
+  // The audit row records ids only. The confirmation address the admin typed
+  // must not travel to the database function that writes it.
   const c = stubClient({ byId: USER });
   await resetProgress(c as any, "actor", USER.id, USER.email);
-  const audit = c.calls.find((x) => x.table === "admin_audit");
-  assertEquals(JSON.stringify(audit?.payload).includes("@"), false);
+  const write = c.calls.find((x) => x.op === "rpc");
+  assertEquals(JSON.stringify(write?.payload).includes("@"), false);
 });
 
 Deno.test("resetProgress refuses an empty confirmEmail against a null-email account", async () => {
@@ -318,7 +348,7 @@ Deno.test("resetProgress refuses a matching-looking confirmEmail when the accoun
   const res = await resetProgress(c as any, "actor", USER.id, "\t\n");
   assertEquals(res.status, 403);
   assertEquals(c.deleted.length, 0);
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
 // GoTrue serializes an account with no address as "" rather than null, so
@@ -351,7 +381,7 @@ Deno.test("resetProgress refuses a blank confirmEmail against an empty-string ac
   const res = await resetProgress(c as any, "actor", USER.id, "");
   assertEquals(res.status, 403);
   assertEquals(c.deleted.length, 0);
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
 Deno.test("resetProgress refuses a whitespace-only confirmEmail against an empty-string account email", async () => {
@@ -359,7 +389,7 @@ Deno.test("resetProgress refuses a whitespace-only confirmEmail against an empty
   const res = await resetProgress(c as any, "actor", USER.id, "   ");
   assertEquals(res.status, 403);
   assertEquals(c.deleted.length, 0);
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
 Deno.test("resetProgress refuses a real address against an empty-string account email", async () => {
@@ -367,16 +397,6 @@ Deno.test("resetProgress refuses a real address against an empty-string account 
   const res = await resetProgress(c as any, "actor", USER.id, "someone@example.com");
   assertEquals(res.status, 403);
   assertEquals(c.deleted.length, 0);
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
-Deno.test("resetProgress records the audit only after the delete succeeds", async () => {
-  const c = stubClient({ byId: USER, deleteError: new Error("delete failed") });
-  await assertRejects(
-    () => resetProgress(c as any, "actor", USER.id, USER.email),
-    Error,
-    "delete failed",
-  );
-  assertEquals(c.deleted.length, 0);
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
-});
