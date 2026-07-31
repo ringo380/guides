@@ -479,9 +479,68 @@ describe("admin accounts reset listener idempotency", () => {
     form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(liveRegion().textContent).not.toBe("");
+    // Pinned to the sentence, not merely to "something": announcing the reset
+    // form's instruction here would be wrong and would pass a not-empty check.
+    expect(liveRegion().textContent).toContain("address or user id");
+    // Visible too. The empty path is the only outcome that renders nothing, so
+    // a sighted admin submitting whitespace would otherwise see no change.
+    expect(form.querySelector(".admin-form-hint").textContent)
+      .toContain("address or user id");
     expect(requested).toBe(false);
     expect(document.activeElement).toBe(input);
+  });
+
+  it("clears the visible hint once a real lookup goes out", async () => {
+    const form = await initPastHealth({
+      ok: false,
+      status: 404,
+      json: async () => ({ error: "no such user" }),
+    });
+    form.querySelector("input").value = "";
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(form.querySelector(".admin-form-hint").textContent).not.toBe("");
+
+    await submitLookup(form);
+
+    // A stale "type an address first" sitting under a real result contradicts
+    // the result.
+    expect(form.querySelector(".admin-form-hint").textContent).toBe("");
+  });
+
+  it("re-announces the same sentence when the empty submit is repeated", async () => {
+    // Assistive tech fires on a change, so writing an identical string is
+    // silent - and repeating the submit is exactly what an admin does after
+    // not hearing the first one.
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      return { ok: true, json: async () => ({ admins: [] }) };
+    };
+    await window.RunbookAdminAccounts.init();
+    const form = root.querySelector("#admin-lookup-form");
+    form.querySelector("input").value = "";
+
+    const submitEmpty = async () => {
+      form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    };
+
+    await submitEmpty();
+    const first = liveRegion().textContent;
+    expect(first).toContain("address or user id");
+
+    const changes = [];
+    const observer = new MutationObserver(() => changes.push(liveRegion().textContent));
+    observer.observe(liveRegion(), { childList: true, characterData: true, subtree: true });
+    await submitEmpty();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    observer.takeRecords();
+    observer.disconnect();
+
+    // The region must have gone empty and back, so the repeat is a real change
+    // rather than a write the accessibility tree cannot distinguish.
+    expect(changes).toContain("");
+    expect(liveRegion().textContent).toContain("address or user id");
   });
 
   it("announces an empty reset confirmation instead of returning in silence", async () => {
@@ -504,9 +563,53 @@ describe("admin accounts reset listener idempotency", () => {
     form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(liveRegion().textContent).not.toBe("");
+    expect(liveRegion().textContent).toContain("confirm the reset");
+    expect(form.querySelector(".admin-form-hint").textContent)
+      .toContain("confirm the reset");
     expect(requested).toBe(false);
     expect(document.activeElement).toBe(input);
+  });
+
+  it("focuses the reset field before announcing, not after", async () => {
+    // Focusing this input also reads the deletion warning it is described by.
+    // Announcing first lets that warning talk over the instruction, and a
+    // polite region preempted by a focus announcement can be dropped entirely.
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      return { ok: true, json: async () => ({ admins: [] }) };
+    };
+    await window.RunbookAdminAccounts.init();
+    window.RunbookAdminAccounts.renderUser(root, USER);
+
+    const order = [];
+    const form = root.querySelector(".admin-reset-form");
+    const input = form.querySelector("input");
+    input.addEventListener("focus", () => order.push("focus"));
+
+    // The write is spied synchronously, through the property itself. A
+    // MutationObserver cannot answer this question: its callback is a
+    // microtask, so it always records after the focus listener no matter which
+    // order the code used, and the test passes against either.
+    const region = liveRegion();
+    const textContent = Object.getOwnPropertyDescriptor(Node.prototype, "textContent");
+    Object.defineProperty(region, "textContent", {
+      configurable: true,
+      get() { return textContent.get.call(this); },
+      set(value) {
+        order.push("announce");
+        textContent.set.call(this, value);
+      },
+    });
+
+    try {
+      input.value = "";
+      form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    } finally {
+      delete region.textContent;
+    }
+
+    expect(order).toEqual(["focus", "announce"]);
   });
 
   it("still writes the live region exactly once for a refused empty submit", async () => {

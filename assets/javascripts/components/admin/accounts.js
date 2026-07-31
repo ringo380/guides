@@ -62,13 +62,49 @@
     return region;
   }
 
+  var pendingAnnounce = null;
+
   /**
    * Announce one sentence for one user action. Exactly one write per action:
    * writing the same text into a second role="status" node reads it twice.
+   *
+   * Assistive tech fires on a CHANGE to the region, so repeating a sentence
+   * verbatim announces nothing - and repeating is exactly what an admin does
+   * after not hearing the first one. An identical message is therefore cleared
+   * and re-set in a later task: done synchronously the two writes coalesce back
+   * into "no change" before the accessibility tree is read. The clearing write
+   * is silent on its own, so this is still one announcement per action.
    */
   function announce(message) {
     var region = document.getElementById(LIVE_ID);
-    if (region) region.textContent = message;
+    if (!region) return;
+    if (pendingAnnounce) {
+      clearTimeout(pendingAnnounce);
+      pendingAnnounce = null;
+    }
+    if (region.textContent !== message) {
+      region.textContent = message;
+      return;
+    }
+    region.textContent = "";
+    pendingAnnounce = setTimeout(function () {
+      pendingAnnounce = null;
+      region.textContent = message;
+    }, 0);
+  }
+
+  /**
+   * The one outcome with nothing to render: a submit refused before it was
+   * sent. Every other branch leaves a visible section behind, so without this
+   * a sighted admin who submits whitespace sees the page not change at all -
+   * the same "did it stop responding?" ambiguity, in the other modality.
+   *
+   * Deliberately carries no role: the sentence is announced through the
+   * persistent region, and a second announcing node would read it twice.
+   */
+  function formHint(form, message) {
+    var hint = form.querySelector(".admin-form-hint");
+    if (hint) hint.textContent = message;
   }
 
   /**
@@ -144,6 +180,7 @@
       "data-user-id": u.id,
       "aria-describedby": warnId,
     }, "Reset this account's progress"));
+    form.appendChild(el("p", { class: "admin-error admin-form-hint" }));
     s.appendChild(form);
   }
 
@@ -315,6 +352,7 @@
     form.appendChild(label);
     form.appendChild(input);
     form.appendChild(submit);
+    form.appendChild(el("p", { class: "admin-error admin-form-hint" }));
     s.appendChild(form);
 
     form.addEventListener("submit", async function (ev) {
@@ -323,13 +361,19 @@
       if (!v) {
         // An empty submit used to return here having rendered nothing and
         // announced nothing, so a screen-reader user got total silence and no
-        // way to tell the submit from a page that had stopped responding. The
-        // announcement is the whole feedback for that user; focus goes to the
-        // field so acting on it does not mean hunting for it again.
-        announce("Type an address or user id first.");
+        // way to tell the submit from a page that had stopped responding.
+        //
+        // Focus moves BEFORE the announcement, not after. A focus change
+        // produces its own announcement, and a polite region written first can
+        // be preempted by it and never spoken; written second, it queues behind
+        // the focus announcement and is still heard.
+        var hint = "Type an address or user id first.";
+        formHint(form, hint);
         input.focus();
+        announce(hint);
         return;
       }
+      formHint(form, "");
       var key = v.indexOf("@") === -1 ? "id" : "email";
       try {
         var res = await authedFetch(
@@ -382,11 +426,17 @@
       if (!typed) {
         // Same silence as the lookup, on the destructive form, where an
         // unexplained non-response is worst: the natural reading is that the
-        // reset may or may not have gone through.
-        announce("Type the account's email address to confirm the reset.");
+        // reset may or may not have gone through. Focus before announcing, for
+        // the reason above - and it matters more here, because focusing this
+        // input also reads the three-sentence deletion warning it is described
+        // by, which would otherwise talk over the instruction.
+        var typeIt = "Type the account's email address to confirm the reset.";
+        formHint(ev.target, typeIt);
         if (field) field.focus();
+        announce(typeIt);
         return;
       }
+      formHint(ev.target, "");
       // The typed address IS the confirmation. The server independently
       // requires the id and the email to belong to the same account, so this
       // field is the input to that check, not a second check layered on top.
