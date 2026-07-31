@@ -411,3 +411,54 @@ Deno.test("resetProgress refuses a real address against an empty-string account 
   assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
+
+Deno.test("lookupAccount counts the pages in the progress blob", async () => {
+  const c = stubClient({
+    byId: USER,
+    progress: {
+      progress: { "Git/branching": {}, "Git/merging": {}, "Nginx/tls": {} },
+      updated_at: "2026-07-01T00:00:00Z",
+    },
+  });
+  const { deps } = stubGoTrue();
+  const res = await lookupAccount(c as any, deps, { kind: "id", id: USER.id });
+  assertEquals(res.status, 200);
+  assertEquals((res.body as any).progress.pageCount, 3);
+  assertEquals((res.body as any).progress.updatedAt, "2026-07-01T00:00:00Z");
+});
+
+Deno.test("lookupAccount reports a stored but empty blob as zero pages", async () => {
+  // A row that exists with nothing in it is not the same as no row, and the
+  // two must not collapse: one account has signed in and read nothing, the
+  // other has no progress record at all.
+  const c = stubClient({
+    byId: USER,
+    progress: { progress: {}, updated_at: "2026-07-01T00:00:00Z" },
+  });
+  const { deps } = stubGoTrue();
+  const res = await lookupAccount(c as any, deps, { kind: "id", id: USER.id });
+  assertEquals((res.body as any).progress.pageCount, 0);
+});
+
+Deno.test("lookupAccount reports a null progress column as zero pages, not a crash", async () => {
+  // The column is nullable, so a row can carry updated_at with a null blob.
+  // Object.keys(null) throws; the ?? is what keeps this a number.
+  const c = stubClient({
+    byId: USER,
+    progress: { progress: null, updated_at: "2026-07-01T00:00:00Z" },
+  });
+  const { deps } = stubGoTrue();
+  const res = await lookupAccount(c as any, deps, { kind: "id", id: USER.id });
+  assertEquals(res.status, 200);
+  assertEquals((res.body as any).progress.pageCount, 0);
+});
+
+Deno.test("lookupAccount reports no progress row as null, never as zero pages", async () => {
+  // null and 0 are different answers: one says the account has no progress
+  // record, the other says it has one holding nothing.
+  const c = stubClient({ byId: USER, progress: null });
+  const { deps } = stubGoTrue();
+  const res = await lookupAccount(c as any, deps, { kind: "id", id: USER.id });
+  assertEquals(res.status, 200);
+  assertEquals((res.body as any).progress, null);
+});
