@@ -184,11 +184,29 @@
     s.appendChild(form);
   }
 
+  /**
+   * @param root  the page root
+   * @param payload  the parsed /admins body, or null if the request produced
+   *   no answer at all. The two are different facts and must not share a
+   *   message: null means the roster is unknown, not that it is empty.
+   */
   function renderRoster(root, payload) {
     var s = section(root, "admin-roster");
     s.appendChild(el("h3", {}, "Admins"));
 
-    var admins = (payload && payload.admins) || [];
+    if (!payload) {
+      // A 500, a 403 on an expired session, or a dropped connection used to
+      // land in the empty-roster branch below, which states as fact that the
+      // roster is empty and that the last-admin trigger is broken. Neither is
+      // known here, and the suggested next step - inspect the trigger - sends
+      // the admin after something that is almost certainly fine.
+      s.appendChild(el("p", { class: "admin-error" },
+        "Could not load the admin roster. This says nothing about who is an " +
+        "admin: the list was not read. Reload the page to try again."));
+      return;
+    }
+
+    var admins = payload.admins || [];
     if (!admins.length) {
       // The last-admin trigger makes this impossible. If it renders, the guard
       // is not doing its job, and an empty table would read as "loading".
@@ -228,6 +246,25 @@
   // single submit fires the reset request - and its audit write - once per
   // accumulated listener. Store the reference and remove it before re-adding.
   var resetSubmitHandler = null;
+
+  // A second submit while the reset is in flight sends a second POST. The
+  // delete is idempotent so nothing extra is lost, but the audit insert is
+  // not: one admin intent then writes two admin_audit rows, and the log
+  // misreports how many resets were actually performed. Guarded twice, because
+  // each guard covers what the other cannot - the flag stops a submit raised
+  // any other way (Enter in the text field, a dispatched event), and the
+  // disabled button is what a sighted or screen-reader user can perceive.
+  var resetInFlight = false;
+
+  function setBusy(btn, busy) {
+    if (!btn) return;
+    btn.disabled = busy;
+    // Kept in step with the property: assistive tech reads the attribute, and
+    // the two disagreeing is how a control announces itself as available while
+    // refusing every activation.
+    if (busy) btn.setAttribute("aria-disabled", "true");
+    else btn.removeAttribute("aria-disabled");
+  }
 
   async function init() {
     var root = document.getElementById("admin-accounts-root");
@@ -273,9 +310,11 @@
       // lookup the admin is in the middle of reading.
       try {
         var res = await authedFetch("/admins", { method: "GET" });
-        renderRoster(root, res.ok ? await res.json() : { admins: [] });
+        // null, not { admins: [] }: a refused request is not evidence of an
+        // empty roster, and the renderer says so in its own words.
+        renderRoster(root, res.ok ? await res.json() : null);
       } catch (e) {
-        renderRoster(root, { admins: [] });
+        renderRoster(root, null);
       }
     } catch (e) {
       // Without this the rejection escapes as an unhandled promise rejection
@@ -420,6 +459,7 @@
         && ev.target.querySelector("[data-action='reset-progress']");
       if (!btn) return;
       ev.preventDefault();
+      if (resetInFlight) return;
       var id = btn.getAttribute("data-user-id");
       var field = ev.target.querySelector("input");
       var typed = (field && field.value.trim()) || "";
@@ -437,6 +477,10 @@
         return;
       }
       formHint(ev.target, "");
+      // Only now, past every branch that returns without sending anything: a
+      // refused empty submit must leave the button usable.
+      resetInFlight = true;
+      setBusy(btn, true);
       // The typed address IS the confirmation. The server independently
       // requires the id and the email to belong to the same account, so this
       // field is the input to that check, not a second check layered on top.
@@ -464,6 +508,11 @@
           "deleted - look the account up again before retrying.";
         sectionMessage(root, "admin-reset-result", unsent);
         announce(unsent);
+      } finally {
+        // In a finally, so a throw from anywhere above cannot leave the page
+        // with a permanently dead reset button and no way back but a reload.
+        resetInFlight = false;
+        setBusy(btn, false);
       }
       focusResult(root, "admin-reset-result");
     };
