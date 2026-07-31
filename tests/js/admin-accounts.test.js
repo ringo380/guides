@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { loadComponent, cleanup } from "./helpers.js";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 
 const USER = {
   user: {
@@ -85,11 +87,21 @@ describe("admin accounts renderer", () => {
 describe("admin accounts reset listener idempotency", () => {
   let root;
 
+  // Mirrors the shell in admin-accounts.md, live region included. A mount that
+  // omits it would test an announcement path the real page does not have.
   function mountAdminAccountsRoot() {
     const el = document.createElement("div");
     el.id = "admin-accounts-root";
+    el.setAttribute("role", "region");
+    el.setAttribute("aria-label", "Account management");
+    const live = document.createElement("p");
+    live.id = "admin-lookup-status";
+    live.className = "sr-only";
+    live.setAttribute("role", "status");
+    el.appendChild(live);
     const status = document.createElement("p");
     status.id = "admin-accounts-status";
+    status.setAttribute("role", "status");
     status.textContent = "Checking authorization...";
     el.appendChild(status);
     document.body.appendChild(el);
@@ -149,19 +161,28 @@ describe("admin accounts reset listener idempotency", () => {
   });
 
   /** init() past the health check, with a scripted answer for the lookup. */
-  async function lookupWith(response) {
+  async function initPastHealth(response) {
     global.fetch = async (url) => {
       if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
       if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
       return response;
     };
     await window.RunbookAdminAccounts.init();
-    const form = root.querySelector("#admin-lookup-form");
+    return root.querySelector("#admin-lookup-form");
+  }
+
+  async function submitLookup(form) {
     form.querySelector("input").value = "someone@example.com";
     form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
     await new Promise((resolve) => setTimeout(resolve, 0));
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
+
+  async function lookupWith(response) {
+    await submitLookup(await initPastHealth(response));
+  }
+
+  const liveRegion = () => document.getElementById("admin-lookup-status");
 
   it("keeps the exact-match hint for a genuine 404", async () => {
     await lookupWith({ ok: false, status: 404, json: async () => ({ error: "no such user" }) });
@@ -288,5 +309,173 @@ describe("admin accounts reset listener idempotency", () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(calls.length).toBe(1);
+  });
+
+  // The maintainer of this page cannot check an announcement by eye, so the
+  // announcement path is asserted structurally: the region exists before the
+  // submit, its text changes for every outcome, and it is written once.
+
+  it("keeps one empty live region in place across re-inits", async () => {
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      return { ok: true, json: async () => ({ admins: [] }) };
+    };
+    await window.RunbookAdminAccounts.init();
+    await window.RunbookAdminAccounts.init();
+
+    const regions = document.querySelectorAll("#admin-lookup-status");
+    expect(regions.length).toBe(1);
+    expect(regions[0].getAttribute("role")).toBe("status");
+    // role="status" already implies aria-live="polite"; both would be a
+    // duplicate announcement in some screen readers.
+    expect(regions[0].hasAttribute("aria-live")).toBe(false);
+    // Present but silent until the reader asks for something.
+    expect(regions[0].textContent).toBe("");
+    // The old blanket live region on the root announced every rendered table.
+    expect(root.hasAttribute("aria-live")).toBe(false);
+  });
+
+  const OUTCOMES = [
+    {
+      name: "a match",
+      response: { ok: true, status: 200, json: async () => USER },
+      announced: "Account found for someone@example.com",
+    },
+    {
+      name: "a genuine 404",
+      response: { ok: false, status: 404, json: async () => ({ error: "no such user" }) },
+      announced: "No matching account",
+    },
+    {
+      name: "a refusal the server explained",
+      response: {
+        ok: false,
+        status: 409,
+        json: async () => ({ error: "too many candidate accounts" }),
+      },
+      announced: "too many candidate accounts",
+    },
+    {
+      name: "an unreadable server error",
+      response: {
+        ok: false,
+        status: 500,
+        json: async () => { throw new SyntaxError("Unexpected token I"); },
+      },
+      announced: "500",
+    },
+  ];
+
+  OUTCOMES.forEach(({ name, response, announced }) => {
+    it(`announces ${name} through the live region`, async () => {
+      const form = await initPastHealth(response);
+      // The precondition that makes the assertion below mean anything: the
+      // region was already in the DOM, and empty, before the submit.
+      expect(liveRegion()).toBeTruthy();
+      expect(liveRegion().textContent).toBe("");
+
+      await submitLookup(form);
+
+      expect(liveRegion().textContent).toContain(announced);
+    });
+  });
+
+  it("announces a lookup that never left the browser", async () => {
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      throw new TypeError("Failed to fetch");
+    };
+    await window.RunbookAdminAccounts.init();
+    expect(liveRegion().textContent).toBe("");
+
+    await submitLookup(root.querySelector("#admin-lookup-form"));
+
+    expect(liveRegion().textContent).toContain("could not be sent");
+  });
+
+  it("writes the live region exactly once per lookup", async () => {
+    const form = await initPastHealth({
+      ok: false,
+      status: 404,
+      json: async () => ({ error: "no such user" }),
+    });
+
+    const records = [];
+    const observer = new MutationObserver((list) => records.push(...list));
+    observer.observe(liveRegion(), { childList: true, characterData: true, subtree: true });
+
+    await submitLookup(form);
+    observer.takeRecords().forEach((r) => records.push(r));
+    observer.disconnect();
+
+    // Two writes per action is the duplicate-announcement bug the repo's
+    // conventions call out, and it is invisible on screen.
+    expect(records.length).toBe(1);
+  });
+
+  it("leaves no second live region holding the same message", async () => {
+    await lookupWith({
+      ok: false,
+      status: 409,
+      json: async () => ({ error: "too many candidate accounts" }),
+    });
+
+    // init() removes the shell status line once authorization succeeds, so the
+    // persistent region is the only announcing node left.
+    const announcing = root.querySelectorAll('[role="status"], [aria-live]');
+    expect(announcing.length).toBe(1);
+    expect(announcing[0].id).toBe("admin-lookup-status");
+  });
+
+  it("moves focus onto the result of a submit, but not on load", async () => {
+    const form = await initPastHealth({
+      ok: false,
+      status: 404,
+      json: async () => ({ error: "no such user" }),
+    });
+    // Loading the page must not yank focus away from whatever the reader was
+    // doing; only a submit they initiated may.
+    expect(document.activeElement).not.toBe(root.querySelector("#admin-user-result"));
+
+    await submitLookup(form);
+
+    const result = root.querySelector("#admin-user-result");
+    expect(result.getAttribute("tabindex")).toBe("-1");
+    expect(document.activeElement).toBe(result);
+  });
+
+  it("announces a reset outcome and lands focus on it", async () => {
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      return { ok: false, status: 403, json: async () => ({ error: "confirmation email does not match that user id" }) };
+    };
+    await window.RunbookAdminAccounts.init();
+    window.RunbookAdminAccounts.renderUser(root, USER);
+    expect(liveRegion().textContent).toBe("");
+
+    const form = root.querySelector(".admin-reset-form");
+    form.querySelector("input").value = USER.user.email;
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(liveRegion().textContent).toContain("does not match");
+    expect(document.activeElement).toBe(root.querySelector("#admin-reset-result"));
+  });
+});
+
+describe("admin accounts page shell", () => {
+  it("ships the live region in the markup, not only in the script", () => {
+    // A region created by the script at the moment it is first needed may never
+    // be announced. It has to be in the page from first render, so this asserts
+    // the shipped markup rather than what the component can patch up.
+    const shell = readFileSync(resolve(__dirname, "../../admin-accounts.md"), "utf-8");
+    expect(shell).toContain('id="admin-lookup-status"');
+    expect(shell).toContain('role="status"');
+    expect(shell).toContain('class="sr-only"');
+    // A blanket live region on the container announces every re-rendered table.
+    expect(shell).not.toContain("aria-live");
   });
 });

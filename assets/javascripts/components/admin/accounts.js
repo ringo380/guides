@@ -44,6 +44,45 @@
     return t;
   }
 
+  // One live region for the whole page, present in the page shell from first
+  // render and never removed or rebuilt. A region that is created already
+  // holding its text may never be announced at all: assistive tech watches a
+  // region it already knows about for changes, so the region has to be in the
+  // DOM before the text lands in it. Every outcome of a submit therefore writes
+  // its sentence here instead of shipping a fresh role="status" node.
+  var LIVE_ID = "admin-lookup-status";
+
+  function liveRegion(root) {
+    var region = document.getElementById(LIVE_ID);
+    if (region) return region;
+    // Only reached if the shell markup lost the element. Created empty and
+    // never populated in the same step, for the reason above.
+    region = el("p", { id: LIVE_ID, class: "sr-only", role: "status" });
+    root.insertBefore(region, root.firstChild);
+    return region;
+  }
+
+  /**
+   * Announce one sentence for one user action. Exactly one write per action:
+   * writing the same text into a second role="status" node reads it twice.
+   */
+  function announce(message) {
+    var region = document.getElementById(LIVE_ID);
+    if (region) region.textContent = message;
+  }
+
+  /**
+   * Send focus to the answer a submit produced, so a keyboard or screen-reader
+   * user lands on it instead of hunting for it below the roster table. Only
+   * ever called in response to a submit, never on load.
+   */
+  function focusResult(root, id) {
+    var s = root.querySelector("#" + id);
+    if (!s || typeof s.focus !== "function") return;
+    s.setAttribute("tabindex", "-1");
+    s.focus();
+  }
+
   function section(root, id) {
     var existing = root.querySelector("#" + id);
     if (existing) existing.remove();
@@ -157,6 +196,10 @@
     var root = document.getElementById("admin-accounts-root");
     if (!root) return;
     if (inFlight) return;
+    // Established before anything can have an outcome, and idempotent, so the
+    // re-init that follows every runbook:auth-changed neither duplicates the
+    // region nor makes it announce on its own.
+    liveRegion(root);
     var status = document.getElementById("admin-accounts-status");
 
     var client = window.RunbookAuth && window.RunbookAuth.getClient();
@@ -213,6 +256,10 @@
    * Report a page-level failure. Uses the status line while it is still on the
    * page; once it has been removed the message goes into its own section, so
    * the text always lands somewhere a reader can reach it.
+   *
+   * The status line is itself a live region in the page shell, so writing to it
+   * announces. Once it is gone the announcement goes through the persistent
+   * region instead - never both, or the message is read twice.
    */
   function fail(root, status, message) {
     if (status && status.isConnected) {
@@ -220,7 +267,8 @@
       return;
     }
     var s = section(root, "admin-accounts-error");
-    s.appendChild(el("p", { class: "admin-error", role: "status" }, message));
+    s.appendChild(el("p", { class: "admin-error" }, message));
+    announce(message);
   }
 
   /**
@@ -239,10 +287,15 @@
     return detail || fallback + " The server answered " + res.status + ".";
   }
 
-  /** Replace one section with a single announced message. */
+  /**
+   * Replace one section with a single message. The announcement is the caller's
+   * job, through the persistent live region: a role="status" on this node would
+   * be a second live region built already holding its text, which is both
+   * unreliable and, when it does fire, a duplicate reading.
+   */
   function sectionMessage(root, id, message) {
     var s = section(root, id);
-    s.appendChild(el("p", { class: "admin-error", role: "status" }, message));
+    s.appendChild(el("p", { class: "admin-error" }, message));
   }
 
   function renderLookupForm(root) {
@@ -273,27 +326,39 @@
         var res = await authedFetch(
           "/user?" + key + "=" + encodeURIComponent(v), { method: "GET" });
         if (res.ok) {
-          renderUser(root, await res.json());
+          var payload = await res.json();
+          renderUser(root, payload);
+          var u = (payload && payload.user) || {};
+          announce("Account found for " + (u.email || u.id || "that query") + ".");
         } else if (res.status === 404) {
           // Only a 404 means the address was searched and matched nothing.
           renderUser(root, null);
+          // The most common outcome of this page, and the one that used to be
+          // announced to nobody.
+          announce("No matching account. The address must match exactly.");
         } else {
           // Every other status has its own reason, and the server states it.
           // Collapsing them all into "no matching account" reintroduces, in the
           // UI, the false negative the server was fixed not to produce: a 409
           // means the address could not be resolved safely, not that it is
           // absent.
-          sectionMessage(root, "admin-user-result",
-            await serverError(res, "The lookup was not completed."));
+          var refused = await serverError(res, "The lookup was not completed.");
+          sectionMessage(root, "admin-user-result", refused);
+          announce(refused);
         }
       } catch (e) {
         // "No matching account" and "the request never left the browser" are
         // different answers. Saying the first when the second happened invites
         // a retry of whatever comes next, including the destructive part.
-        sectionMessage(root, "admin-user-result",
-          "The lookup request could not be sent. Nothing was searched - " +
-          "check your connection and try again.");
+        var unsent = "The lookup request could not be sent. Nothing was " +
+          "searched - check your connection and try again.";
+        sectionMessage(root, "admin-user-result", unsent);
+        announce(unsent);
       }
+      // Every path above leaves a result section behind, including the ones
+      // that failed. Landing on it is the difference between reading the answer
+      // and hunting for it below the roster table.
+      focusResult(root, "admin-user-result");
     });
 
     if (resetSubmitHandler) root.removeEventListener("submit", resetSubmitHandler);
@@ -321,17 +386,20 @@
         var out = section(root, "admin-reset-result");
         out.appendChild(el(
           "p",
-          { class: res.ok ? "admin-note" : "admin-error", role: "status" },
+          { class: res.ok ? "admin-note" : "admin-error" },
           message,
         ));
+        announce(message);
       } catch (e) {
         // A silent failure on a destructive action is the worst case: the
         // admin cannot tell a refusal from a request that never left, and the
         // natural response to that ambiguity is to try the delete again.
-        sectionMessage(root, "admin-reset-result",
-          "The reset request could not be sent. Nothing was deleted - look " +
-          "the account up again before retrying.");
+        var unsent = "The reset request could not be sent. Nothing was " +
+          "deleted - look the account up again before retrying.";
+        sectionMessage(root, "admin-reset-result", unsent);
+        announce(unsent);
       }
+      focusResult(root, "admin-reset-result");
     };
     root.addEventListener("submit", resetSubmitHandler);
   }
