@@ -116,6 +116,28 @@ describe("admin accounts reset listener idempotency", () => {
     cleanup();
   });
 
+  it("says to sign in rather than freezing when the session is gone", async () => {
+    // authedFetch throws on a missing token. Uncaught, the page keeps saying
+    // "Checking authorization..." forever and a screen reader gets nothing.
+    window.RunbookAuth = { getClient: () => sessionClient(null) };
+    global.fetch = async () => { throw new Error("should not be called"); };
+
+    await window.RunbookAdminAccounts.init();
+
+    expect(document.getElementById("admin-accounts-status").textContent)
+      .toContain("Sign in");
+  });
+
+  it("reports an unreachable API instead of leaving the page checking", async () => {
+    global.fetch = async () => { throw new TypeError("Failed to fetch"); };
+
+    await window.RunbookAdminAccounts.init();
+
+    const text = root.textContent;
+    expect(text).not.toContain("Checking authorization");
+    expect(text).toContain("Could not reach the admin service");
+  });
+
   it("fires the reset handler once even after init() has re-run", async () => {
     const calls = [];
     global.fetch = async (url) => {

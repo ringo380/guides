@@ -170,6 +170,17 @@
 
     inFlight = true;
     try {
+      // Checked before the fetch, and separately from a failed request: an
+      // expired session and an unreachable API are different problems, and
+      // "signed out" is the one the reader can act on. Same wording as the
+      // dashboard page, which handles this already.
+      var session = await client.auth.getSession();
+      var token = session.data.session && session.data.session.access_token;
+      if (!token) {
+        if (status) status.textContent = "Sign in to view this page.";
+        return;
+      }
+
       var health = await authedFetch("/health", { method: "GET" });
       if (!health.ok) {
         if (status) status.textContent = "Not authorized.";
@@ -186,9 +197,30 @@
       } catch (e) {
         renderRoster(root, { admins: [] });
       }
+    } catch (e) {
+      // Without this the rejection escapes as an unhandled promise rejection
+      // and the page sits on "Checking authorization..." forever, which gives
+      // a screen reader nothing to act on.
+      fail(root, status,
+        "Could not reach the admin service. Check your connection and " +
+        "reload the page.");
     } finally {
       inFlight = false;
     }
+  }
+
+  /**
+   * Report a page-level failure. Uses the status line while it is still on the
+   * page; once it has been removed the message goes into its own section, so
+   * the text always lands somewhere a reader can reach it.
+   */
+  function fail(root, status, message) {
+    if (status && status.isConnected) {
+      status.textContent = message;
+      return;
+    }
+    var s = section(root, "admin-accounts-error");
+    s.appendChild(el("p", { class: "admin-error", role: "status" }, message));
   }
 
   function renderLookupForm(root) {
