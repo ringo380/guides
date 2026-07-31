@@ -44,11 +44,18 @@ function toAccountUser(u: any): AccountUser {
  *
  * Matched on status and code rather than on message text, which is not a
  * stable interface.
+ *
+ * The code wins over the status when there is one. A bare 404 is not proof of a
+ * missing user: if the auth path itself ever 404s at the edge - a gateway route
+ * change, or GoTrue not serving /auth/v1/admin/users/<id> - then status alone
+ * reports "no such user" for an account that is sitting right there, which is
+ * the one wrong answer an admin has no way to question.
  */
 function isMissingUser(error: unknown): boolean {
   if (!error || typeof error !== "object") return false;
   const e = error as { status?: number; code?: string };
-  return e.status === 404 || e.code === "user_not_found";
+  if (typeof e.code === "string" && e.code !== "") return e.code === "user_not_found";
+  return e.status === 404;
 }
 
 /** Resolve a uuid to an account, or null. No filter, so nothing to narrow. */

@@ -200,6 +200,32 @@ Deno.test("lookupAccount answers 404 for a well-formed but unknown id", async ()
   assertEquals(res.status, 404);
 });
 
+Deno.test("findUser by id rethrows a 404 that is not a missing user", async () => {
+  // A 404 from the auth path itself - a gateway route change, GoTrue not
+  // serving /auth/v1/admin/users/<id> - carries its own code. Reading the
+  // status alone reports a real account as gone, which is worse than an error.
+  const c = stubClient({
+    byIdError: authApiError(404, "not_found", "Requested path is invalid"),
+  });
+  const { deps } = stubGoTrue();
+  await assertRejects(
+    () => findUser(c as any, deps, { kind: "id", id: USER.id }),
+    Error,
+    "Requested path is invalid",
+  );
+});
+
+Deno.test("findUser by id still treats a codeless 404 as a missing user", async () => {
+  // Older auth-js releases answer without a code at all, so the status has to
+  // remain sufficient on its own.
+  const e = new Error("User not found") as Error & { status: number };
+  e.status = 404;
+  const c = stubClient({ byIdError: e });
+  const { deps } = stubGoTrue();
+  const r = await findUser(c as any, deps, { kind: "id", id: USER.id });
+  assertEquals(r.kind, "none");
+});
+
 Deno.test("findUser by id rethrows an error that is not a missing user", async () => {
   // Only "no such user" is an answer. A 500 from GoTrue, or a rejected service
   // key, must not be laundered into "no such user".
