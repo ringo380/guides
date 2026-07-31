@@ -100,8 +100,11 @@ export async function listUsersByFilter(
   perPage: number,
 ): Promise<ListUsersResult> {
   const url = new URL("/auth/v1/admin/users", deps.url);
-  // URLSearchParams percent-encodes the value, so a `+` or `%` in the address
-  // reaches GoTrue as itself rather than as a wildcard or a space.
+  // URLSearchParams percent-encodes the value, so a `+` reaches GoTrue as a
+  // plus rather than a space. Percent-encoding does NOT make a wildcard safe:
+  // GoTrue decodes the parameter before building the LIKE pattern, so `%` and
+  // `_` arrive as wildcards regardless. Neutralizing those is the caller's job,
+  // through identity.gotrueFilter.
   url.searchParams.set("filter", filter);
   url.searchParams.set("page", String(page));
   url.searchParams.set("per_page", String(perPage));

@@ -168,6 +168,17 @@ Deno.test("grantAdmin sends the address as filter=, not as a page read", async (
   assertStringIncludes(urls[0], "per_page=100");
 });
 
+Deno.test("grantAdmin escapes the LIKE wildcards before they reach filter=", async () => {
+  // Same boundary as the lookup path, and it has to be asserted separately:
+  // this call site builds its own filter argument.
+  const c = stubClient({
+    admins: [{ user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" }],
+  });
+  const { deps, urls } = stubGoTrue({ users: [{ id: "x", email: "first_last@example.com" }] });
+  await grantAdmin(c as any, deps, "a", "first_last@example.com");
+  assertStringIncludes(urls[0], "filter=first%5C_last%40example.com");
+});
+
 Deno.test("grantAdmin 404s when no candidate matches exactly", async () => {
   const c = stubClient({
     admins: [{ user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" }],

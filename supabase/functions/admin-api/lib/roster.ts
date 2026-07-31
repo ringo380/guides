@@ -1,4 +1,4 @@
-import { LOOKUP_PAGE_SIZE, narrowToExactEmail } from "./identity.ts";
+import { gotrueFilter, LOOKUP_PAGE_SIZE, narrowToExactEmail } from "./identity.ts";
 import { type GoTrueDeps, listUsersByFilter } from "./gotrue.ts";
 
 export interface AdminRow {
@@ -72,9 +72,10 @@ export async function grantAdmin(
   email: string,
 ): Promise<{ status: number; body: unknown }> {
   // Through lib/gotrue.ts, not supabase-js: the admin client drops `filter`.
+  // Escaped for the same reason as the lookup path: filter= is a LIKE pattern.
   const { users, hasMore } = await listUsersByFilter(
     deps,
-    email,
+    gotrueFilter(email),
     1,
     LOOKUP_PAGE_SIZE,
   );

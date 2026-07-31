@@ -1,6 +1,6 @@
 import { withSupabase } from "npm:@supabase/server@^1";
 import { corsHeaders, resolveCorsOrigin } from "./lib/cors.ts";
-import { withErrorFloor } from "./lib/error-floor.ts";
+import { buildFetch } from "./lib/compose.ts";
 import { parseRange } from "./lib/range.ts";
 import { isFresh, selectPayload } from "./lib/cache.ts";
 import { fetchGa4 } from "./lib/ga4.ts";
@@ -71,12 +71,9 @@ function json(body: unknown, status: number, origin: string | null): Response {
 // What is left to us is the two checks the gateway does not do: origin
 // allowlisting (it returns a wildcard) and admin-membership.
 //
-// The error floor goes OUTSIDE withSupabase, not inside it. Inside, it never
-// sees what withSupabase itself throws before it reaches this handler - client
-// construction against a rotated service-role key, an unexpected claims shape -
-// and those are exactly the failures that reach the browser as a CORS-less
-// plain-text 500 the admin page then mis-narrates.
-const routes = withSupabase({ auth: "user" }, async (req: Request, ctx: any) => {
+// The error floor goes OUTSIDE withSupabase, not inside it. That ordering lives
+// in lib/compose.ts, where a test can hold it: see buildFetch below.
+const handler = async (req: Request, ctx: any) => {
     const origin = resolveCorsOrigin(req.headers.get("Origin"));
     if (origin === null) {
       return json({ error: "forbidden" }, 403, null);
@@ -298,10 +295,8 @@ const routes = withSupabase({ auth: "user" }, async (req: Request, ctx: any) => 
     // call). TypeScript cannot see that exhaustiveness, so a terminal throw
     // satisfies the return-type check without duplicating the 404 response.
     throw new Error("unreachable route");
-});
+};
 
-// withSupabase hands back a one-argument handler, so the floor is adapted to
-// that shape rather than the two-argument one it wraps elsewhere.
 export default {
-  fetch: withErrorFloor((req: Request) => routes(req)),
+  fetch: buildFetch(withSupabase, { auth: "user" }, handler),
 };

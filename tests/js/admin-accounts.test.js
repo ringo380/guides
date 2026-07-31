@@ -63,6 +63,16 @@ describe("admin accounts renderer", () => {
     expect(root.textContent).toContain("no admins");
   });
 
+  it("does not claim the roster is empty when it could not be read", () => {
+    // null is "no answer", which is not the same fact as "no rows". Saying the
+    // trigger is broken on a 500 makes a confident claim about database state
+    // this code has no evidence for.
+    window.RunbookAdminAccounts.renderRoster(root, null);
+    expect(root.textContent).toContain("Could not load the admin roster");
+    expect(root.textContent).not.toContain("no admins");
+    expect(root.textContent).not.toContain("trigger");
+  });
+
   it("marks the reset control as destructive for assistive tech", () => {
     window.RunbookAdminAccounts.renderUser(root, USER);
     const btn = root.querySelector("[data-action='reset-progress']");
@@ -290,6 +300,124 @@ describe("admin accounts reset listener idempotency", () => {
     // only one of them is fixed by retyping the address.
     const out = root.querySelector("#admin-reset-result");
     expect(out.textContent).toContain("no such user");
+  });
+
+  it("does not narrate a failed roster request as an empty roster", async () => {
+    // The wiring half of the renderer test above: init() must pass the failure
+    // through as a failure. Passing { admins: [] } here - what it used to do -
+    // put the trigger claim on the page for a plain 500.
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) {
+        return { ok: false, status: 500, json: async () => ({ error: "boom" }) };
+      }
+      return { ok: false };
+    };
+
+    await window.RunbookAdminAccounts.init();
+
+    const roster = root.querySelector("#admin-roster");
+    expect(roster.textContent).toContain("Could not load the admin roster");
+    expect(roster.textContent).not.toContain("check the trigger");
+  });
+
+  it("still names an empty roster as the impossibility it is", async () => {
+    // The other side of the same branch. Without this row, collapsing both
+    // outcomes back into one message would pass the test above.
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      return { ok: false };
+    };
+
+    await window.RunbookAdminAccounts.init();
+
+    const roster = root.querySelector("#admin-roster");
+    expect(roster.textContent).toContain("check the trigger");
+    expect(roster.textContent).not.toContain("Could not load");
+  });
+
+  it("sends one reset per intent, not one per click", async () => {
+    // The delete is idempotent, so a double-click loses no extra data - but the
+    // audit insert is not, and two rows for one intent misreport how many
+    // resets were performed.
+    const calls = [];
+    let release;
+    const held = new Promise((resolve) => { release = resolve; });
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      if (String(url).includes("/user/progress/reset")) {
+        calls.push(url);
+        await held;
+        return { ok: true, json: async () => ({}) };
+      }
+      return { ok: false };
+    };
+
+    await window.RunbookAdminAccounts.init();
+    window.RunbookAdminAccounts.renderUser(root, USER);
+    const form = root.querySelector(".admin-reset-form");
+    const btn = form.querySelector("[data-action='reset-progress']");
+    form.querySelector("input").value = USER.user.email;
+
+    const submit = () =>
+      form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    try {
+      submit();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // The request is still in flight here, which is the only window in which
+      // the second click can do damage.
+      expect(calls.length).toBe(1);
+      expect(btn.disabled).toBe(true);
+      // Both, in step: assistive tech reads the attribute, and a control that
+      // announces itself as available while refusing every activation is worse
+      // than one that says it is busy.
+      expect(btn.getAttribute("aria-disabled")).toBe("true");
+
+      submit();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(calls.length).toBe(1);
+    } finally {
+      // In a finally, because the component instance outlives this test: the
+      // IIFE returns early once window.RunbookAdminAccounts exists, so its
+      // in-flight flag is shared with every later test in the file. A failed
+      // assertion here would otherwise leave that flag stuck and fail four
+      // unrelated tests with it.
+      release();
+    }
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // Released afterwards, or one reset costs the admin the button for the
+    // rest of the session.
+    expect(btn.disabled).toBe(false);
+    expect(btn.getAttribute("aria-disabled")).toBe(null);
+    expect(root.querySelector("#admin-reset-result").textContent)
+      .toContain("Progress reset");
+  });
+
+  it("leaves the reset button usable after a submit it refused to send", async () => {
+    // The empty-confirmation branch returns before any request goes out. If it
+    // took the in-flight lock on the way past, the admin would have to reload
+    // the page to be able to retry at all.
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      return { ok: true, json: async () => ({}) };
+    };
+
+    await window.RunbookAdminAccounts.init();
+    window.RunbookAdminAccounts.renderUser(root, USER);
+    const form = root.querySelector(".admin-reset-form");
+    const btn = form.querySelector("[data-action='reset-progress']");
+    form.querySelector("input").value = "";
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(btn.disabled).toBe(false);
+    expect(btn.getAttribute("aria-disabled")).toBe(null);
   });
 
   it("fires the reset handler once even after init() has re-run", async () => {
