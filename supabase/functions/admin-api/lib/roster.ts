@@ -1,5 +1,6 @@
 import { gotrueFilter, LOOKUP_PAGE_SIZE, narrowToExactEmail } from "./identity.ts";
 import { type GoTrueDeps, listUsersByFilter } from "./gotrue.ts";
+import { recordRefusal, REFUSAL, type RefusalReason } from "./audit.ts";
 
 export interface AdminRow {
   userId: string;
@@ -18,7 +19,10 @@ export interface AdminRow {
 
 export type RevokeCheck =
   | { ok: true }
-  | { ok: false; status: number; error: string };
+  // The refusal strings ARE the audit vocabulary, one type rather than two
+  // copies: a message reworded on the way to the caller but not in the log
+  // would leave the log describing a refusal the admin never saw.
+  | { ok: false; status: number; error: RefusalReason };
 
 /**
  * Guard a revoke before touching the database.
@@ -45,13 +49,13 @@ export function checkRevoke(args: {
   rosterSize: number;
 }): RevokeCheck {
   if (args.actorId === args.targetId) {
-    return { ok: false, status: 403, error: "cannot revoke yourself" };
+    return { ok: false, status: 403, error: REFUSAL.selfRevoke };
   }
   if (!args.isMember) {
-    return { ok: false, status: 404, error: "not an admin" };
+    return { ok: false, status: 404, error: REFUSAL.notAnAdmin };
   }
   if (args.rosterSize <= 1) {
-    return { ok: false, status: 409, error: "cannot remove the last admin" };
+    return { ok: false, status: 409, error: REFUSAL.lastAdmin };
   }
   return { ok: true };
 }
@@ -111,21 +115,43 @@ export async function grantAdmin(
   if (user === null) {
     // An unmatched page-1 with more pages behind it is not "no such user" - the
     // account may be on a page we never asked for. Say so rather than 404.
+    //
+    // Both refusals are recorded with a null target: there is no account id to
+    // name, which is the whole reason they were refused. The address itself is
+    // deliberately not stored - the audit table holds ids, never emails.
     if (hasMore) {
+      await recordRefusal(
+        supabaseAdmin,
+        actorId,
+        "admin.grant",
+        null,
+        REFUSAL.ambiguousAddress,
+      );
       return {
         status: 409,
-        body: {
-          error:
-            "too many candidate accounts for that address to resolve it safely",
-        },
+        body: { error: REFUSAL.ambiguousAddress },
       };
     }
-    return { status: 404, body: { error: "no such user" } };
+    await recordRefusal(
+      supabaseAdmin,
+      actorId,
+      "admin.grant",
+      null,
+      REFUSAL.noSuchUser,
+    );
+    return { status: 404, body: { error: REFUSAL.noSuchUser } };
   }
 
   const existing = await rosterRows(supabaseAdmin);
   if (existing.some((r) => r.user_id === user.id)) {
-    return { status: 409, body: { error: "already an admin" } };
+    await recordRefusal(
+      supabaseAdmin,
+      actorId,
+      "admin.grant",
+      user.id,
+      REFUSAL.alreadyAnAdmin,
+    );
+    return { status: 409, body: { error: REFUSAL.alreadyAnAdmin } };
   }
 
   // The insert and its audit row go in one transaction. Written as two requests,
@@ -142,7 +168,14 @@ export async function grantAdmin(
     // That is the same conflict the check reports, so it gets the same answer
     // rather than surfacing as a 500. Mirrors the revoke path's P0001 mapping.
     if ((insErr as { code?: string }).code === "23505") {
-      return { status: 409, body: { error: "already an admin" } };
+      await recordRefusal(
+        supabaseAdmin,
+        actorId,
+        "admin.grant",
+        user.id,
+        REFUSAL.alreadyAnAdmin,
+      );
+      return { status: 409, body: { error: REFUSAL.alreadyAnAdmin } };
     }
     throw insErr;
   }
@@ -162,7 +195,20 @@ export async function revokeAdmin(
     isMember: rows.some((r) => r.user_id === targetId),
     rosterSize: rows.length,
   });
-  if (!check.ok) return { status: check.status, body: { error: check.error } };
+  if (!check.ok) {
+    // The refusals worth having on record: a self-revoke, a revoke that would
+    // have emptied the roster, and a revoke of an id that was never on it. All
+    // three leave the roster exactly as it was, so without this they leave no
+    // trace of having been attempted.
+    await recordRefusal(
+      supabaseAdmin,
+      actorId,
+      "admin.revoke",
+      targetId,
+      check.error,
+    );
+    return { status: check.status, body: { error: check.error } };
+  }
 
   // Delete and audit in one transaction, so a failed audit insert can never
   // leave an admin revoked with no record of it - nor report a completed revoke
@@ -176,14 +222,33 @@ export async function revokeAdmin(
     // The trigger fired: this delete would have emptied the roster, even though
     // our own count said otherwise. The trigger is authoritative.
     if (error.code === "P0001") {
-      return { status: 409, body: { error: "cannot remove the last admin" } };
+      await recordRefusal(
+        supabaseAdmin,
+        actorId,
+        "admin.revoke",
+        targetId,
+        REFUSAL.lastAdmin,
+      );
+      return { status: 409, body: { error: REFUSAL.lastAdmin } };
     }
     // The membership check above is check-then-act too: a concurrent revoke of
     // the same account commits in between and this delete matches no row. The
     // function refuses to audit a revoke it did not perform, and says so.
     if (error.code === "P0002") {
-      return { status: 404, body: { error: "not an admin" } };
+      await recordRefusal(
+        supabaseAdmin,
+        actorId,
+        "admin.revoke",
+        targetId,
+        REFUSAL.notAnAdmin,
+      );
+      return { status: 404, body: { error: REFUSAL.notAnAdmin } };
     }
+    // Deliberately NOT recorded as a refusal: nothing refused this revoke. It
+    // lost a race, and the same request repeated a second later succeeds. A log
+    // of blocked attempts that fills with transient lock noise is a log nobody
+    // reads.
+    //
     // Two admins revoking each other at the same instant is a lock cycle, and
     // Postgres breaks it by aborting one side (40P01) - or by giving up on the
     // lock, should a lock_timeout ever be set (55P03). Either way this
