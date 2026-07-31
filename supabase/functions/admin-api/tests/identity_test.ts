@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from "jsr:@std/assert@1";
-import { narrowToExactEmail, parseUserQuery } from "../lib/identity.ts";
+import { isUuid, narrowToExactEmail, parseUserQuery } from "../lib/identity.ts";
 
 Deno.test("parseUserQuery accepts a complete email", () => {
   assertEquals(parseUserQuery("someone@example.com", null), {
@@ -70,4 +70,16 @@ Deno.test("narrowToExactEmail tolerates a candidate with no email", () => {
 
 Deno.test("narrowToExactEmail returns null for an empty candidate set", () => {
   assertEquals(narrowToExactEmail([], "a@b.com"), null);
+});
+
+Deno.test("isUuid accepts a canonical uuid and rejects free text", () => {
+  // The write routes take a userId in the JSON body, where parseUserQuery does
+  // not run. Unvalidated, "abc" reaches GoTrue and the caller gets a 500 for
+  // what is plainly a 400.
+  assertEquals(isUuid("3f2504e0-4f89-11d3-9a0c-0305e82c3301"), true);
+  assertEquals(isUuid("3F2504E0-4F89-11D3-9A0C-0305E82C3301"), true);
+  assertEquals(isUuid("abc"), false);
+  assertEquals(isUuid(""), false);
+  assertEquals(isUuid("3f2504e0-4f89-11d3-9a0c-0305e82c3301x"), false);
+  assertEquals(isUuid("3f2504e0_4f89_11d3_9a0c_0305e82c3301"), false);
 });

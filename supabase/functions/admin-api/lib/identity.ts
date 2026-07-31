@@ -13,6 +13,16 @@ const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
+ * Shape check for a user id, for the routes that take one in a JSON body.
+ *
+ * Without it a body id goes straight to GoTrue, which errors on a malformed
+ * uuid, and malformed input surfaces as a 500 instead of the 400 it is.
+ */
+export function isUuid(value: string): boolean {
+  return UUID.test(value);
+}
+
+/**
  * A complete address only. Deliberately strict: `%`, `@` alone, and a bare
  * domain must all fail, because GoTrue's filter= treats them as substring
  * sweeps that return the entire user table. Verified against the live project

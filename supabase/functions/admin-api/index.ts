@@ -7,7 +7,7 @@ import { fetchProgress } from "./lib/progress.ts";
 import { fetchTraffic } from "./lib/traffic.ts";
 import { buildPayload } from "./lib/merge.ts";
 import { resolveRoute } from "./lib/routes.ts";
-import { parseUserQuery } from "./lib/identity.ts";
+import { isUuid, parseUserQuery } from "./lib/identity.ts";
 import { exportAccount, lookupAccount, resetProgress } from "./lib/accounts.ts";
 import { grantAdmin, listAdmins, revokeAdmin } from "./lib/roster.ts";
 import type { GoTrueDeps } from "./lib/gotrue.ts";
@@ -193,6 +193,11 @@ export default {
       if (targetId === "" || confirmEmail === "") {
         return json({ error: "userId and confirmEmail are required" }, 400, origin);
       }
+      // Shape-checked before it reaches GoTrue, which errors on a malformed
+      // uuid. Malformed input is a 400, not a 500.
+      if (!isUuid(targetId)) {
+        return json({ error: "malformed user id" }, 400, origin);
+      }
       const r = await resetProgress(ctx.supabaseAdmin, actorId, targetId, confirmEmail);
       return json(r.body, r.status, origin);
     }
@@ -223,6 +228,11 @@ export default {
       const b = await body();
       const targetId = typeof b.userId === "string" ? b.userId : "";
       if (targetId === "") return json({ error: "userId is required" }, 400, origin);
+      // Validated here rather than relying on the roster-membership check to
+      // 404 first: that is an accident of ordering, not a guarantee.
+      if (!isUuid(targetId)) {
+        return json({ error: "malformed user id" }, 400, origin);
+      }
       const r = await revokeAdmin(ctx.supabaseAdmin, actorId, targetId);
       return json(r.body, r.status, origin);
     }
