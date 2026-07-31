@@ -14,15 +14,33 @@ const USER = {
   last_sign_in_at: "2026-07-01T00:00:00Z",
 };
 
+/**
+ * The shape @supabase/auth-js 2.111.0 actually returns for a well-formed but
+ * unknown id: a null user AND an AuthApiError carrying status 404. It does not
+ * return a null user with a null error, so a stub that does cannot exercise the
+ * not-found path at all.
+ */
+function authApiError(status: number, code: string, message: string) {
+  const e = new Error(message) as Error & { status: number; code: string };
+  e.name = "AuthApiError";
+  e.status = status;
+  e.code = code;
+  return e;
+}
+
 function stubClient(opts: {
   users?: any[];
   byId?: any;
+  byIdError?: unknown;
   progress?: any;
   deleted?: string[];
   deleteError?: unknown;
 } = {}) {
   const calls: Array<{ table: string; op: string; payload?: unknown }> = [];
   const deleted = opts.deleted ?? [];
+  // No fixture user means the id is unknown, which is what GoTrue reports with
+  // a 404 AuthApiError rather than with a quiet null.
+  const notFound = authApiError(404, "user_not_found", "User not found");
   return {
     calls,
     deleted,
@@ -31,7 +49,13 @@ function stubClient(opts: {
         listUsers: (_a: unknown) =>
           Promise.resolve({ data: { users: opts.users ?? [] }, error: null }),
         getUserById: (_id: string) =>
-          Promise.resolve({ data: { user: opts.byId ?? null }, error: null }),
+          Promise.resolve(
+            opts.byIdError
+              ? { data: { user: null }, error: opts.byIdError }
+              : opts.byId
+              ? { data: { user: opts.byId }, error: null }
+              : { data: { user: null }, error: notFound },
+          ),
       },
     },
     from(table: string) {
@@ -160,10 +184,34 @@ Deno.test("lookupAccount still answers 404 when page one is the whole set", asyn
 });
 
 Deno.test("findUser by id returns none for an unknown id", async () => {
+  // The client answers a well-formed but unknown id with a 404 AuthApiError.
+  // Rethrowing it turns a 404 into an uncaught 500 with no CORS headers, which
+  // the browser cannot even read.
   const c = stubClient({ byId: null });
   const { deps } = stubGoTrue();
   const r = await findUser(c as any, deps, { kind: "id", id: USER.id });
   assertEquals(r.kind, "none");
+});
+
+Deno.test("lookupAccount answers 404 for a well-formed but unknown id", async () => {
+  const c = stubClient({ byId: null });
+  const { deps } = stubGoTrue();
+  const res = await lookupAccount(c as any, deps, { kind: "id", id: USER.id });
+  assertEquals(res.status, 404);
+});
+
+Deno.test("findUser by id rethrows an error that is not a missing user", async () => {
+  // Only "no such user" is an answer. A 500 from GoTrue, or a rejected service
+  // key, must not be laundered into "no such user".
+  const c = stubClient({
+    byIdError: authApiError(500, "unexpected_failure", "boom"),
+  });
+  const { deps } = stubGoTrue();
+  await assertRejects(
+    () => findUser(c as any, deps, { kind: "id", id: USER.id }),
+    Error,
+    "boom",
+  );
 });
 
 Deno.test("findUser normalizes an empty account email to null", async () => {
@@ -207,6 +255,8 @@ Deno.test("resetProgress matches confirmEmail case-insensitively", async () => {
 });
 
 Deno.test("resetProgress 404s an unknown user without deleting", async () => {
+  // Same 404 AuthApiError as the lookup path. Rethrowing it here answers a
+  // destructive request with an unreadable 500.
   const c = stubClient({ byId: null });
   const res = await resetProgress(c as any, "actor", USER.id, USER.email);
   assertEquals(res.status, 404);

@@ -33,13 +33,35 @@ function toAccountUser(u: any): AccountUser {
   };
 }
 
+/**
+ * Is this getUserById error just "no account with that id"?
+ *
+ * @supabase/auth-js answers a well-formed but unknown id with an AuthApiError
+ * carrying status 404, not with a quiet null user. Treating that as a throw
+ * makes the not-found branch unreachable and answers the caller with the
+ * platform's default 500 - plain text, and with no CORS headers, so the browser
+ * cannot read it either.
+ *
+ * Matched on status and code rather than on message text, which is not a
+ * stable interface.
+ */
+function isMissingUser(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const e = error as { status?: number; code?: string };
+  return e.status === 404 || e.code === "user_not_found";
+}
+
 /** Resolve a uuid to an account, or null. No filter, so nothing to narrow. */
 export async function findUserById(
   supabaseAdmin: any,
   id: string,
 ): Promise<AccountUser | null> {
   const { data, error } = await supabaseAdmin.auth.admin.getUserById(id);
-  if (error) throw error;
+  // Only a missing user is an answer. Anything else - a rejected service key, a
+  // GoTrue outage - still throws, because reporting it as "no such user" would
+  // be a claim this code cannot support.
+  if (error && !isMissingUser(error)) throw error;
+  if (error) return null;
   return data?.user ? toAccountUser(data.user) : null;
 }
 
