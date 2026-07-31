@@ -1,5 +1,5 @@
 import { assertEquals, assertRejects, assertStringIncludes } from "jsr:@std/assert@1";
-import { checkRevoke, grantAdmin, revokeAdmin } from "../lib/roster.ts";
+import { checkRevoke, grantAdmin, listAdmins, revokeAdmin } from "../lib/roster.ts";
 import type { GoTrueDeps } from "../lib/gotrue.ts";
 
 /**
@@ -27,24 +27,51 @@ function stubGoTrue(opts: {
 }
 
 Deno.test("checkRevoke refuses self-revoke", () => {
-  const r = checkRevoke({ actorId: "a", targetId: "a", rosterSize: 5 });
+  const r = checkRevoke({ actorId: "a", targetId: "a", isMember: true, rosterSize: 5 });
   assertEquals(r, { ok: false, status: 403, error: "cannot revoke yourself" });
 });
 
 Deno.test("checkRevoke refuses emptying the roster", () => {
-  const r = checkRevoke({ actorId: "a", targetId: "b", rosterSize: 1 });
+  const r = checkRevoke({ actorId: "a", targetId: "b", isMember: true, rosterSize: 1 });
   assertEquals(r, { ok: false, status: 409, error: "cannot remove the last admin" });
 });
 
 Deno.test("checkRevoke allows a normal revoke", () => {
-  assertEquals(checkRevoke({ actorId: "a", targetId: "b", rosterSize: 2 }), { ok: true });
+  assertEquals(
+    checkRevoke({ actorId: "a", targetId: "b", isMember: true, rosterSize: 2 }),
+    { ok: true },
+  );
 });
 
 Deno.test("checkRevoke checks self before roster size", () => {
   // Both conditions hold. Self-revoke is the more actionable message, and the
   // one the admin can actually fix.
-  const r = checkRevoke({ actorId: "a", targetId: "a", rosterSize: 1 });
+  const r = checkRevoke({ actorId: "a", targetId: "a", isMember: true, rosterSize: 1 });
   assertEquals(r, { ok: false, status: 403, error: "cannot revoke yourself" });
+});
+
+Deno.test("checkRevoke checks self before membership", () => {
+  // Only reachable when the actor was revoked by someone else between the admin
+  // gate and the roster read. Both answers are true; "cannot revoke yourself" is
+  // the one that stays true on a retry, and a retry is what "not an admin" about
+  // your own id invites.
+  const r = checkRevoke({ actorId: "a", targetId: "a", isMember: false, rosterSize: 3 });
+  assertEquals(r, { ok: false, status: 403, error: "cannot revoke yourself" });
+});
+
+Deno.test("checkRevoke reports a non-member as a 404 even on a one-admin roster", () => {
+  // Both the membership and the roster-size condition hold, and the roster-size
+  // answer is the wrong one: removing an account that is not on the roster
+  // removes nothing, so it could never have emptied it. "Cannot remove the last
+  // admin" sends the admin off to grant a second admin when the id was simply
+  // not one.
+  const r = checkRevoke({ actorId: "a", targetId: "b", isMember: false, rosterSize: 1 });
+  assertEquals(r, { ok: false, status: 404, error: "not an admin" });
+});
+
+Deno.test("checkRevoke reports a non-member as a 404 on a healthy roster too", () => {
+  const r = checkRevoke({ actorId: "a", targetId: "b", isMember: false, rosterSize: 5 });
+  assertEquals(r, { ok: false, status: 404, error: "not an admin" });
 });
 
 /**
@@ -59,7 +86,10 @@ function stubClient(opts: {
   admins?: Array<{ user_id: string; note: string | null; created_at: string }>;
   deleteError?: { code?: string; message: string };
   insertError?: { code?: string; message: string };
-  users?: Array<{ id: string; email: string }>;
+  users?: Array<{ id: string; email: string | null }>;
+  // Ids whose getUserById fails outright, as opposed to resolving to an
+  // account with no address.
+  lookupErrors?: Record<string, { message: string }>;
 }) {
   const calls: Array<{ table: string; op: string; payload?: unknown }> = [];
   const admins = opts.admins ?? [];
@@ -67,11 +97,16 @@ function stubClient(opts: {
     calls,
     auth: {
       admin: {
-        getUserById: (id: string) =>
-          Promise.resolve({
+        getUserById: (id: string) => {
+          const failure = (opts.lookupErrors ?? {})[id];
+          if (failure) {
+            return Promise.resolve({ data: { user: null }, error: failure });
+          }
+          return Promise.resolve({
             data: { user: (opts.users ?? []).find((u) => u.id === id) ?? null },
             error: null,
-          }),
+          });
+        },
       },
     },
     rpc(name: string, params: Record<string, unknown>) {
@@ -120,6 +155,32 @@ Deno.test("revokeAdmin writes nothing when the guard refuses", async () => {
   });
   const res = await revokeAdmin(c as any, "a", "a");
   assertEquals(res.status, 403);
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
+});
+
+Deno.test("revokeAdmin 404s a non-admin on a single-admin roster", async () => {
+  // The end-to-end shape of the ordering bug: an admin pastes an id that was
+  // never on the roster, and the answer describes the roster's size instead of
+  // the id. Asserted through revokeAdmin, not only through checkRevoke, because
+  // the call site is what decides the order of the arguments it passes.
+  const c = stubClient({
+    admins: [{ user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" }],
+  });
+  const res = await revokeAdmin(c as any, "a", "stranger");
+  assertEquals(res.status, 404);
+  assertEquals((res.body as any).error, "not an admin");
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
+});
+
+Deno.test("revokeAdmin still refuses to empty a roster of one", async () => {
+  // The other side of the same ordering: the last-admin refusal has to survive
+  // the fix, for a target that IS on the roster.
+  const c = stubClient({
+    admins: [{ user_id: "solo", note: null, created_at: "2026-01-01T00:00:00Z" }],
+  });
+  const res = await revokeAdmin(c as any, "a", "solo");
+  assertEquals(res.status, 409);
+  assertEquals((res.body as any).error, "cannot remove the last admin");
   assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
@@ -289,4 +350,42 @@ Deno.test("revokeAdmin maps the trigger's P0001 to a 409", async () => {
   });
   const res = await revokeAdmin(c as any, "a", "b");
   assertEquals(res.status, 409);
+});
+
+Deno.test("listAdmins distinguishes an unreadable address from an absent one", async () => {
+  // Both rows end up with email null. Only one of them is a fact about the
+  // account; the other is a fault. Reporting them identically told an admin
+  // "no address on file" about an account whose address nobody managed to read.
+  const c = stubClient({
+    admins: [
+      { user_id: "reads", note: null, created_at: "2026-01-01T00:00:00Z" },
+      { user_id: "absent", note: null, created_at: "2026-01-02T00:00:00Z" },
+      { user_id: "fails", note: null, created_at: "2026-01-03T00:00:00Z" },
+    ],
+    users: [
+      { id: "reads", email: "someone@example.com" },
+      { id: "absent", email: null },
+    ],
+    lookupErrors: { fails: { message: "connection reset" } },
+  });
+  const rows = await listAdmins(c as any);
+  assertEquals(rows.map((r) => r.email), ["someone@example.com", null, null]);
+  assertEquals(rows.map((r) => r.emailUnavailable), [false, false, true]);
+});
+
+Deno.test("listAdmins keeps returning the roster when one lookup fails", async () => {
+  // Containment: the roster decides who can revoke whom, so one unreadable
+  // address must not cost the caller the whole list.
+  const c = stubClient({
+    admins: [
+      { user_id: "fails", note: null, created_at: "2026-01-01T00:00:00Z" },
+      { user_id: "reads", note: "keeper", created_at: "2026-01-02T00:00:00Z" },
+    ],
+    users: [{ id: "reads", email: "someone@example.com" }],
+    lookupErrors: { fails: { message: "connection reset" } },
+  });
+  const rows = await listAdmins(c as any);
+  assertEquals(rows.length, 2);
+  assertEquals(rows[1].email, "someone@example.com");
+  assertEquals(rows[1].note, "keeper");
 });

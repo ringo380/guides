@@ -219,7 +219,18 @@
     s.appendChild(table("Current admins",
       ["Email", "User id", "Note", "Granted"],
       admins.map(function (a) {
-        return [a.email || "(unknown)", a.userId, a.note || "", a.createdAt];
+        // Three different facts, three different cells. "(unknown)" for all of
+        // them told an admin the account has no address on file when the server
+        // had actually failed to read it - a fault worth retrying, dressed as a
+        // settled property of the account.
+        return [
+          a.email || (a.emailUnavailable
+            ? "(could not be read)"
+            : "(no address on file)"),
+          a.userId,
+          a.note || "",
+          a.createdAt,
+        ];
       })));
   }
 

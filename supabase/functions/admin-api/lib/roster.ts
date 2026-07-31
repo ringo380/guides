@@ -4,6 +4,14 @@ import { type GoTrueDeps, listUsersByFilter } from "./gotrue.ts";
 export interface AdminRow {
   userId: string;
   email: string | null;
+  /**
+   * True when the address could not be read at all, as opposed to being read
+   * and found absent. Both leave `email` null, and collapsing them tells an
+   * admin an account has no address on file when the truth is that nobody
+   * knows - which is the wrong thing to act on, because one is a property of
+   * the account and the other is a fault to retry.
+   */
+  emailUnavailable: boolean;
   note: string | null;
   createdAt: string;
 }
@@ -19,16 +27,28 @@ export type RevokeCheck =
  * authoritative check because this one is a check-then-act race. This exists so
  * the common case returns a clean 409 rather than a raw Postgres error.
  *
- * Self-revoke is checked first: when both conditions hold, "you cannot revoke
- * yourself" is the message the admin can act on.
+ * The order of the three checks is the whole point of this function:
+ *
+ * 1. Self-revoke. An actor is an admin by definition of having reached here, so
+ *    this can never be the non-member case, and it is the message the admin can
+ *    act on when the roster is also down to one.
+ * 2. Membership. Revoking an account that is not on the roster removes nothing,
+ *    so it cannot empty the roster - answering "cannot remove the last admin"
+ *    describes a consequence that was never on the table and sends the admin
+ *    looking for a second admin to grant when the address was simply wrong.
+ * 3. Roster size, which is only meaningful once the target is known to be on it.
  */
 export function checkRevoke(args: {
   actorId: string;
   targetId: string;
+  isMember: boolean;
   rosterSize: number;
 }): RevokeCheck {
   if (args.actorId === args.targetId) {
     return { ok: false, status: 403, error: "cannot revoke yourself" };
+  }
+  if (!args.isMember) {
+    return { ok: false, status: 404, error: "not an admin" };
   }
   if (args.rosterSize <= 1) {
     return { ok: false, status: 409, error: "cannot remove the last admin" };
@@ -54,10 +74,17 @@ export async function listAdmins(supabaseAdmin: any): Promise<AdminRow[]> {
   for (const r of rows) {
     // getUserById, not a list+filter: the id is exact, so there is nothing to
     // narrow and no reason to pull other accounts into memory.
-    const { data } = await supabaseAdmin.auth.admin.getUserById(r.user_id);
+    const { data, error } = await supabaseAdmin.auth.admin.getUserById(r.user_id);
+    // A failed lookup is reported, not thrown: one unreadable address must not
+    // cost the admin the whole roster, which is the part that decides who can
+    // revoke whom. It is also not silently flattened to null - see
+    // emailUnavailable on AdminRow.
+    const failed = Boolean(error);
+    const email = failed ? null : (data?.user?.email ?? null);
     out.push({
       userId: r.user_id,
-      email: data?.user?.email ?? null,
+      email: email === "" ? null : email,
+      emailUnavailable: failed,
       note: r.note,
       createdAt: r.created_at,
     });
@@ -132,13 +159,10 @@ export async function revokeAdmin(
   const check = checkRevoke({
     actorId,
     targetId,
+    isMember: rows.some((r) => r.user_id === targetId),
     rosterSize: rows.length,
   });
   if (!check.ok) return { status: check.status, body: { error: check.error } };
-
-  if (!rows.some((r) => r.user_id === targetId)) {
-    return { status: 404, body: { error: "not an admin" } };
-  }
 
   // Delete and audit in one transaction, so a failed audit insert can never
   // leave an admin revoked with no record of it - nor report a completed revoke

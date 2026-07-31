@@ -73,6 +73,34 @@ describe("admin accounts renderer", () => {
     expect(root.textContent).not.toContain("trigger");
   });
 
+  it("separates an unreadable address from an account with none on file", () => {
+    // Both rows carry email null. One is a property of the account, the other
+    // is a failed lookup worth retrying, and a shared placeholder tells the
+    // admin the wrong one half the time.
+    window.RunbookAdminAccounts.renderRoster(root, {
+      admins: [
+        {
+          userId: "absent",
+          email: null,
+          emailUnavailable: false,
+          note: "",
+          createdAt: "2026-01-01T00:00:00Z",
+        },
+        {
+          userId: "failed",
+          email: null,
+          emailUnavailable: true,
+          note: "",
+          createdAt: "2026-01-02T00:00:00Z",
+        },
+      ],
+    });
+    const cells = [...root.querySelectorAll("tbody tr")].map(
+      (tr) => tr.firstElementChild.textContent
+    );
+    expect(cells).toEqual(["(no address on file)", "(could not be read)"]);
+  });
+
   it("marks the reset control as destructive for assistive tech", () => {
     window.RunbookAdminAccounts.renderUser(root, USER);
     const btn = root.querySelector("[data-action='reset-progress']");

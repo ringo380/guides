@@ -28,10 +28,30 @@ if [ ! -d "$SITE" ]; then
   exit 1
 fi
 
+# The sitemap is parsed as XML, once, into a list of URL paths. Grepping it for
+# "<loc>" answered a different question than the one being asked: the count was
+# of matching lines rather than of entries, and the per-page absence check
+# matched a substring of a URL, so a page at /guides/admin/ would have satisfied
+# "admin is absent from the sitemap" while being listed in it. Pretty-printing,
+# a namespace change, or an entry split across lines defeat the grep silently -
+# and silently, here, means passing.
+SITEMAP_PATHS=$(python3 -c '
+import sys, xml.etree.ElementTree as ET
+from urllib.parse import urlparse
+root = ET.parse(sys.argv[1] + "/sitemap.xml").getroot()
+# Matched on local name: the sitemaps namespace arrives as part of the tag
+# ({http://...}loc), and hardcoding the full name would make a namespace change
+# read as "no entries" rather than as a parse failure.
+for node in root.iter():
+    if node.tag.split("}")[-1] == "loc" and (node.text or "").strip():
+        print(urlparse(node.text.strip()).path)
+' "$SITE" 2>/dev/null)
+
 # Precondition: prove we are reading a real sitemap with real entries, so a
-# passing "admin is absent" check cannot be an empty-file false negative.
-sitemap_entries() { [ "$(grep -c '<loc>' "$SITE/sitemap.xml" 2>/dev/null || echo 0)" -gt 50 ]; }
-check "sitemap.xml exists and has >50 entries" sitemap_entries
+# passing "admin is absent" check cannot be an empty-file false negative. A
+# sitemap that does not parse at all lands here as zero entries.
+sitemap_entries() { [ "$(printf '%s\n' "$SITEMAP_PATHS" | grep -c .)" -gt 50 ]; }
+check "sitemap.xml parses as XML and has >50 entries" sitemap_entries
 
 # Precondition: prove we can actually parse search_index.json and that it has
 # a plausible number of entries, so a passing "page is absent" check below
@@ -60,8 +80,41 @@ check "search_index.json parses and has a plausible number of entries" search_in
 ADMIN_PAGES=("admin" "admin-accounts")
 
 page_built() { [ -f "$SITE/$1/index.html" ]; }
-page_not_in_sitemap() { ! grep -q "<loc>[^<]*/$1/</loc>" "$SITE/sitemap.xml"; }
-page_noindex() { grep -qi 'name="robots" content="noindex' "$SITE/$1/index.html"; }
+
+# Whole-path comparison against the parsed sitemap, not a substring of the raw
+# file.
+page_not_in_sitemap() { ! printf '%s\n' "$SITEMAP_PATHS" | grep -qx "/$1/"; }
+
+# The robots meta is parsed out of the HTML and its content split into
+# directives. The grep it replaces required one exact spelling - name before
+# content, double quotes, noindex first - so reordering the attributes, which
+# is a theme's business and not ours, would have reported the admin pages as
+# indexable; and it matched anywhere in the file, so the word appearing in page
+# text or in a code sample counted as a robots directive.
+page_noindex() {
+  python3 -c '
+import sys
+from html.parser import HTMLParser
+
+class Robots(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.directives = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() != "meta":
+            return
+        a = {k.lower(): (v or "") for k, v in attrs}
+        if a.get("name", "").lower() == "robots":
+            self.directives += [d.strip().lower() for d in a["content"].split(",")]
+
+p = Robots()
+with open(sys.argv[1], encoding="utf-8") as f:
+    p.feed(f.read())
+# Whole directive, not a substring: "noindexing" is not noindex.
+sys.exit(0 if "noindex" in p.directives else 1)
+' "$SITE/$1/index.html"
+}
 
 # mkdocs-material emits compact JSON with no space after the colon
 # ("location":"admin/"), so a naive grep for "location": " never matches and
