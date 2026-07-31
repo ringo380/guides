@@ -49,7 +49,11 @@ Deno.test("checkRevoke checks self before roster size", () => {
 
 /**
  * Minimal stub of the PostgREST builder chain used by roster.ts.
- * `calls` records every table touched so a test can assert the audit write.
+ *
+ * `calls` records every table read and every database function called. The
+ * writes go through functions rather than table calls because each one has to
+ * commit with its audit row or not at all; `insertError` and `deleteError` are
+ * the errors those functions return.
  */
 function stubClient(opts: {
   admins?: Array<{ user_id: string; note: string | null; created_at: string }>;
@@ -70,6 +74,13 @@ function stubClient(opts: {
           }),
       },
     },
+    rpc(name: string, params: Record<string, unknown>) {
+      calls.push({ table: `rpc:${name}`, op: "rpc", payload: params });
+      const error = name === "admin_grant_admin"
+        ? (opts.insertError ?? null)
+        : (opts.deleteError ?? null);
+      return Promise.resolve({ data: null, error });
+    },
     from(table: string) {
       return {
         select() {
@@ -79,25 +90,12 @@ function stubClient(opts: {
             then: (r: any) => r({ data: admins, error: null }),
           };
         },
-        insert(payload: unknown) {
-          calls.push({ table, op: "insert", payload });
-          return Promise.resolve({
-            error: table === "admin_users" ? (opts.insertError ?? null) : null,
-          });
-        },
-        delete() {
-          calls.push({ table, op: "delete" });
-          return {
-            eq: () =>
-              Promise.resolve({ error: opts.deleteError ?? null }),
-          };
-        },
       };
     },
   };
 }
 
-Deno.test("revokeAdmin writes an audit row on success", async () => {
+Deno.test("revokeAdmin removes the row and audits it in one call", async () => {
   const c = stubClient({
     admins: [
       { user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" },
@@ -106,19 +104,39 @@ Deno.test("revokeAdmin writes an audit row on success", async () => {
   });
   const res = await revokeAdmin(c as any, "a", "b");
   assertEquals(res.status, 200);
-  const audit = c.calls.find((x) => x.table === "admin_audit");
-  assertEquals(audit?.op, "insert");
-  assertEquals((audit?.payload as any).action, "admin.revoke");
-  assertEquals((audit?.payload as any).target_user_id, "b");
+  // One write, not a delete followed by an audit insert. Two calls here would
+  // be the bug this replaced: an audit failure after a committed delete, told
+  // to the admin as "nothing was revoked".
+  const writes = c.calls.filter((x) => x.op !== "select");
+  assertEquals(writes.length, 1);
+  assertEquals(writes[0].table, "rpc:admin_revoke_admin");
+  assertEquals((writes[0].payload as any).p_actor, "a");
+  assertEquals((writes[0].payload as any).p_target, "b");
 });
 
-Deno.test("revokeAdmin does not write an audit row when the guard refuses", async () => {
+Deno.test("revokeAdmin writes nothing when the guard refuses", async () => {
   const c = stubClient({
     admins: [{ user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" }],
   });
   const res = await revokeAdmin(c as any, "a", "a");
   assertEquals(res.status, 403);
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
+});
+
+Deno.test("revokeAdmin maps P0002 to 404 rather than reporting a revoke it did not make", async () => {
+  // A concurrent revoke of the same account commits between the roster read
+  // and this delete. The function refuses to audit a revoke that removed no
+  // row; answering 200 would put a revoke in the log that never happened.
+  const c = stubClient({
+    admins: [
+      { user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" },
+      { user_id: "b", note: null, created_at: "2026-01-01T00:00:00Z" },
+    ],
+    deleteError: { code: "P0002", message: "not an admin" },
+  });
+  const res = await revokeAdmin(c as any, "a", "b");
+  assertEquals(res.status, 404);
+  assertEquals((res.body as any).error, "not an admin");
 });
 
 Deno.test("grantAdmin discards substring-only candidates from the filter", async () => {
@@ -136,8 +154,8 @@ Deno.test("grantAdmin discards substring-only candidates from the filter", async
   });
   const res = await grantAdmin(c as any, deps, "a", "new@example.com");
   assertEquals(res.status, 200);
-  const ins = c.calls.find((x) => x.table === "admin_users" && x.op === "insert");
-  assertEquals((ins?.payload as any).user_id, "right");
+  const ins = c.calls.find((x) => x.table === "rpc:admin_grant_admin");
+  assertEquals((ins?.payload as any).p_target, "right");
 });
 
 Deno.test("grantAdmin sends the address as filter=, not as a page read", async () => {
@@ -157,7 +175,6 @@ Deno.test("grantAdmin 404s when no candidate matches exactly", async () => {
   const { deps } = stubGoTrue({ users: [{ id: "wrong", email: "xnew@example.com" }] });
   const res = await grantAdmin(c as any, deps, "a", "new@example.com");
   assertEquals(res.status, 404);
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
 });
 
 Deno.test("grantAdmin 409s rather than 404s when the candidates span more than one page", async () => {
@@ -172,7 +189,7 @@ Deno.test("grantAdmin 409s rather than 404s when the candidates span more than o
   });
   const res = await grantAdmin(c as any, deps, "a", "new@example.com");
   assertEquals(res.status, 409);
-  assertEquals(c.calls.some((x) => x.op === "insert"), false);
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
 Deno.test("grantAdmin 409s an existing admin without a second insert", async () => {
@@ -182,7 +199,7 @@ Deno.test("grantAdmin 409s an existing admin without a second insert", async () 
   const { deps } = stubGoTrue({ users: [{ id: "dup", email: "dup@example.com" }] });
   const res = await grantAdmin(c as any, deps, "a", "dup@example.com");
   assertEquals(res.status, 409);
-  assertEquals(c.calls.some((x) => x.op === "insert"), false);
+  assertEquals(c.calls.some((x) => x.op === "rpc"), false);
 });
 
 
@@ -198,7 +215,6 @@ Deno.test("grantAdmin maps a unique violation to 409, not 500", async () => {
   const res = await grantAdmin(c as any, deps, "a", "new@example.com");
   assertEquals(res.status, 409);
   assertEquals((res.body as any).error, "already an admin");
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
 });
 
 Deno.test("revokeAdmin maps a deadlock abort to a 409, not a 500", async () => {
@@ -216,7 +232,6 @@ Deno.test("revokeAdmin maps a deadlock abort to a 409, not a 500", async () => {
   const res = await revokeAdmin(c as any, "a", "b");
   assertEquals(res.status, 409);
   assertStringIncludes((res.body as any).error, "try again");
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
 });
 
 Deno.test("revokeAdmin maps a lock timeout to a 409, not a 500", async () => {
@@ -235,7 +250,6 @@ Deno.test("revokeAdmin maps a lock timeout to a 409, not a 500", async () => {
   // the admin the wrong reason and the wrong next step: one is worth retrying,
   // the other never will be.
   assertStringIncludes((res.body as any).error, "try again");
-  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
 });
 
 Deno.test("revokeAdmin still throws an error it does not recognize", async () => {
