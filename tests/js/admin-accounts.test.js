@@ -459,6 +459,80 @@ describe("admin accounts reset listener idempotency", () => {
     expect(document.activeElement).toBe(result);
   });
 
+  it("announces an empty lookup submit instead of returning in silence", async () => {
+    // The early return rendered nothing and announced nothing, so a screen
+    // reader user could not tell a rejected submit from a page that had
+    // stopped responding. No request may be sent either.
+    let requested = false;
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      requested = true;
+      return { ok: true, json: async () => ({}) };
+    };
+    await window.RunbookAdminAccounts.init();
+    expect(liveRegion().textContent).toBe("");
+
+    const form = root.querySelector("#admin-lookup-form");
+    const input = form.querySelector("input");
+    input.value = "   ";
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(liveRegion().textContent).not.toBe("");
+    expect(requested).toBe(false);
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("announces an empty reset confirmation instead of returning in silence", async () => {
+    // Worse here than on the lookup: an unexplained non-response to a
+    // destructive form reads as "it may or may not have gone through".
+    let requested = false;
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      requested = true;
+      return { ok: true, json: async () => ({ reset: true }) };
+    };
+    await window.RunbookAdminAccounts.init();
+    window.RunbookAdminAccounts.renderUser(root, USER);
+    expect(liveRegion().textContent).toBe("");
+
+    const form = root.querySelector(".admin-reset-form");
+    const input = form.querySelector("input");
+    input.value = "";
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(liveRegion().textContent).not.toBe("");
+    expect(requested).toBe(false);
+    expect(document.activeElement).toBe(input);
+  });
+
+  it("still writes the live region exactly once for a refused empty submit", async () => {
+    // The empty path must not announce through two nodes any more than the
+    // outcome paths do.
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      return { ok: true, json: async () => ({ admins: [] }) };
+    };
+    await window.RunbookAdminAccounts.init();
+
+    const records = [];
+    const observer = new MutationObserver((list) => records.push(...list));
+    observer.observe(liveRegion(), { childList: true, characterData: true, subtree: true });
+
+    const form = root.querySelector("#admin-lookup-form");
+    form.querySelector("input").value = "";
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    observer.takeRecords().forEach((r) => records.push(r));
+    observer.disconnect();
+
+    expect(records.length).toBe(1);
+    expect(root.querySelectorAll('[role="status"], [aria-live]').length).toBe(1);
+  });
+
   it("announces a reset outcome and lands focus on it", async () => {
     global.fetch = async (url) => {
       if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };

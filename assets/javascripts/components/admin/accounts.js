@@ -320,7 +320,16 @@
     form.addEventListener("submit", async function (ev) {
       ev.preventDefault();
       var v = input.value.trim();
-      if (!v) return;
+      if (!v) {
+        // An empty submit used to return here having rendered nothing and
+        // announced nothing, so a screen-reader user got total silence and no
+        // way to tell the submit from a page that had stopped responding. The
+        // announcement is the whole feedback for that user; focus goes to the
+        // field so acting on it does not mean hunting for it again.
+        announce("Type an address or user id first.");
+        input.focus();
+        return;
+      }
       var key = v.indexOf("@") === -1 ? "id" : "email";
       try {
         var res = await authedFetch(
@@ -370,7 +379,14 @@
       var id = btn.getAttribute("data-user-id");
       var field = ev.target.querySelector("input");
       var typed = (field && field.value.trim()) || "";
-      if (!typed) return;
+      if (!typed) {
+        // Same silence as the lookup, on the destructive form, where an
+        // unexplained non-response is worst: the natural reading is that the
+        // reset may or may not have gone through.
+        announce("Type the account's email address to confirm the reset.");
+        if (field) field.focus();
+        return;
+      }
       // The typed address IS the confirmation. The server independently
       // requires the id and the email to belong to the same account, so this
       // field is the input to that check, not a second check layered on top.
