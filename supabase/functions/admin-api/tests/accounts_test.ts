@@ -137,6 +137,17 @@ Deno.test("findUser by email sends the address as filter=, not as a page read", 
   assertStringIncludes(urls[0], "per_page=100");
 });
 
+Deno.test("findUser escapes the LIKE wildcards before they reach filter=", async () => {
+  // An address is a pattern until its wildcards are escaped: `_` matches any
+  // single character in GoTrue's filter, so this one would scan far wider than
+  // the address it was given. Asserted on the wire, because escaping in
+  // identity.ts is worth nothing if this call site skips it.
+  const c = stubClient();
+  const { deps, urls } = stubGoTrue({ users: [USER] });
+  await findUser(c as any, deps, { kind: "email", email: "first_last@example.com" });
+  assertStringIncludes(urls[0], "filter=first%5C_last%40example.com");
+});
+
 Deno.test("findUser by email returns none when nothing matches exactly", async () => {
   const c = stubClient();
   const { deps } = stubGoTrue({ users: [{ ...USER, email: "other@example.com" }] });

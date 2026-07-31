@@ -30,8 +30,38 @@ export function isUuid(value: string): boolean {
  *
  * This is not trying to be RFC 5322. It is trying to guarantee that whatever
  * reaches filter= is specific enough that a sweep is impossible.
+ *
+ * `_` is NOT excluded here even though it is the other LIKE wildcard, because
+ * it is an ordinary character in real addresses and rejecting `first_last@
+ * example.com` as "malformed" would be a false claim about a valid address.
+ * It is neutralized at the boundary instead - see gotrueFilter.
  */
 const EMAIL = /^[^\s@%,]+@[^\s@%,.]+(\.[^\s@%,.]+)+$/;
+
+/**
+ * Escape an address for GoTrue's filter=, which is a `LIKE '%' || filter ||
+ * '%'` pattern rather than a literal substring test.
+ *
+ * `_` matches any single character there, so an unescaped address is a pattern,
+ * not a search term. No rows leak (narrowToExactEmail still demands an exact
+ * match), but the request forces a wider scan than it should, and the
+ * ambiguous-vs-absent answer then reports whether more than LOOKUP_PAGE_SIZE
+ * accounts match an arbitrary pattern - the inference the strict validator
+ * exists to prevent.
+ *
+ * Backslash is LIKE's default escape character and Postgres applies it here.
+ * Verified against the live project 2026-07-31, with a service-role filter
+ * query per row:
+ *   filter=robworksmusi_@gmail.com   -> 1 user  (`_` matched a real character)
+ *   filter=robworksmusi\_@gmail.com  -> 0 users (escaped, no literal match)
+ *   filter=robworksmusic\@gmail.com  -> 1 user  (the escape is consumed, so a
+ *                                                backslash is not sent literally)
+ * The backslash itself is escaped first, so an address containing one cannot
+ * smuggle an escape sequence through.
+ */
+export function gotrueFilter(email: string): string {
+  return email.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
 
 /**
  * Parse the ?email= / ?id= pair into exactly one identifier.

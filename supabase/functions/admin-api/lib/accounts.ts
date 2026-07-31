@@ -1,4 +1,9 @@
-import { LOOKUP_PAGE_SIZE, narrowToExactEmail, type UserQuery } from "./identity.ts";
+import {
+  gotrueFilter,
+  LOOKUP_PAGE_SIZE,
+  narrowToExactEmail,
+  type UserQuery,
+} from "./identity.ts";
 import { type GoTrueDeps, listUsersByFilter } from "./gotrue.ts";
 
 export interface AccountUser {
@@ -91,9 +96,11 @@ export async function findUser(
     return user === null ? { kind: "none" } : { kind: "found", user };
   }
 
+  // Escaped, because filter= is a LIKE pattern: an address is a search term
+  // only once its wildcards are neutralized.
   const { users, hasMore } = await listUsersByFilter(
     deps,
-    query.email,
+    gotrueFilter(query.email),
     1,
     LOOKUP_PAGE_SIZE,
   );
