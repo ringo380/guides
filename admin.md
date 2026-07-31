@@ -8,6 +8,7 @@ search:
 
 # Admin
 
-<div id="admin-root" role="region" aria-label="Admin dashboard" aria-live="polite">
-<p id="admin-status">Checking authorization...</p>
+<div id="admin-root" role="region" aria-label="Admin dashboard">
+<p id="admin-dashboard-status" class="sr-only" role="status"></p>
+<p id="admin-status" role="status">Checking authorization...</p>
 </div>
