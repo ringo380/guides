@@ -151,6 +151,20 @@ export async function revokeAdmin(
     if (error.code === "P0001") {
       return { status: 409, body: { error: "cannot remove the last admin" } };
     }
+    // Two admins revoking each other at the same instant is a lock cycle, and
+    // Postgres breaks it by aborting one side (40P01) - or by giving up on the
+    // lock, should a lock_timeout ever be set (55P03). Either way this
+    // transaction lost a race and changed nothing, which is a conflict the
+    // caller can retry rather than a server fault.
+    if (error.code === "40P01" || error.code === "55P03") {
+      return {
+        status: 409,
+        body: {
+          error:
+            "another admin change was in flight, so nothing was revoked - try again",
+        },
+      };
+    }
     throw error;
   }
 

@@ -1,4 +1,4 @@
-import { assertEquals, assertStringIncludes } from "jsr:@std/assert@1";
+import { assertEquals, assertRejects, assertStringIncludes } from "jsr:@std/assert@1";
 import { checkRevoke, grantAdmin, revokeAdmin } from "../lib/roster.ts";
 import type { GoTrueDeps } from "../lib/gotrue.ts";
 
@@ -199,6 +199,50 @@ Deno.test("grantAdmin maps a unique violation to 409, not 500", async () => {
   assertEquals(res.status, 409);
   assertEquals((res.body as any).error, "already an admin");
   assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+});
+
+Deno.test("revokeAdmin maps a deadlock abort to a 409, not a 500", async () => {
+  // Two admins revoking each other at the same instant is a lock cycle: each
+  // transaction holds the other's row and wants the one it does not have.
+  // Postgres breaks it by aborting one side with 40P01. That side lost a race,
+  // which is a conflict the caller can retry, not a server fault.
+  const c = stubClient({
+    admins: [
+      { user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" },
+      { user_id: "b", note: null, created_at: "2026-01-01T00:00:00Z" },
+    ],
+    deleteError: { code: "40P01", message: "deadlock detected" },
+  });
+  const res = await revokeAdmin(c as any, "a", "b");
+  assertEquals(res.status, 409);
+  assertStringIncludes((res.body as any).error, "try again");
+  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+});
+
+Deno.test("revokeAdmin maps a lock timeout to a 409, not a 500", async () => {
+  // Same class of answer, should a lock_timeout ever be configured on the
+  // connection: the row was busy, nothing was revoked, retrying is valid.
+  const c = stubClient({
+    admins: [
+      { user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" },
+      { user_id: "b", note: null, created_at: "2026-01-01T00:00:00Z" },
+    ],
+    deleteError: { code: "55P03", message: "lock not available" },
+  });
+  const res = await revokeAdmin(c as any, "a", "b");
+  assertEquals(res.status, 409);
+  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+});
+
+Deno.test("revokeAdmin still throws an error it does not recognize", async () => {
+  const c = stubClient({
+    admins: [
+      { user_id: "a", note: null, created_at: "2026-01-01T00:00:00Z" },
+      { user_id: "b", note: null, created_at: "2026-01-01T00:00:00Z" },
+    ],
+    deleteError: { code: "42501", message: "permission denied" },
+  });
+  await assertRejects(() => revokeAdmin(c as any, "a", "b"));
 });
 
 Deno.test("revokeAdmin maps the trigger's P0001 to a 409", async () => {
