@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { loadComponent, cleanup } from "./helpers.js";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 
 const PAYLOAD = {
   range: "28d",
@@ -87,8 +89,17 @@ describe("admin dashboard auth states", () => {
   function mountAdminRoot() {
     const el = document.createElement("div");
     el.id = "admin-root";
+    // Mirrors the shipped markup in admin.md, including the persistent live
+    // region. A test that mounts a root without it would exercise the
+    // create-it-on-demand fallback rather than the path readers get.
+    const live = document.createElement("p");
+    live.id = "admin-dashboard-status";
+    live.className = "sr-only";
+    live.setAttribute("role", "status");
+    el.appendChild(live);
     status = document.createElement("p");
     status.id = "admin-status";
+    status.setAttribute("role", "status");
     status.textContent = "Checking authorization...";
     el.appendChild(status);
     document.body.appendChild(el);
@@ -145,6 +156,175 @@ describe("admin dashboard auth states", () => {
     expect(calls[0]).toContain("/health");
     expect(status.textContent).toBe("Not authorized.");
     delete global.fetch;
+  });
+});
+
+describe("admin dashboard announcements", () => {
+  let root;
+
+  function mountShell() {
+    const el = document.createElement("div");
+    el.id = "admin-root";
+    el.setAttribute("role", "region");
+    const live = document.createElement("p");
+    live.id = "admin-dashboard-status";
+    live.className = "sr-only";
+    live.setAttribute("role", "status");
+    el.appendChild(live);
+    const status = document.createElement("p");
+    status.id = "admin-status";
+    status.setAttribute("role", "status");
+    status.textContent = "Checking authorization...";
+    el.appendChild(status);
+    document.body.appendChild(el);
+    return el;
+  }
+
+  const live = () => document.getElementById("admin-dashboard-status");
+
+  function scriptedFetch(payload, traffic) {
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/overview")) return { ok: true, json: async () => payload };
+      if (String(url).includes("/traffic")) {
+        if (traffic === undefined) return { ok: false };
+        return { ok: true, json: async () => traffic };
+      }
+      return { ok: false };
+    };
+  }
+
+  beforeEach(async () => {
+    root = mountShell();
+    await loadComponent("admin/dashboard");
+    window.RunbookAuth = {
+      getClient: () => ({
+        auth: { getSession: async () => ({ data: { session: { access_token: "jwt" } } }) },
+      }),
+    };
+  });
+
+  afterEach(() => {
+    delete window.RunbookAuth;
+    delete global.fetch;
+    cleanup();
+  });
+
+  it("keeps the live region out of the rebuilt subtree", async () => {
+    // The defect this fixes: renderPayload cleared #admin-root, which contained
+    // the region, so nothing could survive a refresh to announce through.
+    scriptedFetch(PAYLOAD, TRAFFIC);
+    await window.RunbookAdminDashboard.init();
+
+    expect(live()).toBeTruthy();
+    expect(live().isConnected).toBe(true);
+    // And the figures still rendered, so this is not passing by rendering
+    // nothing at all.
+    expect(root.textContent).toContain("1234");
+  });
+
+  it("announces one sentence for a refresh, not the whole dashboard", async () => {
+    scriptedFetch(PAYLOAD, TRAFFIC);
+    await window.RunbookAdminDashboard.init();
+
+    const spoken = live().textContent;
+    expect(spoken).toBe("Dashboard updated with live data.");
+    // The numbers are on the page but must not be inside the announcement:
+    // that is precisely what a blanket aria-live on the root produced.
+    expect(spoken).not.toContain("1234");
+    expect(spoken).not.toContain("Per-guide progress");
+  });
+
+  it("says in the announcement when the figures are cached", async () => {
+    // Staleness changes whether the reader should trust what follows, so it is
+    // the one detail worth spending the sentence on.
+    scriptedFetch({ ...PAYLOAD, stale: true, ageSeconds: 900 }, TRAFFIC);
+    await window.RunbookAdminDashboard.init();
+
+    expect(live().textContent).toContain("cached data");
+    expect(live().textContent).toContain("15 minutes old");
+  });
+
+  it("names each missing half in the announcement", async () => {
+    // A reader who cannot see the page has no other way to tell a section that
+    // is empty from one that failed.
+    scriptedFetch({ ...PAYLOAD, ga4: { ...PAYLOAD.ga4, error: "unavailable" } }, undefined);
+    await window.RunbookAdminDashboard.init();
+
+    expect(live().textContent).toContain("Google Analytics data is unavailable");
+    expect(live().textContent).toContain("First-party traffic is unavailable");
+  });
+
+  it("announces a repeated refresh that produced the same sentence", async () => {
+    // Assistive tech fires on a CHANGE, so writing identical text announces
+    // nothing - and an unchanged dashboard is the common case on a refresh.
+    scriptedFetch(PAYLOAD, TRAFFIC);
+    await window.RunbookAdminDashboard.init();
+    expect(live().textContent).toBe("Dashboard updated with live data.");
+
+    // Deliberately NOT cleared by the test. Clearing it here would put the
+    // region in a state where a plain write is already a change, so the
+    // deferred re-set would never run and this test would pass against code
+    // that dropped it entirely - which is exactly what it did until a mutation
+    // row came back with zero failures.
+    await window.RunbookAdminDashboard.init();
+    expect(live().textContent).toBe("");
+
+    await new Promise((r) => setTimeout(r, 0));
+    expect(live().textContent).toBe("Dashboard updated with live data.");
+  });
+
+  it("removes the authorization line once the figures are up", async () => {
+    // "Checking authorization..." above live numbers is a stale claim, and it
+    // is a role="status" node, so leaving it gives the page two announcers.
+    scriptedFetch(PAYLOAD, TRAFFIC);
+    await window.RunbookAdminDashboard.init();
+
+    expect(document.getElementById("admin-status")).toBe(null);
+  });
+
+  it("still reports a later failure after the status line is gone", async () => {
+    // init() re-runs on runbook:auth-changed, so a sign-out after a successful
+    // render has no status line left to write to.
+    scriptedFetch(PAYLOAD, TRAFFIC);
+    await window.RunbookAdminDashboard.init();
+    expect(document.getElementById("admin-status")).toBe(null);
+
+    window.RunbookAuth = {
+      getClient: () => ({
+        auth: { getSession: async () => ({ data: { session: null } }) },
+      }),
+    };
+    await window.RunbookAdminDashboard.init();
+
+    expect(root.textContent).toContain("Sign in to view this page.");
+    expect(live().textContent).toContain("Sign in to view this page.");
+    // The stale figures go with it: leaving them under a sign-in message reads
+    // as though they are still current.
+    expect(root.textContent).not.toContain("1234");
+  });
+
+  it("does not announce on a load that rendered nothing", async () => {
+    // init() runs on every page load, including for a reader who is not an
+    // admin. An announcement there would be noise about a page with no content.
+    global.fetch = async () => ({ ok: false });
+    await window.RunbookAdminDashboard.init();
+
+    expect(live().textContent).toBe("");
+  });
+});
+
+describe("admin dashboard page shell", () => {
+  it("ships the live region in the markup and no blanket aria-live", () => {
+    // A region created by the script at the moment it is first needed may never
+    // be announced, so this asserts the shipped markup rather than what the
+    // component can patch up. The blanket aria-live is the defect itself: a
+    // live region wrapping a rebuilt subtree announces every table in it.
+    const shell = readFileSync(resolve(__dirname, "../../admin.md"), "utf-8");
+    expect(shell).toContain('id="admin-dashboard-status"');
+    expect(shell).toContain('class="sr-only"');
+    expect(shell).toContain('role="status"');
+    expect(shell).not.toContain("aria-live");
   });
 });
 
