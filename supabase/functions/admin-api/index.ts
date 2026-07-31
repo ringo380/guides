@@ -10,16 +10,26 @@ import { resolveRoute } from "./lib/routes.ts";
 import { isUuid, parseUserQuery } from "./lib/identity.ts";
 import { exportAccount, lookupAccount, resetProgress } from "./lib/accounts.ts";
 import { grantAdmin, listAdmins, revokeAdmin } from "./lib/roster.ts";
-import type { GoTrueDeps } from "./lib/gotrue.ts";
+import { buildGoTrueDeps, type GoTrueDeps } from "./lib/gotrue.ts";
 
 // Built here, once, rather than inside the lib modules: reading Deno.env in a
 // lib is what would make it untestable, and injecting fetch is what keeps the
 // tests off the network.
-const gotrue: GoTrueDeps = {
-  url: Deno.env.get("SUPABASE_URL") ?? "",
-  serviceKey: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-  fetch: (...args) => globalThis.fetch(...args),
-};
+//
+// A missing env var is caught rather than thrown at module scope. Throwing
+// during import takes the whole function down, including the routes that do not
+// need GoTrue at all, and the resulting 500 carries no CORS headers. Held here,
+// the misconfiguration is answered per request, in JSON, naming the variable.
+let gotrue: GoTrueDeps | null = null;
+let gotrueConfigError: string | null = null;
+try {
+  gotrue = buildGoTrueDeps(
+    (k) => Deno.env.get(k),
+    (...args) => globalThis.fetch(...args),
+  );
+} catch (e) {
+  gotrueConfigError = (e as Error).message;
+}
 
 /** Look the caller up in admin_users using the service-role client. */
 async function isAdmin(
@@ -74,6 +84,16 @@ export default {
     const url = new URL(req.url);
     const route = resolveRoute(req.method, url.pathname);
     if (route === null) return json({ error: "not found" }, 404, origin);
+
+    // The three routes that resolve an address through GoTrue cannot run
+    // without those env vars. Answer them with the named problem rather than
+    // letting an empty base url surface as "Invalid URL" four frames deeper.
+    const needsGoTrue = route === "user" || route === "user.export" ||
+      route === "admins.grant";
+    if (needsGoTrue && gotrue === null) {
+      return json({ error: gotrueConfigError ?? "admin-api is misconfigured" }, 500, origin);
+    }
+    const deps = gotrue as GoTrueDeps;
 
     // isAdmin() above already fails closed on a missing id, so reaching here
     // proves userId is a string. TypeScript cannot narrow through an awaited
@@ -168,7 +188,7 @@ export default {
 
     if (route === "user") {
       try {
-        const r = await lookupAccount(ctx.supabaseAdmin, gotrue, userQuery());
+        const r = await lookupAccount(ctx.supabaseAdmin, deps, userQuery());
         return json(r.body, r.status, origin);
       } catch (e) {
         if (e instanceof RangeError) return json({ error: e.message }, 400, origin);
@@ -178,7 +198,7 @@ export default {
 
     if (route === "user.export") {
       try {
-        const r = await exportAccount(ctx.supabaseAdmin, gotrue, userQuery());
+        const r = await exportAccount(ctx.supabaseAdmin, deps, userQuery());
         return json(r.body, r.status, origin);
       } catch (e) {
         if (e instanceof RangeError) return json({ error: e.message }, 400, origin);
@@ -217,7 +237,7 @@ export default {
       }
       const r = await grantAdmin(
         ctx.supabaseAdmin,
-        gotrue,
+        deps,
         actorId,
         (parsed as { email: string }).email,
       );

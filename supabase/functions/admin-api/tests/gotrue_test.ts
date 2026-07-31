@@ -1,5 +1,15 @@
-import { assertEquals, assertRejects, assertStringIncludes } from "jsr:@std/assert@1";
-import { type GoTrueDeps, listUsersByFilter } from "../lib/gotrue.ts";
+import {
+  assertEquals,
+  assertRejects,
+  assertStringIncludes,
+  assertThrows,
+} from "jsr:@std/assert@1";
+import {
+  buildGoTrueDeps,
+  GoTrueConfigError,
+  type GoTrueDeps,
+  listUsersByFilter,
+} from "../lib/gotrue.ts";
 
 /**
  * Records every requested URL and answers from a canned body. Nothing here
@@ -76,14 +86,31 @@ Deno.test("listUsersByFilter reports hasMore from x-total-count", async () => {
   assertEquals(r.hasMore, true);
 });
 
-Deno.test("listUsersByFilter reports no further pages when the headers say so", async () => {
-  const { deps } = stubDeps({
+Deno.test("listUsersByFilter reads hasMore from the headers in both directions", async () => {
+  // Asserting only the false side is vacuous: a hardcoded `false` satisfies it.
+  // Both directions are asserted here from the header shapes GoTrue actually
+  // sends, including the boundary where the count exactly fills the page.
+  const lastPage = { link: '</admin/users?page=1>; rel="prev"', "x-total-count": "100" };
+
+  const a = stubDeps({ users: [{ id: "a" }], headers: lastPage });
+  assertEquals((await listUsersByFilter(a.deps, "x@example.com", 1, 100)).hasMore, false);
+
+  // One more account than this page window covers: there is a page 2.
+  const b = stubDeps({ users: [{ id: "a" }], headers: { "x-total-count": "101" } });
+  assertEquals((await listUsersByFilter(b.deps, "x@example.com", 1, 100)).hasMore, true);
+
+  // A rel="next" link is enough on its own, with no count header at all.
+  const c = stubDeps({
     users: [{ id: "a" }],
-    headers: { "x-total-count": "1" },
+    headers: { link: '</admin/users?page=2>; rel="next"' },
   });
-  const r = await listUsersByFilter(deps, "x@example.com", 1, 100);
-  assertEquals(r.hasMore, false);
-  assertEquals(r.users.length, 1);
+  assertEquals((await listUsersByFilter(c.deps, "x@example.com", 1, 100)).hasMore, true);
+
+  // The window moves with the page: 101 accounts is not a third page.
+  const d = stubDeps({ users: [{ id: "a" }], headers: { "x-total-count": "101" } });
+  const dr = await listUsersByFilter(d.deps, "x@example.com", 2, 100);
+  assertEquals(dr.hasMore, false);
+  assertEquals(dr.users.length, 1);
 });
 
 Deno.test("listUsersByFilter throws on a non-2xx response", async () => {
@@ -93,4 +120,60 @@ Deno.test("listUsersByFilter throws on a non-2xx response", async () => {
     Error,
     "500",
   );
+});
+
+/**
+ * The env vars are read once, where the deps are built. An empty value there
+ * surfaces much later as `new URL(path, "")` throwing TypeError: Invalid URL,
+ * which reaches the admin as an unexplained 500 on every lookup and names
+ * nothing the operator can fix.
+ */
+Deno.test("buildGoTrueDeps names a missing project url", () => {
+  const err = assertThrows(
+    () =>
+      buildGoTrueDeps(
+        (k) => (k === "SUPABASE_SERVICE_ROLE_KEY" ? "service-role-key" : ""),
+        fetch,
+      ),
+    GoTrueConfigError,
+  );
+  assertStringIncludes((err as Error).message, "SUPABASE_URL");
+});
+
+Deno.test("buildGoTrueDeps names a missing service key", () => {
+  const err = assertThrows(
+    () =>
+      buildGoTrueDeps(
+        (k) => (k === "SUPABASE_URL" ? "https://project.supabase.co" : undefined),
+        fetch,
+      ),
+    GoTrueConfigError,
+  );
+  assertStringIncludes((err as Error).message, "SUPABASE_SERVICE_ROLE_KEY");
+});
+
+Deno.test("buildGoTrueDeps names both when both are missing", () => {
+  const err = assertThrows(() => buildGoTrueDeps(() => "", fetch), GoTrueConfigError);
+  assertStringIncludes((err as Error).message, "SUPABASE_URL");
+  assertStringIncludes((err as Error).message, "SUPABASE_SERVICE_ROLE_KEY");
+});
+
+Deno.test("buildGoTrueDeps rejects a url that is not a usable base", () => {
+  // A truthy but malformed value fails the same way an empty one does, just
+  // later and with a worse message.
+  assertThrows(
+    () => buildGoTrueDeps((k) => (k === "SUPABASE_URL" ? "project.supabase.co" : "key"), fetch),
+    GoTrueConfigError,
+    "SUPABASE_URL",
+  );
+});
+
+Deno.test("buildGoTrueDeps returns usable deps when both are set", () => {
+  const deps = buildGoTrueDeps(
+    (k) => (k === "SUPABASE_URL" ? "https://project.supabase.co" : "service-role-key"),
+    fetch,
+  );
+  assertEquals(deps.url, "https://project.supabase.co");
+  assertEquals(deps.serviceKey, "service-role-key");
+  assertEquals(typeof deps.fetch, "function");
 });

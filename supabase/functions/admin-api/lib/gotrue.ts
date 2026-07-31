@@ -27,6 +27,53 @@ export interface GoTrueDeps {
   fetch: typeof fetch;
 }
 
+/** A deploy problem, not a request problem: an env var is missing or unusable. */
+export class GoTrueConfigError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GoTrueConfigError";
+  }
+}
+
+/**
+ * Read the deps out of the environment once, at the point they are built, and
+ * name what is wrong if anything is.
+ *
+ * Without this an empty SUPABASE_URL travels all the way to
+ * `new URL(path, "")`, which throws "TypeError: Invalid URL" from inside a
+ * request handler. That reaches the admin as an unexplained 500 on every single
+ * lookup and names nothing anyone can act on, when the actual problem is one
+ * unset variable on the deploy.
+ */
+export function buildGoTrueDeps(
+  env: (key: string) => string | undefined,
+  fetchImpl: typeof fetch,
+): GoTrueDeps {
+  const url = (env("SUPABASE_URL") ?? "").trim();
+  const serviceKey = (env("SUPABASE_SERVICE_ROLE_KEY") ?? "").trim();
+
+  const missing: string[] = [];
+  if (url === "") missing.push("SUPABASE_URL");
+  if (serviceKey === "") missing.push("SUPABASE_SERVICE_ROLE_KEY");
+  if (missing.length > 0) {
+    throw new GoTrueConfigError(
+      `admin-api is misconfigured: ${missing.join(" and ")} is not set`,
+    );
+  }
+
+  // A set but malformed url fails in exactly the same place, just later and
+  // with a worse message, so it is rejected here too.
+  try {
+    new URL("/auth/v1/admin/users", url);
+  } catch {
+    throw new GoTrueConfigError(
+      `admin-api is misconfigured: SUPABASE_URL is not a usable base url`,
+    );
+  }
+
+  return { url, serviceKey, fetch: fetchImpl };
+}
+
 export interface ListUsersResult {
   users: GoTrueUser[];
   /** True when the filtered set extends past the requested page. */
