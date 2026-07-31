@@ -29,6 +29,7 @@
     "topic-cards": "assets/javascripts/components/topic-cards.js",
     "auth-ui": "assets/javascripts/components/auth-ui.js",
     "admin-dashboard": "assets/javascripts/components/admin/dashboard.js",
+    "admin-accounts": "assets/javascripts/components/admin/accounts.js",
   };
 
   // Keyed by src, holding the in-flight promise rather than a "done" marker.
@@ -167,6 +168,9 @@
         if (document.getElementById("admin-root")) {
           loadScript(COMPONENT_SCRIPTS["admin-dashboard"]).catch(() => {});
         }
+        if (document.getElementById("admin-accounts-root")) {
+          loadScript(COMPONENT_SCRIPTS["admin-accounts"]).catch(() => {});
+        }
       })
       .catch(() => {
         // Only reachable when storage.js itself failed: every optional step
@@ -182,6 +186,9 @@
           loadScript(COMPONENT_SCRIPTS["auth-ui"]).catch(() => {});
           if (document.getElementById("admin-root")) {
             loadScript(COMPONENT_SCRIPTS["admin-dashboard"]).catch(() => {});
+          }
+          if (document.getElementById("admin-accounts-root")) {
+            loadScript(COMPONENT_SCRIPTS["admin-accounts"]).catch(() => {});
           }
         });
         const types = Object.keys(COMPONENT_SCRIPTS);

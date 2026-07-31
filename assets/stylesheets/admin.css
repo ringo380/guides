@@ -41,3 +41,68 @@
     animation: none !important;
   }
 }
+
+/* Account management forms. Reuses the semantic tokens in interactive.css
+   rather than hardcoding hex values. */
+#admin-lookup label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+#admin-lookup input {
+  width: 100%;
+  max-width: 28rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.2rem;
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+}
+
+#admin-lookup button,
+.admin-destructive {
+  margin-top: 0.6rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.2rem;
+  cursor: pointer;
+}
+
+.admin-reset-form label {
+  display: block;
+  margin-top: 0.8rem;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.admin-reset-form input {
+  width: 100%;
+  max-width: 28rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.2rem;
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+}
+
+.admin-destructive {
+  border: 2px solid var(--rb-color-incorrect);
+  background: var(--rb-color-incorrect-bg);
+  color: var(--md-default-fg-color);
+}
+
+#admin-lookup button:focus-visible,
+.admin-destructive:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: -1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #admin-lookup button,
+  .admin-destructive {
+    transition: none;
+  }
+}
