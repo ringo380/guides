@@ -33,16 +33,62 @@ fi
 sitemap_entries() { [ "$(grep -c '<loc>' "$SITE/sitemap.xml" 2>/dev/null || echo 0)" -gt 50 ]; }
 check "sitemap.xml exists and has >50 entries" sitemap_entries
 
-# The admin shell is noindex; listing it in the sitemap makes Search Console
+# Precondition: prove we can actually parse search_index.json and that it has
+# a plausible number of entries, so a passing "page is absent" check below
+# cannot be a false negative against an empty or unparseable index.
+search_index_entries() {
+  python3 -c '
+import json, sys
+site = sys.argv[1]
+try:
+    with open(site + "/search/search_index.json") as f:
+        data = json.load(f)
+except Exception:
+    sys.exit(1)
+docs = data.get("docs", [])
+sys.exit(0 if len(docs) > 1000 else 1)
+' "$SITE"
+}
+check "search_index.json parses and has a plausible number of entries" search_index_entries
+
+# The admin shells are noindex; listing one in the sitemap makes Search Console
 # report "Submitted URL marked noindex".
-admin_not_in_sitemap() { ! grep -q '<loc>[^<]*/admin/</loc>' "$SITE/sitemap.xml"; }
-check "admin page absent from sitemap.xml" admin_not_in_sitemap
+#
+# Iterated over every admin page rather than hardcoding one. A second admin page
+# inherits none of these assertions automatically, and the accounts page resolves
+# email addresses, so shipping it indexed is the failure worth preventing.
+ADMIN_PAGES=("admin" "admin-accounts")
 
-admin_noindex() { grep -qi 'name="robots" content="noindex' "$SITE/admin/index.html"; }
-check "admin page carries a noindex robots meta" admin_noindex
+page_built() { [ -f "$SITE/$1/index.html" ]; }
+page_not_in_sitemap() { ! grep -q "<loc>[^<]*/$1/</loc>" "$SITE/sitemap.xml"; }
+page_noindex() { grep -qi 'name="robots" content="noindex' "$SITE/$1/index.html"; }
 
-admin_not_in_search() { ! grep -q '"location": "admin/"' "$SITE/search/search_index.json"; }
-check "admin page absent from the search index" admin_not_in_search
+# mkdocs-material emits compact JSON with no space after the colon
+# ("location":"admin/"), so a naive grep for "location": " never matches and
+# silently passes regardless of what is in the index. Parse the JSON for real
+# and compare the location field exactly, so a future formatting change in
+# mkdocs output cannot defeat this check the same way again.
+page_not_in_search() {
+  python3 -c '
+import json, sys
+site, page = sys.argv[1], sys.argv[2]
+with open(site + "/search/search_index.json") as f:
+    data = json.load(f)
+docs = data.get("docs", [])
+target = page + "/"
+sys.exit(1 if any(d.get("location") == target for d in docs) else 0)
+' "$SITE" "$1"
+}
+
+for page in "${ADMIN_PAGES[@]}"; do
+  # Precondition: the page must actually be built, or the three checks below
+  # pass vacuously against a file that does not exist.
+  check "$page page was built" page_built "$page"
+
+  check "$page page absent from sitemap.xml" page_not_in_sitemap "$page"
+  check "$page page carries a noindex robots meta" page_noindex "$page"
+  check "$page page absent from the search index" page_not_in_search "$page"
+done
 
 robots_exists() { [ -f "$SITE/robots.txt" ]; }
 check "robots.txt is published" robots_exists
