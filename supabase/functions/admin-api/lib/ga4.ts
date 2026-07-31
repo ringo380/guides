@@ -1,8 +1,55 @@
-interface Ga4Section {
+export interface Ga4Section {
   activeUsers: number;
   sessions: number;
   topPages: Array<{ path: string; views: number }>;
   events: Record<string, number>;
+  /**
+   * The property that answered. An all-zero section used to be unattributable:
+   * the first question anyone asks of it is "which property is this reading",
+   * and the payload could not say. It is not a secret - this endpoint is
+   * admin-only, and the id identifies a report source, not a credential.
+   */
+  propertyId: string;
+  /**
+   * Did the Data API return any rows at all?
+   *
+   * Zero rows is a successful answer, and the section it produces is identical
+   * to the one a broken query would produce: every number zero, every list
+   * empty, no error. Recording it separately is the only way the page can tell
+   * "nobody was counted" from "nothing was asked properly" - which is exactly
+   * what cost an afternoon of chasing credentials that were fine.
+   */
+  reported: boolean;
+}
+
+/**
+ * Fold the three report responses into the section. Pure, so the shape this
+ * produces - especially the empty one - is testable without a network.
+ */
+export function toSection(
+  propertyId: string,
+  totals: any,
+  pages: any,
+  events: any,
+): Ga4Section {
+  const row = totals?.rows?.[0]?.metricValues ?? [];
+  const rowCount = (totals?.rows?.length ?? 0) + (pages?.rows?.length ?? 0) +
+    (events?.rows?.length ?? 0);
+  return {
+    activeUsers: Number(row[0]?.value ?? 0),
+    sessions: Number(row[1]?.value ?? 0),
+    topPages: (pages?.rows ?? []).map((r: any) => ({
+      path: r.dimensionValues[0].value,
+      views: Number(r.metricValues[0].value),
+    })),
+    events: Object.fromEntries(
+      (events?.rows ?? []).map((
+        r: any,
+      ) => [r.dimensionValues[0].value, Number(r.metricValues[0].value)]),
+    ),
+    propertyId,
+    reported: rowCount > 0,
+  };
 }
 
 /** Mint a Google OAuth access token from the service account via JWT bearer grant. */
@@ -59,8 +106,11 @@ async function accessToken(): Promise<string> {
   return (await res.json()).access_token;
 }
 
-async function runReport(token: string, body: unknown): Promise<any> {
-  const property = Deno.env.get("GA4_PROPERTY_ID");
+async function runReport(
+  token: string,
+  property: string,
+  body: unknown,
+): Promise<any> {
   const res = await fetch(
     `https://analyticsdata.googleapis.com/v1beta/properties/${property}:runReport`,
     {
@@ -82,22 +132,23 @@ async function runReport(token: string, body: unknown): Promise<any> {
  */
 export async function fetchGa4(days: number): Promise<Ga4Section | null> {
   try {
+    const property = Deno.env.get("GA4_PROPERTY_ID") ?? "";
     const token = await accessToken();
     const dateRanges = [{ startDate: `${days}daysAgo`, endDate: "today" }];
 
     const [totals, pages, events] = await Promise.all([
-      runReport(token, {
+      runReport(token, property, {
         dateRanges,
         metrics: [{ name: "activeUsers" }, { name: "sessions" }],
       }),
-      runReport(token, {
+      runReport(token, property, {
         dateRanges,
         dimensions: [{ name: "pagePath" }],
         metrics: [{ name: "screenPageViews" }],
         orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
         limit: 20,
       }),
-      runReport(token, {
+      runReport(token, property, {
         dateRanges,
         dimensions: [{ name: "eventName" }],
         metrics: [{ name: "eventCount" }],
@@ -105,21 +156,7 @@ export async function fetchGa4(days: number): Promise<Ga4Section | null> {
       }),
     ]);
 
-    const row = totals.rows?.[0]?.metricValues ?? [];
-    return {
-      activeUsers: Number(row[0]?.value ?? 0),
-      sessions: Number(row[1]?.value ?? 0),
-      topPages: (pages.rows ?? []).map((r: any) => ({
-        path: r.dimensionValues[0].value,
-        views: Number(r.metricValues[0].value),
-      })),
-      events: Object.fromEntries(
-        (events.rows ?? []).map((r: any) => [
-          r.dimensionValues[0].value,
-          Number(r.metricValues[0].value),
-        ]),
-      ),
-    };
+    return toSection(property, totals, pages, events);
   } catch (e) {
     console.warn("[admin-api] GA4 fetch failed:", (e as Error).message);
     return null;

@@ -131,6 +131,19 @@
           "Google Analytics data is " + ga4.error + ". The figures below cover signed-in users only.")
       );
     } else {
+      // An all-zero GA4 section is byte-for-byte what a broken query produces,
+      // and for months it was read as one. Saying which property answered, and
+      // that it answered with no rows, is what separates "nobody was counted"
+      // from "nothing was asked properly".
+      if (ga4.reported === false) {
+        out.appendChild(el("p", { class: "admin-note" },
+          "Google Analytics returned no rows for this range" +
+          (ga4.propertyId ? " (property " + ga4.propertyId + ")" : "") +
+          ". The query worked; nobody in this population was counted. Only " +
+          "readers who accept the cookie banner and do not block the tag reach " +
+          "GA at all, so compare the first-party traffic section below before " +
+          "concluding the site had no visitors."));
+      }
       out.appendChild(table("Traffic totals", ["Metric", "Value"], [
         ["Active users", ga4.activeUsers],
         ["Sessions", ga4.sessions],
@@ -336,7 +349,13 @@
       ? "Dashboard updated with cached data, " +
         Math.round(payload.ageSeconds / 60) + " minutes old."
       : "Dashboard updated with live data."];
-    if ((payload.ga4 || {}).error) parts.push("Google Analytics data is unavailable.");
+    var ga4 = payload.ga4 || {};
+    if (ga4.error) parts.push("Google Analytics data is unavailable.");
+    // Distinct from unavailable, and worth hearing: one is a fault, the other
+    // is an answer.
+    else if (ga4.reported === false) {
+      parts.push("Google Analytics counted nobody in this range.");
+    }
     if (!traffic || traffic.error) parts.push("First-party traffic is unavailable.");
     return parts.join(" ");
   }
