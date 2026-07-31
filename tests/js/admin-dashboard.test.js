@@ -9,11 +9,16 @@ const PAYLOAD = {
   stale: false,
   ageSeconds: 0,
   ga4: {
-    population: "all visitors",
+    // The population the server actually sends. GA4 sits behind the cookie
+    // banner, so a fixture claiming "all visitors" would be testing a label
+    // the API stopped making.
+    population: "readers who accepted analytics cookies and do not block the tag",
     activeUsers: 1234,
     sessions: 2000,
     topPages: [{ path: "/Git/git-basics/", views: 500 }],
     events: { quiz_answer: 42 },
+    propertyId: "525117219",
+    reported: true,
   },
   progress: {
     population: "signed-in users only",
@@ -51,7 +56,7 @@ describe("admin dashboard renderer", () => {
 
   it("labels each section with its population", () => {
     window.RunbookAdminDashboard.renderPayload(root, PAYLOAD);
-    expect(root.textContent).toContain("all visitors");
+    expect(root.textContent).toContain("accepted analytics cookies");
     expect(root.textContent).toContain("signed-in users only");
   });
 
@@ -221,6 +226,21 @@ describe("admin dashboard announcements", () => {
     // And the figures still rendered, so this is not passing by rendering
     // nothing at all.
     expect(root.textContent).toContain("1234");
+  });
+
+  it("announces that GA counted nobody, distinctly from GA being unavailable", async () => {
+    // The two sound alike and mean opposite things: one is a fault to chase,
+    // the other is a fact about the audience. A reader hearing the wrong one
+    // goes to check credentials that are working.
+    scriptedFetch({
+      ...PAYLOAD,
+      ga4: { ...PAYLOAD.ga4, activeUsers: 0, sessions: 0, reported: false },
+    }, TRAFFIC);
+    await window.RunbookAdminDashboard.init();
+
+    const spoken = live().textContent;
+    expect(spoken).toContain("counted nobody");
+    expect(spoken).not.toContain("unavailable");
   });
 
   it("announces one sentence for a refresh, not the whole dashboard", async () => {
@@ -429,7 +449,7 @@ describe("admin dashboard first-party traffic", () => {
     window.RunbookAdminDashboard.renderPayload(root, PAYLOAD);
     window.RunbookAdminDashboard.renderTraffic(root, null);
     expect(root.textContent).toContain("1234");
-    expect(root.textContent).toContain("all visitors");
+    expect(root.textContent).toContain("accepted analytics cookies");
   });
 
   it("keeps the two populations in separate sections", () => {
@@ -439,7 +459,69 @@ describe("admin dashboard first-party traffic", () => {
     // Two distinct traffic headings, each naming its own population. One
     // merged table would imply the numbers are the same quantity.
     expect(headings.filter((h) => h.startsWith("Traffic")).length).toBe(2);
-    expect(headings.some((h) => h.includes("all visitors"))).toBe(true);
+    expect(headings.some((h) => h.includes("accepted analytics cookies"))).toBe(true);
     expect(headings.some((h) => h.includes("first-party"))).toBe(true);
+  });
+});
+
+describe("admin dashboard GA4 emptiness", () => {
+  let root;
+
+  const EMPTY_GA4 = {
+    ...PAYLOAD,
+    ga4: {
+      population: "readers who accepted analytics cookies and do not block the tag",
+      activeUsers: 0,
+      sessions: 0,
+      topPages: [],
+      events: {},
+      propertyId: "525117219",
+      reported: false,
+    },
+  };
+
+  beforeEach(async () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    await loadComponent("admin/dashboard");
+  });
+
+  afterEach(() => cleanup());
+
+  it("says a rowless GA4 answer is an answer, and names the property", () => {
+    // An all-zero section is byte-identical to what a query against the wrong
+    // property produces. Without this the page leaves the reader to guess
+    // which one they are looking at, which is what #163 actually cost.
+    window.RunbookAdminDashboard.renderPayload(root, EMPTY_GA4);
+    const text = root.textContent;
+    expect(text).toContain("returned no rows");
+    expect(text).toContain("525117219");
+    expect(text).toContain("first-party");
+  });
+
+  it("does not call a rowless answer unavailable", () => {
+    // "Unavailable" is the failure branch. Reporting a working query as a
+    // failure sends the admin to check credentials that are fine.
+    window.RunbookAdminDashboard.renderPayload(root, EMPTY_GA4);
+    expect(root.textContent).not.toContain("Google Analytics data is unavailable");
+    // The tables still render: zero is a number the admin asked for.
+    expect(root.querySelectorAll("table").length).toBeGreaterThan(1);
+  });
+
+  it("stays quiet about emptiness when rows came back", () => {
+    window.RunbookAdminDashboard.renderPayload(root, PAYLOAD);
+    expect(root.textContent).not.toContain("returned no rows");
+  });
+
+  it("keeps the note out of the way when GA4 failed outright", () => {
+    // Both branches would otherwise fire: an error section has no rows either,
+    // and telling the admin both "unavailable" and "the query worked" in one
+    // render is worse than telling them neither.
+    window.RunbookAdminDashboard.renderPayload(root, {
+      ...PAYLOAD,
+      ga4: { population: "x", error: "unavailable", reported: false },
+    });
+    expect(root.textContent).toContain("unavailable");
+    expect(root.textContent).not.toContain("returned no rows");
   });
 });
