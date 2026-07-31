@@ -156,6 +156,9 @@ Deno.test("buildGoTrueDeps names both when both are missing", () => {
   const err = assertThrows(() => buildGoTrueDeps(() => "", fetch), GoTrueConfigError);
   assertStringIncludes((err as Error).message, "SUPABASE_URL");
   assertStringIncludes((err as Error).message, "SUPABASE_SERVICE_ROLE_KEY");
+  // The message is read by an admin trying to fix a deploy, so it agrees with
+  // itself: two variables are not set, one is.
+  assertStringIncludes((err as Error).message, "are not set");
 });
 
 Deno.test("buildGoTrueDeps rejects a url that is not a usable base", () => {

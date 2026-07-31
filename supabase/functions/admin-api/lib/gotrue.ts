@@ -57,7 +57,9 @@ export function buildGoTrueDeps(
   if (serviceKey === "") missing.push("SUPABASE_SERVICE_ROLE_KEY");
   if (missing.length > 0) {
     throw new GoTrueConfigError(
-      `admin-api is misconfigured: ${missing.join(" and ")} is not set`,
+      `admin-api is misconfigured: ${missing.join(" and ")} ${
+        missing.length > 1 ? "are" : "is"
+      } not set`,
     );
   }
 
