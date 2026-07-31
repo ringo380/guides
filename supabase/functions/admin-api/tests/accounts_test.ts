@@ -1,5 +1,10 @@
 import { assertEquals, assertRejects, assertStringIncludes } from "jsr:@std/assert@1";
-import { findUser, lookupAccount, resetProgress } from "../lib/accounts.ts";
+import {
+  confirmsAccount,
+  findUser,
+  lookupAccount,
+  resetProgress,
+} from "../lib/accounts.ts";
 import type { GoTrueDeps } from "../lib/gotrue.ts";
 
 const USER = {
@@ -161,6 +166,15 @@ Deno.test("findUser by id returns none for an unknown id", async () => {
   assertEquals(r.kind, "none");
 });
 
+Deno.test("findUser normalizes an empty account email to null", async () => {
+  // GoTrue serializes an account with no address as "", not null. Left as "",
+  // it is a second shape every downstream comparison has to remember.
+  const c = stubClient({ byId: { ...USER, email: "" } });
+  const { deps } = stubGoTrue();
+  const r = await findUser(c as any, deps, { kind: "id", id: USER.id });
+  assertEquals(r.kind === "found" ? r.user.email : "unset", null);
+});
+
 
 Deno.test("resetProgress refuses when confirmEmail belongs to another account", async () => {
   // The stale-id case: admin looked up A, then B, and the page still held A's id.
@@ -226,6 +240,55 @@ Deno.test("resetProgress refuses a matching-looking confirmEmail when the accoun
   // an account with no email on file.
   const c = stubClient({ byId: { ...USER, email: null } });
   const res = await resetProgress(c as any, "actor", USER.id, "\t\n");
+  assertEquals(res.status, 403);
+  assertEquals(c.deleted.length, 0);
+  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+});
+
+// GoTrue serializes an account with no address as "" rather than null, so
+// these fixtures use "" - a null-email fixture cannot express the case the
+// blank-confirmation clause exists to refuse.
+
+Deno.test("confirmsAccount refuses a blank confirmation for an emailless account", () => {
+  // This is the case that makes the blank-confirmation clause load-bearing:
+  // "" is what the account holds, so an equality test alone would pass it.
+  assertEquals(confirmsAccount("", ""), false);
+  assertEquals(confirmsAccount("", "   "), false);
+  assertEquals(confirmsAccount("", "\t\n"), false);
+});
+
+Deno.test("confirmsAccount refuses a blank confirmation for a normal account", () => {
+  assertEquals(confirmsAccount("someone@example.com", "  "), false);
+});
+
+Deno.test("confirmsAccount refuses any confirmation for an account with no email", () => {
+  assertEquals(confirmsAccount(null, "someone@example.com"), false);
+  assertEquals(confirmsAccount("", "someone@example.com"), false);
+});
+
+Deno.test("confirmsAccount accepts the exact address, case-insensitively", () => {
+  assertEquals(confirmsAccount("someone@example.com", " SOMEONE@example.com "), true);
+});
+
+Deno.test("resetProgress refuses a blank confirmEmail against an empty-string account email", async () => {
+  const c = stubClient({ byId: { ...USER, email: "" } });
+  const res = await resetProgress(c as any, "actor", USER.id, "");
+  assertEquals(res.status, 403);
+  assertEquals(c.deleted.length, 0);
+  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+});
+
+Deno.test("resetProgress refuses a whitespace-only confirmEmail against an empty-string account email", async () => {
+  const c = stubClient({ byId: { ...USER, email: "" } });
+  const res = await resetProgress(c as any, "actor", USER.id, "   ");
+  assertEquals(res.status, 403);
+  assertEquals(c.deleted.length, 0);
+  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+});
+
+Deno.test("resetProgress refuses a real address against an empty-string account email", async () => {
+  const c = stubClient({ byId: { ...USER, email: "" } });
+  const res = await resetProgress(c as any, "actor", USER.id, "someone@example.com");
   assertEquals(res.status, 403);
   assertEquals(c.deleted.length, 0);
   assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);

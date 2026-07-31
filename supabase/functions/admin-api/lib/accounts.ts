@@ -20,9 +20,14 @@ export type FindResult =
   | { kind: "ambiguous" };
 
 function toAccountUser(u: any): AccountUser {
+  // Normalize the emailless account to one shape. GoTrue serializes an account
+  // with no address as "" rather than null, and `??` does not collapse the
+  // empty string, so without this `""` and `null` travel downstream as two
+  // different values and every email comparison has to handle both.
+  const raw = typeof u.email === "string" ? u.email.trim() : "";
   return {
     id: u.id,
-    email: u.email ?? null,
+    email: raw === "" ? null : raw,
     createdAt: u.created_at ?? null,
     lastSignInAt: u.last_sign_in_at ?? null,
   };
@@ -143,6 +148,29 @@ export async function exportAccount(
 }
 
 /**
+ * Does `confirmEmail` confirm a reset of the account holding `accountEmail`?
+ *
+ * Extracted and total on purpose. It must be correct for the raw shapes GoTrue
+ * emits, not only for the normalized ones findUser produces, because it is the
+ * last thing standing between a blank form field and a delete:
+ *
+ * - A blank confirmation is never a confirmation, whatever the account holds.
+ *   GoTrue serializes an emailless account as "" (not null), so without this
+ *   clause a blank confirmation against such an account compares "" to "" and
+ *   passes.
+ * - An account with no address on file has no valid confirmation at all.
+ */
+export function confirmsAccount(
+  accountEmail: string | null,
+  confirmEmail: string,
+): boolean {
+  const confirm = confirmEmail.trim().toLowerCase();
+  if (confirm === "") return false;
+  if (accountEmail === null) return false;
+  return accountEmail.toLowerCase() === confirm;
+}
+
+/**
  * Delete the runbook_progress row. The auth account is untouched.
  *
  * Requires userId and confirmEmail to belong to the same account. This is not
@@ -159,12 +187,7 @@ export async function resetProgress(
   const user = await findUserById(supabaseAdmin, userId);
   if (user === null) return { status: 404, body: { error: "no such user" } };
 
-  const confirm = confirmEmail.trim().toLowerCase();
-  if (
-    confirm === "" ||
-    user.email === null ||
-    user.email.toLowerCase() !== confirm
-  ) {
+  if (!confirmsAccount(user.email, confirmEmail)) {
     return {
       status: 403,
       body: { error: "confirmation email does not match that user id" },
