@@ -114,7 +114,12 @@ export async function resetProgress(
   const user = await findUser(supabaseAdmin, { kind: "id", id: userId });
   if (user === null) return { status: 404, body: { error: "no such user" } };
 
-  if ((user.email ?? "").toLowerCase() !== confirmEmail.trim().toLowerCase()) {
+  const confirm = confirmEmail.trim().toLowerCase();
+  if (
+    confirm === "" ||
+    user.email === null ||
+    user.email.toLowerCase() !== confirm
+  ) {
     return {
       status: 403,
       body: { error: "confirmation email does not match that user id" },

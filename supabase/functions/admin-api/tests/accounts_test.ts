@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert@1";
+import { assertEquals, assertRejects } from "jsr:@std/assert@1";
 import { findUser, resetProgress } from "../lib/accounts.ts";
 
 const USER = {
@@ -13,6 +13,7 @@ function stubClient(opts: {
   byId?: any;
   progress?: any;
   deleted?: string[];
+  deleteError?: unknown;
 } = {}) {
   const calls: Array<{ table: string; op: string; payload?: unknown }> = [];
   const deleted = opts.deleted ?? [];
@@ -46,6 +47,9 @@ function stubClient(opts: {
           calls.push({ table, op: "delete" });
           return {
             eq: (_c: string, v: string) => {
+              if (opts.deleteError) {
+                return Promise.resolve({ error: opts.deleteError });
+              }
               deleted.push(v);
               return Promise.resolve({ error: null });
             },
@@ -125,4 +129,40 @@ Deno.test("resetProgress never puts an email in the audit detail", async () => {
   await resetProgress(c as any, "actor", USER.id, USER.email);
   const audit = c.calls.find((x) => x.table === "admin_audit");
   assertEquals(JSON.stringify(audit?.payload).includes("@"), false);
+});
+
+Deno.test("resetProgress refuses an empty confirmEmail against a null-email account", async () => {
+  const c = stubClient({ byId: { ...USER, email: null } });
+  const res = await resetProgress(c as any, "actor", USER.id, "");
+  assertEquals(res.status, 403);
+  assertEquals(c.deleted.length, 0);
+});
+
+Deno.test("resetProgress refuses a whitespace-only confirmEmail against a null-email account", async () => {
+  const c = stubClient({ byId: { ...USER, email: null } });
+  const res = await resetProgress(c as any, "actor", USER.id, "   ");
+  assertEquals(res.status, 403);
+  assertEquals(c.deleted.length, 0);
+});
+
+Deno.test("resetProgress refuses a matching-looking confirmEmail when the account has no email at all", async () => {
+  // A null account email must never be treated as matching anything, including
+  // another empty/whitespace confirmation - there is no valid confirmation for
+  // an account with no email on file.
+  const c = stubClient({ byId: { ...USER, email: null } });
+  const res = await resetProgress(c as any, "actor", USER.id, "\t\n");
+  assertEquals(res.status, 403);
+  assertEquals(c.deleted.length, 0);
+  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
+});
+
+Deno.test("resetProgress records the audit only after the delete succeeds", async () => {
+  const c = stubClient({ byId: USER, deleteError: new Error("delete failed") });
+  await assertRejects(
+    () => resetProgress(c as any, "actor", USER.id, USER.email),
+    Error,
+    "delete failed",
+  );
+  assertEquals(c.deleted.length, 0);
+  assertEquals(c.calls.some((x) => x.table === "admin_audit"), false);
 });
