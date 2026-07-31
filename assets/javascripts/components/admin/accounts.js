@@ -145,6 +145,14 @@
 
   var inFlight = false;
 
+  // renderLookupForm() runs on every init(), and init() re-runs on every
+  // runbook:auth-changed event (a sign-out followed by a sign-in needs no
+  // navigation). The reset handler is bound to root, which survives across
+  // calls, so without this the listener count grows by one each time and a
+  // single submit fires the reset request - and its audit write - once per
+  // accumulated listener. Store the reference and remove it before re-adding.
+  var resetSubmitHandler = null;
+
   async function init() {
     var root = document.getElementById("admin-accounts-root");
     if (!root) return;
@@ -212,7 +220,8 @@
       renderUser(root, res.ok ? await res.json() : null);
     });
 
-    root.addEventListener("submit", async function (ev) {
+    if (resetSubmitHandler) root.removeEventListener("submit", resetSubmitHandler);
+    resetSubmitHandler = async function (ev) {
       var btn = ev.target.querySelector
         && ev.target.querySelector("[data-action='reset-progress']");
       if (!btn) return;
@@ -233,7 +242,8 @@
         res.ok
           ? "Progress reset."
           : "Reset refused. The address must match the account you looked up."));
-    });
+    };
+    root.addEventListener("submit", resetSubmitHandler);
   }
 
   window.RunbookAdminAccounts = {

@@ -79,3 +79,73 @@ describe("admin accounts renderer", () => {
     expect(label.textContent).toContain("email");
   });
 });
+
+describe("admin accounts reset listener idempotency", () => {
+  let root;
+
+  function mountAdminAccountsRoot() {
+    const el = document.createElement("div");
+    el.id = "admin-accounts-root";
+    const status = document.createElement("p");
+    status.id = "admin-accounts-status";
+    status.textContent = "Checking authorization...";
+    el.appendChild(status);
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function sessionClient(accessToken) {
+    return {
+      auth: {
+        getSession: async () => ({
+          data: { session: accessToken ? { access_token: accessToken } : null },
+        }),
+      },
+    };
+  }
+
+  beforeEach(async () => {
+    root = mountAdminAccountsRoot();
+    await loadComponent("admin/accounts");
+    window.RunbookAuth = { getClient: () => sessionClient("jwt") };
+  });
+
+  afterEach(() => {
+    delete window.RunbookAuth;
+    delete global.fetch;
+    cleanup();
+  });
+
+  it("fires the reset handler once even after init() has re-run", async () => {
+    const calls = [];
+    global.fetch = async (url) => {
+      if (String(url).includes("/health")) return { ok: true, json: async () => ({ admin: true }) };
+      if (String(url).includes("/admins")) return { ok: true, json: async () => ({ admins: [] }) };
+      if (String(url).includes("/user/progress/reset")) {
+        calls.push(url);
+        return { ok: true, json: async () => ({}) };
+      }
+      return { ok: false };
+    };
+
+    // init() re-runs on every runbook:auth-changed event - a sign-out
+    // followed by a sign-in needs no page navigation - so call it twice to
+    // simulate that without waiting on a real auth round trip.
+    await window.RunbookAdminAccounts.init();
+    await window.RunbookAdminAccounts.init();
+
+    // A lookup result is rendered independently of init(), so inject it
+    // directly to get a reset form onto the page.
+    window.RunbookAdminAccounts.renderUser(root, USER);
+    const form = root.querySelector(".admin-reset-form");
+    const input = form.querySelector("input");
+    input.value = USER.user.email;
+
+    form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    // Let the async submit handler(s) run to completion.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(calls.length).toBe(1);
+  });
+});
