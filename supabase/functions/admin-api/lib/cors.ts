@@ -21,7 +21,7 @@ export function corsHeaders(origin: string | null): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Headers": "authorization, apikey, content-type",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     // Responses vary per origin, so a shared cache must not reuse one origin's
     // response for another.
     "Vary": "Origin",

@@ -34,3 +34,8 @@ Deno.test("corsHeaders echoes the allowed origin and varies on Origin", () => {
   assertEquals(h["Access-Control-Allow-Origin"], "https://runbook.fyi");
   assertEquals(h["Vary"], "Origin");
 });
+
+Deno.test("allowed methods include POST for the write routes", () => {
+  const h = corsHeaders("https://runbook.fyi");
+  assertEquals(h["Access-Control-Allow-Methods"], "GET, POST, OPTIONS");
+});

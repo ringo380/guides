@@ -6,6 +6,10 @@ import { fetchGa4 } from "./lib/ga4.ts";
 import { fetchProgress } from "./lib/progress.ts";
 import { fetchTraffic } from "./lib/traffic.ts";
 import { buildPayload } from "./lib/merge.ts";
+import { resolveRoute } from "./lib/routes.ts";
+import { parseUserQuery } from "./lib/identity.ts";
+import { exportAccount, lookupAccount, resetProgress } from "./lib/accounts.ts";
+import { grantAdmin, listAdmins, revokeAdmin } from "./lib/roster.ts";
 
 /** Look the caller up in admin_users using the service-role client. */
 async function isAdmin(
@@ -58,7 +62,28 @@ export default {
     }
 
     const url = new URL(req.url);
-    const route = url.pathname.replace(/^\/admin-api\/?/, "");
+    const route = resolveRoute(req.method, url.pathname);
+    if (route === null) return json({ error: "not found" }, 404, origin);
+
+    // isAdmin() above already fails closed on a missing id, so reaching here
+    // proves userId is a string. TypeScript cannot narrow through an awaited
+    // call, so state it once here rather than asserting at four call sites.
+    const actorId: string = userId as string;
+
+    /** Parse ?email= / ?id= into one identifier, or answer 400. */
+    const userQuery = () => parseUserQuery(
+      url.searchParams.get("email"),
+      url.searchParams.get("id"),
+    );
+
+    /** Read a JSON body, tolerating an empty or malformed one. */
+    const body = async (): Promise<Record<string, unknown>> => {
+      try {
+        return (await req.json()) ?? {};
+      } catch {
+        return {};
+      }
+    };
 
     if (route === "health") {
       return json({ admin: true }, 200, origin);
@@ -131,6 +156,66 @@ export default {
       );
     }
 
-    return json({ error: "not found" }, 404, origin);
+    if (route === "user") {
+      try {
+        const r = await lookupAccount(ctx.supabaseAdmin, userQuery());
+        return json(r.body, r.status, origin);
+      } catch (e) {
+        if (e instanceof RangeError) return json({ error: e.message }, 400, origin);
+        throw e;
+      }
+    }
+
+    if (route === "user.export") {
+      try {
+        const r = await exportAccount(ctx.supabaseAdmin, userQuery());
+        return json(r.body, r.status, origin);
+      } catch (e) {
+        if (e instanceof RangeError) return json({ error: e.message }, 400, origin);
+        throw e;
+      }
+    }
+
+    if (route === "user.reset") {
+      const b = await body();
+      const targetId = typeof b.userId === "string" ? b.userId : "";
+      const confirmEmail = typeof b.confirmEmail === "string" ? b.confirmEmail : "";
+      if (targetId === "" || confirmEmail === "") {
+        return json({ error: "userId and confirmEmail are required" }, 400, origin);
+      }
+      const r = await resetProgress(ctx.supabaseAdmin, actorId, targetId, confirmEmail);
+      return json(r.body, r.status, origin);
+    }
+
+    if (route === "admins.list") {
+      return json({ admins: await listAdmins(ctx.supabaseAdmin) }, 200, origin);
+    }
+
+    if (route === "admins.grant") {
+      const b = await body();
+      const email = typeof b.email === "string" ? b.email : "";
+      let parsed;
+      try {
+        parsed = parseUserQuery(email, null);
+      } catch (e) {
+        return json({ error: (e as Error).message }, 400, origin);
+      }
+      const r = await grantAdmin(ctx.supabaseAdmin, actorId, (parsed as { email: string }).email);
+      return json(r.body, r.status, origin);
+    }
+
+    if (route === "admins.revoke") {
+      const b = await body();
+      const targetId = typeof b.userId === "string" ? b.userId : "";
+      if (targetId === "") return json({ error: "userId is required" }, 400, origin);
+      const r = await revokeAdmin(ctx.supabaseAdmin, actorId, targetId);
+      return json(r.body, r.status, origin);
+    }
+
+    // Unreachable: resolveRoute only returns a RouteName covered by one of the
+    // branches above, or null (handled immediately after the resolveRoute
+    // call). TypeScript cannot see that exhaustiveness, so a terminal throw
+    // satisfies the return-type check without duplicating the 404 response.
+    throw new Error("unreachable route");
   }),
 };
