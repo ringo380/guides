@@ -6,11 +6,15 @@ import { fetchGa4 } from "./lib/ga4.ts";
 import { fetchProgress } from "./lib/progress.ts";
 import { fetchTraffic } from "./lib/traffic.ts";
 import { buildPayload } from "./lib/merge.ts";
-import { resolveRoute } from "./lib/routes.ts";
+import { resolveRoute, routeNeedsGoTrue } from "./lib/routes.ts";
 import { isUuid, parseUserQuery } from "./lib/identity.ts";
 import { exportAccount, lookupAccount, resetProgress } from "./lib/accounts.ts";
 import { grantAdmin, listAdmins, revokeAdmin } from "./lib/roster.ts";
-import { buildGoTrueDeps, type GoTrueDeps } from "./lib/gotrue.ts";
+import {
+  buildGoTrueDeps,
+  type GoTrueDeps,
+  GoTrueConfigError,
+} from "./lib/gotrue.ts";
 
 // Built here, once, rather than inside the lib modules: reading Deno.env in a
 // lib is what would make it untestable, and injecting fetch is what keeps the
@@ -85,15 +89,31 @@ export default {
     const route = resolveRoute(req.method, url.pathname);
     if (route === null) return json({ error: "not found" }, 404, origin);
 
-    // The three routes that resolve an address through GoTrue cannot run
-    // without those env vars. Answer them with the named problem rather than
-    // letting an empty base url surface as "Invalid URL" four frames deeper.
-    const needsGoTrue = route === "user" || route === "user.export" ||
-      route === "admins.grant";
-    if (needsGoTrue && gotrue === null) {
+    // The routes that resolve an address through GoTrue cannot run without
+    // those env vars. Answer them with the named problem rather than letting an
+    // empty base url surface as "Invalid URL" four frames deeper. The gate
+    // itself lives in lib/routes.ts, where a test can hold it to the route list.
+    if (routeNeedsGoTrue(route) && gotrue === null) {
       return json({ error: gotrueConfigError ?? "admin-api is misconfigured" }, 500, origin);
     }
-    const deps = gotrue as GoTrueDeps;
+
+    // An accessor rather than `gotrue as GoTrueDeps`. The cast asserts the gate
+    // above and the routes below can never disagree; if they ever do, it hands
+    // null to a lib and the admin gets "Cannot read properties of null" with
+    // nothing to act on. This throws the named configuration error instead, and
+    // the call sites answer it as a 500 that says which variable is unset.
+    const deps = (): GoTrueDeps => {
+      if (gotrue === null) {
+        throw new GoTrueConfigError(
+          gotrueConfigError ?? "admin-api is misconfigured",
+        );
+      }
+      return gotrue;
+    };
+
+    /** A configuration failure is a 500 with a readable body, never a throw. */
+    const configFailure = (e: unknown): Response | null =>
+      e instanceof GoTrueConfigError ? json({ error: e.message }, 500, origin) : null;
 
     // isAdmin() above already fails closed on a missing id, so reaching here
     // proves userId is a string. TypeScript cannot narrow through an awaited
@@ -188,20 +208,24 @@ export default {
 
     if (route === "user") {
       try {
-        const r = await lookupAccount(ctx.supabaseAdmin, deps, userQuery());
+        const r = await lookupAccount(ctx.supabaseAdmin, deps(), userQuery());
         return json(r.body, r.status, origin);
       } catch (e) {
         if (e instanceof RangeError) return json({ error: e.message }, 400, origin);
+        const misconfigured = configFailure(e);
+        if (misconfigured) return misconfigured;
         throw e;
       }
     }
 
     if (route === "user.export") {
       try {
-        const r = await exportAccount(ctx.supabaseAdmin, deps, userQuery());
+        const r = await exportAccount(ctx.supabaseAdmin, deps(), userQuery());
         return json(r.body, r.status, origin);
       } catch (e) {
         if (e instanceof RangeError) return json({ error: e.message }, 400, origin);
+        const misconfigured = configFailure(e);
+        if (misconfigured) return misconfigured;
         throw e;
       }
     }
@@ -235,13 +259,19 @@ export default {
       } catch (e) {
         return json({ error: (e as Error).message }, 400, origin);
       }
-      const r = await grantAdmin(
-        ctx.supabaseAdmin,
-        deps,
-        actorId,
-        (parsed as { email: string }).email,
-      );
-      return json(r.body, r.status, origin);
+      try {
+        const r = await grantAdmin(
+          ctx.supabaseAdmin,
+          deps(),
+          actorId,
+          (parsed as { email: string }).email,
+        );
+        return json(r.body, r.status, origin);
+      } catch (e) {
+        const misconfigured = configFailure(e);
+        if (misconfigured) return misconfigured;
+        throw e;
+      }
     }
 
     if (route === "admins.revoke") {

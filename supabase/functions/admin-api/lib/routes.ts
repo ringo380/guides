@@ -28,6 +28,22 @@ const TABLE = new Map<string, RouteName>([
   ["POST admins/revoke", "admins.revoke"],
 ]);
 
+/** Every route name the table can produce, in table order. */
+export const ROUTE_NAMES: RouteName[] = [...new Set(TABLE.values())];
+
+/**
+ * Does this route resolve an address through GoTrue, and so need the env vars
+ * that talk to it?
+ *
+ * Here rather than inline in index.ts because index.ts has no tests: a list
+ * that drifts from the routes that actually need the deps is how a
+ * misconfigured deploy gets an unexplained TypeError instead of the named
+ * problem, and this is the only place that drift can be caught.
+ */
+export function routeNeedsGoTrue(route: RouteName): boolean {
+  return route === "user" || route === "user.export" || route === "admins.grant";
+}
+
 export function resolveRoute(
   method: string,
   pathname: string,
