@@ -1,5 +1,6 @@
 import { withSupabase } from "npm:@supabase/server@^1";
 import { corsHeaders, resolveCorsOrigin } from "./lib/cors.ts";
+import { withErrorFloor } from "./lib/error-floor.ts";
 import { parseRange } from "./lib/range.ts";
 import { isFresh, selectPayload } from "./lib/cache.ts";
 import { fetchGa4 } from "./lib/ga4.ts";
@@ -70,7 +71,7 @@ function json(body: unknown, status: number, origin: string | null): Response {
 // What is left to us is the two checks the gateway does not do: origin
 // allowlisting (it returns a wildcard) and admin-membership.
 export default {
-  fetch: withSupabase({ auth: "user" }, async (req: Request, ctx: any) => {
+  fetch: withSupabase({ auth: "user" }, withErrorFloor(async (req: Request, ctx: any) => {
     const origin = resolveCorsOrigin(req.headers.get("Origin"));
     if (origin === null) {
       return json({ error: "forbidden" }, 403, null);
@@ -292,5 +293,5 @@ export default {
     // call). TypeScript cannot see that exhaustiveness, so a terminal throw
     // satisfies the return-type check without duplicating the 404 response.
     throw new Error("unreachable route");
-  }),
+  })),
 };
