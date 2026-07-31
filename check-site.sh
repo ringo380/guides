@@ -33,16 +33,28 @@ fi
 sitemap_entries() { [ "$(grep -c '<loc>' "$SITE/sitemap.xml" 2>/dev/null || echo 0)" -gt 50 ]; }
 check "sitemap.xml exists and has >50 entries" sitemap_entries
 
-# The admin shell is noindex; listing it in the sitemap makes Search Console
+# The admin shells are noindex; listing one in the sitemap makes Search Console
 # report "Submitted URL marked noindex".
-admin_not_in_sitemap() { ! grep -q '<loc>[^<]*/admin/</loc>' "$SITE/sitemap.xml"; }
-check "admin page absent from sitemap.xml" admin_not_in_sitemap
+#
+# Iterated over every admin page rather than hardcoding one. A second admin page
+# inherits none of these assertions automatically, and the accounts page resolves
+# email addresses, so shipping it indexed is the failure worth preventing.
+ADMIN_PAGES=("admin" "admin-accounts")
 
-admin_noindex() { grep -qi 'name="robots" content="noindex' "$SITE/admin/index.html"; }
-check "admin page carries a noindex robots meta" admin_noindex
+page_built() { [ -f "$SITE/$1/index.html" ]; }
+page_not_in_sitemap() { ! grep -q "<loc>[^<]*/$1/</loc>" "$SITE/sitemap.xml"; }
+page_noindex() { grep -qi 'name="robots" content="noindex' "$SITE/$1/index.html"; }
+page_not_in_search() { ! grep -q "\"location\": \"$1/\"" "$SITE/search/search_index.json"; }
 
-admin_not_in_search() { ! grep -q '"location": "admin/"' "$SITE/search/search_index.json"; }
-check "admin page absent from the search index" admin_not_in_search
+for page in "${ADMIN_PAGES[@]}"; do
+  # Precondition: the page must actually be built, or the three checks below
+  # pass vacuously against a file that does not exist.
+  check "$page page was built" page_built "$page"
+
+  check "$page page absent from sitemap.xml" page_not_in_sitemap "$page"
+  check "$page page carries a noindex robots meta" page_noindex "$page"
+  check "$page page absent from the search index" page_not_in_search "$page"
+done
 
 robots_exists() { [ -f "$SITE/robots.txt" ]; }
 check "robots.txt is published" robots_exists
